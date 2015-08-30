@@ -5,13 +5,13 @@
 using namespace hogbovw;
 using namespace std;
 
-   int main(int argc,char**argv){
-      ImageScanner is(15,100);
-      is.setImage("cat.jpg");
-      is.showImage();
-      cout << "Hello World!\n";
-      return 0;
-   }
+int main(int argc,char**argv){
+   ImageScanner is(15,100);
+   is.setImage("cat.jpg");
+   is.showImage();
+   cout << "Hello World!\n";
+   return 0;
+}
 
 
 
