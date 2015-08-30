@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/marc/bachelor/HOG-BOVW/src/hogbovw/hb_image_scanner.cc
+hogbovw/hb_image_scanner.h
+-
+
+/home/marc/bachelor/HOG-BOVW/src/main.cc
+hogbovw/hogbovw.h
+-
+iostream
+-
+
+include/hogbovw/hb_hog_descriptor.h
+
+include/hogbovw/hb_image_scanner.h
+iostream
+-
+opencv/cv.h
+-
+opencv2/highgui/highgui.hpp
+-
+opencv2/imgproc/imgproc.hpp
+-
+opencv/objdetect.hpp
+-
+
+include/hogbovw/hb_kmeans.h
+
+include/hogbovw/hb_lvq.h
+
+include/hogbovw/hogbovw.h
+hb_image_scanner.h
+include/hogbovw/hb_image_scanner.h
+hb_hog_descriptor.h
+include/hogbovw/hb_hog_descriptor.h
+hb_kmeans.h
+include/hogbovw/hb_kmeans.h
+hb_lvq.h
+include/hogbovw/hb_lvq.h
+
