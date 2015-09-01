@@ -6,10 +6,7 @@
 #include <iostream>
 #include <vector>
 
-#include <opencv/cv.h>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
+#include "hb_opencv_incl.h"
 
 using namespace cv;
 using namespace std;

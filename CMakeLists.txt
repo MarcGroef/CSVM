@@ -9,7 +9,7 @@ src/main.cc
 ##name .cc files here
 
 src/hogbovw/hb_image_scanner.cc
-
+src/hogbovw/hb_hog_descriptor.cc
 )
 
 find_package(OpenCV 3.0.0 EXACT REQUIRED NO_MODULE)
