@@ -42,6 +42,6 @@ void ImageScanner::scanImage(){
    //}
    HOGDescriptor hog(9,4,4,32,16);
    
-   hog.getHOG(image);
-   cout << "done Imagescan\n";
+   v_hogValues = hog.getHOG(image);
+   cout << "done Imagescan. "<< v_hogValues.size() << " HOGs obtained \n";
 }

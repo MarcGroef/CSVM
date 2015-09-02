@@ -113,6 +113,23 @@ vector< vector<float> > HOGDescriptor::getHOG(Mat image){
       }
       
    }
+   
+   for (uint i=0;i<histograms.size();i++){   //L2-normalization
+      double abs=0;
+      for(int j=0;j<nBins;j++){
+          abs+=histograms[i][j]*histograms[i][j];
+      }
+      abs=sqrt(abs);
+      for(int j=0;j<nBins;j++){
+          if(abs==0){
+            cout << "hogbovw::HOGDescriptor::getHOG() WARNING!: devision by zero at normalization. Making 0.00001f from it.\n";
+            abs=0.00001;
+          }
+          histograms[i][j]/=abs;
+      }
+   }
+   
+  
    delete votes;
    cout << "DONE\n";
    return histograms;

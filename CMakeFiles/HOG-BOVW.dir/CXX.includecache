@@ -6,8 +6,8 @@
 
 #IncludeRegexTransform: 
 
-/home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_hog_descriptor.cc
-hogbovw/hb_hog_descriptor.h
+/home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_image_scanner.cc
+hogbovw/hb_image_scanner.h
 -
 
 include/hogbovw/hb_hog_descriptor.h
@@ -19,6 +19,16 @@ cmath
 -
 hb_opencv_incl.h
 include/hogbovw/hb_opencv_incl.h
+
+include/hogbovw/hb_image_scanner.h
+iostream
+-
+vector
+-
+hb_opencv_incl.h
+include/hogbovw/hb_opencv_incl.h
+hb_hog_descriptor.h
+include/hogbovw/hb_hog_descriptor.h
 
 include/hogbovw/hb_opencv_incl.h
 opencv/cv.h
