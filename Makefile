@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW
+CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW
+CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW/CMakeFiles /home/marc/bachelor/HOG-BOVW/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -110,6 +110,30 @@ HOG-BOVW: cmake_check_build_system
 HOG-BOVW/fast:
 	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/build
 .PHONY : HOG-BOVW/fast
+
+src/hogbovw/hb_hog_descriptor.o: src/hogbovw/hb_hog_descriptor.cc.o
+.PHONY : src/hogbovw/hb_hog_descriptor.o
+
+# target to build an object file
+src/hogbovw/hb_hog_descriptor.cc.o:
+	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o
+.PHONY : src/hogbovw/hb_hog_descriptor.cc.o
+
+src/hogbovw/hb_hog_descriptor.i: src/hogbovw/hb_hog_descriptor.cc.i
+.PHONY : src/hogbovw/hb_hog_descriptor.i
+
+# target to preprocess a source file
+src/hogbovw/hb_hog_descriptor.cc.i:
+	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.i
+.PHONY : src/hogbovw/hb_hog_descriptor.cc.i
+
+src/hogbovw/hb_hog_descriptor.s: src/hogbovw/hb_hog_descriptor.cc.s
+.PHONY : src/hogbovw/hb_hog_descriptor.s
+
+# target to generate assembly for a file
+src/hogbovw/hb_hog_descriptor.cc.s:
+	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.s
+.PHONY : src/hogbovw/hb_hog_descriptor.cc.s
 
 src/hogbovw/hb_image_scanner.o: src/hogbovw/hb_image_scanner.cc.o
 .PHONY : src/hogbovw/hb_image_scanner.o
@@ -168,6 +192,9 @@ help:
 	@echo "... HOG-BOVW"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... src/hogbovw/hb_hog_descriptor.o"
+	@echo "... src/hogbovw/hb_hog_descriptor.i"
+	@echo "... src/hogbovw/hb_hog_descriptor.s"
 	@echo "... src/hogbovw/hb_image_scanner.o"
 	@echo "... src/hogbovw/hb_image_scanner.i"
 	@echo "... src/hogbovw/hb_image_scanner.s"

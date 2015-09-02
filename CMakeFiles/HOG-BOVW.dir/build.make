@@ -35,10 +35,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW
+CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW
+CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 # Include any dependencies generated for this target.
 include CMakeFiles/HOG-BOVW.dir/depend.make
@@ -51,17 +51,17 @@ include CMakeFiles/HOG-BOVW.dir/flags.make
 
 CMakeFiles/HOG-BOVW.dir/src/main.cc.o: CMakeFiles/HOG-BOVW.dir/flags.make
 CMakeFiles/HOG-BOVW.dir/src/main.cc.o: src/main.cc
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW/CMakeFiles $(CMAKE_PROGRESS_1)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/HOG-BOVW.dir/src/main.cc.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/HOG-BOVW.dir/src/main.cc.o -c /home/marc/bachelor/HOG-BOVW/src/main.cc
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/HOG-BOVW.dir/src/main.cc.o -c /home/marc/bachelor/HOG-BOVW-Detector/src/main.cc
 
 CMakeFiles/HOG-BOVW.dir/src/main.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/HOG-BOVW.dir/src/main.cc.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/marc/bachelor/HOG-BOVW/src/main.cc > CMakeFiles/HOG-BOVW.dir/src/main.cc.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/marc/bachelor/HOG-BOVW-Detector/src/main.cc > CMakeFiles/HOG-BOVW.dir/src/main.cc.i
 
 CMakeFiles/HOG-BOVW.dir/src/main.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/HOG-BOVW.dir/src/main.cc.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/marc/bachelor/HOG-BOVW/src/main.cc -o CMakeFiles/HOG-BOVW.dir/src/main.cc.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/marc/bachelor/HOG-BOVW-Detector/src/main.cc -o CMakeFiles/HOG-BOVW.dir/src/main.cc.s
 
 CMakeFiles/HOG-BOVW.dir/src/main.cc.o.requires:
 .PHONY : CMakeFiles/HOG-BOVW.dir/src/main.cc.o.requires
@@ -74,17 +74,17 @@ CMakeFiles/HOG-BOVW.dir/src/main.cc.o.provides.build: CMakeFiles/HOG-BOVW.dir/sr
 
 CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o: CMakeFiles/HOG-BOVW.dir/flags.make
 CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o: src/hogbovw/hb_image_scanner.cc
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o -c /home/marc/bachelor/HOG-BOVW/src/hogbovw/hb_image_scanner.cc
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o -c /home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_image_scanner.cc
 
 CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/marc/bachelor/HOG-BOVW/src/hogbovw/hb_image_scanner.cc > CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_image_scanner.cc > CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.i
 
 CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/marc/bachelor/HOG-BOVW/src/hogbovw/hb_image_scanner.cc -o CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_image_scanner.cc -o CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.s
 
 CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o.requires:
 .PHONY : CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o.requires
@@ -95,16 +95,41 @@ CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o.provides: CMakeFiles/H
 
 CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o.provides.build: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o
 
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o: CMakeFiles/HOG-BOVW.dir/flags.make
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o: src/hogbovw/hb_hog_descriptor.cc
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles $(CMAKE_PROGRESS_3)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o -c /home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_hog_descriptor.cc
+
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_hog_descriptor.cc > CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.i
+
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_hog_descriptor.cc -o CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.s
+
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.requires:
+.PHONY : CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.requires
+
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.provides: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.requires
+	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.provides.build
+.PHONY : CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.provides
+
+CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.provides.build: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o
+
 # Object files for target HOG-BOVW
 HOG__BOVW_OBJECTS = \
 "CMakeFiles/HOG-BOVW.dir/src/main.cc.o" \
-"CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o"
+"CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o" \
+"CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o"
 
 # External object files for target HOG-BOVW
 HOG__BOVW_EXTERNAL_OBJECTS =
 
 build/HOG-BOVW: CMakeFiles/HOG-BOVW.dir/src/main.cc.o
 build/HOG-BOVW: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o
+build/HOG-BOVW: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o
 build/HOG-BOVW: /usr/local/lib/libopencv_viz.so.3.0.0
 build/HOG-BOVW: /usr/local/lib/libopencv_videostab.so.3.0.0
 build/HOG-BOVW: /usr/local/lib/libopencv_videoio.so.3.0.0
@@ -145,6 +170,7 @@ CMakeFiles/HOG-BOVW.dir/build: build/HOG-BOVW
 
 CMakeFiles/HOG-BOVW.dir/requires: CMakeFiles/HOG-BOVW.dir/src/main.cc.o.requires
 CMakeFiles/HOG-BOVW.dir/requires: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o.requires
+CMakeFiles/HOG-BOVW.dir/requires: CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o.requires
 .PHONY : CMakeFiles/HOG-BOVW.dir/requires
 
 CMakeFiles/HOG-BOVW.dir/clean:
@@ -152,6 +178,6 @@ CMakeFiles/HOG-BOVW.dir/clean:
 .PHONY : CMakeFiles/HOG-BOVW.dir/clean
 
 CMakeFiles/HOG-BOVW.dir/depend:
-	cd /home/marc/bachelor/HOG-BOVW && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/marc/bachelor/HOG-BOVW /home/marc/bachelor/HOG-BOVW /home/marc/bachelor/HOG-BOVW /home/marc/bachelor/HOG-BOVW /home/marc/bachelor/HOG-BOVW/CMakeFiles/HOG-BOVW.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/marc/bachelor/HOG-BOVW-Detector && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/marc/bachelor/HOG-BOVW-Detector /home/marc/bachelor/HOG-BOVW-Detector /home/marc/bachelor/HOG-BOVW-Detector /home/marc/bachelor/HOG-BOVW-Detector /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles/HOG-BOVW.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/HOG-BOVW.dir/depend
 

@@ -6,41 +6,25 @@
 
 #IncludeRegexTransform: 
 
-/home/marc/bachelor/HOG-BOVW/src/hogbovw/hb_image_scanner.cc
-hogbovw/hb_image_scanner.h
--
-
-/home/marc/bachelor/HOG-BOVW/src/main.cc
-hogbovw/hogbovw.h
--
-iostream
+/home/marc/bachelor/HOG-BOVW-Detector/src/hogbovw/hb_hog_descriptor.cc
+hogbovw/hb_hog_descriptor.h
 -
 
 include/hogbovw/hb_hog_descriptor.h
-
-include/hogbovw/hb_image_scanner.h
+vector
+-
 iostream
 -
+cmath
+-
+hb_opencv_incl.h
+include/hogbovw/hb_opencv_incl.h
+
+include/hogbovw/hb_opencv_incl.h
 opencv/cv.h
 -
 opencv2/highgui/highgui.hpp
 -
 opencv2/imgproc/imgproc.hpp
 -
-opencv/objdetect.hpp
--
-
-include/hogbovw/hb_kmeans.h
-
-include/hogbovw/hb_lvq.h
-
-include/hogbovw/hogbovw.h
-hb_image_scanner.h
-include/hogbovw/hb_image_scanner.h
-hb_hog_descriptor.h
-include/hogbovw/hb_hog_descriptor.h
-hb_kmeans.h
-include/hogbovw/hb_kmeans.h
-hb_lvq.h
-include/hogbovw/hb_lvq.h
 

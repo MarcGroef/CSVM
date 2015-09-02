@@ -10,16 +10,15 @@ ImageScanner::ImageScanner(int wSize,int nPatches){
    winSize = wSize;
    this->nPatches = nPatches;
 
-   hog
 }
 
 void ImageScanner::setImage(string filename){
-   image = imread(filename,CV_LOAD_IMAGE_COLOR);
+   image = imread(filename,0);
    imageDir = filename;
    if (!image.data)
       cout << "Failed loading image " << filename << "\n";
    else
-      cout << "Image "<< filename <<" loaded succesfully.\n";
+      cout << "Image "<< filename <<" loaded succesfully. " << image.cols << "x" << image.rows << "pixels\n";
 
 }
 
@@ -33,11 +32,16 @@ void ImageScanner::showImage(){
    }
 }
 
+
+
 void ImageScanner::scanImage(){
-   for(int patch=0;patch<nPatches;patch++){
+   //for(int patch=0;patch<nPatches;patch++){
 
 
 
-   }
-
+   //}
+   HOGDescriptor hog(9,4,4,32,16);
+   
+   hog.getHOG(image);
+   cout << "done Imagescan\n";
 }

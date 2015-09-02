@@ -47,10 +47,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW
+CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW
+CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 #=============================================================================
 # Target rules for target CMakeFiles/HOG-BOVW.dir
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW
 CMakeFiles/HOG-BOVW.dir/all:
 	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/depend
 	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW/CMakeFiles  1 2
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles  1 2 3
 	@echo "Built target HOG-BOVW"
 .PHONY : CMakeFiles/HOG-BOVW.dir/all
 
@@ -69,9 +69,9 @@ all: CMakeFiles/HOG-BOVW.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/HOG-BOVW.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/HOG-BOVW.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles 0
 .PHONY : CMakeFiles/HOG-BOVW.dir/rule
 
 # Convenience name for target.
