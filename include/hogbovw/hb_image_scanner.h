@@ -1,4 +1,3 @@
-//copyright Marc Groefsema (c) 2015
 
 #ifndef HB_IMAGE_SCANNER_H
 #define HB_IMAGE_SCANNER_H

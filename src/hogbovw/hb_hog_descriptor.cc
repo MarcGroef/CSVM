@@ -1,5 +1,3 @@
-//Copyright Marc Groefsema (c) 2015
-
 #include <hogbovw/hb_hog_descriptor.h>
 
 using namespace cv;

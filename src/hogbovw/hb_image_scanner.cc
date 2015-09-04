@@ -1,5 +1,3 @@
-//copyright Marc Groefsema (c) 2015
-
 #include <hogbovw/hb_image_scanner.h>
 
 using namespace hogbovw;

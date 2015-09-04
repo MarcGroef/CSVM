@@ -1,4 +1,4 @@
-//copyright Marc Groefsema (c) 2015
+
 
 #ifndef HB_OPENCV_INCL
 #define HB_OPENCV_INCL

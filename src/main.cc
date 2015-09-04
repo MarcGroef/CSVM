@@ -1,4 +1,4 @@
-//copyright Marc Groefsema (c) 2015
+
 #include <hogbovw/hogbovw.h>
 #include <iostream>
 

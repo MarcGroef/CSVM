@@ -1,4 +1,4 @@
-//copyright Marc Groefsema (c) 2015
+
 
 #ifndef HB_HOGBOVW_H
 #define HB_HOGBOVW_H
