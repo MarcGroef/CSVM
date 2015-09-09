@@ -36,3 +36,17 @@ void FreqMatrix::addCombo(int wordA, int wordB, float activationA, float activat
 float FreqMatrix::getCombo(int wordA, int wordB){
    return triangle[getTriangleIndex(wordA, wordB)];
 }
+
+void FreqMatrix::analyze(){
+   mean=0;
+   stddev=0;
+   for(int i = 0; i < size; i++){
+      mean += triangle[i];
+   }
+   mean /= size;
+   for(int i = 0; i < size; i++){
+      stddev += (mean - triangle[i])*(mean - triangle[i]);
+   }
+   stddev = sqrt(stddev);
+   stddev /= size;
+}

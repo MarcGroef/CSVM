@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 
    using namespace std;
    
@@ -12,7 +13,8 @@
       class FreqMatrix{
          float* triangle;
          int size;
-         
+         float mean;
+         float stddev;
       public:
         FreqMatrix(int size) ;
         ~FreqMatrix();
@@ -20,6 +22,7 @@
         void setZeros();
         void addCombo(int wordA, int wordB, float activationA, float activationB);
         float getCombo(int wordA, int wordB);
+        void analyze();
       };
       
       
