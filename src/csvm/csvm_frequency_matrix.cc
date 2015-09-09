@@ -32,3 +32,7 @@ void FreqMatrix::setZeros(){
 void FreqMatrix::addCombo(int wordA,int wordB,float activationA,float activationB){
    triangle[getTriangleIndex(wordA,wordB)]+=activationA*activationB;
 }
+
+float FreqMatrix::getCombo(int wordA,int wordB){
+   return triangle[getTriangleIndex(wordA,wordB)];
+}
