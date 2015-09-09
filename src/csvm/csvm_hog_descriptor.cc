@@ -14,16 +14,19 @@ HOGDescriptor::HOGDescriptor(int nBins=9,int cellSize=3,int cellStride=3,int blo
 
 //assumes a square uchar (grey) image
 
+
+//Devnote: This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
 vector< vector<float> > HOGDescriptor::getHOG(Mat image){
    Mat gx,gy;
-   gx=image.clone();
-   gy=image.clone();
+   gx=image.clone();  //cloned image to store horizontal gradient
+   gy=image.clone();  //cloned image to store vertical gradient
    
    int imWidth = image.cols;
    int imHeight = image.rows;
-   vector< vector<float> > histograms;
+   
+   vector< vector<float> > histograms;   //collection of HOG histograms
    double* votes = new double[nBins]();
-   double binSize = M_PI/9;
+   double binSize = M_PI/nBins;
    
    if(image.cols!=image.rows)
       cout << "HOGDescriptor::getHOG() Warning! Image is not a square! Some parts might not get scanned.\n";
@@ -31,25 +34,25 @@ vector< vector<float> > HOGDescriptor::getHOG(Mat image){
    //get gradients of image
    for(int i=0;i<imWidth;i++)
       for(int j=0;j<imHeight;j++){
-         int gv=(i-1>=0? image.at<uchar>(j,i-1):0)-(i+1 < imWidth?image.at<uchar>(j,i+1):0);
-         gx.at<uchar>(j,i) = (uchar)abs(gv);
-         gv = (j-1>=0? image.at<uchar>(j-1,i):0)-(j+1<imHeight?image.at<uchar>(j+1,i):0);
+         int gv=(i-1>=0? image.at<uchar>(j,i-1):0)-(i+1 < imWidth?image.at<uchar>(j,i+1):0);    //calculate difference between left and right pixel
+         gx.at<uchar>(j,i) = (uchar)abs(gv);                                                    //store absolute difference
+         gv = (j-1>=0? image.at<uchar>(j-1,i):0)-(j+1<imHeight?image.at<uchar>(j+1,i):0);       //same for up and down
          gy.at<uchar>(j,i) = (uchar)abs(gv);
       }
    
    
    //show the gradients for fun
    
-   namedWindow("Gx",WINDOW_AUTOSIZE);
-   imshow("Gx",gx);
-   waitKey(0);
+   namedWindow("Gx",WINDOW_AUTOSIZE);   //spawn window called "Gx"
+   imshow("Gx",gx);                     //parse the image to the just spawned "Gx"
+   waitKey(0);                          //wait infinitly for used imput   (a wait for user input is necessary, otherwise the window will crash)
    
    namedWindow("Gy",WINDOW_AUTOSIZE);
    imshow("Gy",gy);
    waitKey(0);
    
    //devide in blocks.
-   if(imWidth%blockSize!=0||imHeight%blockSize!=0)
+   if(imWidth%blockSize!=0||imHeight%blockSize!=0)     //check whether the blocks fit in the image
       cout << "HOGDescriptor::getHOG() Warning! The instructed blocksize does not define a perfect grid in the image!\n";
    
    
@@ -120,7 +123,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Mat image){
       abs=sqrt(abs);
       for(int j=0;j<nBins;j++){
           if(abs==0){
-            cout << "hogbovw::HOGDescriptor::getHOG() WARNING!: devision by zero at normalization. Making 0.00001f from it.\n";
+            cout << "hogbovw::HOGDescriptor::getHOG() WARNING!: devision by zero at normalization. Making 0.00001f from it.\n";    //fishy.. Any ideas?
             abs=0.00001;
           }
           histograms[i][j]/=abs;
