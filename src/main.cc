@@ -6,8 +6,8 @@ using namespace csvm;
 using namespace std;
 
 int main(int argc,char**argv){
-   ImageScanner is(15,100);
-   is.setImage("lenna.png");
+   ImageScanner is(15,100);  //window size, nPatches
+   is.setImage("lenna.png");  //load image into ImageScanner using openCV
    is.showImage();
    
    is.scanImage();

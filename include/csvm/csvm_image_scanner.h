@@ -17,24 +17,24 @@ namespace csvm{
 
 
    class ImageScanner{
-      Mat image;
-      string imageDir;
+      Mat image;                                //openCV Image container to hold an image
+      string imageDir;                          //directory of the image
       
       
-      Mat window;
+      Mat window;                               //the window sample
       int winSize;
       int winPosX;
       int winPosY;
 
-      int nPatches;
+      int nPatches;                             //number of patches that should be taken
 
-      vector< vector<float> > v_hogValues;
+      vector< vector<float> > v_hogValues;      // vector of hog vectors
 
       public:
-      ImageScanner(int wSize,int nPatches);
-      void setImage(string filename);
-      void showImage();
-      void scanImage();
+      ImageScanner(int wSize,int nPatches);     //contructor
+      void setImage(string filename);           //load image into ImageScanner
+      void showImage();                         //popup a window to show the image
+      void scanImage();                         //scan the image
 
    };
 
