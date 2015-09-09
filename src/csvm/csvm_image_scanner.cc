@@ -1,6 +1,6 @@
-#include <hogbovw/hb_image_scanner.h>
+#include <csvm/csvm_image_scanner.h>
 
-using namespace hogbovw;
+using namespace csvm;
 using namespace cv;
 using namespace std;
 

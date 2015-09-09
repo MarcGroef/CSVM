@@ -1,8 +1,8 @@
 
-#include <hogbovw/hogbovw.h>
+#include <csvm/csvm.h>
 #include <iostream>
 
-using namespace hogbovw;
+using namespace csvm;
 using namespace std;
 
 int main(int argc,char**argv){

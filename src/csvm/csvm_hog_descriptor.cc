@@ -1,8 +1,8 @@
-#include <hogbovw/hb_hog_descriptor.h>
+#include <csvm/csvm_hog_descriptor.h>
 
 using namespace cv;
 using namespace std;
-using namespace hogbovw;
+using namespace csvm;
 
 HOGDescriptor::HOGDescriptor(int nBins=9,int cellSize=3,int cellStride=3,int blockSize=36,int blockStride=18){
    this->nBins=nBins;

@@ -1,1 +1,1 @@
-/home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles/HOG-BOVW.dir
+/home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles/CSVM.dir

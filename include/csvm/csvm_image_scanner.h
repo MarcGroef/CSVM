@@ -1,18 +1,18 @@
 
-#ifndef HB_IMAGE_SCANNER_H
-#define HB_IMAGE_SCANNER_H
+#ifndef CSVM_IMAGE_SCANNER_H
+#define CSVM_IMAGE_SCANNER_H
 
 #include <iostream>
 #include <vector>
 
-#include "hb_opencv_incl.h"
+#include "csvm_opencv_incl.h"
 
-#include "hb_hog_descriptor.h"
+#include "csvm_hog_descriptor.h"
 
 using namespace cv;
 using namespace std;
 
-namespace hogbovw{
+namespace csvm{
 
 
 

@@ -1,7 +1,7 @@
 
 
-#ifndef HB_OPENCV_INCL
-#define HB_OPENCV_INCL
+#ifndef CSVM_OPENCV_INCL
+#define CSVM_OPENCV_INCL
 
 #include <opencv/cv.h>
 #include <opencv2/highgui/highgui.hpp>

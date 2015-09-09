@@ -53,38 +53,38 @@ CMAKE_SOURCE_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 CMAKE_BINARY_DIR = /home/marc/bachelor/HOG-BOVW-Detector
 
 #=============================================================================
-# Target rules for target CMakeFiles/HOG-BOVW.dir
+# Target rules for target CMakeFiles/CSVM.dir
 
 # All Build rule for target.
-CMakeFiles/HOG-BOVW.dir/all:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/depend
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/build
+CMakeFiles/CSVM.dir/all:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/depend
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles  1 2 3
-	@echo "Built target HOG-BOVW"
-.PHONY : CMakeFiles/HOG-BOVW.dir/all
+	@echo "Built target CSVM"
+.PHONY : CMakeFiles/CSVM.dir/all
 
 # Include target in all.
-all: CMakeFiles/HOG-BOVW.dir/all
+all: CMakeFiles/CSVM.dir/all
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/HOG-BOVW.dir/rule: cmake_check_build_system
+CMakeFiles/CSVM.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles 3
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/HOG-BOVW.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/CSVM.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/HOG-BOVW-Detector/CMakeFiles 0
-.PHONY : CMakeFiles/HOG-BOVW.dir/rule
+.PHONY : CMakeFiles/CSVM.dir/rule
 
 # Convenience name for target.
-HOG-BOVW: CMakeFiles/HOG-BOVW.dir/rule
-.PHONY : HOG-BOVW
+CSVM: CMakeFiles/CSVM.dir/rule
+.PHONY : CSVM
 
 # clean rule for target.
-CMakeFiles/HOG-BOVW.dir/clean:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/clean
-.PHONY : CMakeFiles/HOG-BOVW.dir/clean
+CMakeFiles/CSVM.dir/clean:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/clean
+.PHONY : CMakeFiles/CSVM.dir/clean
 
 # clean rule for target.
-clean: CMakeFiles/HOG-BOVW.dir/clean
+clean: CMakeFiles/CSVM.dir/clean
 .PHONY : clean
 
 #=============================================================================

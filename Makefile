@@ -99,72 +99,72 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named HOG-BOVW
+# Target rules for targets named CSVM
 
 # Build rule for target.
-HOG-BOVW: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 HOG-BOVW
-.PHONY : HOG-BOVW
+CSVM: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 CSVM
+.PHONY : CSVM
 
 # fast build rule for target.
-HOG-BOVW/fast:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/build
-.PHONY : HOG-BOVW/fast
+CSVM/fast:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/build
+.PHONY : CSVM/fast
 
-src/hogbovw/hb_hog_descriptor.o: src/hogbovw/hb_hog_descriptor.cc.o
-.PHONY : src/hogbovw/hb_hog_descriptor.o
-
-# target to build an object file
-src/hogbovw/hb_hog_descriptor.cc.o:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.o
-.PHONY : src/hogbovw/hb_hog_descriptor.cc.o
-
-src/hogbovw/hb_hog_descriptor.i: src/hogbovw/hb_hog_descriptor.cc.i
-.PHONY : src/hogbovw/hb_hog_descriptor.i
-
-# target to preprocess a source file
-src/hogbovw/hb_hog_descriptor.cc.i:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.i
-.PHONY : src/hogbovw/hb_hog_descriptor.cc.i
-
-src/hogbovw/hb_hog_descriptor.s: src/hogbovw/hb_hog_descriptor.cc.s
-.PHONY : src/hogbovw/hb_hog_descriptor.s
-
-# target to generate assembly for a file
-src/hogbovw/hb_hog_descriptor.cc.s:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_hog_descriptor.cc.s
-.PHONY : src/hogbovw/hb_hog_descriptor.cc.s
-
-src/hogbovw/hb_image_scanner.o: src/hogbovw/hb_image_scanner.cc.o
-.PHONY : src/hogbovw/hb_image_scanner.o
+src/csvm/csvm_hog_descriptor.o: src/csvm/csvm_hog_descriptor.cc.o
+.PHONY : src/csvm/csvm_hog_descriptor.o
 
 # target to build an object file
-src/hogbovw/hb_image_scanner.cc.o:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.o
-.PHONY : src/hogbovw/hb_image_scanner.cc.o
+src/csvm/csvm_hog_descriptor.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_hog_descriptor.cc.o
+.PHONY : src/csvm/csvm_hog_descriptor.cc.o
 
-src/hogbovw/hb_image_scanner.i: src/hogbovw/hb_image_scanner.cc.i
-.PHONY : src/hogbovw/hb_image_scanner.i
+src/csvm/csvm_hog_descriptor.i: src/csvm/csvm_hog_descriptor.cc.i
+.PHONY : src/csvm/csvm_hog_descriptor.i
 
 # target to preprocess a source file
-src/hogbovw/hb_image_scanner.cc.i:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.i
-.PHONY : src/hogbovw/hb_image_scanner.cc.i
+src/csvm/csvm_hog_descriptor.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_hog_descriptor.cc.i
+.PHONY : src/csvm/csvm_hog_descriptor.cc.i
 
-src/hogbovw/hb_image_scanner.s: src/hogbovw/hb_image_scanner.cc.s
-.PHONY : src/hogbovw/hb_image_scanner.s
+src/csvm/csvm_hog_descriptor.s: src/csvm/csvm_hog_descriptor.cc.s
+.PHONY : src/csvm/csvm_hog_descriptor.s
 
 # target to generate assembly for a file
-src/hogbovw/hb_image_scanner.cc.s:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/hogbovw/hb_image_scanner.cc.s
-.PHONY : src/hogbovw/hb_image_scanner.cc.s
+src/csvm/csvm_hog_descriptor.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_hog_descriptor.cc.s
+.PHONY : src/csvm/csvm_hog_descriptor.cc.s
+
+src/csvm/csvm_image_scanner.o: src/csvm/csvm_image_scanner.cc.o
+.PHONY : src/csvm/csvm_image_scanner.o
+
+# target to build an object file
+src/csvm/csvm_image_scanner.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.o
+.PHONY : src/csvm/csvm_image_scanner.cc.o
+
+src/csvm/csvm_image_scanner.i: src/csvm/csvm_image_scanner.cc.i
+.PHONY : src/csvm/csvm_image_scanner.i
+
+# target to preprocess a source file
+src/csvm/csvm_image_scanner.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.i
+.PHONY : src/csvm/csvm_image_scanner.cc.i
+
+src/csvm/csvm_image_scanner.s: src/csvm/csvm_image_scanner.cc.s
+.PHONY : src/csvm/csvm_image_scanner.s
+
+# target to generate assembly for a file
+src/csvm/csvm_image_scanner.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
+.PHONY : src/csvm/csvm_image_scanner.cc.s
 
 src/main.o: src/main.cc.o
 .PHONY : src/main.o
 
 # target to build an object file
 src/main.cc.o:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/main.cc.o
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/main.cc.o
 .PHONY : src/main.cc.o
 
 src/main.i: src/main.cc.i
@@ -172,7 +172,7 @@ src/main.i: src/main.cc.i
 
 # target to preprocess a source file
 src/main.cc.i:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/main.cc.i
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/main.cc.i
 .PHONY : src/main.cc.i
 
 src/main.s: src/main.cc.s
@@ -180,7 +180,7 @@ src/main.s: src/main.cc.s
 
 # target to generate assembly for a file
 src/main.cc.s:
-	$(MAKE) -f CMakeFiles/HOG-BOVW.dir/build.make CMakeFiles/HOG-BOVW.dir/src/main.cc.s
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/main.cc.s
 .PHONY : src/main.cc.s
 
 # Help Target
@@ -189,15 +189,15 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... HOG-BOVW"
+	@echo "... CSVM"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... src/hogbovw/hb_hog_descriptor.o"
-	@echo "... src/hogbovw/hb_hog_descriptor.i"
-	@echo "... src/hogbovw/hb_hog_descriptor.s"
-	@echo "... src/hogbovw/hb_image_scanner.o"
-	@echo "... src/hogbovw/hb_image_scanner.i"
-	@echo "... src/hogbovw/hb_image_scanner.s"
+	@echo "... src/csvm/csvm_hog_descriptor.o"
+	@echo "... src/csvm/csvm_hog_descriptor.i"
+	@echo "... src/csvm/csvm_hog_descriptor.s"
+	@echo "... src/csvm/csvm_image_scanner.o"
+	@echo "... src/csvm/csvm_image_scanner.i"
+	@echo "... src/csvm/csvm_image_scanner.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

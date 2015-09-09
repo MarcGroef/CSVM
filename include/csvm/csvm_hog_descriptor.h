@@ -1,18 +1,18 @@
 
-#ifndef HB_HOG_DESCRIPTOR_H
-#define HB_HOG_DESCRIPTOR_H
+#ifndef CSVM_HOG_DESCRIPTOR_H
+#define CSVM_HOG_DESCRIPTOR_H
 
 
 #include <vector>
 #include <iostream>
 #include <cmath>
 
-#include "hb_opencv_incl.h"
+#include "csvm_opencv_incl.h"
 
 using namespace std;
 using namespace cv;
 
-namespace hogbovw{
+namespace csvm{
 
    class HOGDescriptor{
       int nBins; //number of angular orientated histogram bins bins
