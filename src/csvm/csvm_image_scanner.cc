@@ -11,7 +11,7 @@ ImageScanner::ImageScanner(int wSize,int nPatches){
 }
 
 void ImageScanner::setImage(string filename){
-   image = imread(filename,0);
+   image = imread(filename, 0);
    imageDir = filename;
    if (!image.data)
       cout << "Failed loading image " << filename << "\n";
@@ -24,8 +24,8 @@ void ImageScanner::showImage(){
    if(!image.data){
      cout << "There is no image loaded to show..\n";
    }else{
-     namedWindow("ImageScanner: Image loaded",WINDOW_AUTOSIZE);
-     imshow("ImageScanner: Image loaded",image);
+     namedWindow("ImageScanner: Image loaded", WINDOW_AUTOSIZE);
+     imshow("ImageScanner: Image loaded", image);
      waitKey(0);
    }
 }

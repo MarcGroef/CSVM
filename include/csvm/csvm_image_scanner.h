@@ -31,7 +31,7 @@ namespace csvm{
       vector< vector<float> > v_hogValues;      // vector of hog vectors
 
       public:
-      ImageScanner(int wSize,int nPatches);     //contructor
+      ImageScanner(int wSize, int nPatches);     //contructor
       void setImage(string filename);           //load image into ImageScanner
       void showImage();                         //popup a window to show the image
       void scanImage();                         //scan the image

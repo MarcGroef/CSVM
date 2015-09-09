@@ -16,10 +16,10 @@
       public:
         FreqMatrix(int size) ;
         ~FreqMatrix();
-        int getTriangleIndex(int i,int j);
+        int getTriangleIndex(int i, int j);
         void setZeros();
-        void addCombo(int wordA,int wordB,float activationA,float activationB);
-        float getCombo(int wordA,int wordB);
+        void addCombo(int wordA, int wordB, float activationA, float activationB);
+        float getCombo(int wordA, int wordB);
       };
       
       
