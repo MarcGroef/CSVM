@@ -5,7 +5,7 @@ using namespace csvm;
 
 FreqMatrix::FreqMatrix(int nWords){
    size = 0.5 * (nWords * nWords + nWords);
-   triangle = new float[size]();
+   triangle = new double[size]();
 }
 
 FreqMatrix::~FreqMatrix(){
@@ -13,7 +13,7 @@ FreqMatrix::~FreqMatrix(){
 }
 
 
-int FreqMatrix::getTriangleIndex(int i,int j){
+int FreqMatrix::getTriangleIndex(int i, int j){
    if(i > size - 1 || j > size - 1){
       cout << "csvm_frequency_matrix::FreqMatrix::getTriangleIndex(int,int) Error: Provided index (" << i << "," << j << ")out of bounds.\nExiting..\n";
       exit(-1);
