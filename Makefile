@@ -111,6 +111,30 @@ CSVM/fast:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/build
 .PHONY : CSVM/fast
 
+src/csvm/csvm_frequency_matrix.o: src/csvm/csvm_frequency_matrix.cc.o
+.PHONY : src/csvm/csvm_frequency_matrix.o
+
+# target to build an object file
+src/csvm/csvm_frequency_matrix.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_frequency_matrix.cc.o
+.PHONY : src/csvm/csvm_frequency_matrix.cc.o
+
+src/csvm/csvm_frequency_matrix.i: src/csvm/csvm_frequency_matrix.cc.i
+.PHONY : src/csvm/csvm_frequency_matrix.i
+
+# target to preprocess a source file
+src/csvm/csvm_frequency_matrix.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_frequency_matrix.cc.i
+.PHONY : src/csvm/csvm_frequency_matrix.cc.i
+
+src/csvm/csvm_frequency_matrix.s: src/csvm/csvm_frequency_matrix.cc.s
+.PHONY : src/csvm/csvm_frequency_matrix.s
+
+# target to generate assembly for a file
+src/csvm/csvm_frequency_matrix.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_frequency_matrix.cc.s
+.PHONY : src/csvm/csvm_frequency_matrix.cc.s
+
 src/csvm/csvm_hog_descriptor.o: src/csvm/csvm_hog_descriptor.cc.o
 .PHONY : src/csvm/csvm_hog_descriptor.o
 
@@ -192,6 +216,9 @@ help:
 	@echo "... CSVM"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... src/csvm/csvm_frequency_matrix.o"
+	@echo "... src/csvm/csvm_frequency_matrix.i"
+	@echo "... src/csvm/csvm_frequency_matrix.s"
 	@echo "... src/csvm/csvm_hog_descriptor.o"
 	@echo "... src/csvm/csvm_hog_descriptor.i"
 	@echo "... src/csvm/csvm_hog_descriptor.s"
