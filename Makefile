@@ -183,6 +183,30 @@ src/csvm/csvm_image_scanner.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
 .PHONY : src/csvm/csvm_image_scanner.cc.s
 
+src/lodepng/lodepng.o: src/lodepng/lodepng.cc.o
+.PHONY : src/lodepng/lodepng.o
+
+# target to build an object file
+src/lodepng/lodepng.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/lodepng/lodepng.cc.o
+.PHONY : src/lodepng/lodepng.cc.o
+
+src/lodepng/lodepng.i: src/lodepng/lodepng.cc.i
+.PHONY : src/lodepng/lodepng.i
+
+# target to preprocess a source file
+src/lodepng/lodepng.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/lodepng/lodepng.cc.i
+.PHONY : src/lodepng/lodepng.cc.i
+
+src/lodepng/lodepng.s: src/lodepng/lodepng.cc.s
+.PHONY : src/lodepng/lodepng.s
+
+# target to generate assembly for a file
+src/lodepng/lodepng.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/lodepng/lodepng.cc.s
+.PHONY : src/lodepng/lodepng.cc.s
+
 src/main.o: src/main.cc.o
 .PHONY : src/main.o
 
@@ -225,6 +249,9 @@ help:
 	@echo "... src/csvm/csvm_image_scanner.o"
 	@echo "... src/csvm/csvm_image_scanner.i"
 	@echo "... src/csvm/csvm_image_scanner.s"
+	@echo "... src/lodepng/lodepng.o"
+	@echo "... src/lodepng/lodepng.i"
+	@echo "... src/lodepng/lodepng.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

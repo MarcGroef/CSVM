@@ -11,6 +11,8 @@ src/main.cc
 src/csvm/csvm_image_scanner.cc
 src/csvm/csvm_hog_descriptor.cc
 src/csvm/csvm_frequency_matrix.cc
+
+src/lodepng/lodepng.cc
 )
 
 find_package(OpenCV 3.0.0 EXACT REQUIRED NO_MODULE)
