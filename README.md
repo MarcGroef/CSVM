@@ -6,9 +6,9 @@ This technique is based on the paper "Recognizing Handwritten Characters with Lo
 This is still early work in progress..
 
 
-Dependenies:
+External Dependenies:
 1. OpenCV 3.0.0                     http://opencv.org/            (this dependency will shortly be removed)
-2. LodePNG (by Lode Vandevenne)     http://lodev.org/lodepng/     (source already included in project)
+
 
 Usage: (linux)
 
