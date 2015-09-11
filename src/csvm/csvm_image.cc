@@ -27,11 +27,11 @@ namespace csvm{
       return image;
    }
    
-   void exportImage(string fileName){
+   void Image::exportImage(string filename){
       string png = ".png";
       
       if(filename.length() > png.length() && 0 == filename.compare(filename.length() - png.length(), png.length(), png)){  //if so, write a png file
-         unsigned int error = encode(image,width,height,filename);
+         unsigned int error = encode(filename,image,width,height);
          if(error)
             cout << "csvm::Image::exportImage(std::string) Error: " << lodepng_error_text(error) << "\n";
          else{
