@@ -15,7 +15,7 @@ namespace csvm{
    
    enum ImageFormat{
       CSVM_IMAGE_EMPTY=0,
-      CSVM_IMAGE_RGBA=1,
+      CSVM_IMAGE_UCHAR_RGBA=1,
       
       
    };
@@ -29,9 +29,16 @@ namespace csvm{
    public:
       Image();
       Image(string filename);
+      Image(Image* im);
       void loadImage(string filename);
       vector<unsigned char> getImage();
       void exportImage(string filename);
+      unsigned char getPixel(int x,int y,int channel);
+      void setPixel(int x,int y,int channel,unsigned char value);
+      int getWidth();
+      int getHeight();
+      ImageFormat getFormat();
+      Image clone();
       
    };
    
