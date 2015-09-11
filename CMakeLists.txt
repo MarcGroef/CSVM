@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (HOG-BOVW)
+project (CSVM)
 
 add_executable(
 CSVM
