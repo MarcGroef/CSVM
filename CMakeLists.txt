@@ -8,6 +8,7 @@ CSVM
 src/main.cc
 ##name .cc files here
 
+src/csvm/csvm_image.cc
 src/csvm/csvm_image_scanner.cc
 src/csvm/csvm_hog_descriptor.cc
 src/csvm/csvm_frequency_matrix.cc
