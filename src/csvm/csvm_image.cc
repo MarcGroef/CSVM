@@ -21,6 +21,28 @@ namespace csvm{
       format = im->getFormat();
    }
    
+   Image::Image(Image* ROI_source,int ROI_x,int ROI_y,int ROI_width,int ROI_height){
+      width = ROI_width;
+      height = ROI_height;
+      format = ROI_source->getFormat();
+      switch(ROI_source->getFormat()){
+         case CSVM_IMAGE_EMPTY:
+            cout << "csvm::Image::ROI Constructor: Error! ROI source has no image! Exiting..\n";
+            exit(-1);
+            return;
+         case CSVM_IMAGE_UCHAR_RGBA:
+            image.resize(ROI_height*ROI_width*4);
+            for(int x = 0; x < ROI_width; x++){
+               for(int y = 0; y < ROI_height;y++){
+                  for(int ch = 0; ch < 4; ch++){
+                     setPixel(x,y,ch,ROI_source->getPixel(ROI_x+x,ROI_y+y,ch));
+                  }
+               }
+            }
+      }
+      
+   }
+   
    void Image::loadImage(string filename){
       string png = ".png";
       
@@ -48,6 +70,7 @@ namespace csvm{
          
          
       }
+      return 0;
    }
    
    void Image::setPixel(int x,int y,int channel,unsigned char value){
@@ -95,6 +118,11 @@ namespace csvm{
    Image Image::clone(){
       Image clone(this);
       return clone;
+   }
+   
+   Image Image::getROI(int x,int y,int regionWidth,int regionHeight){
+      Image roi(this,x,y,regionWidth,regionHeight);
+      return roi;
    }
    
 }

@@ -30,6 +30,7 @@ namespace csvm{
       Image();
       Image(string filename);
       Image(Image* im);
+      Image(Image* ROI_source,int ROI_x,int ROI_y,int ROI_width,int ROI_height);
       void loadImage(string filename);
       vector<unsigned char> getImage();
       void exportImage(string filename);
@@ -39,7 +40,11 @@ namespace csvm{
       int getHeight();
       ImageFormat getFormat();
       Image clone();
+      Image getROI(int x,int y,int RegionWidth,int RegionHeight);
       
+      //TODO
+      
+      //void resize(int width,int height);
    };
    
 }

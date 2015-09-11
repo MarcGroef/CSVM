@@ -18,10 +18,16 @@ src/lodepng/lodepng.cc
 
 find_package(OpenCV 3.0.0 EXACT REQUIRED NO_MODULE)
 
-include_directories(${OpenCV_INCLUDE_DIR} "include/")
+include_directories(
+   ${OpenCV_INCLUDE_DIR}
+   "include/"
+   )
 
 set_target_properties(CSVM PROPERTIES RUNTIME_OUTPUT_DIRECTORY "build/")
 ## set compiler settings here : 
 add_definitions("-Wall")
 
-target_link_libraries(CSVM ${OpenCV_LIBS} -lm)
+target_link_libraries( CSVM
+   ${OpenCV_LIBS}
+   -lm
+)

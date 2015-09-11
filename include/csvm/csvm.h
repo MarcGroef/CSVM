@@ -3,7 +3,7 @@
 #ifndef CSVM_H
 #define CSVM_H
 
-#include "csvm_opencv_incl.h"
+//#include "csvm_opencv_incl.h"
 
 #include "csvm_image.h"
 #include "csvm_image_scanner.h"

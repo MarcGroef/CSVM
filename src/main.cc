@@ -1,5 +1,5 @@
 
-#include <csvm/csvm.h>
+#include <csvm/csvm_image.h>
 #include <iostream>
 
 using namespace csvm;
@@ -15,8 +15,8 @@ int main(int argc,char**argv){
    */
    Image im("lenna.png");
    Image cl;
-   cl = im.clone();
-   cl.exportImage("copy.png");
+   cl = im.getROI(256,256,50,50);
+   cl.exportImage("ROI.png");
    return 0;
 }
 
