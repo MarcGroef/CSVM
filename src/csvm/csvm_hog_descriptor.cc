@@ -1,6 +1,6 @@
 #include <csvm/csvm_hog_descriptor.h>
 
-using namespace cv;
+
 using namespace std;
 using namespace csvm;
 
@@ -15,41 +15,47 @@ HOGDescriptor::HOGDescriptor(int nBins=9,int cellSize=3,int cellStride=3,int blo
 //assumes a square uchar (grey) image
 
 
-//Devnote: This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
-vector< vector<float> > HOGDescriptor::getHOG(Mat image){
-   Mat gx,gy;
+//This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
+vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
+   Image gx,gy;
    gx = image.clone();  //cloned image to store horizontal gradient
    gy = image.clone();  //cloned image to store vertical gradient
    
-   int imWidth = image.cols;
-   int imHeight = image.rows;
+   int imWidth = image.getWidth();
+   int imHeight = image.getHeight();
    
    vector< vector<float> > histograms;   //collection of HOG histograms
    double* votes = new double[nBins]();
    double binSize = M_PI/nBins;
    
-   if(image.cols != image.rows)
+   if(imWidth != imHeight)
       cout << "HOGDescriptor::getHOG() Warning! Image is not a square! Some parts might not get scanned.\n";
    
    //get gradients of image
    for(int i=0; i<imWidth; i++)
       for(int j=0;j < imHeight; j++){
-         int gv=(i -1 >= 0 ? image.at<uchar>(j, i - 1) : 0) - (i + 1 < imWidth ? image.at<uchar>(j, i + 1): 0);    //calculate difference between left and right pixel
-         gx.at<uchar>(j,i) = (uchar)abs(gv);                                                    //store absolute difference
-         gv = (j - 1 >= 0 ? image.at<uchar>(j - 1, i) : 0)-(j+1<imHeight?image.at<uchar>(j + 1, i) : 0);       //same for up and down
-         gy.at<uchar>(j,i) = (uchar)abs(gv);
+         int gv=(i -1 >= 0 ? image.getPixel(j, i - 1,channel) : 0) - (i + 1 < imWidth ? image.getPixel(j, i + 1,channel): 0);    //calculate difference between left and right pixel
+         gx.setPixel(j,i,channel,(unsigned char)abs(gv));                                                    //store absolute difference
+         gv = (j - 1 >= 0 ? image.getPixel(j - 1, i,channel) : 0)-(j+1<imHeight?image.getPixel(j + 1, i,channel) : 0);       //same for up and down
+         gy.setPixel(j,i,channel,(unsigned char)abs(gv));
       }
-   
-   
+      
+      
    //show the gradients for fun
+   for(int i=0;i<imWidth;i++)
+      for(int j=0; j<imHeight;j++)
+         for(int c=0;c<3;c++){
+            if(c==channel) continue;
+            gx.setPixel(i,j,c,0);
+            gy.setPixel(i,j,c,0);
+         }
+      
    
-   namedWindow("Gx", WINDOW_AUTOSIZE);   //spawn window called "Gx"
-   imshow("Gx", gx);                     //parse the image to the just spawned "Gx"
-   waitKey(0);                          //wait infinitly for used imput   (a wait for user input is necessary, otherwise the window will crash)
+   gx.exportImage("gx.png");
+   gy.exportImage("gy.png");
    
-   namedWindow("Gy", WINDOW_AUTOSIZE);
-   imshow("Gy", gy);
-   waitKey(0);
+   
+   
    
    //devide in blocks.
    if(imWidth % blockSize != 0 || imHeight % blockSize != 0)     //check whether the blocks fit in the image
@@ -75,9 +81,9 @@ vector< vector<float> > HOGDescriptor::getHOG(Mat image){
                      //cout << "cell pixel " << x << "," << y << "\n";
                      //  cout << "accessing " << blockPX+cellX+x << "," << blockPY+cellY+y << "\n";
                      //cout << "dx\n";
-                     uchar dx = gx.at<uchar>(blockPY + cellY + y, blockPX + cellX + x);
+                     unsigned char dx = gx.getPixel(blockPY + cellY + y, blockPX + cellX + x,channel);
                      //cout << "dy\n";
-                     uchar dy = gy.at<uchar>(blockPY + cellY + y, blockPX + cellX + x);
+                     unsigned char dy = gy.getPixel(blockPY + cellY + y, blockPX + cellX + x,channel);
                      //cout << "calc abs gradient\n";
                      double absGrad = sqrt(dx * dx + dy * dy);
                      //cout << "calc orientation\n";

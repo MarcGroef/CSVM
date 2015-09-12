@@ -6,9 +6,6 @@ This technique is based on the paper "Recognizing Handwritten Characters with Lo
 This is still early work in progress..
 
 
-External Dependenies:
-1. OpenCV 3.0.0                     http://opencv.org/            (this dependency will shortly be removed)
-
 
 Usage: (linux)
 
