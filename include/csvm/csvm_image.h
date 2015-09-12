@@ -42,9 +42,7 @@ namespace csvm{
       Image clone();
       Image getROI(int x,int y,int RegionWidth,int RegionHeight);
       
-      //TODO
-      
-      //void resize(int width,int height);
+     
    };
    
 }
