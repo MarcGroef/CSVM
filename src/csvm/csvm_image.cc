@@ -25,6 +25,12 @@ namespace csvm{
       width = ROI_width;
       height = ROI_height;
       format = ROI_source->getFormat();
+      
+      if(ROI_x+ROI_width>ROI_source->getWidth()||ROI_y+ROI_height>ROI_source->getHeight()){
+         cout << "csvm::Image::ROI Constructor: Error! Region out of bounds!\n";
+         exit(-1);
+         return;
+      }
       switch(ROI_source->getFormat()){
          case CSVM_IMAGE_EMPTY:
             cout << "csvm::Image::ROI Constructor: Error! ROI source has no image! Exiting..\n";
