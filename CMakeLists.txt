@@ -24,7 +24,7 @@ include_directories(
 
 set_target_properties(CSVM PROPERTIES RUNTIME_OUTPUT_DIRECTORY "build/")
 ## set compiler settings here : 
-add_definitions("-Wall")
+add_definitions("-Wall -g")
 
 target_link_libraries( CSVM
    -lm

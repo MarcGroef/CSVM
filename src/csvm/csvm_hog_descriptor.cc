@@ -25,7 +25,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
    int imHeight = image.getHeight();
    
    vector< vector<float> > histograms;   //collection of HOG histograms
-   double* votes = new double[nBins]();
+   double* votes = new double[nBins];
    double binSize = M_PI/nBins;
    
    if(imWidth != imHeight)
@@ -76,6 +76,9 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
             //cout << "cellx = " << cellX << "\n";
             for(int cellY=0; cellY + cellSize < blockSize; cellY += cellStride){
                //cout << "celly = " << cellY << "\n";
+               //reset votes
+               for(int v=0;v<nBins;v++)
+                  votes[v]=0;
                for(int x = 0; x < cellSize; x++){    //evaluate gradients in cell
                   for(int y = 0; y < cellSize; y++){
                      //cout << "cell pixel " << x << "," << y << "\n";
@@ -137,7 +140,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
    }
    
   
-   delete votes;
+   delete[] votes;
    cout << "DONE\n";
    return histograms;
 }
