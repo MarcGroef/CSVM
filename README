@@ -15,3 +15,13 @@ Usage: (linux)
       make                          (builds the project)
       cd build/                     (change directory to the build folder)
       ./CSVM                        (Execute the program)
+
+Usage: (Windows using Visual Studio)
+1. Download the repository, if not already done so.
+2. Open CSVM.sln
+3. To execute: Go to the build folder in terminal, and execute from there
+
+(note: If you execute the program from visual studio, the link to images is relative to 
+the main (CSVM) folder. This causes to program to crash in a controlled way, since it cannot find the 
+.png files. Because of this you have to execute the program by hand from the "build" folder. Either by a double-click 
+or in terminal. Using the terminal is adviced, since the program will disappear directly when finished otherwise.)
