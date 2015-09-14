@@ -17,8 +17,7 @@ int main(int argc,char**argv){
    Image cl;
    cl = im.getROI(256,256,50,50);
    cl.exportImage("ROI.png");
-   getchar();
-   getchar();
+ 
    return 0;
 }
 
