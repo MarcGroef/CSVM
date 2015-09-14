@@ -23,7 +23,7 @@ namespace csvm{
       
    public:
       HOGDescriptor(int nBins, int cellSize, int cellStride, int blockSize, int blockStride); 
-      vector< vector< float> > getHOG(Image image,int channel);
+      vector< vector< double> > getHOG(Image image,int channel);
       
    };
 

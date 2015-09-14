@@ -28,7 +28,7 @@ namespace csvm{
 
       int nPatches;                             //number of patches that should be taken
 
-      vector< vector<float> > v_hogValues;      // vector of hog vectors
+      vector< vector<double> > v_hogValues;      // vector of hog vectors
 
       public:
       ImageScanner(int wSize, int nPatches);     //contructor

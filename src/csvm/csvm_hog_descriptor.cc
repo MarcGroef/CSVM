@@ -16,7 +16,7 @@ HOGDescriptor::HOGDescriptor(int nBins=9,int cellSize=3,int cellStride=3,int blo
 
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
-vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
+vector< vector<double> > HOGDescriptor::getHOG(Image image,int channel){
    Image gx,gy;
    gx = image.clone();  //cloned image to store horizontal gradient
    gy = image.clone();  //cloned image to store vertical gradient
@@ -24,7 +24,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
    int imWidth = image.getWidth();
    int imHeight = image.getHeight();
    
-   vector< vector<float> > histograms;   //collection of HOG histograms
+   vector< vector<double> > histograms;   //collection of HOG histograms
    double* votes = new double[nBins];
    double binSize = M_PI/nBins;
    
@@ -67,7 +67,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
       for(int blockPY = 0;(blockPY + blockSize) < imHeight; blockPY += blockStride){
          //cout << "blocky = " << blockPY << "\n";
          //init histogram for the block
-         vector<float> hist(nBins, 0);
+         vector<double> hist(nBins, 0);
          
          
          //apply cell operations    
@@ -98,7 +98,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
                      if(theta < 0)
                         theta += M_PI;
                      //add weighted vote
-                     int bin = theta / binSize;
+                     int bin =(int)( theta / binSize);
                      //cout << "bin: " << bin <<"\n";
                      votes[bin] += absGrad;
                      //add weighted votes to hist  
@@ -124,7 +124,7 @@ vector< vector<float> > HOGDescriptor::getHOG(Image image,int channel){
       
    }
    
-   for (uint i=0;i<histograms.size();i++){   //L2-normalization
+   for (unsigned int i=0;i<histograms.size();i++){   //L2-normalization
       double abs=0;
       for(int j = 0; j < nBins;j++){
           abs += histograms[i][j] * histograms[i][j];

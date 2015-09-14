@@ -4,7 +4,7 @@ using namespace std;
 using namespace csvm;
 
 FreqMatrix::FreqMatrix(int nWords){
-   size = 0.5 * (nWords * nWords + nWords);
+   size = (int)(0.5 * (nWords * nWords + nWords));
    triangle = new double[size]();
 }
 
@@ -20,7 +20,7 @@ int FreqMatrix::getTriangleIndex(int i, int j){
    }
    i++;
    j++;
-   return 0.5 * (j * j - j) + i - 1;
+   return (int)( 0.5 * (j * j - j) + i - 1);
 }
 
 void FreqMatrix::setZeros(){
