@@ -24,4 +24,4 @@ Usage: (Windows using Visual Studio)
 (note: If you execute the program from visual studio, the link to images is relative to 
 the main (CSVM) folder. This causes to program to crash in a controlled way, since it cannot find the 
 .png files. Because of this you have to execute the program by hand from the "build" folder. Either by a double-click 
-or in terminal.)
+or in terminal. Using the terminal is adviced, since the program will disappear directly when finished otherwise.)
