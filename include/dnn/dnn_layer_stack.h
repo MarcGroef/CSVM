@@ -14,8 +14,6 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
-
 #ifndef DNN_LAYER_STACK_H
 #define DNN_LAYER_STACK_H
 
@@ -43,8 +41,7 @@ typedef struct {
 }LayerStack;
 
 //functions
-void initLayerStack(LayerStack* net);
+void initLayerStack(LayerStack* net,int nLayers,int* layerSizes);
 void setInputData(LayerStack* net, Dataset* data, int index);
-void allocLayerStack(LayerStack* ls);
 void freeLayerStack(LayerStack* ls);
 #endif

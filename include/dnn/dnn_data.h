@@ -25,18 +25,18 @@
 
 //include dependencies
 #include "dnn_constants.h"
-#include <MNIST/mnist.h>
+//#include <MNIST/mnist.h>
 
 
 typedef struct{
 	int size;
-	float** data;
+	double** data;
 	int* labels;
 }Dataset;
 
-void datasetAlloc(Dataset* dataset,int size);
+void datasetAlloc(Dataset* dataset,int size,int nEntries);
 void datasetFree(Dataset* dataset);
-void addMNIST(char* mnist_image_dir,char* mnist_label_dir,Dataset* dataset,int size);
+//void addMNIST(char* mnist_image_dir,char* mnist_label_dir,Dataset* dataset,int size);
 
 
 #endif

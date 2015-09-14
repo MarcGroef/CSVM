@@ -35,7 +35,7 @@ void datasetFree(Dataset* dataset){
 	free(dataset->data);
 	free(dataset->labels);
 }
-
+/*
 void addMNIST(char* mnist_image_dir,char* mnist_label_dir,Dataset* dataset,int size){
 	int parseSucces;
 	if(dataset->data==NULL)
@@ -44,3 +44,4 @@ void addMNIST(char* mnist_image_dir,char* mnist_label_dir,Dataset* dataset,int s
 	dataset->labels=parseLabel(mnist_label_dir);
 	printf("labels parsed!\n");
 }
+*/

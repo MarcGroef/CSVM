@@ -8,9 +8,25 @@ extern "C"{
 
 using namespace std;
 
+
+
+
 namespace csmv{
    
-   
+   class RBM{
+      LayerStack layers;
+      float learningRate;
+      
+   public:
+      Dataset data;
+      
+      
+      
+      RBM(int nLayers,int* layerSizes,float learningRate);
+      RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries);  //dimension of a single data-entry should be equal to the layersize of the first, thus zero-th, layer.
+      ~RBM();
+      
+   }
    
    
 }
