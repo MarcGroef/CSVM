@@ -1,5 +1,5 @@
 ##CSVM
-A computer vision classificator based on Convolutional Support Vector Machines.
+
 
 This program is an experimental platform exploring new variations on the techniques based on the paper 
 "Recognizing Handwritten Characters with Local Descriptor and Bags of Visual Words" by Surinta e.a.
