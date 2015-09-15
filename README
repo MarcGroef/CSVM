@@ -1,13 +1,14 @@
 ##CSVM
 A computer vision classificator based on Convolutional Support Vector Machines.
 
-This technique is based on the paper "Recognizing Handwritten Characters with Local Descriptor and Bags of Visual Words" by Surinta e.a.
+This program is an experimental platform exploring new variations on the techniques based on the paper 
+"Recognizing Handwritten Characters with Local Descriptor and Bags of Visual Words" by Surinta e.a.
 
 This is still early work in progress..
 
 
 
-Usage: (linux)
+Usage: (linux using g++, CMake and Make)
 
 1. Download the repository, if not already done so.
 2. Go to the repository in terminal and type the following:
