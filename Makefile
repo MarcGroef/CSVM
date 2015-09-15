@@ -35,22 +35,22 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
-# Escaping for special characters.
-EQUALS = =
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/s2055236/CSVM
+CMAKE_SOURCE_DIR = /home/marc/bachelor/CSVM
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/s2055236/CSVM
+CMAKE_BINARY_DIR = /home/marc/bachelor/CSVM
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
-	/usr/bin/cmake -i .
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/s2055236/CSVM/CMakeFiles /home/s2055236/CSVM/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles /home/marc/bachelor/CSVM/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/s2055236/CSVM/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -207,6 +207,150 @@ src/csvm/csvm_image_scanner.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
 .PHONY : src/csvm/csvm_image_scanner.cc.s
 
+src/dnn/dnn_data.o: src/dnn/dnn_data.c.o
+.PHONY : src/dnn/dnn_data.o
+
+# target to build an object file
+src/dnn/dnn_data.c.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_data.c.o
+.PHONY : src/dnn/dnn_data.c.o
+
+src/dnn/dnn_data.i: src/dnn/dnn_data.c.i
+.PHONY : src/dnn/dnn_data.i
+
+# target to preprocess a source file
+src/dnn/dnn_data.c.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_data.c.i
+.PHONY : src/dnn/dnn_data.c.i
+
+src/dnn/dnn_data.s: src/dnn/dnn_data.c.s
+.PHONY : src/dnn/dnn_data.s
+
+# target to generate assembly for a file
+src/dnn/dnn_data.c.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_data.c.s
+.PHONY : src/dnn/dnn_data.c.s
+
+src/dnn/dnn_flow.o: src/dnn/dnn_flow.c.o
+.PHONY : src/dnn/dnn_flow.o
+
+# target to build an object file
+src/dnn/dnn_flow.c.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_flow.c.o
+.PHONY : src/dnn/dnn_flow.c.o
+
+src/dnn/dnn_flow.i: src/dnn/dnn_flow.c.i
+.PHONY : src/dnn/dnn_flow.i
+
+# target to preprocess a source file
+src/dnn/dnn_flow.c.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_flow.c.i
+.PHONY : src/dnn/dnn_flow.c.i
+
+src/dnn/dnn_flow.s: src/dnn/dnn_flow.c.s
+.PHONY : src/dnn/dnn_flow.s
+
+# target to generate assembly for a file
+src/dnn/dnn_flow.c.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_flow.c.s
+.PHONY : src/dnn/dnn_flow.c.s
+
+src/dnn/dnn_layer_stack.o: src/dnn/dnn_layer_stack.c.o
+.PHONY : src/dnn/dnn_layer_stack.o
+
+# target to build an object file
+src/dnn/dnn_layer_stack.c.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_layer_stack.c.o
+.PHONY : src/dnn/dnn_layer_stack.c.o
+
+src/dnn/dnn_layer_stack.i: src/dnn/dnn_layer_stack.c.i
+.PHONY : src/dnn/dnn_layer_stack.i
+
+# target to preprocess a source file
+src/dnn/dnn_layer_stack.c.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_layer_stack.c.i
+.PHONY : src/dnn/dnn_layer_stack.c.i
+
+src/dnn/dnn_layer_stack.s: src/dnn/dnn_layer_stack.c.s
+.PHONY : src/dnn/dnn_layer_stack.s
+
+# target to generate assembly for a file
+src/dnn/dnn_layer_stack.c.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_layer_stack.c.s
+.PHONY : src/dnn/dnn_layer_stack.c.s
+
+src/dnn/dnn_math.o: src/dnn/dnn_math.c.o
+.PHONY : src/dnn/dnn_math.o
+
+# target to build an object file
+src/dnn/dnn_math.c.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_math.c.o
+.PHONY : src/dnn/dnn_math.c.o
+
+src/dnn/dnn_math.i: src/dnn/dnn_math.c.i
+.PHONY : src/dnn/dnn_math.i
+
+# target to preprocess a source file
+src/dnn/dnn_math.c.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_math.c.i
+.PHONY : src/dnn/dnn_math.c.i
+
+src/dnn/dnn_math.s: src/dnn/dnn_math.c.s
+.PHONY : src/dnn/dnn_math.s
+
+# target to generate assembly for a file
+src/dnn/dnn_math.c.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_math.c.s
+.PHONY : src/dnn/dnn_math.c.s
+
+src/dnn/dnn_pretrainer.o: src/dnn/dnn_pretrainer.c.o
+.PHONY : src/dnn/dnn_pretrainer.o
+
+# target to build an object file
+src/dnn/dnn_pretrainer.c.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_pretrainer.c.o
+.PHONY : src/dnn/dnn_pretrainer.c.o
+
+src/dnn/dnn_pretrainer.i: src/dnn/dnn_pretrainer.c.i
+.PHONY : src/dnn/dnn_pretrainer.i
+
+# target to preprocess a source file
+src/dnn/dnn_pretrainer.c.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_pretrainer.c.i
+.PHONY : src/dnn/dnn_pretrainer.c.i
+
+src/dnn/dnn_pretrainer.s: src/dnn/dnn_pretrainer.c.s
+.PHONY : src/dnn/dnn_pretrainer.s
+
+# target to generate assembly for a file
+src/dnn/dnn_pretrainer.c.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_pretrainer.c.s
+.PHONY : src/dnn/dnn_pretrainer.c.s
+
+src/dnn/dnn_weights.o: src/dnn/dnn_weights.c.o
+.PHONY : src/dnn/dnn_weights.o
+
+# target to build an object file
+src/dnn/dnn_weights.c.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_weights.c.o
+.PHONY : src/dnn/dnn_weights.c.o
+
+src/dnn/dnn_weights.i: src/dnn/dnn_weights.c.i
+.PHONY : src/dnn/dnn_weights.i
+
+# target to preprocess a source file
+src/dnn/dnn_weights.c.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_weights.c.i
+.PHONY : src/dnn/dnn_weights.c.i
+
+src/dnn/dnn_weights.s: src/dnn/dnn_weights.c.s
+.PHONY : src/dnn/dnn_weights.s
+
+# target to generate assembly for a file
+src/dnn/dnn_weights.c.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/dnn/dnn_weights.c.s
+.PHONY : src/dnn/dnn_weights.c.s
+
 src/lodepng/lodepng.o: src/lodepng/lodepng.cc.o
 .PHONY : src/lodepng/lodepng.o
 
@@ -276,6 +420,24 @@ help:
 	@echo "... src/csvm/csvm_image_scanner.o"
 	@echo "... src/csvm/csvm_image_scanner.i"
 	@echo "... src/csvm/csvm_image_scanner.s"
+	@echo "... src/dnn/dnn_data.o"
+	@echo "... src/dnn/dnn_data.i"
+	@echo "... src/dnn/dnn_data.s"
+	@echo "... src/dnn/dnn_flow.o"
+	@echo "... src/dnn/dnn_flow.i"
+	@echo "... src/dnn/dnn_flow.s"
+	@echo "... src/dnn/dnn_layer_stack.o"
+	@echo "... src/dnn/dnn_layer_stack.i"
+	@echo "... src/dnn/dnn_layer_stack.s"
+	@echo "... src/dnn/dnn_math.o"
+	@echo "... src/dnn/dnn_math.i"
+	@echo "... src/dnn/dnn_math.s"
+	@echo "... src/dnn/dnn_pretrainer.o"
+	@echo "... src/dnn/dnn_pretrainer.i"
+	@echo "... src/dnn/dnn_pretrainer.s"
+	@echo "... src/dnn/dnn_weights.o"
+	@echo "... src/dnn/dnn_weights.i"
+	@echo "... src/dnn/dnn_weights.s"
 	@echo "... src/lodepng/lodepng.o"
 	@echo "... src/lodepng/lodepng.i"
 	@echo "... src/lodepng/lodepng.s"

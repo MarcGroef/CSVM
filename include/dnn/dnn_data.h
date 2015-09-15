@@ -24,7 +24,7 @@
 #include <assert.h>
 
 //include dependencies
-#include "dnn_constants.h"
+//#include "dnn_constants.h"
 //#include <MNIST/mnist.h>
 
 

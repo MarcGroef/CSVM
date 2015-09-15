@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "dnn_layer_stack.h"
-#include "dnn_constants.h"
+//#include "dnn_constants.h"
 
 void initWeightsRandom(LayerStack* ls,int layer);
 void initStackWeightsRandom(LayerStack* ls);

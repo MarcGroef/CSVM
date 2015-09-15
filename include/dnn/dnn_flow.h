@@ -25,7 +25,7 @@
 #include "dnn_layer_stack.h"
 #include "dnn_data.h"
 #include "dnn_math.h"
-#include "dnn_show.h"
+//#include "dnn_show.h"
 
 //TODO. Use SIMD for flow calculations. Calcs batches instead of scalars at once.
 //should in future be in https://github.com/jobtalle/ccVector to fork.

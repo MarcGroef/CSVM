@@ -27,7 +27,7 @@
 
 //include dependancies
 #include "dnn_data.h"
-#include "dnn_constants.h"
+//#include "dnn_constants.h"
 //typedefs
 
 typedef struct {

@@ -14,6 +14,15 @@ src/csvm/csvm_hog_descriptor.cc
 src/csvm/csvm_frequency_matrix.cc
 
 src/lodepng/lodepng.cc
+
+##dnn project files
+src/dnn/dnn_data.c
+src/dnn/dnn_flow.c
+src/dnn/dnn_layer_stack.c
+src/dnn/dnn_math.c
+src/dnn/dnn_pretrainer.c
+src/dnn/dnn_weights.c
+
 )
 
 

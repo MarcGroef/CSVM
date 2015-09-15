@@ -17,20 +17,22 @@
 #include <dnn/dnn_data.h>
 
 
-void datasetAlloc(Dataset* dataset, int size){
-	dataset->size = size;
-	dataset->data = (float**)malloc(size*sizeof(float*));
+void datasetAlloc(Dataset* dataset, int size,int nEntries){
+	int i;
+	dataset->size = nEntries;
+	dataset->data = (double**)malloc(nEntries*sizeof(double*));
 	assert(dataset->data != NULL);
-	for (int i = 0; i < size; i++){
-		dataset->data[i] =(float*) malloc(INPUT_LAYER_SIZE*sizeof(float));
+	for (i = 0; i < nEntries; i++){
+		dataset->data[i] =(double*) malloc(size*sizeof(double));
 		assert(dataset->data[i] != NULL);
 	}
-	printf("Allocated dataset: %d bytes\n",(int)(size*sizeof(float*)+INPUT_LAYER_SIZE*sizeof(float)));
+	printf("Allocated dataset: %d bytes\n",(int)(nEntries*sizeof(double*)+size*sizeof(double)));
 }
 
 
 void datasetFree(Dataset* dataset){
-	for (int i = 0; i < dataset->size; i++)
+	int i;
+	for (i = 0; i < dataset->size; i++)
 		free(dataset->data[i]);
 	free(dataset->data);
 	free(dataset->labels);
@@ -43,5 +45,4 @@ void addMNIST(char* mnist_image_dir,char* mnist_label_dir,Dataset* dataset,int s
 	parseSucces = parseImage(mnist_image_dir,size,dataset->data);
 	dataset->labels=parseLabel(mnist_label_dir);
 	printf("labels parsed!\n");
-}
-*/
+}*/
