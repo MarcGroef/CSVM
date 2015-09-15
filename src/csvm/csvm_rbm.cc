@@ -6,7 +6,8 @@ using namespace csvm;
    RBM::RBM(int nLayers,int* layerSizes,float learningRate){
       initLayerStack(&layers,nLayers,layerSizes);
       this->learningRate = learningRate;
-     
+      this->layerSizes = layerSizes;
+      this-> nLayers = nLayers;
    }
    
    
@@ -15,11 +16,37 @@ using namespace csvm;
       data.data = dataset;
       data.size = nDataEntries;
       this->learningRate = learningRate;
+      this->layerSizes = layerSizes;
+      this->nLayers = nLayers;
    }
    
    RBM::~RBM(){
       freeLayerStack(&layers);
       
    }
-      
-      
+   
+   void RBM::linkDataset(double** data,int nEntries){
+      dataset->data = data; 
+      dataset->size = nEntries;
+     
+   }
+   
+   void RBM::train(float learningRate,int nGibbsSampleSteps){
+      performRBM(&layers,&data,learningRate,0,nGibbsSampleSteps);
+   }
+   
+   double* RBM::getOutput(){
+      double* output = new double[layerSizes[layerSizes[nLayers-1]];
+      for(int i = 0;i < layerSizes[nLayers-1]){
+         output[i] = layers->layers[nLayers-1][i];
+      }
+      return output;
+   }
+   
+   double* RBM::run(double* input){
+      for(int i = 0;i < layerSizes[0];i++){
+         layers->layers[0][i] = input;
+      }
+      flowUp(&layers);
+      return getOutput();
+   }

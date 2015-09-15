@@ -16,9 +16,12 @@ namespace csvm{
    class RBM{
       LayerStack layers;
       float learningRate;
+      Dataset data;
+      int* layerSizes;
+      int nLayers;
       
    public:
-      Dataset data;
+      
       
       
       
@@ -26,6 +29,10 @@ namespace csvm{
       RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries);  //dimension of a single data-entry should be equal to the layersize of the first, thus zero-th, layer.
       ~RBM();
       
+      void linkDataset(double** data,int nEntries);
+      void train(float learningRate,int nGibbsSampleSteps);
+      double* getOutput();
+      double* run(double* input);
    };
    
    

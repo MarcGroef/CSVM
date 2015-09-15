@@ -70,7 +70,7 @@ namespace csvm{
       switch(format){
          case CSVM_IMAGE_EMPTY:
             cout << "csvm::Image::getPixel() Warning! Image not set! returning 0\n";
-            return 0;
+            return -1;
          case CSVM_IMAGE_UCHAR_RGBA:
             return image[(width * y * 4) + (x * 4) + channel];
          
