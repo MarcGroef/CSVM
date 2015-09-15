@@ -1,7 +1,7 @@
 #include <csvm/csvm_rbm.h>
 
 using namespace std;
-using namespace csvm{
+using namespace csvm;
    
    RBM::RBM(int nLayers,int* layerSizes,float learningRate){
       initLayerStack(&layers,nLayers,layerSizes);
@@ -12,8 +12,8 @@ using namespace csvm{
    
    RBM::RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries){
       initLayerStack(&layers,nLayers,layerSizes);
-      dataset->data = dataset;
-      dataset->size = nDataEntries;
+      data.data = dataset;
+      data.size = nDataEntries;
       this->learningRate = learningRate;
    }
    
@@ -23,4 +23,3 @@ using namespace csvm{
    }
       
       
-}

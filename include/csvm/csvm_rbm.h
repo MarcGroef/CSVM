@@ -11,7 +11,7 @@ using namespace std;
 
 
 
-namespace csmv{
+namespace csvm{
    
    class RBM{
       LayerStack layers;
@@ -26,7 +26,7 @@ namespace csmv{
       RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries);  //dimension of a single data-entry should be equal to the layersize of the first, thus zero-th, layer.
       ~RBM();
       
-   }
+   };
    
    
 }
