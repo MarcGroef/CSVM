@@ -20,6 +20,7 @@ namespace csvm{
       int* layerSizes;
       int nLayers;
       
+     
    public:
       
       
