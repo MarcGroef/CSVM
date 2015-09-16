@@ -28,7 +28,7 @@
 #include "dnn_flow.h"
 
 void performRBM(LayerStack* layers, Dataset* dataset,float learningRate,int nIterations,int kSteps);
-float** allocViHj(int vSize,int hSize);
-void freeViHj(float** d,int vSize);
+double** allocViHj(int vSize,int hSize);
+void freeViHj(double** d,int vSize);
 
 #endif

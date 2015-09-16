@@ -18,19 +18,19 @@
 
 
 
-float** allocViHj(int vSize,int hSize){
+double** allocViHj(int vSize,int hSize){
 	int i;
 	printf("alloc vihj: %dx%d\n",vSize,hSize);
-	float** d = malloc(vSize*sizeof(float*));
+	double** d = malloc(vSize*sizeof(double*));
 	assert(d!=NULL);
 	for(i=0;i<vSize;i++){
-		d[i] = malloc(hSize*sizeof(float));
+		d[i] = malloc(hSize*sizeof(double));
 		assert(d[i]!=NULL);
 	}
 	return d;
 }
 
-void freeViHj(float** d,int vSize){
+void freeViHj(double** d,int vSize){
 	int i;
 	for(i=0;i<vSize;i++){
 		free(d[i]);
@@ -39,7 +39,7 @@ void freeViHj(float** d,int vSize){
 	
 }
 
-void computeViHj(LayerStack* l,int layer,float** civj){  //layer should be layer j
+void computeViHj(LayerStack* l,int layer,double** civj){  //layer should be layer j
 	int i,j;
 	if(layer==0)printf("dnn_pretrainer:computeCiVj: int layer should not be 0! It cannot downflow from that");
 	for(i=0;i<l->layerSizes[layer-1];i++){
@@ -56,13 +56,13 @@ void computeViHj(LayerStack* l,int layer,float** civj){  //layer should be layer
 void performRBM(LayerStack* layers,Dataset* dataset,float learningRate,int nIterations,int kSteps){
 	int layer,it,dataLayer,k,source,target;
 	int datasetSize = dataset->size;
-	float** vihjData;
-	float** vihjModel;
-	float learnStep;
-	float totalLearned=0;
-	float prevTotalLearned=0;
-	float preprevTotalLearned=0;
-	float diffThreshold=0.00000001;
+	double** vihjData;
+	double** vihjModel;
+	double learnStep;
+	double totalLearned=0;
+	double prevTotalLearned=0;
+	double preprevTotalLearned=0;
+	double diffThreshold=0.00000001;
 
 	//iterate through layer stack
 	for (layer = 0; layer <layers->nLayers-2; layer++){ //layer i
@@ -105,7 +105,7 @@ void performRBM(LayerStack* layers,Dataset* dataset,float learningRate,int nIter
 			prevTotalLearned = totalLearned;
 			
 			
-			float var = fabs(totalLearned-((prevTotalLearned+preprevTotalLearned+totalLearned)/3));
+			double var = fabs(totalLearned-((prevTotalLearned+preprevTotalLearned+totalLearned)/3));
 			printf("totalWeight edit @ %d: dW:%f w:%f\n",it,var,totalLearned);
 			
 		}

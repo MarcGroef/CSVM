@@ -18,8 +18,8 @@
 
 const double e = 2.718281828459045;
 
-float sigmoid(float x){
-	float s = (1.0f / (1 + pow(e, x*-1)));
+double sigmoid(double x){
+	double s = (1.0f / (1 + pow(e, x*-1)));
 	//printf("sigmoid : %.4f\n",s);
 	return s;
 }

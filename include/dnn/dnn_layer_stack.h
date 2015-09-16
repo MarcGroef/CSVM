@@ -33,8 +33,8 @@
 typedef struct {
 	int* layerSizes;
 	int nLayers;
-	float** layers;
-	float*** weights;  //[source layer][source index][target index]
+	double** layers;
+	double*** weights;  //[source layer][source index][target index]
 	
 	//float output_weights[LAYER_SIZE][OUTPUT_LAYER_SIZE];
 	//float output_layer[OUTPUT_LAYER_SIZE];
