@@ -1,0 +1,7 @@
+Place datasets in this folder. That way the directories given to the program can be constant.
+
+
+
+Do NOT add datasets to the repository!
+
+You can add it to the folder, but do not use git add on the content. Git is for code.

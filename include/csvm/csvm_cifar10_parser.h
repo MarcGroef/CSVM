@@ -16,7 +16,7 @@ namespace csvm{
       
    public:
       void loadImages(string dir);
-   }
+   };
    
    
 }

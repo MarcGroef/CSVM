@@ -14,6 +14,7 @@ src/csvm/csvm_image.cc
 src/csvm/csvm_image_scanner.cc
 src/csvm/csvm_hog_descriptor.cc
 src/csvm/csvm_frequency_matrix.cc
+src/csvm/csvm_cifar10_parser.cc
 
 src/lodepng/lodepng.cc
 
