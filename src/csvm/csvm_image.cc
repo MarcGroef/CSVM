@@ -139,7 +139,7 @@ namespace csvm{
       return label;
    }
    
-   void setLabel(string label){
+   void Image::setLabel(string label){
       this->label = label;
    }
    
