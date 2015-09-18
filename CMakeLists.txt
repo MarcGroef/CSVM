@@ -5,6 +5,8 @@ add_executable(
 CSVM
 
 
+#add all .c/.cc files here, otherwise they wont be compiled and linked
+
 src/main.cc
 ##name .cc files here
 
@@ -26,15 +28,20 @@ src/dnn/dnn_weights.c
 )
 
 
-
+#define a place where #include<..> can search from
 include_directories(
    "include/"
    )
 
 set_target_properties(CSVM PROPERTIES RUNTIME_OUTPUT_DIRECTORY "build/")
 ## set compiler settings here : 
-add_definitions("-Wall -g")
 
+#-Wall instructs g++ the show all compile warnings. There should be no compile warnings.
+#-g causes the linker to link c++ code with the machinecode, such that e.g. valgrind can give directed messeges towards your code, which is nice :)
+
+add_definitions("-Wall -g")   
+
+#link the std math library to the program
 target_link_libraries( CSVM
    -lm
 )
