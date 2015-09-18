@@ -131,6 +131,18 @@ namespace csvm{
       return roi;
    }
    
+   bool Image::isLabeled(){
+      return hasLabel;
+   }
+      
+   string Image::getLabel(){
+      return label;
+   }
+   
+   void setLabel(string label){
+      this->label = label;
+   }
+   
 }
 
 

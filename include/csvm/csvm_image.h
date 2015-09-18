@@ -26,6 +26,9 @@ namespace csvm{
       unsigned int height;
       ImageFormat format;
       
+      bool hasLabel;
+      string label;
+      
    public:
       Image();
       Image(string filename);
@@ -41,7 +44,9 @@ namespace csvm{
       ImageFormat getFormat();
       Image clone();
       Image getROI(int x,int y,int RegionWidth,int RegionHeight);
-      
+      bool isLabeled();
+      string getLabel();
+      void setLabel(string l);
      
    };
    
