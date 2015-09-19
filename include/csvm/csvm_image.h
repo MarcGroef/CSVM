@@ -12,6 +12,8 @@ using namespace lodepng;
 
 
 namespace csvm{
+   // Image formats are CSVM_IMAGE_<TYPE>_<LAYOUT>
+   // e.g. UCHAR_RGB is an image of unsigned char's, in a layout of rgbrgbrgbrgb....
    
    enum ImageFormat{
       CSVM_IMAGE_EMPTY = 0,
@@ -28,6 +30,10 @@ namespace csvm{
       
       bool hasLabel;
       string label;
+      
+      //private methods:
+      Image UCHAR_RGB2UCHAR_RGBA();
+      Image UCHAR_RGBA2UCHAR_RGB();
       
    public:
       Image();
@@ -48,7 +54,7 @@ namespace csvm{
       bool isLabeled();
       string getLabel();
       void setLabel(string l);
-      void convertTo(ImageFormat f);
+      Image convertTo(ImageFormat f);
      
    };
    

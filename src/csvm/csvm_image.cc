@@ -64,6 +64,17 @@ namespace csvm{
                   }
                }
             }
+            break;
+         case CSVM_IMAGE_UCHAR_RGB:
+            image.resize(ROI_height*ROI_width*3);
+            for(int x = 0; x < ROI_width; x++){
+               for(int y = 0; y < ROI_height;y++){
+                  for(int ch = 0; ch < 3; ch++){
+                     setPixel(x,y,ch,ROI_source->getPixel(ROI_x+x,ROI_y+y,ch));
+                  }
+               }
+            }
+            break;
       }
       
    }
@@ -92,7 +103,8 @@ namespace csvm{
             return -1;
          case CSVM_IMAGE_UCHAR_RGBA:
             return image[(width * y * 4) + (x * 4) + channel];
-         
+         case CSVM_IMAGE_UCHAR_RGB:
+            return image[(width * y * 3) + (x * 3) + channel];
          
       }
       return 0;
@@ -106,6 +118,8 @@ namespace csvm{
          case CSVM_IMAGE_UCHAR_RGBA:
             image[(width * y * 4) + (x * 4) + channel] = value;
          break;
+         case CSVM_IMAGE_UCHAR_RGB:
+            image[(width * y * 3) + (x * 3) + channel] = value;
       }      
    }
    
@@ -115,12 +129,21 @@ namespace csvm{
    
    void Image::exportImage(string filename){
       string png = ".png";
-      
+      unsigned int error;
       if(filename.length() > png.length() && 0 == filename.compare(filename.length() - png.length(), png.length(), png)){  //if so, write a png file
-         unsigned int error = encode(filename,image,width,height);
-         if(error)
-            cout << "csvm::Image::exportImage(std::string) Error: " << lodepng_error_text(error) << "\n";
-         
+         switch(format){
+            case CSVM_IMAGE_UCHAR_RGBA:
+            error = encode(filename,image,width,height);
+            
+            if(error)
+               cout << "csvm::Image::exportImage(std::string) Error: " << lodepng_error_text(error) << "\n";
+            break;
+            case CSVM_IMAGE_UCHAR_RGB:
+               cout << "warning! not yet impl. (export im)\n";
+               break;
+            case CSVM_IMAGE_EMPTY:
+               break;
+         }
       }else
          cout << "csvm::Image::exportImage(std::string) Error: Given filename " << filename << " has an unsupported extention.\nSupported extentions are: .png\n";
         
@@ -160,10 +183,78 @@ namespace csvm{
       this->label = label;
    }
    
-   void convertTo(ImageFormat f){
+   Image Image::convertTo(ImageFormat f){
+      Image im;
+      
+      if(format==f)
+         return im.clone();     //nothing to do
+      switch(format){
+         
+         case CSVM_IMAGE_EMPTY:
+            cout << "csvm::Image::convert(ImageFormat) Warning! Trying to convert from an empty image. Returning..\n";
+            break;
+            
+         case CSVM_IMAGE_UCHAR_RGB:  
+            switch(f){
+               case CSVM_IMAGE_EMPTY:
+                  cout << "csvm::Image::convert(ImageFormat) Warning! Trying to convert to an empty image. Returning..\n";
+                  break;
+               case CSVM_IMAGE_UCHAR_RGB: //case already handled above
+                  break;
+               case CSVM_IMAGE_UCHAR_RGBA:
+                  im = UCHAR_RGB2UCHAR_RGBA();
+                  break;
+            }
+            break;
+         case CSVM_IMAGE_UCHAR_RGBA:
+            switch(f){
+               case CSVM_IMAGE_EMPTY:
+                  cout << "csvm::Image::convert(ImageFormat) Warning! Trying to convert to an empty image. Returning..\n";
+                  break;
+               case CSVM_IMAGE_UCHAR_RGB: 
+                  im = UCHAR_RGBA2UCHAR_RGB();
+                  break;
+               case CSVM_IMAGE_UCHAR_RGBA://case already handled above
+                  break;
+            }
+            break;
+      }
+      return im;
+   }
+   
+   //------------------------------- private methods ------------------------------------
+   
+   Image Image::UCHAR_RGB2UCHAR_RGBA(){
+      Image newImage(width,height,CSVM_IMAGE_UCHAR_RGBA);
+      newImage.setLabel(label);
+     
+      for(unsigned int y = 0; y < height; y++){
+         for(unsigned int x = 0; x < width; x++){
+            for(int ch = 0; ch < 4;ch++){
+               if(ch != 3)
+                  newImage.setPixel(x,y,ch,getPixel(x,y,ch));
+               else
+                  newImage.setPixel(x,y,ch,255);
+            }
+         }
+      }
+      return newImage;
       
    }
    
+   Image Image::UCHAR_RGBA2UCHAR_RGB(){
+      Image newImage(width,height,CSVM_IMAGE_UCHAR_RGBA);
+      
+     
+      for(unsigned int y = 0; y < height; y++){
+         for(unsigned int x = 0; x < width; x++){
+            for(int ch = 0; ch < 3;ch++){
+               newImage.setPixel(x,y,ch,getPixel(x,y,ch));
+            }
+         }
+      }
+      return newImage;
+   }
 }
 
 

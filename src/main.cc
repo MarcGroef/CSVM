@@ -11,6 +11,13 @@ int main(int argc,char**argv){
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
    c.dataset.loadCifar10("../datasets/cifar-10-batches-bin/batches.meta.txt",imDirs);
+   Image im;
+   Image png;
+   for(int i=0;i<20;i++){
+      im = c.dataset.getImage(i);
+      png = im.convertTo(CSVM_IMAGE_UCHAR_RGBA);
+      png.exportImage(png.getLabel()+"cifarImages.png");
+   }
    return 0;
 }
 

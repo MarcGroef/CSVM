@@ -26,6 +26,7 @@ namespace csvm{
    public:
       void readLabels(string dir);
       void loadImages(string dir);
+      Image getImage(int index);
    };
    
    
