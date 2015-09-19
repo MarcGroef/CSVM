@@ -8,8 +8,11 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
    cifar10.readLabels(labelsDir);
    int imDirs = imageDirs.size();
 
-   for(int i = 0; i < imDirs; i++)
+   for(int i = 0; i < imDirs; i++){
+      
       cifar10.loadImages(imageDirs[i]);
+      
+   }
    
 }
 

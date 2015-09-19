@@ -15,7 +15,7 @@ namespace csvm{
    
    enum CSVM_CIFAR10_CONTSTANTS{
       N_IMAGES_PER_BATCH = 10000,
-      IMAGE_SIZE = 3073,
+      IMAGE_SIZE = 3072,
    };
    
    class CIFAR10{
