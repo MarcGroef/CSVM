@@ -120,9 +120,7 @@ namespace csvm{
          unsigned int error = encode(filename,image,width,height);
          if(error)
             cout << "csvm::Image::exportImage(std::string) Error: " << lodepng_error_text(error) << "\n";
-         else{
-            format = CSVM_IMAGE_UCHAR_RGBA;
-         }
+         
       }else
          cout << "csvm::Image::exportImage(std::string) Error: Given filename " << filename << " has an unsupported extention.\nSupported extentions are: .png\n";
         
@@ -160,6 +158,10 @@ namespace csvm{
    
    void Image::setLabel(string label){
       this->label = label;
+   }
+   
+   void convertTo(ImageFormat f){
+      
    }
    
 }

@@ -48,6 +48,7 @@ namespace csvm{
       bool isLabeled();
       string getLabel();
       void setLabel(string l);
+      void convertTo(ImageFormat f);
      
    };
    
