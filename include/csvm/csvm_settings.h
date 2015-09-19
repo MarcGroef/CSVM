@@ -1,18 +1,23 @@
 #ifndef CSVM_SETTINGS_H
 #define CSVM_SETTINGS_H
 
+using namespace std;
 
-enum FEATURE_TYPE{
-   CSVM_FEATURE_HOG = 1,
-   
-}
+namespace csvm{
 
-//this class should be able to read a settingsfile, or write a default settings file.
-//The settingsfile should contain all experiment parameters and relative directories of the datasets.
+   enum FEATURE_TYPE{
+      CSVM_FEATURE_HOG = 1,
+      
+   };
 
-class CSVMSettings{
-   
-   
+   //this class should be able to read a settingsfile, or write a default settings file.
+   //The settingsfile should contain all experiment parameters and relative directories of the datasets.
+
+   class CSVMSettings{
+      FEATURE_TYPE feature;
+      
+   };
+
 }
 
 #endif

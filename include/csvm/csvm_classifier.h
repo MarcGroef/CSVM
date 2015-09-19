@@ -11,10 +11,15 @@ using namespace std;
 namespace csvm{
    
    class CSVMClassifier{
+      
+      
+   public:
+      //public vars
       CSVMSettings settings;
       CSVMDataset dataset;
       
       
+      //CSVMClassifier();
       
       
    };

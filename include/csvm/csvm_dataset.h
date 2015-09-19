@@ -15,6 +15,7 @@ namespace csvm{
       
    public:
       void loadCifar10(string dir);
+      Image getImage(int index);
    };
 }
 #endif

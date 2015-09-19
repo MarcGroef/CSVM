@@ -14,9 +14,9 @@ using namespace lodepng;
 namespace csvm{
    
    enum ImageFormat{
-      CSVM_IMAGE_EMPTY=0,
-      CSVM_IMAGE_UCHAR_RGBA=1,
-      
+      CSVM_IMAGE_EMPTY = 0,
+      CSVM_IMAGE_UCHAR_RGBA = 1,
+      CSVM_IMAGE_UCHAR_RGB = 2,
       
    };
    
@@ -31,6 +31,7 @@ namespace csvm{
       
    public:
       Image();
+      Image(int width,int height,ImageFormat f);
       Image(string filename);
       Image(Image* im);
       Image(Image* ROI_source,int ROI_x,int ROI_y,int ROI_width,int ROI_height);

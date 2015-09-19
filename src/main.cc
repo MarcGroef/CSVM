@@ -6,18 +6,8 @@ using namespace csvm;
 using namespace std;
 
 int main(int argc,char**argv){
-   //ImageScanner is(15,100);  //window size, nPatches
-   //is.setImage("lenna.png");  //load image into ImageScanner
- 
-   
-  // is.scanImage();            //scan the image 
-
-   
-   Image im("lenna.png");
-  // Image cl;
-   //cl = im.getROI(256,256,50,50);
-   //cl.exportImage("ROI.png");
- 
+   CSVMClassifier c;
+   c.dataset.loadCifar10("../datasets/cifar-10-batches-bin/data_batch_1.bin");
    return 0;
 }
 

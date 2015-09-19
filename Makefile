@@ -135,6 +135,54 @@ src/csvm/csvm_cifar10_parser.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cifar10_parser.cc.s
 .PHONY : src/csvm/csvm_cifar10_parser.cc.s
 
+src/csvm/csvm_classifier.o: src/csvm/csvm_classifier.cc.o
+.PHONY : src/csvm/csvm_classifier.o
+
+# target to build an object file
+src/csvm/csvm_classifier.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.o
+.PHONY : src/csvm/csvm_classifier.cc.o
+
+src/csvm/csvm_classifier.i: src/csvm/csvm_classifier.cc.i
+.PHONY : src/csvm/csvm_classifier.i
+
+# target to preprocess a source file
+src/csvm/csvm_classifier.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.i
+.PHONY : src/csvm/csvm_classifier.cc.i
+
+src/csvm/csvm_classifier.s: src/csvm/csvm_classifier.cc.s
+.PHONY : src/csvm/csvm_classifier.s
+
+# target to generate assembly for a file
+src/csvm/csvm_classifier.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.s
+.PHONY : src/csvm/csvm_classifier.cc.s
+
+src/csvm/csvm_dataset.o: src/csvm/csvm_dataset.cc.o
+.PHONY : src/csvm/csvm_dataset.o
+
+# target to build an object file
+src/csvm/csvm_dataset.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_dataset.cc.o
+.PHONY : src/csvm/csvm_dataset.cc.o
+
+src/csvm/csvm_dataset.i: src/csvm/csvm_dataset.cc.i
+.PHONY : src/csvm/csvm_dataset.i
+
+# target to preprocess a source file
+src/csvm/csvm_dataset.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_dataset.cc.i
+.PHONY : src/csvm/csvm_dataset.cc.i
+
+src/csvm/csvm_dataset.s: src/csvm/csvm_dataset.cc.s
+.PHONY : src/csvm/csvm_dataset.s
+
+# target to generate assembly for a file
+src/csvm/csvm_dataset.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_dataset.cc.s
+.PHONY : src/csvm/csvm_dataset.cc.s
+
 src/csvm/csvm_frequency_matrix.o: src/csvm/csvm_frequency_matrix.cc.o
 .PHONY : src/csvm/csvm_frequency_matrix.o
 
@@ -230,6 +278,30 @@ src/csvm/csvm_image_scanner.s: src/csvm/csvm_image_scanner.cc.s
 src/csvm/csvm_image_scanner.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
 .PHONY : src/csvm/csvm_image_scanner.cc.s
+
+src/csvm/csvm_settings.o: src/csvm/csvm_settings.cc.o
+.PHONY : src/csvm/csvm_settings.o
+
+# target to build an object file
+src/csvm/csvm_settings.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_settings.cc.o
+.PHONY : src/csvm/csvm_settings.cc.o
+
+src/csvm/csvm_settings.i: src/csvm/csvm_settings.cc.i
+.PHONY : src/csvm/csvm_settings.i
+
+# target to preprocess a source file
+src/csvm/csvm_settings.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_settings.cc.i
+.PHONY : src/csvm/csvm_settings.cc.i
+
+src/csvm/csvm_settings.s: src/csvm/csvm_settings.cc.s
+.PHONY : src/csvm/csvm_settings.s
+
+# target to generate assembly for a file
+src/csvm/csvm_settings.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_settings.cc.s
+.PHONY : src/csvm/csvm_settings.cc.s
 
 src/dnn/dnn_data.o: src/dnn/dnn_data.c.o
 .PHONY : src/dnn/dnn_data.o
@@ -435,6 +507,12 @@ help:
 	@echo "... src/csvm/csvm_cifar10_parser.o"
 	@echo "... src/csvm/csvm_cifar10_parser.i"
 	@echo "... src/csvm/csvm_cifar10_parser.s"
+	@echo "... src/csvm/csvm_classifier.o"
+	@echo "... src/csvm/csvm_classifier.i"
+	@echo "... src/csvm/csvm_classifier.s"
+	@echo "... src/csvm/csvm_dataset.o"
+	@echo "... src/csvm/csvm_dataset.i"
+	@echo "... src/csvm/csvm_dataset.s"
 	@echo "... src/csvm/csvm_frequency_matrix.o"
 	@echo "... src/csvm/csvm_frequency_matrix.i"
 	@echo "... src/csvm/csvm_frequency_matrix.s"
@@ -447,6 +525,9 @@ help:
 	@echo "... src/csvm/csvm_image_scanner.o"
 	@echo "... src/csvm/csvm_image_scanner.i"
 	@echo "... src/csvm/csvm_image_scanner.s"
+	@echo "... src/csvm/csvm_settings.o"
+	@echo "... src/csvm/csvm_settings.i"
+	@echo "... src/csvm/csvm_settings.s"
 	@echo "... src/dnn/dnn_data.o"
 	@echo "... src/dnn/dnn_data.i"
 	@echo "... src/dnn/dnn_data.s"

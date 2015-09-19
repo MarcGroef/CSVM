@@ -21,6 +21,25 @@ namespace csvm{
       format = im->getFormat();
    }
    
+   Image::Image(int width,int height,ImageFormat f){
+      this->width = width;
+      this->height = height;
+      this->format = f;
+      
+      switch(format){
+         case CSVM_IMAGE_EMPTY:
+            cout << "csvm::Image::constructor(int,int,ImageFormat): Warning! Trying to allocate empty image. Leaving Image empty..\n";
+            return;
+         case CSVM_IMAGE_UCHAR_RGB:
+            image.resize(3*this->width*this->height);
+            return;
+         case CSVM_IMAGE_UCHAR_RGBA:
+            image.resize(4*this->width*this->height);
+            return;
+         
+      }
+   }
+   
    Image::Image(Image* ROI_source,int ROI_x,int ROI_y,int ROI_width,int ROI_height){
       width = ROI_width;
       height = ROI_height;
