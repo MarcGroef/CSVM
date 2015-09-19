@@ -14,7 +14,7 @@ namespace csvm{
       vector<Image> images;
       
    public:
-      void loadCifar10(string dir);
+      void loadCifar10(string labelDir,vector<string> imDirs);
       Image getImage(int index);
    };
 }
