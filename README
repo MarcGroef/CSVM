@@ -6,7 +6,7 @@ This program is an experimental platform exploring new variations on the techniq
 
 This is still early work in progress..
 
-
+Also see te dataset README in /datasets/
 
 Usage: (linux using g++, CMake and Make)
 
