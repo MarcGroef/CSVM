@@ -1,0 +1,40 @@
+There are a number of directories useful.
+
+1) The SVM directory contains the code of the Deep Support Vector Regression
+
+To use it on another dataset, please follow the following steps:
+
+1) Change NR_FEATURES in param_letters.h
+2) Change the data file in SVM.cpp in the two calls of read_data
+   (there are 2 calls, since the first one is used to compute the amount
+    of datapoints).
+3) Then use make clean 
+4) Then use make
+5) Run with ./SVM Score_1
+
+The Score_1 file contains parameters found by PSO for the specific dataset,
+for another dataset, new parameters have to be found. 
+
+For automatically finding new parameters, do the following:
+
+1) In SIMUL.c put on the return statement in show_simulations
+2) Go to the testers directory
+3) Use ./start.sh which uses 8 CPU cores, the amount of cores can be
+changed at the bottom of bandit.py
+4) In bandit.py also the domains of all parameters can be changed, the
+most important one would probably be FSIGMA, in case your dataset has
+many features (inputs), then FSIGMA should have a higher max value than
+now.
+
+The found parameter files will be stored in DSVM_REGRESSION/Results. 
+As an example you can see the run of found parameters in the Results dataset.
+
+After running for enough time, the process stops and you can use the
+best parameters (with lowest MSE score).
+For this do the following:
+1) Copy this Score file to the SVM directory
+2) Set return of in SIMUL.c
+3) Run program with ./SVM.cpp Score_file
+
+
+
