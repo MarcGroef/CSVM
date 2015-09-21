@@ -1,0 +1,25 @@
+Needed class: Patch. Contains region info of Image.
+
+General high-level CSVM class that contains all.
+
+Experiment class. Handles experiments
+
+Image Scanner: Extract patches into a vector. Should be flexible 
+
+Feature Extractor. Take Patch vector, return feature vectors
+Contains feature-extractor setting classes for each feature extact method
+
+Dataset class. Should be able to parse and manage the dataset(s)
+
+Codebook class.  Should be able to cluster and give VW-activations based on a given vector.
+
+Cluster analyser that build hierarchies/RMBS on controid activation.
+
+
+
+Potential datasets:
+
+CMU-KO8
+CIFAR-10
+
+
