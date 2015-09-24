@@ -78,3 +78,15 @@ using namespace csvm;
       }
       return images[index];
    }
+   
+   Image* CIFAR10::getImagePtr(int index){
+      if(index < 0 || index >= (int)images.size()){
+         cout << "csvm::CIFAR10::getImage(int index == " << index << ") out of bounds! Exitting..\n";
+         exit(-1);
+      }
+      return &images[index];  
+   }
+   
+   int CIFAR10::getSize(){
+      return images.size();
+   }

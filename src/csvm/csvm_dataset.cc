@@ -19,3 +19,11 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
 Image CSVMDataset::getImage(int index){
    return cifar10.getImage(index);
 }
+
+Image* CSVMDataset::getImagePtr(int index){
+   return cifar10.getImagePtr(index);
+}
+
+int CSVMDataset::getSize(){
+   return cifar10.getSize();
+}
