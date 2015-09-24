@@ -279,6 +279,30 @@ src/csvm/csvm_image_scanner.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
 .PHONY : src/csvm/csvm_image_scanner.cc.s
 
+src/csvm/csvm_patch.o: src/csvm/csvm_patch.cc.o
+.PHONY : src/csvm/csvm_patch.o
+
+# target to build an object file
+src/csvm/csvm_patch.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_patch.cc.o
+.PHONY : src/csvm/csvm_patch.cc.o
+
+src/csvm/csvm_patch.i: src/csvm/csvm_patch.cc.i
+.PHONY : src/csvm/csvm_patch.i
+
+# target to preprocess a source file
+src/csvm/csvm_patch.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_patch.cc.i
+.PHONY : src/csvm/csvm_patch.cc.i
+
+src/csvm/csvm_patch.s: src/csvm/csvm_patch.cc.s
+.PHONY : src/csvm/csvm_patch.s
+
+# target to generate assembly for a file
+src/csvm/csvm_patch.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_patch.cc.s
+.PHONY : src/csvm/csvm_patch.cc.s
+
 src/csvm/csvm_settings.o: src/csvm/csvm_settings.cc.o
 .PHONY : src/csvm/csvm_settings.o
 
@@ -525,6 +549,9 @@ help:
 	@echo "... src/csvm/csvm_image_scanner.o"
 	@echo "... src/csvm/csvm_image_scanner.i"
 	@echo "... src/csvm/csvm_image_scanner.s"
+	@echo "... src/csvm/csvm_patch.o"
+	@echo "... src/csvm/csvm_patch.i"
+	@echo "... src/csvm/csvm_patch.s"
 	@echo "... src/csvm/csvm_settings.o"
 	@echo "... src/csvm/csvm_settings.i"
 	@echo "... src/csvm/csvm_settings.s"

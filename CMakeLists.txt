@@ -18,7 +18,10 @@ src/csvm/csvm_cifar10_parser.cc
 src/csvm/csvm_dataset.cc
 src/csvm/csvm_classifier.cc
 src/csvm/csvm_settings.cc
+src/csvm/csvm_patch.cc
 
+
+##png library
 src/lodepng/lodepng.cc
 
 ##dnn project files

@@ -14,7 +14,7 @@ Patch::Patch(Image* source, int x, int y, int width,int height){
 
 Patch::Patch(){
    isSet = false;
-   source = null;
+   source = NULL;
 }
 
 Patch::Patch(Image* source){
@@ -30,9 +30,9 @@ void Patch::setArea(int x,int y,int width,int height){
 }
 
 unsigned char Patch::getPixel(int x,int y,int channel){
-
+   return source->getPixel(offsetX+x,offsetY+y,channel);
 }
 
 void Patch::setPixel(int x,int y,int channel,unsigned char value){
-   
+   source->setPixel(offsetX+x,offsetY+y,channel,value);
 }

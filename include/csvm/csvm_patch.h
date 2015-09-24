@@ -1,6 +1,9 @@
 #ifndef CSVM_PATCH_H
 #define CSVM_PATCH_H
 
+#include "csvm_image.h"
+#include <cstdlib>
+
 using namespace std;
 
 namespace csvm{
@@ -18,6 +21,6 @@ namespace csvm{
       unsigned char getPixel(int x,int y,int channel);
       void setPixel(int x,int y,int channel,unsigned char value);
       
-   }
+   };
 }
 #endif
