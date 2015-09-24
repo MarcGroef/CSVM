@@ -1,6 +1,10 @@
 #ifndef CSVM_SETTINGS_H
 #define CSVM_SETTINGS_H
 
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+
 using namespace std;
 
 namespace csvm{
@@ -15,7 +19,10 @@ namespace csvm{
 
    class CSVMSettings{
       FEATURE_TYPE feature;
+      struct SVM_settings;
       
+   public:
+      void readSettingsFile(string dir);
    };
 
 }

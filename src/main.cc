@@ -6,8 +6,28 @@
 using namespace csvm;
 using namespace std;
 
+void showUsage(){
+   cout << "CSVM: An experimental platform for the Convolutional Support Vector Machine\n" <<
+           "Usage: CSVM [settingsFile]\n" <<
+           "Where:\n" <<
+           "\tsettingsFile: location of settingsFile\n";
+       
+   
+}
+
 int main(int argc,char**argv){
    CSVMClassifier c;
+   
+   if(argc!=2){
+      showUsage();
+      return 0;
+   }
+   
+   c.setSettings(argv[1]);
+   
+   
+   
+   
    vector<string> imDirs;
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
