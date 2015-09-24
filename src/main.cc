@@ -16,18 +16,23 @@ void showUsage(){
 }
 
 int main(int argc,char**argv){
-   CSVMClassifier c;
    
    if(argc!=2){
       showUsage();
       return 0;
    }
    
+   CSVMClassifier c;
+   ImageScanner scanner;
+   vector<Patch> newPatches;
+   vector<Patch> patches;
+   
+   //load settingsFile
    c.setSettings(argv[1]);
    
    
    
-   
+   //setup cifar10 data directories
    vector<string> imDirs;
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
@@ -37,30 +42,24 @@ int main(int argc,char**argv){
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
    imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
    
+   //load cifar10
    c.dataset.loadCifar10("../datasets/cifar-10-batches-bin/batches.meta.txt",imDirs);
    
-   ImageScanner scanner;
-   vector<Patch> newPatches;
-   vector<Patch> patches;
-   
+  
    unsigned int nImages = (unsigned int) c.dataset.getSize();
    cout << nImages << " images loaded.\n";
+   
+   //measure cpu time
    time_t time0 = clock();
    
    for(size_t idx = 0; idx < nImages; ++idx){
       newPatches = scanner.scanImage(c.dataset.getImagePtr(0),8,8,1,1);
       patches.insert(patches.end(),newPatches.begin(),newPatches.end());
    }
-   
+   //print number of patches and time difference
    cout << patches.size() << " patches collected! in " << (clock() - time0)/1000  << " ms\n";
    
-   /*Image im;
-   Image png;
-   for(int i=0;i<20;i++){
-      im = c.dataset.getImage(i);
-      png = im.convertTo(CSVM_IMAGE_UCHAR_RGBA);
-      png.exportImage(png.getLabel()+"cifarImages.png");
-   }*/
+   
    return 0;
 }
 
