@@ -21,16 +21,15 @@ namespace csvm{
     int ALPHA_ITER;
     int NR_REP1;
     int NR_REP2;
-  
-  }
+  };
    
   class SVM{
       
     //State variables
-    struct SVM_Settings;
+    SVM_Settings settings;
     
     string parameterFile;
-    string train
+    
       
   public:
      
@@ -42,7 +41,7 @@ namespace csvm{
     void train(Feature feat);
      
       
-  }
+  };
    
 }
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <csvm/csvm_svm.h>
 
 using namespace std;
 
@@ -19,9 +20,12 @@ namespace csvm{
 
    class CSVMSettings{
       FEATURE_TYPE feature;
-      struct SVM_settings;
+      SVM_Settings svmSettings;
       
+      
+  
    public:
+      
       void readSettingsFile(string dir);
    };
 

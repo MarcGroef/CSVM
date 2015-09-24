@@ -17,6 +17,7 @@ HOGDescriptor::HOGDescriptor(int nBins=9,int cellSize=3,int cellStride=3,int blo
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
 vector< vector<double> > HOGDescriptor::getHOG(Image image,int channel){
+   
    Image gx,gy;
    gx = image.clone();  //cloned image to store horizontal gradient
    gy = image.clone();  //cloned image to store vertical gradient
