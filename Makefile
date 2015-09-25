@@ -303,6 +303,30 @@ src/csvm/csvm_patch.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_patch.cc.s
 .PHONY : src/csvm/csvm_patch.cc.s
 
+src/csvm/csvm_rbm.o: src/csvm/csvm_rbm.cc.o
+.PHONY : src/csvm/csvm_rbm.o
+
+# target to build an object file
+src/csvm/csvm_rbm.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_rbm.cc.o
+.PHONY : src/csvm/csvm_rbm.cc.o
+
+src/csvm/csvm_rbm.i: src/csvm/csvm_rbm.cc.i
+.PHONY : src/csvm/csvm_rbm.i
+
+# target to preprocess a source file
+src/csvm/csvm_rbm.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_rbm.cc.i
+.PHONY : src/csvm/csvm_rbm.cc.i
+
+src/csvm/csvm_rbm.s: src/csvm/csvm_rbm.cc.s
+.PHONY : src/csvm/csvm_rbm.s
+
+# target to generate assembly for a file
+src/csvm/csvm_rbm.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_rbm.cc.s
+.PHONY : src/csvm/csvm_rbm.cc.s
+
 src/csvm/csvm_settings.o: src/csvm/csvm_settings.cc.o
 .PHONY : src/csvm/csvm_settings.o
 
@@ -552,6 +576,9 @@ help:
 	@echo "... src/csvm/csvm_patch.o"
 	@echo "... src/csvm/csvm_patch.i"
 	@echo "... src/csvm/csvm_patch.s"
+	@echo "... src/csvm/csvm_rbm.o"
+	@echo "... src/csvm/csvm_rbm.i"
+	@echo "... src/csvm/csvm_rbm.s"
 	@echo "... src/csvm/csvm_settings.o"
 	@echo "... src/csvm/csvm_settings.i"
 	@echo "... src/csvm/csvm_settings.s"

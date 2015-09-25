@@ -7,7 +7,7 @@ using namespace csvm;
 using namespace std;
 
 void showUsage(){
-   cout << "CSVM: An experimental platform for the Convolutional Support Vector Machine\n" <<
+   cout << "CSVM: An experimental platform for the Convolutional Support Vector Machine architecture\n" <<
            "Usage: CSVM [settingsFile]\n" <<
            "Where:\n" <<
            "\tsettingsFile: location of settingsFile\n";
@@ -50,7 +50,7 @@ int main(int argc,char**argv){
    cout << nImages << " images loaded.\n";
    
    //measure cpu time
-   time_t time0 = clock();
+   /*time_t time0 = clock();
    
    for(size_t idx = 0; idx < nImages; ++idx){
       newPatches = scanner.scanImage(c.dataset.getImagePtr(0),8,8,1,1);
@@ -58,7 +58,7 @@ int main(int argc,char**argv){
    }
    //print number of patches and time difference
    cout << patches.size() << " patches collected! in " << (clock() - time0)/1000  << " ms\n";
-   
+   */
    
    return 0;
 }

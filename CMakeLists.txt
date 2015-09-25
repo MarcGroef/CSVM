@@ -19,7 +19,7 @@ src/csvm/csvm_dataset.cc
 src/csvm/csvm_classifier.cc
 src/csvm/csvm_settings.cc
 src/csvm/csvm_patch.cc
-
+src/csvm/csvm_rbm.cc
 
 ##png library
 src/lodepng/lodepng.cc
