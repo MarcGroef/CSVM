@@ -15,7 +15,8 @@ Usage: (linux using g++, CMake and Make)
       cmake .                       (Generates MAKEFILE)
       make                          (builds the project)
       cd build/                     (change directory to the build folder)
-      ./CSVM                        (Execute the program)
+      ./CSVM [settingsfile]         (Execute the program)
+      or ./run.sh
 
 Usage: (Windows using Visual Studio)
 1. Download the repository, if not already done so.
