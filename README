@@ -11,7 +11,8 @@ Also see te dataset README in /datasets/
 Usage: (linux using g++, CMake and Make)
 
 1. Download the repository, if not already done so.
-2. Go to the repository in terminal and type the following:
+2. Download the dataset as described in the README in the dataset folder.
+3. Go to the repository in terminal and type the following:
       cmake .                       (Generates MAKEFILE)
       make                          (builds the project)
       cd build/                     (change directory to the build folder)
