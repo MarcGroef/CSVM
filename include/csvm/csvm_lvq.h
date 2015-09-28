@@ -4,7 +4,14 @@
 
 
 namespace csvm{
+  
+    struct LVQ_Settings{
+      int nClusters;
+    }
 
+    class LVQ{
+      LVQ_Settings settings;
+    };
 }
 
 #endif
