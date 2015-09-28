@@ -7,6 +7,8 @@
 #include "csvm_svm.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_codebook.h"
+#include "csvm_image_scanner.h"
+
 
 using namespace std;
 
@@ -25,7 +27,8 @@ namespace csvm{
       SVM_Settings svmSettings;
       FeatureExtractorSettings featureSettings;
       Codebook_settings codebookSettings;
-  
+      ImageScannerSettings scannerSettings;
+      
    public:
       
       void readSettingsFile(string dir);

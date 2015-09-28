@@ -15,9 +15,9 @@ namespace csvm{
   
   struct Codebook_settings{
     LVQ_Settings lvqSettings;
-    KMeans_Settings kmeansSettings;
+    KMeans_settings kmeansSettings;
     CodebookClusterMethod method;
-  }
+  };
   
   class Codebook{
     Codebook_settings settings;

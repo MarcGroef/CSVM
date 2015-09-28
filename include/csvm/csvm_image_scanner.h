@@ -16,10 +16,15 @@ using namespace std;
 
 namespace csvm{
 
+   struct ImageScannerSettings{
+      int stride;
+      int patchWidth;
+      int patchHeight;
+   };
 
 
    class ImageScanner{
-      
+      ImageScannerSettings settings;
       
    public:
       ImageScanner();
