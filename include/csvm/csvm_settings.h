@@ -4,7 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#include <csvm/csvm_svm.h>
+#include "csvm_svm.h"
+#include "csvm_feature_extractor.h"
+#include "csvm_codebook.h"
 
 using namespace std;
 
@@ -21,8 +23,8 @@ namespace csvm{
    class CSVMSettings{
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
-      
-      
+      FeatureExtractorSettings featureSettings;
+      Codebook_settings codebookSettings;
   
    public:
       
