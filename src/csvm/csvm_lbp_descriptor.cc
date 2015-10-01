@@ -1,22 +1,17 @@
 
 #include <csvm/csvm_lbp_descriptor.h>
-#include <io.h>
 #include <bitset>
 #include <iostream>
 
 using namespace std;
 using namespace csvm;
 
-
-
 LBPDescriptor::LBPDescriptor() {
 	
 }
 
-//assumes a square uchar (grey) image
 
-
-//This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
+//This function implements basic Local Binary Patterns, and returns a feature vector.
 vector< int > LBPDescriptor::getLBP(Patch patch, int channel) {
 
 	int patchWidth = patch.getWidth();
