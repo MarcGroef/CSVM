@@ -18,6 +18,7 @@ vector<Patch> ImageScanner::scanImage(Image* image,unsigned int patchWidth,unsig
    for(size_t x = 0; x < scanWidth; ++x){
       for(size_t y = 0; y < scanHeight; ++y){
          patches[patchesTaken] = Patch(image, x, y, patchWidth, patchHeight);
+	 ++patchesTaken;
       }
    }
    
