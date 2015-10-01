@@ -26,7 +26,8 @@ int main(int argc,char**argv){
    ImageScanner scanner;
    vector<Patch> newPatches;
    vector<Patch> patches;
-   
+   LBPDescriptor localBinPat;
+
    //load settingsFile
    c.setSettings(argv[1]);
    
@@ -36,8 +37,8 @@ int main(int argc,char**argv){
    vector<string> imDirs;
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
-   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
-   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
@@ -58,6 +59,10 @@ int main(int argc,char**argv){
    }
    //print number of patches and time difference
    cout << patches.size() << " patches collected! in " << (clock() - time0)/1000  << " ms\n";
+   vector<int> v = localBinPat.getLBP(patches[2], 0);
+   for (int index; index < v.size();++index) {
+	   cout << v[index] << "	";
+   }
    
    
    return 0;

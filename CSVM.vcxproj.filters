@@ -69,6 +69,9 @@
     <ClCompile Include="src\csvm\csvm_settings.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\csvm\csvm.h">
@@ -150,6 +153,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\csvm\csvm_svm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_lbp_descriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
