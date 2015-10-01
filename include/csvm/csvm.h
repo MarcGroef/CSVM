@@ -5,7 +5,7 @@
 
 //#include "csvm_opencv_incl.h"
 
-
+#include "csvm_lbp_descriptor.h"
 #include "csvm_classifier.h"
 #include "csvm_dataset.h"
 #include "csvm_cifar10_parser.h"

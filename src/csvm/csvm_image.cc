@@ -222,6 +222,10 @@ namespace csvm{
       return im;
    }
    
+   unsigned char Image::getGreyPixel(int x, int y){
+      return 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
+   }
+   
    //------------------------------- private methods ------------------------------------
    
    Image Image::UCHAR_RGB2UCHAR_RGBA(){

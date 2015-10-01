@@ -36,3 +36,16 @@ unsigned char Patch::getPixel(int x,int y,int channel){
 void Patch::setPixel(int x,int y,int channel,unsigned char value){
    source->setPixel(offsetX+x,offsetY+y,channel,value);
 }
+
+int Patch::getWidth(){
+   return width;
+}
+
+
+int Patch::getHeight(){
+   return height;
+}
+
+unsigned char Patch::getGreyPixel(int x, int y){
+    return source->getGreyPixel(offsetX+x,offsetY+y);
+}

@@ -26,7 +26,8 @@ int main(int argc,char**argv){
    ImageScanner scanner;
    vector<Patch> newPatches;
    vector<Patch> patches;
-   
+   LBPDescriptor localBinPat;
+
    //load settingsFile
    c.setSettings(argv[1]);
    
@@ -36,8 +37,8 @@ int main(int argc,char**argv){
    vector<string> imDirs;
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
-   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
-   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
@@ -53,11 +54,19 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    for(size_t idx = 0; idx < nImages; ++idx){
-      newPatches = scanner.scanImage(c.dataset.getImagePtr(0),8,8,1,1);
+      newPatches = scanner.scanImage(c.dataset.getImagePtr(idx),8,8,1,1);
       patches.insert(patches.end(),newPatches.begin(),newPatches.end());
+      
    }
+   unsigned long nPatches = patches.size();
+   for(size_t idx = 0; idx < nPatches; ++idx)
+     localBinPat.getLBP(patches[idx], 0);
    //print number of patches and time difference
-   cout << patches.size() << " patches collected! in " << (clock() - time0)/1000  << " ms\n";
+   cout << patches.size() << " patches collected! in " << (double)(clock() - time0)/1000  << " ms\n";
+   vector<int> v = localBinPat.getLBP(patches[2], 0);
+   for (int index =0 ; index < (int)(v.size());++index) {
+	   cout << "v[" << index << "] = " << v[index] << " \n";
+   }
    
    
    return 0;
