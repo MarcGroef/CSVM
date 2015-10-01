@@ -38,9 +38,9 @@ int main(int argc,char**argv){
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
-  // imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
-  // imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
-  // imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
+   //imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
    
    //load cifar10
    c.dataset.loadCifar10("../datasets/cifar-10-batches-bin/batches.meta.txt",imDirs);
