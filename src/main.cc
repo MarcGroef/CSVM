@@ -56,8 +56,11 @@ int main(int argc,char**argv){
    for(size_t idx = 0; idx < nImages; ++idx){
       newPatches = scanner.scanImage(c.dataset.getImagePtr(idx),8,8,1,1);
       patches.insert(patches.end(),newPatches.begin(),newPatches.end());
+      
    }
-   cout << "patchwidth: " << patches[0].getWidth() << "\n";
+   unsigned long nPatches = patches.size();
+   for(size_t idx = 0; idx < nPatches; ++idx)
+     localBinPat.getLBP(patches[idx], 0);
    //print number of patches and time difference
    cout << patches.size() << " patches collected! in " << (double)(clock() - time0)/1000  << " ms\n";
    vector<int> v = localBinPat.getLBP(patches[2], 0);

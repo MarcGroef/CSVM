@@ -20,7 +20,7 @@ vector< int > LBPDescriptor::getLBP(Patch patch, int channel) {
 	
 	std::bitset<(8 * scope)> pixelFeatures;
 	vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
-	cout << " patch width is: " << patchWidth;
+	//cout << " patch width is: " << patchWidth;
 	//for now 
 
 	//iterate ofer the whole patch, with boundary setoff of 1 
@@ -40,8 +40,8 @@ vector< int > LBPDescriptor::getLBP(Patch patch, int channel) {
 				}
 			}
 			//transpose pixelfeatures to byte value
-			cout << "test";
-			cout << histogram[pixelFeatures.to_ulong()] << "	";
+			//cout << "test";
+			//cout << histogram[pixelFeatures.to_ulong()] << "	";
 			histogram[pixelFeatures.to_ulong()] += 1;
 
 		}
