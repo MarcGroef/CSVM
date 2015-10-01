@@ -18,20 +18,25 @@ vector< int > LBPDescriptor::getLBP(Patch patch, int channel) {
 	int patchHeight = patch.getHeight();
 	const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
 	
-	std::bitset<(4 * scope)> pixelFeatures;
+	std::bitset<(8 * scope)> pixelFeatures;
 	vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
 	cout << " patch width is: " << patchWidth;
 	//for now 
 
-	for (int x = 1;x < patchWidth-1;++x) { // iterating over the x axis, up to the the boundary-1. we want to perform computations.
+	//iterate ofer the whole patch, with boundary setoff of 1 
+	for (int x = 1;x < patchWidth-1;++x) { 
 		for (int y = 1;y < patchHeight-1;++y) {
+			//get the pixel intensity value of the central pixel we occupy ourselves with..
 			int centroidPixelIntensity = patch.getGreyPixel(x, y);
 
+			//in a neighbourhood around the centroid pixel: 
 			for (int dx = 0;dx < 2*scope; ++dx) {
 				for (int dy = 0;dy < 2*scope; ++dy) {
+					//use the setoff relative to the centroid as index-based accessor: 
+					//the sum of dx+dy will 
 					int neighbourPixelX = dx - scope;
 					int neighbourPixelY = dy - scope;
-					pixelFeatures[dx + dy] = ( (centroidPixelIntensity > patch.getGreyPixel(x + neighbourPixelX, y + neighbourPixelY)) ? 0 : 1);
+					pixelFeatures[(3*dx) + dy] = ( (centroidPixelIntensity > patch.getGreyPixel(x + neighbourPixelX, y + neighbourPixelY)) ? 0 : 1);
 				}
 			}
 			//transpose pixelfeatures to byte value
