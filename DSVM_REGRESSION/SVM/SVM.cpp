@@ -5,32 +5,31 @@
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
-#include <fstream>
+# include <fstream>
 # include <vector>
-#include<clocale>
-#include <float.h>
-#include <iostream>
-#include <sys/time.h>
+# include <clocale>
+# include <float.h>
+# include <iostream>
+# include <sys/time.h>
 
-# include "SIMUL.h"
-# include "SVM.h"
-# include "param_letters.h"
-
-//# include "SIMUL.h"
-//# include "param_letters.h"
+# include "SIMUL.h"							// includes structs for SIMULATIONS en RESULTS
+# include "SVM.h"							// overview of SVM class
+# include "param_letters.h"					// DATA struct with hardcoded nr. of features
 
 #define CLASSES 1
 #define BETA_ITER 1
 #define AVERAGE_OUT 22.5
 
 //#define KERNEL 3
-#define LINEAR 1
+
+#define LINEAR 1							// for Kernel selection
 #define TANH 2
 #define GAUSS 3
+
 #define NR_DISTANCES 1
 
-extern DATA *read_data(char *);
-extern double fabs(double);
+extern DATA *read_data(char *);				// defined in param_letters.c
+extern double fabs(double);					// downgrading float Math::fabs()
 extern SIMULATIONS *insert_simulation(SIMULATIONS*, long int, double);
 extern void show_simulations(SIMULATIONS *);
 extern void write_to_file_all(char*,SIMULATIONS*);
@@ -39,10 +38,17 @@ using namespace std;
 
 bool SVM_verbose = false;
 
+
+
+
 double sqr(double x)
 {
     return x * x;
 }
+
+
+
+
 
 //added KERNEL argument instead of using a defined kernel so we can destinquish between the feature and main kernel
 double SVM::compute_similarity(double *x, double *y, int actionDimension, int KERNEL, double SIG)
@@ -78,10 +84,15 @@ double SVM::compute_similarity(double *x, double *y, int actionDimension, int KE
     cout << "*** NO KERNEL SELECTED " << endl;
 }
 
+
+
 double exact_Tan(double tot_F)
 {
     return  2.0 / (1.0 + exp(-tot_F)) - 1.0;
 }
+
+
+
 
 
 SVM::SVM(const char * pFile, bool featureSVM)
@@ -91,6 +102,9 @@ SVM::SVM(const char * pFile, bool featureSVM)
     readParameterFile(featureSVM);
 }
 
+
+
+
 SVM::SVM(const char * pFile)
 {
     parameterFile = pFile;
@@ -99,9 +113,14 @@ SVM::SVM(const char * pFile)
 }
 
 
+
 SVM::~SVM()
 {
 }
+
+
+
+
 
 void SVM::y_initialize_regression(DATA *leerdata)
 {
@@ -112,6 +131,10 @@ void SVM::y_initialize_regression(DATA *leerdata)
     }
 }   
         
+
+
+
+
 void SVM::y_initialize(DATA *leerdata)
 {
     for (int episode = 0; episode < leerdata[0].tot_data; ++episode) 
@@ -124,6 +147,10 @@ void SVM::y_initialize(DATA *leerdata)
                 y[C][episode] = -1.0;
     }
 }   
+
+
+
+
 
 void SVM::alpha_initialize(int tot_data, double SVM_C, bool feature = false)
 {
@@ -146,6 +173,10 @@ void SVM::alpha_initialize(int tot_data, double SVM_C, bool feature = false)
         }
 }
             
+
+
+
+
 void SVM::compute_kernel_matrix(DATA *leerdata)
 {
     for (int episode = 0; episode < leerdata[0].tot_data; ++episode)
@@ -153,12 +184,21 @@ void SVM::compute_kernel_matrix(DATA *leerdata)
             kernel_train[episode][ad] = compute_similarity(leerdata[episode].input,leerdata[ad].input,NR_FEATURES, GAUSS, SIGMA);
 }
 
+
+
+
+
 void SVM::compute_feature_matrix(double **featureLayer, int numData)
 {
     for (int episode = 0; episode < numData; ++episode)
         for (int ad = 0; ad < numData; ++ad)
             kernel_train[episode][ad] = compute_similarity(featureLayer[episode],featureLayer[ad],FLAYER_SIZE, GAUSS, SIGMA);
 }
+
+
+
+
+
 
 void SVM::alpha_back_propagation(double **featureLayer, int tot_data, int init)
 {
@@ -239,6 +279,11 @@ void SVM::alpha_back_propagation(double **featureLayer, int tot_data, int init)
   }
 }
 
+
+
+
+
+
 void SVM::update_feature_y(SVM *featureSVM, double **featureLayer, int tot_data)
 {
     for (int flayer = 0; flayer != FLAYER_SIZE; ++flayer)
@@ -246,6 +291,11 @@ void SVM::update_feature_y(SVM *featureSVM, double **featureLayer, int tot_data)
             for (int episode = 0; episode != tot_data; ++episode)
                 featureSVM[flayer].y[C][episode] = featureLayer[episode][flayer];
 }
+
+
+
+
+
 
 void SVM::train_regression(int tot_data, int init)
 {
@@ -334,6 +384,12 @@ void SVM::train_regression(int tot_data, int init)
     }
 }
  
+
+
+
+
+
+
 void SVM::train(int tot_data)
 {
     double delta_alpha;
@@ -379,6 +435,10 @@ void SVM::train(int tot_data)
                 }
 }
            
+
+
+
+
 void SVM::compute_bias_regression(int tot_data)
 {
     for (int C = 0; C < CLASSES; ++C)
@@ -405,6 +465,12 @@ void SVM::compute_bias_regression(int tot_data)
             bias[C] = 0;
     }
 }
+
+
+
+
+
+
 
 void SVM::compute_bias(int tot_data)
 {
@@ -440,6 +506,12 @@ void SVM::compute_bias(int tot_data)
 }
 
                 
+
+
+
+
+
+
 void SVM::compute_features(double **featureLayer, int feature, int tot_data)
 {
     for (int C = 0; C != CLASSES; ++C)
@@ -456,6 +528,11 @@ void SVM::compute_features(double **featureLayer, int feature, int tot_data)
         }
     }
 }
+
+
+
+
+
 
 void SVM::compute_result(double *input, DATA *leerdata)
 {
@@ -477,6 +554,11 @@ void SVM::compute_result(double *input, DATA *leerdata)
         output_SVM[C] += bias[C];
     } 
 }
+
+
+
+
+
 
 double SVM::compute_train_error_regression(DATA *train_example, int first_id, int tot_data)
 {
@@ -500,6 +582,11 @@ double SVM::compute_train_error_regression(DATA *train_example, int first_id, in
 
     return error;
 }
+
+
+
+
+
 
 //double SVM::compute_test_error_regression(double *input, double label, DATA *leerdata)
 double SVM::compute_test_error_regression(double *input, double label, double **leerdata, int tot_data)
@@ -539,6 +626,16 @@ double SVM::compute_test_error_regression(double *input, double label, double **
      return error;
 }
 
+
+
+
+
+
+
+
+
+
+
 /*
 double SVM::compute_test_error_regression(DATA *testdata, int episode2, DATA *leerdata)
 {
@@ -568,6 +665,19 @@ double SVM::compute_test_error_regression(DATA *testdata, int episode2, DATA *le
      return error;
 }
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* TEST op trainset */ 
 double SVM::compute_train_error(DATA *train_example, int first_id, int tot_data)
@@ -615,6 +725,11 @@ double SVM::compute_train_error(DATA *train_example, int first_id, int tot_data)
 
     return TrainResult;
 }
+
+
+
+
+
 	            
 double SVM::compute_test_error(DATA *testdata, int episode2, DATA *leerdata)
 {
@@ -675,6 +790,10 @@ double SVM::run()
     return AverageresultPerEpisode;
 }
 
+
+
+
+
 void SVM::allocate_datamembers(int num_data)
 {
     bias = new double[CLASSES];
@@ -695,6 +814,9 @@ void SVM::allocate_datamembers(int num_data)
         alpha_coeff_star[C] = new double[num_data];
     }
 }
+
+
+
 
 double SVM::runExperiment()
 {       
@@ -915,6 +1037,12 @@ double SVM::runExperiment()
     return SIMULBEST->average;
 }
 
+
+
+
+
+
+
 void SVM::readParameterFile(bool featureSVM)
 {
     ifstream ifile;
@@ -967,6 +1095,12 @@ void SVM::readParameterFile(bool featureSVM)
     }   
 }
 
+
+
+
+
+
+
 void seed_random()
 {
     struct timeval tv;
@@ -974,6 +1108,15 @@ void seed_random()
     int val = tv.tv_sec + tv.tv_usec;
     srand48(val);
 }
+
+
+
+
+
+
+
+
+
 
 int main(int argn, char *argv[])
 {
@@ -986,6 +1129,13 @@ int main(int argn, char *argv[])
     cout << result << endl; 
     delete i;
 }
+
+
+
+
+
+
+
 
 double runSVM(char const *file)
 {
