@@ -65,7 +65,7 @@ int main(int argc,char**argv){
    cout << patches.size() << " patches collected! in " << (double)(clock() - time0)/1000  << " ms\n";
    vector<int> v = localBinPat.getLBP(patches[2], 0);
    for (int index =0 ; index < (int)(v.size());++index) {
-	   cout << v[index] << "	";
+	   cout << "v[" << index << "] = " << v[index] << " \n";
    }
    
    
