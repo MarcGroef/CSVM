@@ -35,6 +35,7 @@ namespace csvm{
       Image UCHAR_RGB2UCHAR_RGBA();
       Image UCHAR_RGBA2UCHAR_RGB();
       
+      
    public:
       Image();
       Image(int width,int height,ImageFormat f);
@@ -45,6 +46,7 @@ namespace csvm{
       vector<unsigned char> getImage();
       void exportImage(string filename);
       unsigned char getPixel(int x,int y,int channel);
+      unsigned char getGreyPixel(int x, int y);
       void setPixel(int x,int y,int channel,unsigned char value);
       int getWidth();
       int getHeight();

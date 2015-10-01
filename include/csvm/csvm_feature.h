@@ -7,6 +7,7 @@ namespace csvm{
   class Feature{
     double* content;
     string label;
+    int size;
   };
   
   
