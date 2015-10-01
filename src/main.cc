@@ -61,7 +61,7 @@ int main(int argc,char**argv){
    //print number of patches and time difference
    cout << patches.size() << " patches collected! in " << (clock() - time0)/1000  << " ms\n";
    vector<int> v = localBinPat.getLBP(patches[2], 0);
-   for (int index; index < (int)(v.size());++index) {
+   for (int index =0 ; index < (int)(v.size());++index) {
 	   cout << v[index] << "	";
    }
    
