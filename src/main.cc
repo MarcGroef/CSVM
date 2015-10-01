@@ -59,7 +59,7 @@ int main(int argc,char**argv){
    }
    cout << "patchwidth: " << patches[0].getWidth() << "\n";
    //print number of patches and time difference
-   cout << patches.size() << " patches collected! in " << (clock() - time0)/1000  << " ms\n";
+   cout << patches.size() << " patches collected! in " << (double)(clock() - time0)/1000  << " ms\n";
    vector<int> v = localBinPat.getLBP(patches[2], 0);
    for (int index =0 ; index < (int)(v.size());++index) {
 	   cout << v[index] << "	";
