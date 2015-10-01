@@ -15,6 +15,7 @@
          int size;
          double mean;
          double stddev;
+	 double totalInput;
       public:
         FreqMatrix(int size) ;
         ~FreqMatrix();
@@ -23,6 +24,7 @@
         void addCombo(int wordA, int wordB, double activationA, double activationB);
         double getCombo(int wordA, int wordB);
         void analyze();
+	void normalize();
       };
       
       
