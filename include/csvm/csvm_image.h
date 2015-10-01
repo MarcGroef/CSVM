@@ -19,7 +19,7 @@ namespace csvm{
       CSVM_IMAGE_EMPTY = 0,
       CSVM_IMAGE_UCHAR_RGBA = 1,
       CSVM_IMAGE_UCHAR_RGB = 2,
-      
+      CSVM_IMAGE_UCHAR_GREY = 3,
    };
    
    class Image{
@@ -34,6 +34,8 @@ namespace csvm{
       //private methods:
       Image UCHAR_RGB2UCHAR_RGBA();
       Image UCHAR_RGBA2UCHAR_RGB();
+      Image UCHAR_RGB2UCHAR_GREY();
+      Image UCHAR_RGBA2UCHAR_GREY();
       
       
    public:

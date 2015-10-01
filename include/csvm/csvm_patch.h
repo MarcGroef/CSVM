@@ -22,6 +22,7 @@ namespace csvm{
       void setPixel(int x,int y,int channel,unsigned char value);
       int getWidth();
       int getHeight();
+      unsigned char getGreyPixel(int x,int y);
    };
 }
 #endif

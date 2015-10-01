@@ -45,3 +45,7 @@ int Patch::getWidth(){
 int Patch::getHeight(){
    return height;
 }
+
+unsigned char Patch::getGreyPixel(int x, int y){
+    return source->getGreyPixel(offsetX+x,offsetY+y);
+}
