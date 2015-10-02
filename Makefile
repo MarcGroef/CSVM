@@ -35,19 +35,22 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
+
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/karkov/Documents/Projects/BatProj
+CMAKE_SOURCE_DIR = /home/marc/bachelor/CSVM
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/karkov/Documents/Projects/BatProj
+CMAKE_BINARY_DIR = /home/marc/bachelor/CSVM
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
-	/usr/bin/cmake -i .
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -66,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karkov/Documents/Projects/BatProj/CMakeFiles /home/karkov/Documents/Projects/BatProj/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles /home/marc/bachelor/CSVM/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karkov/Documents/Projects/BatProj/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -179,6 +182,30 @@ src/csvm/csvm_dataset.s: src/csvm/csvm_dataset.cc.s
 src/csvm/csvm_dataset.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_dataset.cc.s
 .PHONY : src/csvm/csvm_dataset.cc.s
+
+src/csvm/csvm_feature.o: src/csvm/csvm_feature.cc.o
+.PHONY : src/csvm/csvm_feature.o
+
+# target to build an object file
+src/csvm/csvm_feature.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.o
+.PHONY : src/csvm/csvm_feature.cc.o
+
+src/csvm/csvm_feature.i: src/csvm/csvm_feature.cc.i
+.PHONY : src/csvm/csvm_feature.i
+
+# target to preprocess a source file
+src/csvm/csvm_feature.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.i
+.PHONY : src/csvm/csvm_feature.cc.i
+
+src/csvm/csvm_feature.s: src/csvm/csvm_feature.cc.s
+.PHONY : src/csvm/csvm_feature.s
+
+# target to generate assembly for a file
+src/csvm/csvm_feature.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.s
+.PHONY : src/csvm/csvm_feature.cc.s
 
 src/csvm/csvm_frequency_matrix.o: src/csvm/csvm_frequency_matrix.cc.o
 .PHONY : src/csvm/csvm_frequency_matrix.o
@@ -582,6 +609,9 @@ help:
 	@echo "... src/csvm/csvm_dataset.o"
 	@echo "... src/csvm/csvm_dataset.i"
 	@echo "... src/csvm/csvm_dataset.s"
+	@echo "... src/csvm/csvm_feature.o"
+	@echo "... src/csvm/csvm_feature.i"
+	@echo "... src/csvm/csvm_feature.s"
 	@echo "... src/csvm/csvm_frequency_matrix.o"
 	@echo "... src/csvm/csvm_frequency_matrix.i"
 	@echo "... src/csvm/csvm_frequency_matrix.s"

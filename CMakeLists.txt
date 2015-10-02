@@ -21,6 +21,7 @@ src/csvm/csvm_settings.cc
 src/csvm/csvm_patch.cc
 src/csvm/csvm_rbm.cc
 src/csvm/csvm_lbp_descriptor.cc
+src/csvm/csvm_feature.cc
 
 ##png library
 src/lodepng/lodepng.cc

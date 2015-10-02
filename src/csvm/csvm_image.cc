@@ -36,7 +36,9 @@ namespace csvm{
          case CSVM_IMAGE_UCHAR_RGBA:
             image.resize(4*this->width*this->height);
             return;
-         
+         case CSVM_IMAGE_UCHAR_GREY:
+            image.resize(this->width*this->height);
+            return;
       }
    }
    
@@ -75,6 +77,14 @@ namespace csvm{
                }
             }
             break;
+         case CSVM_IMAGE_UCHAR_GREY:
+            image.resize(ROI_height*ROI_width);
+            for(int x = 0; x < ROI_width; x++){
+               for(int y = 0; y < ROI_height; y++){
+                  setPixel(x,y,0,ROI_source->getPixel(ROI_x+x,ROI_y+y,0));
+               }
+            }
+            break;
       }
       
    }
@@ -105,7 +115,8 @@ namespace csvm{
             return image[(width * y * 4) + (x * 4) + channel];
          case CSVM_IMAGE_UCHAR_RGB:
             return image[(width * y * 3) + (x * 3) + channel];
-         
+         case CSVM_IMAGE_UCHAR_GREY:
+            return image[(width * y) + (x)];
       }
       return 0;
    }
@@ -120,6 +131,10 @@ namespace csvm{
          break;
          case CSVM_IMAGE_UCHAR_RGB:
             image[(width * y * 3) + (x * 3) + channel] = value;
+            break;
+         case CSVM_IMAGE_UCHAR_GREY:
+            image[width * y + x] = value;
+            break;
       }      
    }
    
@@ -140,6 +155,9 @@ namespace csvm{
             break;
             case CSVM_IMAGE_UCHAR_RGB:
                cout << "warning! not yet impl. (export im)\n";
+               break;
+            case CSVM_IMAGE_UCHAR_GREY:
+               cout << "Export grey image. warning! not yet implementer!\n";
                break;
             case CSVM_IMAGE_EMPTY:
                break;
@@ -204,6 +222,9 @@ namespace csvm{
                case CSVM_IMAGE_UCHAR_RGBA:
                   im = UCHAR_RGB2UCHAR_RGBA();
                   break;
+               case CSVM_IMAGE_UCHAR_GREY:
+                  cout << "RGB to GREY: not yet implemented!\n";
+                  break;
             }
             break;
          case CSVM_IMAGE_UCHAR_RGBA:
@@ -216,7 +237,14 @@ namespace csvm{
                   break;
                case CSVM_IMAGE_UCHAR_RGBA://case already handled above
                   break;
+               case CSVM_IMAGE_UCHAR_GREY:
+                  cout << "RGBA to GREY: not yet implemented!\n";
+                  break;
             }
+            break;
+            
+         case CSVM_IMAGE_UCHAR_GREY:
+            cout << "image conversion from grey: not yet implemented!\n";
             break;
       }
       return im;
@@ -247,7 +275,7 @@ namespace csvm{
    }
    
    Image Image::UCHAR_RGBA2UCHAR_RGB(){
-      Image newImage(width,height,CSVM_IMAGE_UCHAR_RGBA);
+      Image newImage(width,height,CSVM_IMAGE_UCHAR_RGB);
       
      
       for(unsigned int y = 0; y < height; y++){
@@ -255,6 +283,33 @@ namespace csvm{
             for(int ch = 0; ch < 3;ch++){
                newImage.setPixel(x,y,ch,getPixel(x,y,ch));
             }
+         }
+      }
+      return newImage;
+   }
+   
+   Image Image::UCHAR_RGB2UCHAR_GREY(){
+      Image newImage(width,height,CSVM_IMAGE_UCHAR_GREY);
+      unsigned char val;
+      for(unsigned int y = 0; y < height; y++){
+         for(unsigned int x = 0; x < width; x++){
+            val = 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
+            newImage.setPixel(x,y,0,val);
+            
+         }
+      }
+      return newImage;
+      
+   }
+   
+   Image Image::UCHAR_RGBA2UCHAR_GREY(){
+      Image newImage(width,height,CSVM_IMAGE_UCHAR_GREY);
+      unsigned char val;
+      for(unsigned int y = 0; y < height; y++){
+         for(unsigned int x = 0; x < width; x++){
+            val = 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
+            newImage.setPixel(x,y,0,val);
+            
          }
       }
       return newImage;

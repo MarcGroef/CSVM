@@ -9,6 +9,9 @@
 #include "csvm_image.h"
 #include "csvm_feature.h"
 
+#include <bitset>
+
+
 using namespace std;
 
 
@@ -19,7 +22,7 @@ namespace csvm {
 
 	public:
 		LBPDescriptor();
-		vector< int > getLBP(Patch patch, int channel);
+		Feature getLBP(Patch patch, int channel);
 
 	};
 
