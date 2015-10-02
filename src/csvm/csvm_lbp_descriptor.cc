@@ -19,6 +19,7 @@ Feature LBPDescriptor::getLBP(Patch patch, int channel) {
 	
 	bitset<(8)> pixelFeatures;
    Feature histogram(256,0);
+   histogram.label = patch.getLabel();
 	//vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
 	//cout << " patch width is: " << patchWidth;
 	//for now 
