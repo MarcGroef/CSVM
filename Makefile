@@ -159,6 +159,30 @@ src/csvm/csvm_classifier.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.s
 .PHONY : src/csvm/csvm_classifier.cc.s
 
+src/csvm/csvm_codebook.o: src/csvm/csvm_codebook.cc.o
+.PHONY : src/csvm/csvm_codebook.o
+
+# target to build an object file
+src/csvm/csvm_codebook.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_codebook.cc.o
+.PHONY : src/csvm/csvm_codebook.cc.o
+
+src/csvm/csvm_codebook.i: src/csvm/csvm_codebook.cc.i
+.PHONY : src/csvm/csvm_codebook.i
+
+# target to preprocess a source file
+src/csvm/csvm_codebook.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_codebook.cc.i
+.PHONY : src/csvm/csvm_codebook.cc.i
+
+src/csvm/csvm_codebook.s: src/csvm/csvm_codebook.cc.s
+.PHONY : src/csvm/csvm_codebook.s
+
+# target to generate assembly for a file
+src/csvm/csvm_codebook.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_codebook.cc.s
+.PHONY : src/csvm/csvm_codebook.cc.s
+
 src/csvm/csvm_dataset.o: src/csvm/csvm_dataset.cc.o
 .PHONY : src/csvm/csvm_dataset.o
 
@@ -303,6 +327,30 @@ src/csvm/csvm_image_scanner.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
 .PHONY : src/csvm/csvm_image_scanner.cc.s
 
+src/csvm/csvm_kmeans.o: src/csvm/csvm_kmeans.cc.o
+.PHONY : src/csvm/csvm_kmeans.o
+
+# target to build an object file
+src/csvm/csvm_kmeans.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_kmeans.cc.o
+.PHONY : src/csvm/csvm_kmeans.cc.o
+
+src/csvm/csvm_kmeans.i: src/csvm/csvm_kmeans.cc.i
+.PHONY : src/csvm/csvm_kmeans.i
+
+# target to preprocess a source file
+src/csvm/csvm_kmeans.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_kmeans.cc.i
+.PHONY : src/csvm/csvm_kmeans.cc.i
+
+src/csvm/csvm_kmeans.s: src/csvm/csvm_kmeans.cc.s
+.PHONY : src/csvm/csvm_kmeans.s
+
+# target to generate assembly for a file
+src/csvm/csvm_kmeans.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_kmeans.cc.s
+.PHONY : src/csvm/csvm_kmeans.cc.s
+
 src/csvm/csvm_lbp_descriptor.o: src/csvm/csvm_lbp_descriptor.cc.o
 .PHONY : src/csvm/csvm_lbp_descriptor.o
 
@@ -326,6 +374,30 @@ src/csvm/csvm_lbp_descriptor.s: src/csvm/csvm_lbp_descriptor.cc.s
 src/csvm/csvm_lbp_descriptor.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lbp_descriptor.cc.s
 .PHONY : src/csvm/csvm_lbp_descriptor.cc.s
+
+src/csvm/csvm_lvq.o: src/csvm/csvm_lvq.cc.o
+.PHONY : src/csvm/csvm_lvq.o
+
+# target to build an object file
+src/csvm/csvm_lvq.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lvq.cc.o
+.PHONY : src/csvm/csvm_lvq.cc.o
+
+src/csvm/csvm_lvq.i: src/csvm/csvm_lvq.cc.i
+.PHONY : src/csvm/csvm_lvq.i
+
+# target to preprocess a source file
+src/csvm/csvm_lvq.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lvq.cc.i
+.PHONY : src/csvm/csvm_lvq.cc.i
+
+src/csvm/csvm_lvq.s: src/csvm/csvm_lvq.cc.s
+.PHONY : src/csvm/csvm_lvq.s
+
+# target to generate assembly for a file
+src/csvm/csvm_lvq.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lvq.cc.s
+.PHONY : src/csvm/csvm_lvq.cc.s
 
 src/csvm/csvm_patch.o: src/csvm/csvm_patch.cc.o
 .PHONY : src/csvm/csvm_patch.o
@@ -606,6 +678,9 @@ help:
 	@echo "... src/csvm/csvm_classifier.o"
 	@echo "... src/csvm/csvm_classifier.i"
 	@echo "... src/csvm/csvm_classifier.s"
+	@echo "... src/csvm/csvm_codebook.o"
+	@echo "... src/csvm/csvm_codebook.i"
+	@echo "... src/csvm/csvm_codebook.s"
 	@echo "... src/csvm/csvm_dataset.o"
 	@echo "... src/csvm/csvm_dataset.i"
 	@echo "... src/csvm/csvm_dataset.s"
@@ -624,9 +699,15 @@ help:
 	@echo "... src/csvm/csvm_image_scanner.o"
 	@echo "... src/csvm/csvm_image_scanner.i"
 	@echo "... src/csvm/csvm_image_scanner.s"
+	@echo "... src/csvm/csvm_kmeans.o"
+	@echo "... src/csvm/csvm_kmeans.i"
+	@echo "... src/csvm/csvm_kmeans.s"
 	@echo "... src/csvm/csvm_lbp_descriptor.o"
 	@echo "... src/csvm/csvm_lbp_descriptor.i"
 	@echo "... src/csvm/csvm_lbp_descriptor.s"
+	@echo "... src/csvm/csvm_lvq.o"
+	@echo "... src/csvm/csvm_lvq.i"
+	@echo "... src/csvm/csvm_lvq.s"
 	@echo "... src/csvm/csvm_patch.o"
 	@echo "... src/csvm/csvm_patch.i"
 	@echo "... src/csvm/csvm_patch.s"
