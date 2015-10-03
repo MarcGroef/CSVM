@@ -1,5 +1,7 @@
 #ifndef CSVM_LVQ_H
 #define CSVM_LVQ_H
+
+#include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <vector>
@@ -20,7 +22,7 @@ namespace csvm{
       
     public:
       LVQ();
-      vector<Feature> cluster(vector<Feature> collection, unsigned int numberPrototypes, double learningRate);
+      vector<Feature> cluster(vector<Feature> collection, unsigned int numberPrototypes, double learningRate, int epochs);
     };
 }
 

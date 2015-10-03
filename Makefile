@@ -255,6 +255,30 @@ src/csvm/csvm_feature.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.s
 .PHONY : src/csvm/csvm_feature.cc.s
 
+src/csvm/csvm_feature_extractor.o: src/csvm/csvm_feature_extractor.cc.o
+.PHONY : src/csvm/csvm_feature_extractor.o
+
+# target to build an object file
+src/csvm/csvm_feature_extractor.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature_extractor.cc.o
+.PHONY : src/csvm/csvm_feature_extractor.cc.o
+
+src/csvm/csvm_feature_extractor.i: src/csvm/csvm_feature_extractor.cc.i
+.PHONY : src/csvm/csvm_feature_extractor.i
+
+# target to preprocess a source file
+src/csvm/csvm_feature_extractor.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature_extractor.cc.i
+.PHONY : src/csvm/csvm_feature_extractor.cc.i
+
+src/csvm/csvm_feature_extractor.s: src/csvm/csvm_feature_extractor.cc.s
+.PHONY : src/csvm/csvm_feature_extractor.s
+
+# target to generate assembly for a file
+src/csvm/csvm_feature_extractor.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature_extractor.cc.s
+.PHONY : src/csvm/csvm_feature_extractor.cc.s
+
 src/csvm/csvm_frequency_matrix.o: src/csvm/csvm_frequency_matrix.cc.o
 .PHONY : src/csvm/csvm_frequency_matrix.o
 
@@ -714,6 +738,9 @@ help:
 	@echo "... src/csvm/csvm_feature.o"
 	@echo "... src/csvm/csvm_feature.i"
 	@echo "... src/csvm/csvm_feature.s"
+	@echo "... src/csvm/csvm_feature_extractor.o"
+	@echo "... src/csvm/csvm_feature_extractor.i"
+	@echo "... src/csvm/csvm_feature_extractor.s"
 	@echo "... src/csvm/csvm_frequency_matrix.o"
 	@echo "... src/csvm/csvm_frequency_matrix.i"
 	@echo "... src/csvm/csvm_frequency_matrix.s"

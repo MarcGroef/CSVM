@@ -1,14 +1,16 @@
 #ifndef CSVM_FEATURE_EXTRACTOR_H
 #define CSVM_FEATURE_EXTRACTOR_H
 
-#include "csvm_lvq.h"
-#include "csvm_kmeans.h"
+
+#include "csvm_lbp_descriptor.h"
+#include "csvm_feature.h"
 
 using namespace std;
 namespace csvm{
   
   enum FeatureType{
-    HOG,
+    LBP,
+   
   };
   
   struct FeatureExtractorSettings{
@@ -17,8 +19,11 @@ namespace csvm{
   
   class FeatureExtractor{
     FeatureExtractorSettings settings;
+    LBPDescriptor lbp;
     
-    
+  public:
+     FeatureExtractor();
+     Feature extract(Patch p);
   };
 }
 #endif

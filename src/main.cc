@@ -52,9 +52,11 @@ int main(int argc,char**argv){
    cout << nImages << " images loaded.\n";
    
    //measure cpu time
+   cout << "Start timing\n";
    time_t time0 = clock();
    
-   for(size_t idx = 0; idx < nImages/100; ++idx){
+   c.constructCodebook();
+   /*for(size_t idx = 0; idx < nImages/100; ++idx){
       newPatches = scanner.scanImage(c.dataset.getImagePtr(idx),8,8,1,1);
       patches.insert(patches.end(),newPatches.begin(),newPatches.end());
       
@@ -63,15 +65,10 @@ int main(int argc,char**argv){
    for(size_t idx = 0; idx < nPatches; ++idx)
      localBinPat.getLBP(patches[idx], 0);
    //print number of patches and time difference
-   cout << patches.size() << " patches collected! in " << (double)(clock() - time0)/1000  << " ms\n";
-   Feature v = localBinPat.getLBP(patches[0], 0);
-   //for (int index =0 ; index < (int)(v.size());++index) {
-	//  cout << "v[" << index << "] = " << v[index] << " \n";
-   //}
+   */
+   cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
    
-   Image patch = c.dataset.getImage(0).getROI(0,0,8,8);
-   Image pngIm = patch.convertTo(CSVM_IMAGE_UCHAR_RGBA);
-   pngIm.exportImage("patch2.png");
+   
    
    
    return 0;

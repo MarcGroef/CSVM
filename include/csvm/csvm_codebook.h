@@ -27,7 +27,8 @@ namespace csvm{
     KMeans kmeans;
     vector<Feature> bow;
   public:
-    void constructCodeBook(vector<Feature> featureset);
+    void constructCodebook(vector<Feature> featureset);
+    
   };
   
 }

@@ -26,6 +26,7 @@ src/csvm/csvm_codebook.cc
 src/csvm/csvm_lvq.cc
 src/csvm/csvm_kmeans.cc
 src/csvm/csvm_cluster_analyser.cc
+src/csvm/csvm_feature_extractor.cc
 
 ##png library
 src/lodepng/lodepng.cc

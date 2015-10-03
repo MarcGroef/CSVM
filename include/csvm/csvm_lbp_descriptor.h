@@ -1,5 +1,5 @@
 
-#ifndef CSVM_LBP_DECRIPTOR_H
+#ifndef CSVM_LBP_DESCRIPTOR_H
 #define CSVM_LBP_DESCRIPTOR_H
 
 #include <vector>

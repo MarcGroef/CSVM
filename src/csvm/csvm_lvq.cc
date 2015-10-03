@@ -17,7 +17,7 @@ vector<Feature> LVQ::initPrototypes(vector<Feature> collection, unsigned int nPr
    return dictionary;
 }
 
-vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberPrototypes, double learningRate){
+vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberPrototypes, double learningRate, int epochs){
    vector<Feature> dictionary;
    unsigned int collectionSize = collection.size();
    double distances[numberPrototypes];
@@ -26,35 +26,37 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberProt
    
    double minDist;
    int closestProto;
-   
-   for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints
-      Feature* f = &collection[idx];
-      minDist = 9999999999;
-      
-      //calc distances and closest prototype
-      for(size_t proto = 0; proto < numberPrototypes; ++proto){
+   for(int epoch = 0; epoch < epochs ; ++epoch){
+      cout << "Epoch " << epoch << "\n";
+      for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints
+         Feature* f = &collection[idx];
+         minDist = 9999999999;
          
-         distances[proto] = 0;
+         //calc distances and closest prototype
+         for(size_t proto = 0; proto < numberPrototypes; ++proto){
+            
+            distances[proto] = 0;
+            
+            for(size_t dim = 0; dim < featureDims; ++dim){
+               //squared distance
+               distances[proto] += (dictionary[proto].content[dim] - f->content[dim]) * (dictionary[proto].content[dim] - f->content[dim]);
+            }
+            if(distances[proto] < minDist){
+               minDist = distances[proto];
+               closestProto = proto;
+            }
+         }
+         
+         //update prototype
          
          for(size_t dim = 0; dim < featureDims; ++dim){
-            //squared distance
-            distances[proto] += (dictionary[proto].content[dim] - f->content[dim]) * (dictionary[proto].content[dim] - f->content[dim]);
+            dictionary[closestProto].content[dim] += learningRate * (f->content[dim] - dictionary[closestProto].content[dim]);
+               
          }
-         if(distances[proto] < minDist){
-            minDist = distances[proto];
-            closestProto = proto;
-         }
+         
+         
+         
       }
-      
-      //update prototype
-      
-      for(size_t dim = 0; dim < featureDims; ++dim){
-         dictionary[closestProto].content[dim] += learningRate * (f->content[dim] - dictionary[closestProto].content[dim]);
-            
-      }
-      
-      
-      
    }
    
    return dictionary;
