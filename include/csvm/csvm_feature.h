@@ -14,7 +14,7 @@ namespace csvm{
       string label;
       int size;
       Feature(int size,double initValue);
-
+      Feature(Feature* f);
     
   };
   

@@ -159,6 +159,30 @@ src/csvm/csvm_classifier.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.s
 .PHONY : src/csvm/csvm_classifier.cc.s
 
+src/csvm/csvm_cluster_analyser.o: src/csvm/csvm_cluster_analyser.cc.o
+.PHONY : src/csvm/csvm_cluster_analyser.o
+
+# target to build an object file
+src/csvm/csvm_cluster_analyser.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cluster_analyser.cc.o
+.PHONY : src/csvm/csvm_cluster_analyser.cc.o
+
+src/csvm/csvm_cluster_analyser.i: src/csvm/csvm_cluster_analyser.cc.i
+.PHONY : src/csvm/csvm_cluster_analyser.i
+
+# target to preprocess a source file
+src/csvm/csvm_cluster_analyser.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cluster_analyser.cc.i
+.PHONY : src/csvm/csvm_cluster_analyser.cc.i
+
+src/csvm/csvm_cluster_analyser.s: src/csvm/csvm_cluster_analyser.cc.s
+.PHONY : src/csvm/csvm_cluster_analyser.s
+
+# target to generate assembly for a file
+src/csvm/csvm_cluster_analyser.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cluster_analyser.cc.s
+.PHONY : src/csvm/csvm_cluster_analyser.cc.s
+
 src/csvm/csvm_codebook.o: src/csvm/csvm_codebook.cc.o
 .PHONY : src/csvm/csvm_codebook.o
 
@@ -678,6 +702,9 @@ help:
 	@echo "... src/csvm/csvm_classifier.o"
 	@echo "... src/csvm/csvm_classifier.i"
 	@echo "... src/csvm/csvm_classifier.s"
+	@echo "... src/csvm/csvm_cluster_analyser.o"
+	@echo "... src/csvm/csvm_cluster_analyser.i"
+	@echo "... src/csvm/csvm_cluster_analyser.s"
 	@echo "... src/csvm/csvm_codebook.o"
 	@echo "... src/csvm/csvm_codebook.i"
 	@echo "... src/csvm/csvm_codebook.s"

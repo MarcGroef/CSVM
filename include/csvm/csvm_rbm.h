@@ -13,6 +13,13 @@ using namespace std;
 
 namespace csvm{
    
+   struct RBMSettings{
+      
+      
+   };
+   
+   
+   
    class RBM{
       LayerStack layers;
       float learningRate;

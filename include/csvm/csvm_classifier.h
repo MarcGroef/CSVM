@@ -5,7 +5,7 @@
 #include "csvm_dataset.h"
 #include "csvm_codebook.h"
 #include "csvm_image_scanner.h"
-
+#include "csvm_cluster_analyser.h"
 
 
 using namespace std;
@@ -15,13 +15,13 @@ namespace csvm{
       CSVMSettings settings;
       Codebook codebook;
       ImageScanner imageScanner;
-      
+      ClusterAnalyser analyser;
       
    public:
       //public vars
       CSVMDataset dataset;
       void setSettings(string settingsFile);
-      void constructCodebook()
+      void constructCodebook();
       //CSVMClassifier();
       
       
