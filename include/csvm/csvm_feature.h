@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+#include <cstdlib>
+
 using namespace std;
 namespace csvm{
   
@@ -15,7 +18,7 @@ namespace csvm{
       int size;
       Feature(int size,double initValue);
       Feature(Feature* f);
-    
+      double getDistanceSq(Feature* f);
   };
   
   

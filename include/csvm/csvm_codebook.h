@@ -28,7 +28,7 @@ namespace csvm{
     vector<Feature> bow;
   public:
     void constructCodebook(vector<Feature> featureset);
-    
+    Feature getActivations(Feature* f);
   };
   
 }

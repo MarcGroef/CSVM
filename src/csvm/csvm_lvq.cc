@@ -35,12 +35,9 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberProt
          //calc distances and closest prototype
          for(size_t proto = 0; proto < numberPrototypes; ++proto){
             
-            distances[proto] = 0;
             
-            for(size_t dim = 0; dim < featureDims; ++dim){
-               //squared distance
-               distances[proto] += (dictionary[proto].content[dim] - f->content[dim]) * (dictionary[proto].content[dim] - f->content[dim]);
-            }
+            distances[proto] = dictionary[proto].getDistanceSq(f);
+            
             if(distances[proto] < minDist){
                minDist = distances[proto];
                closestProto = proto;

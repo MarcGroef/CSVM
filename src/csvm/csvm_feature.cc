@@ -16,3 +16,17 @@ Feature::Feature(Feature* f){
    this->label = f->label;
    
 }
+
+double Feature::getDistanceSq(Feature* f){
+   if(f->size != size){
+      cout << "csvm::Feature::getDistance() Error! Different feature sizes!\n";
+      exit(-1);
+   }
+   double distance = 0;
+   double dist;
+   for(int dim = 0; dim < size; ++dim){
+      dist = (f->content[dim] - content[dim]);
+      distance += dist * dist;
+   }
+   return distance;
+}
