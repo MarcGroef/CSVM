@@ -16,9 +16,10 @@
 */
 #include <dnn/dnn_math.h>
 
-const double e = 2.718281828459045;
+
 
 double sigmoid(double x){
+   const double e = 2.718281828459045;
 	double s = (1.0f / (1 + pow(e, x*-1)));
 	//printf("sigmoid : %.4f\n",s);
 	return s;

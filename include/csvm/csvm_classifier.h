@@ -32,6 +32,7 @@ namespace csvm{
       
       void setSettings(string settingsFile);
       void constructCodebook();
+      void trainRBM();
       //CSVMClassifier();
       
       

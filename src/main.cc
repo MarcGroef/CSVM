@@ -56,6 +56,7 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
+   c.trainRBM();
    /*for(size_t idx = 0; idx < nImages/100; ++idx){
       newPatches = scanner.scanImage(c.dataset.getImagePtr(idx),8,8,1,1);
       patches.insert(patches.end(),newPatches.begin(),newPatches.end());

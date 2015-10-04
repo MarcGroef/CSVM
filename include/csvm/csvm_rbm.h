@@ -1,6 +1,10 @@
 #ifndef CSVM_RBM_H
 #define CSVM_RBM_H
 
+#include <cstdlib>
+#include <assert.h>
+#include <iostream>
+
 extern "C"{
 #include <dnn/dnn.h>
 }
@@ -13,30 +17,30 @@ using namespace std;
 
 namespace csvm{
    
-   struct RBMSettings{
+   typedef struct{
+      int nLayers;
+      int* layerSizes;
+      float learningRate;
       
-      
-   };
+   }RBMSettings;
    
    
    
    class RBM{
       LayerStack layers;
-      float learningRate;
       Dataset data;
-      int* layerSizes;
-      int nLayers;
-      
+      RBMSettings settings;
      
    public:
       
       
       
-      
+      RBM();
       RBM(int nLayers,int* layerSizes,float learningRate);
       RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries);  //dimension of a single data-entry should be equal to the layersize of the first, thus zero-th, layer.
       ~RBM();
       
+      void freeDataset();
       void linkDataset(double** data,int nEntries);
       void train(float learningRate,int nGibbsSampleSteps);
       double* getOutput();

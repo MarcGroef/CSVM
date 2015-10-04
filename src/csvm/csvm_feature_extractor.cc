@@ -15,3 +15,4 @@ Feature FeatureExtractor::extract(Patch p){
    }
    return lbp.getLBP(p,0);
 }
+
