@@ -19,7 +19,7 @@ void Codebook::constructCodebook(vector<Feature> featureset){
 
 Feature Codebook::getActivations(Feature* f){
    Feature act(settings.numberVisualWords,0);
-   double distances[settings.numberVisualWords];
+   vector<double> distances(settings.numberVisualWords);
    double meanDist = 0;
    double dev;
    

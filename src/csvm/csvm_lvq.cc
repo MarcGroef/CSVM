@@ -20,7 +20,7 @@ vector<Feature> LVQ::initPrototypes(vector<Feature> collection, unsigned int nPr
 vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberPrototypes, double learningRate, int epochs){
    vector<Feature> dictionary;
    unsigned int collectionSize = collection.size();
-   double distances[numberPrototypes];
+   vector<double> distances(numberPrototypes);
    unsigned int featureDims = collection[0].size;
    dictionary = initPrototypes(collection,numberPrototypes);
    
