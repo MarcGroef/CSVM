@@ -13,16 +13,42 @@ namespace csvm{
     double alpha;
   };
   
-  struct Centroid {
-	  Feature position;
+  struct ClusterCentroid {
 	  Feature lastPosition;
 	  Feature newPosition;
 	  int nAssignments;
+	  void assignFeature(Feature feature)
+	  {
+		  ++nAssignments;
+		  for (int idx = 0; idx < feature.size;++idx)
+		  {
+			  newPosition.content[idx] += feature.content[idx];
+		  }
+	  }
+	  void computeNewPosition()
+	  {
+		  for (int idx = 0; idx < newPosition.content.size; ++idx)
+		  {
+			  newPosition.content[idx] = newPosition.content[idx] / nAssignments;
+		  }
+	  }
+	  
+	  void resetCluster()
+	  {
+		  lastPosition = newPosition;
+		  newPosition = new Feature(lastPosition.size, 0);
+		  nAssignments = 0;
+	  }
+
+	  bool hasChanged()
+	  {
+		  return (newPosition.content != lastPosition.content);
+	  }
   };
 
   class KMeans{
     KMeans_settings settings;
-	vector<Centroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
+	vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
 
     
   public:
