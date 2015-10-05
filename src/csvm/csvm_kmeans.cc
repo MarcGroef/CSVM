@@ -21,11 +21,11 @@ vector<Centroid> KMeans::initPrototypes(vector<Feature> featureSamples, unsigned
 
 vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nClusters){
    
-	unsigned int featureDims = featureSamples[0].size;
-	//initialize centroids
-	vector<Centroid> centroids = initPrototypes(featureSamples, nClusters);
-	unsigned int featureSampleSize = featureSamples.size();
-
+    unsigned int featureDims = featureSamples[0].size;
+    //initialize centroids
+    vector<Centroid> centroids = initPrototypes(featureSamples, nClusters);
+    unsigned int featureSampleSize = featureSamples.size();
+   unsigned int nFeatures = featureSamples.size();
 
 	
    
@@ -36,14 +36,14 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    while (!centroidChanged)
    {
 	   bool centroidChanged = 0;
-	   for (auto &feature : featureSamples) //for every feature...
+	   for(size_t fidx = 0; fidx < nFeatures; ++fidx)
 	   {
 		   int newWinningCentroid; //used to track the index of the winning centroid
 		   size_t clusterLabel;
 		   //iterate all clusters (by index clusterLabel), and determine label of winning cluster.
 		   for (clusterLabel = 0; clusterLabel < centroids.size(); ++clusterLabel)
 		   {
-			   double featureDistance = feature.getDistanceSq( &centroids[clusterLabel].position );
+			   double featureDistance = featureSamples[fidx].getDistanceSq( &centroids[clusterLabel].position );
 			   
 			   if (featureDistance < smallestDistance)
 			   {
@@ -54,7 +54,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
 		   //here we should have determined the closest cluster to the feature 'feature'
 		   //now we iteratively add the feature value
 		   for (size_t idx = 0;idx < featureDims;++idx) {
-			   centroids[newWinningCentroid].position.content[idx] += feature.content[idx];
+			   centroids[newWinningCentroid].position.content[idx] += featureSamples[fidx].content[idx];
 		   }
 		   centroids[newWinningCentroid].nAssignments += 1;
 	   }

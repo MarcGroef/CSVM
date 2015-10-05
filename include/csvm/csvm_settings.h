@@ -8,7 +8,7 @@
 #include "csvm_feature_extractor.h"
 #include "csvm_codebook.h"
 #include "csvm_image_scanner.h"
-
+#include "csvm_dataset.h"
 
 using namespace std;
 
@@ -30,7 +30,7 @@ namespace csvm{
       ImageScannerSettings scannerSettings;
       
    public:
-      
+      void parseDatasetSettings(ifstream& stream);
       void readSettingsFile(string dir);
    };
 

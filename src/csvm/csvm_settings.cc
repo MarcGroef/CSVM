@@ -4,16 +4,16 @@ using namespace std;
 using namespace csvm;
 
 
-void parseDatasetSettings(ifstream stream){
+void CSVMSettings::parseDatasetSettings(ifstream& stream){
   string setting;
-  string method
+  string method;
   stream >> setting;
   if(setting != "method"){
     cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Crashing...\n";
     exit(-1);
   }
   stream >> method;
-  switch(method){
+ /* switch(method){
     case "CIFAR10":
       cout >> setting;
       if(setting != "nImages"){
@@ -25,7 +25,7 @@ void parseDatasetSettings(ifstream stream){
       break;
     
   }
-  
+  */
 }
 
 void CSVMSettings::readSettingsFile(string dir){
