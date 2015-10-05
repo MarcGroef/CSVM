@@ -12,6 +12,8 @@ vector<Centroid> KMeans::initPrototypes(vector<Feature> featureSamples, unsigned
 	for (size_t idx = 0; idx < nClusters; ++idx)
 	{
 		centroids[idx].position = featureSamples[rand() % nFeatureSamplesSize];
+		centroids[idx].newPosition = centroids[idx].position;
+		centroids[idx].lastPosition = centroids[idx].position;
 		centroids[idx].nAssignments = 1;
 	}
 	return centroids;
@@ -58,6 +60,16 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
 		   }
 		   centroids[newWinningCentroid].nAssignments += 1;
 	   }
+
+	   for (size_t idx = 0; idx < nClusters; ++idx)
+	   {
+		   centroids[idx].newPosition
+		   if (centroids[idx].position != centroids[idx].lastPosition)
+		   {
+
+		   }
+	   }
+
    }
 		
 

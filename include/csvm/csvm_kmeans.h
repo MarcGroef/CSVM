@@ -15,6 +15,8 @@ namespace csvm{
   
   struct Centroid {
 	  Feature position;
+	  Feature lastPosition;
+	  Feature newPosition;
 	  int nAssignments;
   };
 
