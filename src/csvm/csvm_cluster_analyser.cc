@@ -28,7 +28,7 @@ void ClusterAnalyser::studyFeatures(vector<Feature> features){
    features.clear();
    cout << "Created RBM dataset with " << nFeatures << " 1 x " << featureDim << " features\n";
    rbm.linkDataset(data,nFeatures);
-   rbm.train(0.01,10);
+   rbm.train();
    rbm.freeDataset();
 }
 

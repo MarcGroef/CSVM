@@ -10,6 +10,18 @@
 
 using namespace std;
 namespace csvm{
+   
+   enum CSVMClusterAnalyseMethods{
+      CSVM_RBM,
+      
+   };
+   
+   
+   struct ClusterAnalyserSettings{
+      CSVMClusterAnalyseMethods method;
+      RBMSettings rbmSettings;
+      
+   };
   
    class ClusterAnalyser{
       RBM rbm;

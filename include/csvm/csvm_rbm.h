@@ -21,7 +21,7 @@ namespace csvm{
       int nLayers;
       int* layerSizes;
       float learningRate;
-      
+      int nGibbsSteps;
    }RBMSettings;
    
    
@@ -42,7 +42,7 @@ namespace csvm{
       
       void freeDataset();
       void linkDataset(double** data,int nEntries);
-      void train(float learningRate,int nGibbsSampleSteps);
+      void train();
       double* getOutput();
       double* run(double* input);
    };

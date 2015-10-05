@@ -20,6 +20,7 @@ namespace csvm{
       int stride;
       int patchWidth;
       int patchHeight;
+      
    };
 
 

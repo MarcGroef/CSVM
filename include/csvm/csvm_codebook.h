@@ -29,6 +29,7 @@ namespace csvm{
   public:
     void constructCodebook(vector<Feature> featureset);
     Feature getActivations(Feature* f);
+    void exportCodebook(string filename);
   };
   
 }

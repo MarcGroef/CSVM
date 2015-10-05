@@ -7,9 +7,10 @@ using namespace csvm;
       settings.nLayers = 2;
       settings.layerSizes = (int*) malloc(2*sizeof(int));
       assert(settings.layerSizes!=NULL);
-      settings.layerSizes[0] = 5;
-      settings.layerSizes[1] = 5;
+      settings.layerSizes[0] = 100;
+      settings.layerSizes[1] = 100;
       settings.learningRate = 0.01;
+      settings.nGibbsSteps = 10;
       
       initLayerStack(&layers,settings.nLayers,settings.layerSizes);
       initStackWeightsRandom(&layers);
@@ -35,7 +36,7 @@ using namespace csvm;
    RBM::~RBM(){
       freeLayerStack(&layers);
       free(settings.layerSizes);
-      //freeDataset();
+      
    }
    
    void RBM::linkDataset(double** data,int nEntries){
@@ -51,9 +52,9 @@ using namespace csvm;
       free(data.data);
    }
    
-   void RBM::train(float learningRate,int nGibbsSampleSteps){
+   void RBM::train(){
       cout << "Training rbm..\n";
-      performRBM(&layers,&data,learningRate,0,nGibbsSampleSteps);
+      performRBM(&layers,&data,settings.learningRate,0,settings.nGibbsSteps);
    }
    
    double* RBM::getOutput(){

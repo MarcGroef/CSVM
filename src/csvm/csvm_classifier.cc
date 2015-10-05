@@ -20,7 +20,7 @@ void CSVMClassifier::trainRBM(){
    pretrainDump.clear();
    unsigned int nPatches;
    
-   nImages = 10;
+   //nImages = 100;
    
    for(size_t idx = 0; idx < nImages; ++idx){
       patches = imageScanner.scanImage(dataset.getImagePtr(idx),8,8,1,1);

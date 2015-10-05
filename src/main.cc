@@ -57,21 +57,9 @@ int main(int argc,char**argv){
    
    c.constructCodebook();
    c.trainRBM();
-   /*for(size_t idx = 0; idx < nImages/100; ++idx){
-      newPatches = scanner.scanImage(c.dataset.getImagePtr(idx),8,8,1,1);
-      patches.insert(patches.end(),newPatches.begin(),newPatches.end());
-      
-   }
-   unsigned long nPatches = patches.size();
-   for(size_t idx = 0; idx < nPatches; ++idx)
-     localBinPat.getLBP(patches[idx], 0);
-   //print number of patches and time difference
-   */
+
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
-   
-   
-   
-   
+
    return 0;
 }
 

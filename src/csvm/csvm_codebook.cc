@@ -5,10 +5,10 @@ using namespace csvm;
 
 void Codebook::constructCodebook(vector<Feature> featureset){
    settings.method = LVQ_Clustering;
-   settings.numberVisualWords = 5;
+   settings.numberVisualWords = 100;
    switch(settings.method){
       case LVQ_Clustering:
-         bow = lvq.cluster(featureset, 5, 0.02,1);
+         bow = lvq.cluster(featureset, settings.numberVisualWords, 0.02,10);
          break;
       case KMeans_Clustering:
          bow = kmeans.cluster(featureset);
@@ -36,4 +36,17 @@ Feature Codebook::getActivations(Feature* f){
    act.label = f->label;
    
    return act;
+}
+
+void Codebook::exportCodebook(string filename){
+   /* codebook file conventions:
+      first one line with one number, representing the number of visual words
+      seconds, one line with one number: the number of bytes of each visual words.
+      third a little-endian binary dump of the visual words.
+   */
+   
+   
+   
+   
+   
 }
