@@ -28,6 +28,7 @@ namespace csvm{
       FeatureExtractorSettings featureSettings;
       Codebook_settings codebookSettings;
       ImageScannerSettings scannerSettings;
+      CSVMDataset_Settings datasetSettings;
       
    public:
       void parseDatasetSettings(ifstream& stream);

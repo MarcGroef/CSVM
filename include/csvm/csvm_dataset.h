@@ -16,7 +16,7 @@ namespace csvm{
    };
    
    struct CSVMDataset_Settings{
-      
+      int nImages;
    };
    
    class CSVMDataset{

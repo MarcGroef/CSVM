@@ -5,6 +5,8 @@ using namespace csvm;
 
 
 void CSVMSettings::parseDatasetSettings(ifstream& stream){
+
+  
   string setting;
   string method;
   stream >> setting;
@@ -13,20 +15,20 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream){
     exit(-1);
   }
   stream >> method;
- /* switch(method){
-    case "CIFAR10":
-      cout >> setting;
+
+  if(method == "CIFAR10"){
+      stream >> setting;
       if(setting != "nImages"){
-	
 	cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Crashing...\n";
 	exit(-1);
       }
-      }
-      break;
+      stream >> datasetSettings.nImages;
     
   }
-  */
+ 
 }
+
+
 
 void CSVMSettings::readSettingsFile(string dir){
    ifstream file(dir.c_str(),ios::in);
@@ -38,11 +40,18 @@ void CSVMSettings::readSettingsFile(string dir){
       exit(0);
    }
    
-   while(getline(file,line) && line != "algorithm");
+   while(getline(file,line) && line != "Dataset");
+   parseDatasetSettings(file);
+   while(getline(file,line) && line != "ClusterAnalyser");
    
+   while(getline(file,line) && line != "Codebook");
+   
+   while(getline(file,line) && line != "FeatureExtractor");
+   
+   while(getline(file,line) && line != "ImageScanner");
    // parse values:
    
-   string temp;
+   /*string temp;
    file >> temp >> svmSettings.alpha;
    file >> temp >> svmSettings.beta;
    file >> temp >> svmSettings.COST;
@@ -53,7 +62,7 @@ void CSVMSettings::readSettingsFile(string dir){
    file >> temp >> svmSettings.NR_REP2;
    file >> temp >> svmSettings.EPS;
    file >> temp >> svmSettings.SIGMA;
-   file >> temp >> svmSettings.INIT_ALPHA;
+   file >> temp >> svmSettings.INIT_ALPHA;*/
    
    
    file.close();   
