@@ -72,6 +72,24 @@
     <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\csvm\csvm_cluster_analyser.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_codebook.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_feature.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_feature_extractor.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_kmeans.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_lvq.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\csvm\csvm.h">

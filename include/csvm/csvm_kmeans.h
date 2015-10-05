@@ -13,13 +13,20 @@ namespace csvm{
     double alpha;
   };
   
+  struct Centroid {
+	  Feature position;
+	  int nAssignments;
+  };
+
   class KMeans{
     KMeans_settings settings;
-    
+	vector<Centroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
+
     
   public:
-    vector<Feature> cluster(vector<Feature> collection);
+    vector<Feature> cluster(vector<Feature> collection, unsigned int nClusters);
   };
 }
+
 
 #endif

@@ -80,12 +80,18 @@
   <ItemGroup>
     <ClCompile Include="src\csvm\csvm_cifar10_parser.cc" />
     <ClCompile Include="src\csvm\csvm_classifier.cc" />
+    <ClCompile Include="src\csvm\csvm_cluster_analyser.cc" />
+    <ClCompile Include="src\csvm\csvm_codebook.cc" />
     <ClCompile Include="src\csvm\csvm_dataset.cc" />
+    <ClCompile Include="src\csvm\csvm_feature.cc" />
+    <ClCompile Include="src\csvm\csvm_feature_extractor.cc" />
     <ClCompile Include="src\csvm\csvm_frequency_matrix.cc" />
     <ClCompile Include="src\csvm\csvm_hog_descriptor.cc" />
     <ClCompile Include="src\csvm\csvm_image.cc" />
     <ClCompile Include="src\csvm\csvm_image_scanner.cc" />
+    <ClCompile Include="src\csvm\csvm_kmeans.cc" />
     <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc" />
+    <ClCompile Include="src\csvm\csvm_lvq.cc" />
     <ClCompile Include="src\csvm\csvm_patch.cc" />
     <ClCompile Include="src\csvm\csvm_rbm.cc" />
     <ClCompile Include="src\csvm\csvm_settings.cc" />
