@@ -12,7 +12,7 @@ void ClusterAnalyser::setSettings(ClusterAnalyserSettings set){
    settings = set;
    switch(settings.method){
      case CSVM_RBM:
-       rbm.setSettings(settings.rbmSettings);
+       rbm.setSettings(settings.rbmSettings);  //TODO: 
        break;
      
    }
