@@ -19,7 +19,7 @@ namespace csvm{
    
    typedef struct{
       int nLayers;
-      int* layerSizes;
+      int* layerSizes;   //freed b rbm.cc RBM destructor
       float learningRate;
       int nGibbsSteps;
    }RBMSettings;

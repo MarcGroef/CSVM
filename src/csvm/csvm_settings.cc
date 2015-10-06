@@ -17,6 +17,7 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream){
   stream >> method;
 
   if(method == "CIFAR10"){
+      datasetSettings.type = DATASET_CIFAR10;
       stream >> setting;
       if(setting != "nImages"){
 	cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Crashing...\n";
@@ -29,6 +30,138 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream){
 }
 
 
+void CSVMSettings::parseClusterAnalserData(ifstream& stream){
+  string setting;
+  string method;
+  stream >> setting;
+  if(setting != "method"){
+    cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Crashing...\n";
+    exit(-1);
+  }
+  stream >> method;
+  if(method == "RBM"){
+    analyserSettings.method = CSVM_RBM;
+    
+    stream >> setting;
+    if(setting == "nLayers"){
+      stream >> analyserSettings.rbmSettings.nLayers;
+      analyserSettings.rbmSettings.layerSizes = (int*) malloc(analyserSettings.rbmSettings.nLayers*sizeof(int));
+      assert(analyserSettings.rbmSettings.layerSizes!=NULL);
+            
+    }else{
+      cout << "csvm::csvm_settings:parseClusterAnalserData(): Error! Invalid settingsfile layout. Crashing...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "layerSizes"){
+      //set layerSizes except the size of the first layer. That one should be determined by the feature extractor feature dimensionality
+      for(int idx = 1; idx < analyserSettings.rbmSettings.nLayers; ++idx){
+	stream >> analyserSettings.rbmSettings.layerSizes[idx];	
+      }
+    }else{
+      cout << "csvm::csvm_settings:parseClusterAnalserData(): Error! Invalid settingsfile layout. Crashing...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "learningRate"){
+      stream >> analyserSettings.rbmSettings.learningRate;
+    }else{
+      cout << "csvm::csvm_settings:parseClusterAnalserData(): Error! Invalid settingsfile layout. Crashing...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "nGibbsSteps"){
+      stream >> analyserSettings.rbmSettings.nGibbsSteps;
+    }else{
+      cout << "csvm::csvm_settings:parseClusterAnalserData(): Error! Invalid settingsfile layout. Crashing...\n";
+      exit(-1);
+    }
+      
+    
+  }
+  
+}
+
+void CSVMSettings::parseCodebookSettings(ifstream& stream){
+  string setting;
+  string method;
+  stream >> setting;
+  if(setting != "method"){
+    cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Crashing...\n";
+    exit(-1);
+  }
+  stream >> method;
+  if(method == "LVQ"){
+    codebookSettings.method = LVQ_Clustering;
+    
+    stream >> setting;
+    if(setting == "nClusters"){
+      stream >> codebookSettings.lvqSettings.nClusters;
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Crashing...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "learningRate"){
+      stream >> codebookSettings.lvqSettings.alpha;
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Crashing...\n";
+      exit(-1);
+    }
+    
+    
+  }
+}
+
+void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
+  string setting;
+  string method;
+  stream >> setting;
+  if(setting != "method"){
+    cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Crashing...\n";
+    exit(-1);
+  }
+  stream >> method;
+  if(method == "LBP"){
+    featureSettings.featureType = LBP;
+    
+  }
+  
+  
+}
+
+void CSVMSettings::parseImageScannerSettings(ifstream& stream){
+  string setting;
+  string method;
+  stream >> setting;
+  if(setting == "patchHeight"){
+    stream >> scannerSettings.patchHeight;   
+  }else{
+    cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Crashing...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "patchWidth"){
+    stream >> scannerSettings.patchWidth;   
+  }else{
+    cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Crashing...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "scanStride"){
+    stream >> scannerSettings.stride;   
+  }else{
+    cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Crashing...\n";
+    exit(-1);
+  }
+  
+}
 
 void CSVMSettings::readSettingsFile(string dir){
    ifstream file(dir.c_str(),ios::in);
@@ -43,11 +176,11 @@ void CSVMSettings::readSettingsFile(string dir){
    while(getline(file,line) && line != "Dataset");
    parseDatasetSettings(file);
    while(getline(file,line) && line != "ClusterAnalyser");
-   
+   parseClusterAnalserData(file);
    while(getline(file,line) && line != "Codebook");
-   
+   parseCodebookSettings(file);
    while(getline(file,line) && line != "FeatureExtractor");
-   
+   parseFeatureExtractorSettings(file);
    while(getline(file,line) && line != "ImageScanner");
    // parse values:
    

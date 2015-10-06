@@ -27,7 +27,7 @@ namespace csvm{
 	  }
 	  void computeNewPosition()
 	  {
-		  for (int idx = 0; idx < newPosition.content.size; ++idx)
+		  for (size_t idx = 0; idx < newPosition.content.size(); ++idx)
 		  {
 			  newPosition.content[idx] = newPosition.content[idx] / nAssignments;
 		  }
@@ -36,7 +36,7 @@ namespace csvm{
 	  void resetCluster()
 	  {
 		  lastPosition = newPosition;
-		  newPosition = new Feature(lastPosition.size, 0);
+		  newPosition = new Feature(lastPosition.size, 0);  //Jonathan, free/delete[] je deze alloc wel?
 		  nAssignments = 0;
 	  }
 

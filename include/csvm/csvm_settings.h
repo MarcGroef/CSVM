@@ -3,12 +3,14 @@
 
 #include <iostream>
 #include <fstream>
+#include <assert.h>
 #include <cstdlib>
 #include "csvm_svm.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_codebook.h"
 #include "csvm_image_scanner.h"
 #include "csvm_dataset.h"
+#include "csvm_cluster_analyser.h"
 
 using namespace std;
 
@@ -29,10 +31,14 @@ namespace csvm{
       Codebook_settings codebookSettings;
       ImageScannerSettings scannerSettings;
       CSVMDataset_Settings datasetSettings;
-      
+      ClusterAnalyserSettings analyserSettings;
    public:
       void parseDatasetSettings(ifstream& stream);
       void readSettingsFile(string dir);
+      void parseClusterAnalserData(ifstream& stream);
+      void parseCodebookSettings(ifstream& stream);
+      void parseFeatureExtractorSettings(ifstream& stream);
+      void parseImageScannerSettings(ifstream& stream);
    };
 
 }
