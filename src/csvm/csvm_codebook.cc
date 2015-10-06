@@ -4,11 +4,12 @@ using namespace std;
 using namespace csvm;
 
 void Codebook::constructCodebook(vector<Feature> featureset){
-	settings.method = KMeans_Clustering;//LVQ_Clustering;
-   settings.numberVisualWords = 100;
+   settings.method = /*KMeans_Clustering;*/LVQ_Clustering;
+   settings.numberVisualWords = 300;
+   cout << "clustering " << featureset.size() << " features..\n";
    switch(settings.method){
       case LVQ_Clustering:
-         bow = lvq.cluster(featureset, settings.numberVisualWords, 0.02,10);
+         bow = lvq.cluster(featureset, settings.numberVisualWords, 0.02,1);
          break;
       case KMeans_Clustering:
          bow = kmeans.cluster(featureset, 8);

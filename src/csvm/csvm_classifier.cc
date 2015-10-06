@@ -7,6 +7,8 @@ CSVMClassifier::CSVMClassifier(){
    srand(time(NULL));
 }
 
+
+
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
 }
@@ -60,7 +62,7 @@ void CSVMClassifier::constructCodebook(){
   
    int nImages = dataset.getSize();
    
-   for(int im = 0; im < 100; ++im){
+   for(int im = 0; im < nImages; ++im){
       patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % nImages), 10, 8, 8);
       
       features.clear();
@@ -71,7 +73,7 @@ void CSVMClassifier::constructCodebook(){
       pretrainDump.insert(pretrainDump.end(),features.begin(),features.end());
       
    }
-   cout << nPatches << " features extracted\n";
+   cout << pretrainDump.size() << " features extracted\n";
    
    codebook.constructCodebook(pretrainDump);
    

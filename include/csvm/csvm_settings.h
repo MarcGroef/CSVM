@@ -33,6 +33,7 @@ namespace csvm{
       CSVMDataset_Settings datasetSettings;
       ClusterAnalyserSettings analyserSettings;
    public:
+      ~CSVMSettings();
       void parseDatasetSettings(ifstream& stream);
       void readSettingsFile(string dir);
       void parseClusterAnalserData(ifstream& stream);

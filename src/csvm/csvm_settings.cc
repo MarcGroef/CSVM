@@ -3,6 +3,11 @@
 using namespace std;
 using namespace csvm;
 
+CSVMSettings::~CSVMSettings(){
+  free(analyserSettings.rbmSettings.layerSizes);
+  
+  
+}
 
 void CSVMSettings::parseDatasetSettings(ifstream& stream){
 
