@@ -26,11 +26,13 @@ namespace csvm{
    class ClusterAnalyser{
       RBM rbm;
       vector<Feature> images;
-      
+      ClusterAnalyserSettings settings;
    public:
       ClusterAnalyser();
       
       ~ClusterAnalyser();
+      
+      void setSettings(ClusterAnalyserSettings sets);
       void studyFeatures(vector<Feature> features);
    };
 

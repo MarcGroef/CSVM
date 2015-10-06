@@ -7,6 +7,10 @@ ImageScanner::ImageScanner(){
    srand(time(NULL));
 }
 
+void ImageScanner::setSettings(ImageScannerSettings set){
+  settings = set;
+}
+
 vector<Patch> ImageScanner::scanImage(Image* image,unsigned int patchWidth,unsigned int patchHeight,unsigned int xStride,unsigned int yStride){
    vector<Patch> patches((image->getWidth()-patchWidth)*(image->getHeight()-patchHeight));
    

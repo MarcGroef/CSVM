@@ -4,7 +4,7 @@ using namespace std;
 using namespace csvm;
 
 CSVMSettings::~CSVMSettings(){
-  free(analyserSettings.rbmSettings.layerSizes);
+  //free(analyserSettings.rbmSettings.layerSizes);
   
   
 }

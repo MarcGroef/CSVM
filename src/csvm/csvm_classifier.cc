@@ -11,6 +11,8 @@ CSVMClassifier::CSVMClassifier(){
 
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
+   analyser.setSettings(settings.analyserSettings);
+   imageScanner.setSettings(settings.scannerSettings);
 }
 
 void CSVMClassifier::trainRBM(){

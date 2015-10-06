@@ -25,6 +25,7 @@ namespace csvm{
    //The settingsfile should contain all experiment parameters and relative directories of the datasets.
 
    class CSVMSettings{
+     public:
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
       FeatureExtractorSettings featureSettings;
@@ -32,7 +33,7 @@ namespace csvm{
       ImageScannerSettings scannerSettings;
       CSVMDataset_Settings datasetSettings;
       ClusterAnalyserSettings analyserSettings;
-   public:
+   
       ~CSVMSettings();
       void parseDatasetSettings(ifstream& stream);
       void readSettingsFile(string dir);

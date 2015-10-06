@@ -39,6 +39,11 @@ using namespace csvm;
       
    }
    
+   void RBM::setSettings(RBMSettings set){
+      this->settings = set;
+   }
+   
+   
    void RBM::linkDataset(double** data,int nEntries){
       this->data.data = data; 
       this->data.size = nEntries;

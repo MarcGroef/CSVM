@@ -8,6 +8,16 @@ ClusterAnalyser::ClusterAnalyser(){
    
 }
 
+void ClusterAnalyser::setSettings(ClusterAnalyserSettings set){
+   settings = set;
+   switch(settings.method){
+     case CSVM_RBM:
+       rbm.setSettings(settings.rbmSettings);
+       break;
+     
+   }
+}
+
 void ClusterAnalyser::studyFeatures(vector<Feature> features){
    unsigned int nFeatures = features.size();
    unsigned int featureDim = features[0].content.size();
