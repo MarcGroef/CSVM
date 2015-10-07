@@ -7,10 +7,10 @@ using namespace csvm;
       settings.nLayers = 2;
       settings.layerSizes = (int*) malloc(2*sizeof(int));
       assert(settings.layerSizes!=NULL);
-      settings.layerSizes[0] = 100;
+      settings.layerSizes[0] = 300;
       settings.layerSizes[1] = 100;
       settings.learningRate = 0.01;
-      settings.nGibbsSteps = 10;
+      settings.nGibbsSteps = 1;
       
       initLayerStack(&layers,settings.nLayers,settings.layerSizes);
       initStackWeightsRandom(&layers);

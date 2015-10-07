@@ -19,6 +19,7 @@ namespace csvm{
       Feature(int size,double initValue);
       Feature(Feature* f);
       double getDistanceSq(Feature* f);
+      double getManhDist(Feature* f);
   };
   
   

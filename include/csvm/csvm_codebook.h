@@ -1,6 +1,8 @@
 #ifndef CSVM_CODEBOOK_H
 #define CSVM_CODEBOOK_H
 
+#include <cmath>
+
 #include "csvm_feature.h"
 #include "csvm_lvq.h"
 #include "csvm_kmeans.h"

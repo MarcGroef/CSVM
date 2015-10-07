@@ -30,3 +30,17 @@ double Feature::getDistanceSq(Feature* f){
    }
    return distance;
 }
+
+double Feature::getManhDist(Feature* f){
+   if(f->size != size){
+      cout << "csvm::Feature::getDistance() Error! Different feature sizes!\n";
+      exit(-1);
+   }
+   double distance = 0;
+   double dist;
+   for(int dim = 0; dim < size; ++dim){
+      dist = (f->content[dim] - content[dim]);
+      distance += dist >= 0 ? dist : dist*-1 ;
+   }
+   return distance;
+}

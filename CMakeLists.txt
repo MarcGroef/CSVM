@@ -27,6 +27,7 @@ src/csvm/csvm_lvq.cc
 src/csvm/csvm_kmeans.cc
 src/csvm/csvm_cluster_analyser.cc
 src/csvm/csvm_feature_extractor.cc
+src/csvm/csvm_clean_descriptor.cc
 
 ##png library
 src/lodepng/lodepng.cc
@@ -53,7 +54,7 @@ set_target_properties(CSVM PROPERTIES RUNTIME_OUTPUT_DIRECTORY "build/")
 #-Wall instructs g++ the show all compile warnings. There should be no compile warnings.
 #-g causes the linker to link c++ code with the machinecode, such that e.g. valgrind can give directed messeges towards your code, which is nice :)
 
-add_definitions("-Wall -g -O")   
+add_definitions("-Wall -g -O3")   
 
 #link the std math library to the program
 target_link_libraries( CSVM

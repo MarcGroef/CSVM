@@ -35,22 +35,22 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
-# Escaping for special characters.
-EQUALS = =
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/s2055236/CSVM
+CMAKE_SOURCE_DIR = /home/marc/bachelor/CSVM
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/s2055236/CSVM
+CMAKE_BINARY_DIR = /home/marc/bachelor/CSVM
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
-	/usr/bin/cmake -i .
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/s2055236/CSVM/CMakeFiles /home/s2055236/CSVM/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles /home/marc/bachelor/CSVM/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/s2055236/CSVM/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -158,6 +158,30 @@ src/csvm/csvm_classifier.s: src/csvm/csvm_classifier.cc.s
 src/csvm/csvm_classifier.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.s
 .PHONY : src/csvm/csvm_classifier.cc.s
+
+src/csvm/csvm_clean_descriptor.o: src/csvm/csvm_clean_descriptor.cc.o
+.PHONY : src/csvm/csvm_clean_descriptor.o
+
+# target to build an object file
+src/csvm/csvm_clean_descriptor.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_clean_descriptor.cc.o
+.PHONY : src/csvm/csvm_clean_descriptor.cc.o
+
+src/csvm/csvm_clean_descriptor.i: src/csvm/csvm_clean_descriptor.cc.i
+.PHONY : src/csvm/csvm_clean_descriptor.i
+
+# target to preprocess a source file
+src/csvm/csvm_clean_descriptor.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_clean_descriptor.cc.i
+.PHONY : src/csvm/csvm_clean_descriptor.cc.i
+
+src/csvm/csvm_clean_descriptor.s: src/csvm/csvm_clean_descriptor.cc.s
+.PHONY : src/csvm/csvm_clean_descriptor.s
+
+# target to generate assembly for a file
+src/csvm/csvm_clean_descriptor.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_clean_descriptor.cc.s
+.PHONY : src/csvm/csvm_clean_descriptor.cc.s
 
 src/csvm/csvm_cluster_analyser.o: src/csvm/csvm_cluster_analyser.cc.o
 .PHONY : src/csvm/csvm_cluster_analyser.o
@@ -726,6 +750,9 @@ help:
 	@echo "... src/csvm/csvm_classifier.o"
 	@echo "... src/csvm/csvm_classifier.i"
 	@echo "... src/csvm/csvm_classifier.s"
+	@echo "... src/csvm/csvm_clean_descriptor.o"
+	@echo "... src/csvm/csvm_clean_descriptor.i"
+	@echo "... src/csvm/csvm_clean_descriptor.s"
 	@echo "... src/csvm/csvm_cluster_analyser.o"
 	@echo "... src/csvm/csvm_cluster_analyser.i"
 	@echo "... src/csvm/csvm_cluster_analyser.s"

@@ -31,7 +31,7 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberProt
       for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints
          Feature* f = &collection[idx];
          minDist = 9999999999;
-         
+         closestProto = 0;
          //calc distances and closest prototype
          for(size_t proto = 0; proto < numberPrototypes; ++proto){
             

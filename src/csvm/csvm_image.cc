@@ -89,6 +89,8 @@ namespace csvm{
       
    }
    
+  
+   
    void Image::loadImage(string filename){
       string png = ".png";
       

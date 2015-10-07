@@ -5,9 +5,9 @@ nImages 1000
 ClusterAnalyser
 method RBM
 nLayers 2
-layerSizes 10
+layerSizes 100
 learningRate 0.1
-nGibbsSteps 10
+nGibbsSteps 2
 
 Codebook
 method LVQ

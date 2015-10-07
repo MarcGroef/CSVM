@@ -56,7 +56,7 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
-   //c.trainRBM();
+   c.trainRBM();
 
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 

@@ -52,6 +52,7 @@ namespace csvm{
       void setPixel(int x,int y,int channel,unsigned char value);
       int getWidth();
       int getHeight();
+      
       ImageFormat getFormat();
       Image clone();
       Image getROI(int x,int y,int RegionWidth,int RegionHeight);
