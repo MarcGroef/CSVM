@@ -59,7 +59,7 @@ void CSVMClassifier::trainRBM(){
 }
 
 void CSVMClassifier::constructCodebook(){
-   int nPatches = 10;
+   int nPatches = 100;
    pretrainDump.clear();
    pretrainDump.reserve(nPatches * dataset.getSize());
    
