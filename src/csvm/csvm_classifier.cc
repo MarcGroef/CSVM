@@ -51,7 +51,7 @@ void CSVMClassifier::trainRBM(){
          pretrainDump.insert(pretrainDump.end(),features.begin(),features.end());
       }
       cout << "Training RBM batch " << batch/batchSize  <<" out of " << (nImages/batchSize) << " on " << pretrainDump.size() << " features ..\n";
-      analyser.studyFeatures(pretrainDump);
+      analyser.studyFeaturesRBM(pretrainDump);
       pretrainDump.clear();
       dumpAlloced=false;
    }
@@ -59,7 +59,7 @@ void CSVMClassifier::trainRBM(){
 }
 
 void CSVMClassifier::constructCodebook(){
-   int nPatches = 100;
+   int nPatches = 10;
    pretrainDump.clear();
    pretrainDump.reserve(nPatches * dataset.getSize());
    
@@ -70,7 +70,7 @@ void CSVMClassifier::constructCodebook(){
    
   
    int nImages = dataset.getSize();
-   //nImages = 10;
+   nImages = 10;
    for(int im = 0; im < nImages; ++im){
       patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % nImages), nPatches, 8, 8);
       

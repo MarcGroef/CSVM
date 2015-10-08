@@ -8,6 +8,10 @@ ClusterAnalyser::ClusterAnalyser(){
    
 }
 
+ClusterAnalyser::~ClusterAnalyser(){
+   ;
+}
+
 void ClusterAnalyser::setSettings(ClusterAnalyserSettings set){
    settings = set;
    switch(settings.method){
@@ -18,7 +22,7 @@ void ClusterAnalyser::setSettings(ClusterAnalyserSettings set){
    }
 }
 
-void ClusterAnalyser::studyFeatures(vector<Feature> features){
+void ClusterAnalyser::studyFeaturesRBM(vector<Feature> features){
    unsigned int nFeatures = features.size();
    unsigned int featureDim = features[0].content.size();
    cout << "Studying " << nFeatures << " 1 x " << featureDim << " dimensional features\n";
@@ -42,6 +46,17 @@ void ClusterAnalyser::studyFeatures(vector<Feature> features){
    rbm.freeDataset();
 }
 
-ClusterAnalyser::~ClusterAnalyser(){
-   
+void ClusterAnalyser::studyCoocurences(vector<Feature> patchBatch){
+  unsigned int nFeatures = patchBatch.size();
+  unsigned int featDims = patchBatch[0].content.size();
+  
+  for(size_t idx = 0; idx < nFeatures; ++idx){
+    for(size_t idx1 = 0; idx1 < featDims; ++idx1){
+      for(size_t idx2 = idx1; idx2 < featDims; ++idx2){
+	cooc.addCombo(idx1, idx2, patchBatch[idx].content[idx1], patchBatch[idx].content[idx1]);
+      }
+    }
+  }
+  
 }
+
