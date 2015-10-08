@@ -127,7 +127,7 @@ void SVM::y_initialize_regression(DATA *leerdata)
     for (int episode = 0; episode < leerdata[0].tot_data; ++episode) 
     {
         double label =  leerdata[episode].class1;
-        y[0][episode] = label;
+        y[0][episode] = label;													//
     }
 }   
         
@@ -160,7 +160,7 @@ void SVM::alpha_initialize(int tot_data, double SVM_C, bool feature = false)
         for (int episode = 0; episode < tot_data; ++episode)
         {
             if (feature)
-            {
+            {															// Alpha construction.. Lagrange? What? How? Why?
                 alpha_coeff[C][episode] =  (INIT_ALPHA_1 + INIT_ALPHA_2 * drand48()) * SVM_C * INIT_ALPHA; // (INIT_ALPHA is between 0 and 1)
                 alpha_coeff_star[C][episode] =  (INIT_ALPHA_1 + INIT_ALPHA_2 * drand48()) * SVM_C * INIT_ALPHA; // (INIT_ALPHA is between 0 and 1)
                 //alpha_coeff[C][episode] =  (drand48()) * SVM_C * INIT_ALPHA; // (INIT_ALPHA is between 0 and 1)
@@ -821,7 +821,7 @@ void SVM::allocate_datamembers(int num_data)
 double SVM::runExperiment()
 {       
     DATA *data;
-    SIMULATIONS *SIMULTRAIN;
+    SIMULATIONS *SIMULTRAIN;				//mark: a simulation contains a chain of results as well as min/max av and std.dev.
     SIMULATIONS *SIMULTEST;
     SIMULATIONS *SIMULBEST;
     char added[150];
@@ -842,40 +842,41 @@ double SVM::runExperiment()
     double best_test;
     int best_found;
 
-    data = read_data("28.csv");
-    int num_data = data[0].tot_data + 1;
+    data = read_data("28.csv");								// 1024 X 7 FLOAT
+    int num_data = data[0].tot_data + 1;					// read_data also stores an int for the number of entries.
     DATA *leerdata = new DATA[num_data];
     DATA *testdata = new DATA[num_data];
 
     allocate_datamembers(num_data);
 
-    SVM *featureSVM = new SVM[FLAYER_SIZE];
+    SVM *featureSVM = new SVM[FLAYER_SIZE]; 				//Feature Layer Size is set in parameterFile (SVM constructor argument) 
     for (int fnode = 0; fnode != FLAYER_SIZE; ++fnode)
     {
-        featureSVM[fnode] = SVM(parameterFile, true);
+        featureSVM[fnode] = SVM(parameterFile, true);		//featureSVM is an array of SVMs (Feature==true)
         featureSVM[fnode].allocate_datamembers(num_data);
     }
     
-    for (int rep = 0; rep < NR_REP1; ++rep)
+    for (int rep = 0; rep < NR_REP1; ++rep)					//NR_REP1 also paramerFile entry
     {
-        for (int C = 0; C < CLASSES; ++C)
+        for (int C = 0; C < CLASSES; ++C)					//CLASSES defined at top of document
             bias[C] = 0;
 
         if (data != NULL)
             free(data);
-    data = read_data("28.csv");
+    	data = read_data("28.csv");
 
-        best_train = DBL_MAX;
+        best_train = DBL_MAX;								//DBL_MAX is found only in this document...
         leerdata[0].tot_data = 0;
-        testdata[0].tot_data = 0;
-        for (i = 0; i < data[0].tot_data; ++i)
+        testdata[0].tot_data = 0;							//why twice?
+
+        for (i = 0; i < data[0].tot_data; ++i)				//data[0] is used to keep track of total amount in array?
         {
-            if (leerdata[0].tot_data >= (data[0].tot_data * 9 / 10))
-            {
-                testdata[testdata[0].tot_data].class1 = data[i].class1;
+            if (leerdata[0].tot_data >= (data[0].tot_data * 9 / 10))		// This block randomly distributes data[]
+            {																// over testdata[] and leerdata[]
+                testdata[testdata[0].tot_data].class1 = data[i].class1;	
                 for (j = 0; j < NR_FEATURES; ++j)
-                    testdata[testdata[0].tot_data].input[j] = data[i].input[j];
-                ++testdata[0].tot_data;
+                    testdata[testdata[0].tot_data].input[j] = data[i].input[j];		// input[] is array with size
+                ++testdata[0].tot_data;												// NR_FEATURES in Data
             }
             else if (testdata[0].tot_data >= (data[0].tot_data * 1 / 10))
             {
@@ -902,11 +903,12 @@ double SVM::runExperiment()
         
         // INITIALIZE
 
-        double **featureLayer = new double*[leerdata[0].tot_data];
-        for (int feature = 0; feature != leerdata[0].tot_data; ++feature)
-            featureLayer[feature] = new double[FLAYER_SIZE];
+        double **featureLayer = new double*[leerdata[0].tot_data];							// featureLayer: array of arrays of 
+        for (int feature = 0; feature != leerdata[0].tot_data; ++feature)					// doubles, each array representing 
+            featureLayer[feature] = new double[FLAYER_SIZE];								// a feature... layer?
         
-        y_initialize_regression(leerdata);
+        y_initialize_regression(leerdata);									// used once. Fills y[0][...](declared in SVM.h) with
+																			// class1 value from leerData
         
         alpha_initialize(leerdata[0].tot_data,SVM_C);
         for (int fnode = 0; fnode != FLAYER_SIZE; ++fnode)
