@@ -1,0 +1,17 @@
+TO only run the SVM
+
+Use Make
+Then:
+./SVM Score_Bandit....etc.
+
+To optimize parameters
+1) Go to SVM directory
+2) Edit in SIMUL.c where there is the method show_simulations
+make sure the return is on.
+3) go to the PSO/testers directory
+4) Use ./start.sh
+
+in bandit.py you can set the number of CPU cores, currently 16
+at the end of the file
+
+

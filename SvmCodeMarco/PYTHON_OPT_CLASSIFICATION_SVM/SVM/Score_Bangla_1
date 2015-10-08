@@ -1,0 +1,13 @@
+
+algorithm
+alpha                   0.02298982
+beta                    0.20000000
+COST                    0.00000000
+D2                      1.15088939
+SVM_C                   2604.24239359
+ALPHA_ITER              10
+NR_REP1                 1000
+NR_REP2                 28
+EPS                     0.10000000
+SIGMA                   100.0
+INIT_ALPHA              0.30000000
