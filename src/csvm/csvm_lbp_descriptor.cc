@@ -1,7 +1,6 @@
 
 #include <csvm/csvm_lbp_descriptor.h>
-#include <bitset>
-#include <iostream>
+
 
 using namespace std;
 using namespace csvm;
@@ -12,14 +11,16 @@ LBPDescriptor::LBPDescriptor() {
 
 
 //This function implements basic Local Binary Patterns, and returns a feature vector.
-vector< int > LBPDescriptor::getLBP(Patch patch, int channel) {
+Feature LBPDescriptor::getLBP(Patch patch, int channel) {
 
 	int patchWidth = patch.getWidth();
 	int patchHeight = patch.getHeight();
-	const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
+	//const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
 	
-	std::bitset<(8)> pixelFeatures;
-	vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
+	bitset<(8)> pixelFeatures;
+   Feature histogram(256,0);
+   histogram.label = patch.getLabel();
+	//vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
 	//cout << " patch width is: " << patchWidth;
 	//for now 
 
@@ -56,9 +57,9 @@ vector< int > LBPDescriptor::getLBP(Patch patch, int channel) {
 			//transpose pixelfeatures to byte value
 
 			//cout << "test";
-			//cout << histogram[pixelFeatures.to_ulong()] << "	";
+			//cout << pixelFeatures.to_ulong() << "\n";
 
-			histogram[pixelFeatures.to_ulong()] += 1;
+			histogram.content[(int)pixelFeatures.to_ulong()] += 1;
 
 		}
 	}

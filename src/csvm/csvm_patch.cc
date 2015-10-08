@@ -49,3 +49,7 @@ int Patch::getHeight(){
 unsigned char Patch::getGreyPixel(int x, int y){
     return source->getGreyPixel(offsetX+x,offsetY+y);
 }
+
+string Patch::getLabel(){
+   return source->getLabel();
+}

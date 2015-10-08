@@ -1,5 +1,5 @@
 
-#ifndef CSVM_LBP_DECRIPTOR_H
+#ifndef CSVM_LBP_DESCRIPTOR_H
 #define CSVM_LBP_DESCRIPTOR_H
 
 #include <vector>
@@ -8,6 +8,9 @@
 #include "csvm_patch.h"
 #include "csvm_image.h"
 #include "csvm_feature.h"
+
+#include <bitset>
+
 
 using namespace std;
 
@@ -19,7 +22,7 @@ namespace csvm {
 
 	public:
 		LBPDescriptor();
-		vector< int > getLBP(Patch patch, int channel);
+		Feature getLBP(Patch patch, int channel);
 
 	};
 

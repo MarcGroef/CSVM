@@ -20,6 +20,7 @@ namespace csvm{
       int stride;
       int patchWidth;
       int patchHeight;
+      
    };
 
 
@@ -28,6 +29,7 @@ namespace csvm{
       
    public:
       ImageScanner();
+      void setSettings(ImageScannerSettings set);
       vector<Patch> scanImage(Image* image,unsigned int patchWidth,unsigned int patchHeight,unsigned int xStride,unsigned int yStride);
       vector<Patch> getRandomPatches(Image* image, unsigned int nPatches,unsigned int patchWidth, unsigned int patchHeight);
    };

@@ -23,6 +23,7 @@ namespace csvm{
       int getWidth();
       int getHeight();
       unsigned char getGreyPixel(int x,int y);
+      string getLabel();
    };
 }
 #endif

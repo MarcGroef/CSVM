@@ -1,0 +1,25 @@
+Dataset
+method CIFAR10
+nImages 1000
+
+ClusterAnalyser
+method RBM
+nLayers 2
+layerSizes 100
+learningRate 0.1
+nGibbsSteps 2
+
+Codebook
+method LVQ
+nClusters 100
+learningRate 0.1
+
+FeatureExtractor
+method LBP
+
+ImageScanner 
+patchHeight 8
+patchWidth 8
+scanStride 1
+
+

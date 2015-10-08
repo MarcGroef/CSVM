@@ -35,19 +35,22 @@ CMAKE_COMMAND = /usr/bin/cmake
 # The command to remove a file.
 RM = /usr/bin/cmake -E remove -f
 
+# The program to use to edit the cache.
+CMAKE_EDIT_COMMAND = /usr/bin/cmake-gui
+
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/karkov/Documents/Projects/BatProj
+CMAKE_SOURCE_DIR = /home/marc/bachelor/CSVM
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/karkov/Documents/Projects/BatProj
+CMAKE_BINARY_DIR = /home/marc/bachelor/CSVM
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running interactive CMake command-line interface..."
-	/usr/bin/cmake -i .
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -66,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karkov/Documents/Projects/BatProj/CMakeFiles /home/karkov/Documents/Projects/BatProj/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles /home/marc/bachelor/CSVM/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/karkov/Documents/Projects/BatProj/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/marc/bachelor/CSVM/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -156,6 +159,78 @@ src/csvm/csvm_classifier.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_classifier.cc.s
 .PHONY : src/csvm/csvm_classifier.cc.s
 
+src/csvm/csvm_clean_descriptor.o: src/csvm/csvm_clean_descriptor.cc.o
+.PHONY : src/csvm/csvm_clean_descriptor.o
+
+# target to build an object file
+src/csvm/csvm_clean_descriptor.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_clean_descriptor.cc.o
+.PHONY : src/csvm/csvm_clean_descriptor.cc.o
+
+src/csvm/csvm_clean_descriptor.i: src/csvm/csvm_clean_descriptor.cc.i
+.PHONY : src/csvm/csvm_clean_descriptor.i
+
+# target to preprocess a source file
+src/csvm/csvm_clean_descriptor.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_clean_descriptor.cc.i
+.PHONY : src/csvm/csvm_clean_descriptor.cc.i
+
+src/csvm/csvm_clean_descriptor.s: src/csvm/csvm_clean_descriptor.cc.s
+.PHONY : src/csvm/csvm_clean_descriptor.s
+
+# target to generate assembly for a file
+src/csvm/csvm_clean_descriptor.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_clean_descriptor.cc.s
+.PHONY : src/csvm/csvm_clean_descriptor.cc.s
+
+src/csvm/csvm_cluster_analyser.o: src/csvm/csvm_cluster_analyser.cc.o
+.PHONY : src/csvm/csvm_cluster_analyser.o
+
+# target to build an object file
+src/csvm/csvm_cluster_analyser.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cluster_analyser.cc.o
+.PHONY : src/csvm/csvm_cluster_analyser.cc.o
+
+src/csvm/csvm_cluster_analyser.i: src/csvm/csvm_cluster_analyser.cc.i
+.PHONY : src/csvm/csvm_cluster_analyser.i
+
+# target to preprocess a source file
+src/csvm/csvm_cluster_analyser.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cluster_analyser.cc.i
+.PHONY : src/csvm/csvm_cluster_analyser.cc.i
+
+src/csvm/csvm_cluster_analyser.s: src/csvm/csvm_cluster_analyser.cc.s
+.PHONY : src/csvm/csvm_cluster_analyser.s
+
+# target to generate assembly for a file
+src/csvm/csvm_cluster_analyser.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_cluster_analyser.cc.s
+.PHONY : src/csvm/csvm_cluster_analyser.cc.s
+
+src/csvm/csvm_codebook.o: src/csvm/csvm_codebook.cc.o
+.PHONY : src/csvm/csvm_codebook.o
+
+# target to build an object file
+src/csvm/csvm_codebook.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_codebook.cc.o
+.PHONY : src/csvm/csvm_codebook.cc.o
+
+src/csvm/csvm_codebook.i: src/csvm/csvm_codebook.cc.i
+.PHONY : src/csvm/csvm_codebook.i
+
+# target to preprocess a source file
+src/csvm/csvm_codebook.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_codebook.cc.i
+.PHONY : src/csvm/csvm_codebook.cc.i
+
+src/csvm/csvm_codebook.s: src/csvm/csvm_codebook.cc.s
+.PHONY : src/csvm/csvm_codebook.s
+
+# target to generate assembly for a file
+src/csvm/csvm_codebook.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_codebook.cc.s
+.PHONY : src/csvm/csvm_codebook.cc.s
+
 src/csvm/csvm_dataset.o: src/csvm/csvm_dataset.cc.o
 .PHONY : src/csvm/csvm_dataset.o
 
@@ -179,6 +254,54 @@ src/csvm/csvm_dataset.s: src/csvm/csvm_dataset.cc.s
 src/csvm/csvm_dataset.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_dataset.cc.s
 .PHONY : src/csvm/csvm_dataset.cc.s
+
+src/csvm/csvm_feature.o: src/csvm/csvm_feature.cc.o
+.PHONY : src/csvm/csvm_feature.o
+
+# target to build an object file
+src/csvm/csvm_feature.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.o
+.PHONY : src/csvm/csvm_feature.cc.o
+
+src/csvm/csvm_feature.i: src/csvm/csvm_feature.cc.i
+.PHONY : src/csvm/csvm_feature.i
+
+# target to preprocess a source file
+src/csvm/csvm_feature.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.i
+.PHONY : src/csvm/csvm_feature.cc.i
+
+src/csvm/csvm_feature.s: src/csvm/csvm_feature.cc.s
+.PHONY : src/csvm/csvm_feature.s
+
+# target to generate assembly for a file
+src/csvm/csvm_feature.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature.cc.s
+.PHONY : src/csvm/csvm_feature.cc.s
+
+src/csvm/csvm_feature_extractor.o: src/csvm/csvm_feature_extractor.cc.o
+.PHONY : src/csvm/csvm_feature_extractor.o
+
+# target to build an object file
+src/csvm/csvm_feature_extractor.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature_extractor.cc.o
+.PHONY : src/csvm/csvm_feature_extractor.cc.o
+
+src/csvm/csvm_feature_extractor.i: src/csvm/csvm_feature_extractor.cc.i
+.PHONY : src/csvm/csvm_feature_extractor.i
+
+# target to preprocess a source file
+src/csvm/csvm_feature_extractor.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature_extractor.cc.i
+.PHONY : src/csvm/csvm_feature_extractor.cc.i
+
+src/csvm/csvm_feature_extractor.s: src/csvm/csvm_feature_extractor.cc.s
+.PHONY : src/csvm/csvm_feature_extractor.s
+
+# target to generate assembly for a file
+src/csvm/csvm_feature_extractor.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_feature_extractor.cc.s
+.PHONY : src/csvm/csvm_feature_extractor.cc.s
 
 src/csvm/csvm_frequency_matrix.o: src/csvm/csvm_frequency_matrix.cc.o
 .PHONY : src/csvm/csvm_frequency_matrix.o
@@ -276,6 +399,30 @@ src/csvm/csvm_image_scanner.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_image_scanner.cc.s
 .PHONY : src/csvm/csvm_image_scanner.cc.s
 
+src/csvm/csvm_kmeans.o: src/csvm/csvm_kmeans.cc.o
+.PHONY : src/csvm/csvm_kmeans.o
+
+# target to build an object file
+src/csvm/csvm_kmeans.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_kmeans.cc.o
+.PHONY : src/csvm/csvm_kmeans.cc.o
+
+src/csvm/csvm_kmeans.i: src/csvm/csvm_kmeans.cc.i
+.PHONY : src/csvm/csvm_kmeans.i
+
+# target to preprocess a source file
+src/csvm/csvm_kmeans.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_kmeans.cc.i
+.PHONY : src/csvm/csvm_kmeans.cc.i
+
+src/csvm/csvm_kmeans.s: src/csvm/csvm_kmeans.cc.s
+.PHONY : src/csvm/csvm_kmeans.s
+
+# target to generate assembly for a file
+src/csvm/csvm_kmeans.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_kmeans.cc.s
+.PHONY : src/csvm/csvm_kmeans.cc.s
+
 src/csvm/csvm_lbp_descriptor.o: src/csvm/csvm_lbp_descriptor.cc.o
 .PHONY : src/csvm/csvm_lbp_descriptor.o
 
@@ -299,6 +446,30 @@ src/csvm/csvm_lbp_descriptor.s: src/csvm/csvm_lbp_descriptor.cc.s
 src/csvm/csvm_lbp_descriptor.cc.s:
 	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lbp_descriptor.cc.s
 .PHONY : src/csvm/csvm_lbp_descriptor.cc.s
+
+src/csvm/csvm_lvq.o: src/csvm/csvm_lvq.cc.o
+.PHONY : src/csvm/csvm_lvq.o
+
+# target to build an object file
+src/csvm/csvm_lvq.cc.o:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lvq.cc.o
+.PHONY : src/csvm/csvm_lvq.cc.o
+
+src/csvm/csvm_lvq.i: src/csvm/csvm_lvq.cc.i
+.PHONY : src/csvm/csvm_lvq.i
+
+# target to preprocess a source file
+src/csvm/csvm_lvq.cc.i:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lvq.cc.i
+.PHONY : src/csvm/csvm_lvq.cc.i
+
+src/csvm/csvm_lvq.s: src/csvm/csvm_lvq.cc.s
+.PHONY : src/csvm/csvm_lvq.s
+
+# target to generate assembly for a file
+src/csvm/csvm_lvq.cc.s:
+	$(MAKE) -f CMakeFiles/CSVM.dir/build.make CMakeFiles/CSVM.dir/src/csvm/csvm_lvq.cc.s
+.PHONY : src/csvm/csvm_lvq.cc.s
 
 src/csvm/csvm_patch.o: src/csvm/csvm_patch.cc.o
 .PHONY : src/csvm/csvm_patch.o
@@ -579,9 +750,24 @@ help:
 	@echo "... src/csvm/csvm_classifier.o"
 	@echo "... src/csvm/csvm_classifier.i"
 	@echo "... src/csvm/csvm_classifier.s"
+	@echo "... src/csvm/csvm_clean_descriptor.o"
+	@echo "... src/csvm/csvm_clean_descriptor.i"
+	@echo "... src/csvm/csvm_clean_descriptor.s"
+	@echo "... src/csvm/csvm_cluster_analyser.o"
+	@echo "... src/csvm/csvm_cluster_analyser.i"
+	@echo "... src/csvm/csvm_cluster_analyser.s"
+	@echo "... src/csvm/csvm_codebook.o"
+	@echo "... src/csvm/csvm_codebook.i"
+	@echo "... src/csvm/csvm_codebook.s"
 	@echo "... src/csvm/csvm_dataset.o"
 	@echo "... src/csvm/csvm_dataset.i"
 	@echo "... src/csvm/csvm_dataset.s"
+	@echo "... src/csvm/csvm_feature.o"
+	@echo "... src/csvm/csvm_feature.i"
+	@echo "... src/csvm/csvm_feature.s"
+	@echo "... src/csvm/csvm_feature_extractor.o"
+	@echo "... src/csvm/csvm_feature_extractor.i"
+	@echo "... src/csvm/csvm_feature_extractor.s"
 	@echo "... src/csvm/csvm_frequency_matrix.o"
 	@echo "... src/csvm/csvm_frequency_matrix.i"
 	@echo "... src/csvm/csvm_frequency_matrix.s"
@@ -594,9 +780,15 @@ help:
 	@echo "... src/csvm/csvm_image_scanner.o"
 	@echo "... src/csvm/csvm_image_scanner.i"
 	@echo "... src/csvm/csvm_image_scanner.s"
+	@echo "... src/csvm/csvm_kmeans.o"
+	@echo "... src/csvm/csvm_kmeans.i"
+	@echo "... src/csvm/csvm_kmeans.s"
 	@echo "... src/csvm/csvm_lbp_descriptor.o"
 	@echo "... src/csvm/csvm_lbp_descriptor.i"
 	@echo "... src/csvm/csvm_lbp_descriptor.s"
+	@echo "... src/csvm/csvm_lvq.o"
+	@echo "... src/csvm/csvm_lvq.i"
+	@echo "... src/csvm/csvm_lvq.s"
 	@echo "... src/csvm/csvm_patch.o"
 	@echo "... src/csvm/csvm_patch.i"
 	@echo "... src/csvm/csvm_patch.s"

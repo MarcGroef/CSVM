@@ -68,7 +68,7 @@ using namespace csvm;
       }
       
       delete[] block;
-      cout << dir+" loaded succesfully!\n";
+      
    }
    
    Image CIFAR10::getImage(int index){

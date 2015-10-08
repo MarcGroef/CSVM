@@ -3,6 +3,7 @@
 #include <iostream>
 #include <time.h>
 
+
 using namespace csvm;
 using namespace std;
 
@@ -51,24 +52,14 @@ int main(int argc,char**argv){
    cout << nImages << " images loaded.\n";
    
    //measure cpu time
+   cout << "Start timing\n";
    time_t time0 = clock();
    
-   for(size_t idx = 0; idx < nImages; ++idx){
-      newPatches = scanner.scanImage(c.dataset.getImagePtr(idx),8,8,1,1);
-      patches.insert(patches.end(),newPatches.begin(),newPatches.end());
-      
-   }
-   unsigned long nPatches = patches.size();
-   for(size_t idx = 0; idx < nPatches; ++idx)
-     localBinPat.getLBP(patches[idx], 0);
-   //print number of patches and time difference
-   cout << patches.size() << " patches collected! in " << (double)(clock() - time0)/1000  << " ms\n";
-   vector<int> v = localBinPat.getLBP(patches[2], 0);
-   for (int index =0 ; index < (int)(v.size());++index) {
-	   cout << "v[" << index << "] = " << v[index] << " \n";
-   }
-   
-   
+   c.constructCodebook();
+   //c.trainRBM();
+
+   cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
+
    return 0;
 }
 
