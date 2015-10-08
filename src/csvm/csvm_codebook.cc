@@ -3,6 +3,16 @@
 using namespace std;
 using namespace csvm;
 
+union charInt{
+   unsigned char chars[4];
+   int intVal;
+};
+
+union charDouble{
+   char chars[8];
+   double doubleVal;
+};
+
 void Codebook::constructCodebook(vector<Feature> featureset){
    settings.method = /*KMeans_Clustering;*/LVQ_Clustering;
    settings.numberVisualWords = 300;

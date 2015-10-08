@@ -25,15 +25,7 @@ namespace csvm{
    unsigned int numberVisualWords;
    };
 
-   union charInt{
-   unsigned char chars[4];
-   int intVal;
-   };
    
-   union charDouble{
-      char chars[8];
-      double doubleVal;
-   };
   
   class Codebook{
     Codebook_settings settings;

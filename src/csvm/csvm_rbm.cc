@@ -2,6 +2,16 @@
 
 using namespace std;
 using namespace csvm;
+
+   union charInt{
+      unsigned char chars[4];
+      int intVal;
+   };
+   
+   union charDouble{
+      char chars[8];
+      double doubleVal;
+   };
    
    RBM::RBM(){
       settings.nLayers = 2;
@@ -76,4 +86,45 @@ using namespace csvm;
       }
       flowUp(&layers);
       return getOutput();
+   }
+   
+   void RBM::exportNetwork(string filename){
+   /* Format:
+    * 4 bytes: int : number of layers
+    * for each of layer: 4 bytes int layerSize;
+    * 
+    *
+    */
+   charDouble fancyDouble;
+   charInt fancyInt;
+   
+   ofstream file(filename.c_str(), ios::out | ios::binary);
+   
+   
+   //write number of layers
+   fancyInt.intVal = settings.nLayers;
+   for(size_t idx = 0; idx < 4; ++idx){
+      file << fancyInt.chars[idx];      
+   }
+   //write layer sizes
+   for(size_t layer = 0; layer < (unsigned int)settings.nLayers; ++layer){
+      fancyInt.intVal = settings.layerSizes[layer];
+      for(size_t idx = 0; idx < 4; ++idx){
+         file << fancyInt.chars[idx];    
+      }
+   }
+   //write weights 
+   
+   for(size_t layer = 0; layer < (unsigned int)settings.nLayers - 1; ++layer){
+      for(size_t lIdx1 = 0; lIdx1 < (unsigned int) settings.layerSizes[layer]; ++lIdx1){  //source neuron index
+         for(size_t lIdx2 = 0; lIdx2 < (unsigned int)settings.layerSizes[layer]; ++lIdx2){  //target neuron
+            fancyDouble.doubleVal = layers.weights[layer][lIdx1][lIdx2];
+            for(size_t idxt = 0; idxt < 8; ++ idxt)
+               file << fancyDouble.chars[idxt];
+         }
+      }
+   }
+   
+   file.close();
+      
    }

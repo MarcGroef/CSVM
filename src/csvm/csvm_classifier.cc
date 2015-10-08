@@ -23,7 +23,7 @@ void CSVMClassifier::trainRBM(){
    vector<Feature> features;
    bool dumpAlloced = false;
    pretrainDump.clear();
-   unsigned int nPatches;
+   unsigned int nPatches = 0;
    
    //nImages = 100;
    unsigned int batchSize = 1000;
@@ -67,7 +67,7 @@ void CSVMClassifier::importCodebook(string filename){
 }
 
 void CSVMClassifier::constructCodebook(){
-   int nPatches = 10;
+   unsigned int nPatches = 10;
    pretrainDump.clear();
    pretrainDump.reserve(nPatches * dataset.getSize());
    
@@ -77,9 +77,9 @@ void CSVMClassifier::constructCodebook(){
    features.reserve(nPatches);
    
   
-   int nImages = dataset.getSize();
+   unsigned int nImages = dataset.getSize();
    nImages = 10;
-   for(int im = 0; im < nImages; ++im){
+   for(size_t im = 0; im < nImages; ++im){
       patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % nImages), nPatches, 8, 8);
       
       features.clear();

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <assert.h>
 #include <iostream>
+#include <fstream>
 
 extern "C"{
 #include <dnn/dnn.h>
@@ -46,6 +47,7 @@ namespace csvm{
       void train();
       double* getOutput();
       double* run(double* input);
+      void exportNetwork(string filename);
    };
    
    
