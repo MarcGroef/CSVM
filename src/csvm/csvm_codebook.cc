@@ -43,15 +43,81 @@ Feature Codebook::getActivations(Feature* f){
    return act;
 }
 
+void Codebook::importCodebook(string filename){
+   charInt fancyInt;
+   charDouble fancyDouble;
+   unsigned int typesize;
+   unsigned int featDims;
+   
+   ifstream file(filename.c_str(), ios::in | ios::binary);
+   //read first int (nVisualWords)
+   for(size_t idx = 0; idx < 4; ++idx){
+      file >> fancyInt.chars[idx];
+   }
+   settings.numberVisualWords = fancyInt.intVal;
+   
+   //read typesize
+   file >> typesize;
+   
+   //read feature dimensionality
+   for(size_t idx = 0; idx < 4; ++idx){
+      file >> fancyInt.chars[idx];
+   }
+   featDims = fancyInt.intVal;
+   //allocate space
+   
+   bow.reserve(settings.numberVisualWords);
+   //read centroids
+   
+   for (size_t idx = 0; idx < settings.numberVisualWords; ++idx){
+      Feature f(featDims,0);
+      for(size_t featIdx = 0; featIdx < featDims; ++featIdx){
+         for(size_t doubleIdx = 0; doubleIdx < 8; ++doubleIdx)
+            file >> fancyDouble.chars[doubleIdx];
+         f.content[featIdx] = fancyDouble.doubleVal;
+         
+      }
+   }
+   
+   file.close();
+}
+
 void Codebook::exportCodebook(string filename){
    /* codebook file conventions:
-      first one line with one number, representing the number of visual words
-      seconds, one line with one number: the number of bytes of each visual words.
-      third a little-endian binary dump of the visual words.
+      first one line with one number (4 bytes), representing the number of visual words
+      second, the size of the primitive-types of each value (double, float etc)  (1 byte)
+      third, one line with one number: the number of dimensions of each visual words. (4 bytes)
+      fourth a little-endian binary dump of the visual words.
+      
+      No seperator characters are used
    */
    
+   charInt fancyInt;
+   charDouble fancyDouble;
    
    
    
+   unsigned int wordSize = bow[0].content.size();
    
+   ofstream file(filename.c_str(), ios::out | ios::binary);
+   
+   //write nr visual words
+   fancyInt.intVal = settings.numberVisualWords;
+   file << fancyInt.chars[0] << fancyInt.chars[1] << fancyInt.chars[2] << fancyInt.chars[3];
+   //type size
+   file << (unsigned char) 8;
+   
+   //dimensionality of features
+   
+   fancyInt.intVal = wordSize;
+   file << fancyInt.chars[0] << fancyInt.chars[1] << fancyInt.chars[2] << fancyInt.chars[3];
+   
+   for(size_t word = 0; word < settings.numberVisualWords; ++word){
+      for (size_t val = 0; val < wordSize; ++val){
+         fancyDouble.doubleVal = bow[word].content[val];
+         file << fancyDouble.chars[0] << fancyDouble.chars[1] << fancyDouble.chars[2] << fancyDouble.chars[3] << fancyDouble.chars[4] << fancyDouble.chars[5] << fancyDouble.chars[6] << fancyDouble.chars[7];
+      }
+   } 
+   
+   file.close();
 }

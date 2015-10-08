@@ -58,6 +58,14 @@ void CSVMClassifier::trainRBM(){
    features.clear();
 }
 
+void CSVMClassifier::exportCodebook(string filename){
+   codebook.exportCodebook(filename);
+}
+
+void CSVMClassifier::importCodebook(string filename){
+   codebook.importCodebook(filename);
+}
+
 void CSVMClassifier::constructCodebook(){
    int nPatches = 10;
    pretrainDump.clear();

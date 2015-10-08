@@ -2,6 +2,8 @@
 #define CSVM_CODEBOOK_H
 
 #include <cmath>
+#include <iostream>
+#include <fstream>
 
 #include "csvm_feature.h"
 #include "csvm_lvq.h"
@@ -10,18 +12,28 @@
 using namespace std;
 namespace csvm{
   
-  enum CodebookClusterMethod{
-    LVQ_Clustering = 0,
-    KMeans_Clustering = 1,
-    
-  };
-  
-  struct Codebook_settings{
-    LVQ_Settings lvqSettings;
-    KMeans_settings kmeansSettings;
-    CodebookClusterMethod method;
-    unsigned int numberVisualWords;
-  };
+   enum CodebookClusterMethod{
+   LVQ_Clustering = 0,
+   KMeans_Clustering = 1,
+
+   };
+
+   struct Codebook_settings{
+   LVQ_Settings lvqSettings;
+   KMeans_settings kmeansSettings;
+   CodebookClusterMethod method;
+   unsigned int numberVisualWords;
+   };
+
+   union charInt{
+   unsigned char chars[4];
+   int intVal;
+   };
+   
+   union charDouble{
+      char chars[8];
+      double doubleVal;
+   };
   
   class Codebook{
     Codebook_settings settings;
@@ -32,6 +44,7 @@ namespace csvm{
     void constructCodebook(vector<Feature> featureset);
     Feature getActivations(Feature* f);
     void exportCodebook(string filename);
+    void importCodebook(string filename);
   };
   
 }
