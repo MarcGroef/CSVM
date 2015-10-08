@@ -4,21 +4,23 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-
+#include <vector>
    using namespace std;
    
    namespace csvm{
       
       
       class FreqMatrix{
-         double* triangle;
+         vector<double> triangle;
          int size;
          double mean;
          double stddev;
 	 double totalInput;
       public:
         FreqMatrix(int size) ;
+	FreqMatrix();
         ~FreqMatrix();
+	void reserve(int size);
         int getTriangleIndex(int i, int j);
         void setZeros();
         void addCombo(int wordA, int wordB, double activationA, double activationB);

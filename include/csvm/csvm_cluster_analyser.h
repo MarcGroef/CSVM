@@ -25,6 +25,7 @@ namespace csvm{
   
    class ClusterAnalyser{
       RBM rbm;
+      FreqMatrix cooc;
       vector<Feature> images;
       ClusterAnalyserSettings settings;
    public:
@@ -33,7 +34,8 @@ namespace csvm{
       ~ClusterAnalyser();
       
       void setSettings(ClusterAnalyserSettings sets);
-      void studyFeatures(vector<Feature> features);
+      void studyFeaturesRBM(vector<Feature> features);
+      void studyCoocurences(vector<Feature> patchBatch);
    };
 
 }

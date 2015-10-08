@@ -3,16 +3,24 @@
 using namespace std;
 using namespace csvm;
 
+FreqMatrix::FreqMatrix(){
+  
+}
+
 FreqMatrix::FreqMatrix(int nWords){
-   size = (int)(0.5 * (nWords * nWords + nWords));
-   triangle = new double[size]();
-   totalInput = 0;
+   reserve(nWords);
 }
 
 FreqMatrix::~FreqMatrix(){
-   delete triangle;  
+
 }
 
+void FreqMatrix::reserve(int nWords){
+  size = (int)(0.5 * (nWords * nWords + nWords));
+  triangle.reserve(size);
+  totalInput = 0;
+  setZeros();
+}
 
 int FreqMatrix::getTriangleIndex(int i, int j){
    if(i > size - 1 || j > size - 1){
@@ -36,7 +44,7 @@ void FreqMatrix::addCombo(int wordA, int wordB, double activationA, double activ
 }
 
 void FreqMatrix::normalize(){
-   for(int i = 0; i< size; i++){
+   for(int i = 0; i < size; i++){
       triangle[i] /= totalInput;
    }
 }
