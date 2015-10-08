@@ -48,6 +48,7 @@ namespace csvm{
       double* getOutput();
       double* run(double* input);
       void exportNetwork(string filename);
+      void importNetwork(string filename);
    };
    
    

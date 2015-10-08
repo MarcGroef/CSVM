@@ -66,6 +66,13 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
+void CSVMClassifier::importNetwork(string filename){
+   //clusterAnalyser.importNetwork(string filename);
+}
+
+void CSVMClassifier::exportNetwork(string filename){
+   //clusterAnalyser.exportNetwork(filename);
+}
 void CSVMClassifier::constructCodebook(){
    unsigned int nPatches = 10;
    pretrainDump.clear();

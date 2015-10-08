@@ -32,6 +32,8 @@ namespace csvm{
       void constructCodebook();
       void exportCodebook(string filename);
       void importCodebook(string filename);
+      void exportNetwork(string filename);
+      void importNetwork(string filename);
       void trainRBM();
       //CSVMClassifier();
       

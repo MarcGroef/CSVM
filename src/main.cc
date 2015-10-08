@@ -4,6 +4,14 @@
 #include <time.h>
 
 
+/*Optimze technique
+ * use -pg compile flag
+ * run as :
+ * gprof -bp <program name > <output name>
+ * 
+ * 
+ */
+
 using namespace csvm;
 using namespace std;
 
