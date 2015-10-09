@@ -27,7 +27,7 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberProt
    double minDist;
    int closestProto;
    for(int epoch = 0; epoch < epochs ; ++epoch){
-      cout << "Epoch " << epoch << "\n";
+      //cout << "Epoch " << epoch << "\n";
       for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints
          Feature* f = &collection[idx];
          minDist = 9999999999;
@@ -46,9 +46,20 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberProt
          
          //update prototype
          
+         //move closest proto towards vector
          for(size_t dim = 0; dim < featureDims; ++dim){
             dictionary[closestProto].content[dim] += learningRate * (f->content[dim] - dictionary[closestProto].content[dim]);
                
+         }
+         
+         //move other prototypes away from vector
+         for(size_t proto = 0; proto < numberPrototypes; ++proto){
+            if(proto != closestProto){
+               for(size_t dim = 0; dim < featureDims; ++dim){
+                  dictionary[proto].content[dim] -= learningRate * (f->content[dim] - dictionary[proto].content[dim]);
+                     
+               }
+            }
          }
          
          

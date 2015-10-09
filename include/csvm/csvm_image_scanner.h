@@ -10,7 +10,7 @@
 #include "csvm_image.h"
 #include "csvm_patch.h"
 
-
+//TODO: Add zero padding while scanning.
 
 using namespace std;
 

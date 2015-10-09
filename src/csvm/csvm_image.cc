@@ -252,11 +252,19 @@ namespace csvm{
       return im;
    }
    
+   void Image::setLabelId(int id){
+      labelId = id;
+   }
+   
+   int Image::getLabelId(){
+      return labelId;
+   }
+   
    unsigned char Image::getGreyPixel(int x, int y){
       return 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
    }
    
-   //------------------------------- private methods ------------------------------------
+   //------------------------------- private methods ------------------------------------//
    
    Image Image::UCHAR_RGB2UCHAR_RGBA(){
       Image newImage(width,height,CSVM_IMAGE_UCHAR_RGBA);

@@ -19,9 +19,9 @@ using namespace csvm;
             }
          }
       }
-
-      im.setLabel(labels[label]);
       
+      im.setLabel(labels[label]);
+      im.setLabelId(label);
       return im;
       
    }

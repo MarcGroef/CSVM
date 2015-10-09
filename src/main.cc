@@ -63,10 +63,10 @@ int main(int argc,char**argv){
    cout << "Start timing\n";
    time_t time0 = clock();
    
-   //c.constructCodebook();
-   //c.exportCodebook("codebook.bin");
-   //c.trainRBM();
-   c.importCodebook("codebook.bin");
+   c.constructCodebook();
+   c.exportCodebook("codebook.bin");
+
+   //c.importCodebook("codebook.bin");
 
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 

@@ -28,7 +28,7 @@ void ClusterAnalyser::studyFeaturesRBM(vector<Feature> features){
    cout << "Studying " << nFeatures << " 1 x " << featureDim << " dimensional features\n";
    double** data;
    
-   
+  
    data = (double**) malloc(nFeatures * sizeof(double*));
    assert(data!=NULL);
    

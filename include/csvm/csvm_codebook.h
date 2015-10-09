@@ -31,10 +31,12 @@ namespace csvm{
     Codebook_settings settings;
     LVQ lvq;
     KMeans kmeans;
-    vector<Feature> bow;
+    vector< vector<Feature> > bow;
+    unsigned int nClasses;
   public:
-    void constructCodebook(vector<Feature> featureset);
-    Feature getActivations(Feature* f);
+    Codebook();
+    void constructCodebook(vector<Feature> featureset,int labelId);
+    vector<Feature> getActivations(vector<Feature> features);
     void exportCodebook(string filename);
     void importCodebook(string filename);
   };
