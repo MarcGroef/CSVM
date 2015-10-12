@@ -116,7 +116,7 @@ void Codebook::exportCodebook(string filename){
     * first, the number of classes(int4)
     * second one line with one number (4 bytes), representing the number of visual words
     * third, the size of the primitive-types of each value (double, float etc)  (1 byte)
-    * fourth, one line with one number: the number of dimensions of each visual words. (4 bytes)
+    * fourth,  one number: the number of dimensions of each visual words. (4 bytes)
     * for each class 
     *    a little-endian binary dump of the visual words.
     *  

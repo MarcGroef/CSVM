@@ -50,7 +50,7 @@ void CSVMClassifier::constructCodebook(){
       //cout << "space reserved\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
-         patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % nImages), nPatches, 8, 8);
+         patches = imageScanner.getRandomPatches(dataset.getImagePtr(im), nPatches, 8, 8);
          
          features.clear();
          //cout << "extracting patches..\n";
