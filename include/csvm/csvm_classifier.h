@@ -12,6 +12,7 @@
 #include "csvm_cluster_analyser.h"
 #include "csvm_feature.h"
 #include "csvm_feature_extractor.h"
+#include "csvm_svm.h"
 
 using namespace std;
 namespace csvm{
@@ -24,6 +25,7 @@ namespace csvm{
       FeatureExtractor featExtr;
       vector< vector<Feature> > pretrainDump;
       vector< Feature> pretrainDump1D;
+      vector< SVM > svms;
    public:
       //public vars
       CSVMDataset dataset;
@@ -33,6 +35,8 @@ namespace csvm{
       void constructCodebook();
       void exportCodebook(string filename);
       void importCodebook(string filename);
+      void trainSVMs();
+      void initSVMs(int datasetSize);
       //CSVMClassifier();
       
       
