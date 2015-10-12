@@ -25,7 +25,7 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int numberProt
    dictionary = initPrototypes(collection,numberPrototypes);
    
    double minDist;
-   int closestProto;
+   unsigned int closestProto;
    for(int epoch = 0; epoch < epochs ; ++epoch){
       //cout << "Epoch " << epoch << "\n";
       for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints

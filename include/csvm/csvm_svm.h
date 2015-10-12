@@ -22,14 +22,16 @@ namespace csvm{
     vector <double> alphaData;
     vector<vector <double> > alphaClusters;
     double learningRate;
-    
-    double updateAlphaData(vector<Feature> data, unsigned int dataIdx, Codebook* cb, unsigned int labelId);
+    unsigned int classId;
+    double updateAlphaData(vector<Feature> data, unsigned int dataIdx, Codebook* cb);
     double kernel(Feature data, Feature centroid);
+    vector <double> finalDataWeights;
+    unsigned int dataDims;
   public:
      
-     SVM(int datasetSize, int nClusters, double learningRate);
+     SVM(int datasetSize, int nClusters, double learningRate, unsigned labelId, int dataDims);
      void train(vector<Feature> data, Codebook* cb);
-     
+     int classify(Feature f);
       
   };
    
