@@ -5,8 +5,16 @@ using namespace csvm;
 
 CSVMClassifier::CSVMClassifier(){
    srand(time(NULL));
+   
 }
 
+void CSVMClassifier::initSVMs(int datasetSize){
+   double learningRate = 0.05;
+   svms.reserve(codebook.getNClasses());
+   for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
+      svms[svmIdx] = SVM(datasetSize, codebook.getNClasses() * codebook.getNCentroids(), learningRate, svmIdx, codebook.getNCentroids());
+   }
+}
 
 
 void CSVMClassifier::setSettings(string settingsFile){
@@ -64,8 +72,9 @@ void CSVMClassifier::constructCodebook(){
       codebook.constructCodebook(pretrainDump[cl],cl);
       cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << nPatches << " patches each: " << nPatches * nImages<<" in total.\n";
    }
-   
-   
-   
+  
+}
+
+void CSVMClassifier::trainSVMs(){
    
 }

@@ -28,6 +28,7 @@ src/csvm/csvm_kmeans.cc
 src/csvm/csvm_cluster_analyser.cc
 src/csvm/csvm_feature_extractor.cc
 src/csvm/csvm_clean_descriptor.cc
+src/csvm/csvm_svm.cc
 
 ##png library
 src/lodepng/lodepng.cc

@@ -15,9 +15,13 @@ namespace csvm{
   public:
       vector< double> content;
       string label;
+      int labelId;
       int size;
       Feature(int size,double initValue);
       Feature(Feature* f);
+      
+      void setLabelId(int id);
+      int getLabelId();
       double getDistanceSq(Feature* f);
       double getManhDist(Feature* f);
   };
