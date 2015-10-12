@@ -1,8 +1,10 @@
 #ifndef CSVM_SVM_H
 #define CSVM_SVM_H
 
+#include <vector>
+#include <iostream>
 #include "csvm_feature.h"
-
+#include "csvm_codebook.h"
 
 using namespace std;
 namespace csvm{
@@ -10,35 +12,23 @@ namespace csvm{
   
   
   struct SVM_Settings{
-    double alpha; 
-    double beta;
-    double COST;
-    double D2;
-    double SVM_C;
-    double EPS;
-    double SIGMA;
-    double INIT_ALPHA;
-    int ALPHA_ITER;
-    int NR_REP1;
-    int NR_REP2;
+
   };
    
   class SVM{
       
     //State variables
     SVM_Settings settings;
+    vector <double> alphaData;
+    vector<vector <double> > alphaClusters;
+    double learningRate;
     
-    string parameterFile;
-    
-      
+    double updateAlphaData(vector<Feature> data, unsigned int dataIdx, Codebook* cb, unsigned int labelId);
+    double kernel(Feature data, Feature centroid);
   public:
      
-     
-    void setSettings(double alpha, double beta, double COST, double D2, double SVM_C, double EPS,
-      double SIGMA, double INIT_ALPHA, int ALPHA_ITER, int NR_REP1, int NR_REP2);
-    
-    double classify(Feature feat);  //classify the feature and return output
-    void train(Feature feat);
+     SVM(int datasetSize, int nClusters, double learningRate);
+     void train(vector<Feature> data, Codebook* cb);
      
       
   };

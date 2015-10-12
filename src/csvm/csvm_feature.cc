@@ -17,6 +17,13 @@ Feature::Feature(Feature* f){
    
 }
 
+void Feature::setLabelId(int id){
+   labelId = id;
+}
+
+int Feature::getLabelId(){
+   return labelId;
+}
 double Feature::getDistanceSq(Feature* f){
    if(f->size != size){
       cout << "csvm::Feature::getDistance() Error! Different feature sizes!\n";

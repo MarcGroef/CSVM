@@ -18,6 +18,10 @@ Codebook::Codebook(){
    bow.resize(nClasses);
 }
 
+Feature Codebook::getCentroid(int cl, int centrIdx){
+   return bow[cl][centrIdx];
+}
+
 void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
    settings.method = /*KMeans_Clustering;*/LVQ_Clustering;
    settings.numberVisualWords = 300;
@@ -32,8 +36,12 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
    
 }
 
-
-
+unsigned int Codebook::getNClasses(){
+   return nClasses;
+}
+unsigned int Codebook::getNCentroids(){
+   return settings.numberVisualWords;
+}
 vector<Feature> Codebook::getActivations(vector<Feature> features){
    vector<Feature> activations(nClasses,Feature(settings.numberVisualWords * nClasses, 0));
    
