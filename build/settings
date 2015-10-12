@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 10000
+nImages 100
 
 ClusterAnalyser
 method RBM

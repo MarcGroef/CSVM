@@ -66,8 +66,11 @@ int main(int argc,char**argv){
    //c.constructCodebook();
    //c.exportCodebook("codebook.bin");
 
-   //c.importCodebook("codebook.bin");
+   c.importCodebook("codebook.bin");
 
+   //svm stuff
+   c.initSVMs();
+   c.trainSVMs();
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;

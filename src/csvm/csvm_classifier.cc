@@ -8,11 +8,11 @@ CSVMClassifier::CSVMClassifier(){
    
 }
 
-void CSVMClassifier::initSVMs(int datasetSize){
+void CSVMClassifier::initSVMs(){
    double learningRate = 0.05;
    svms.reserve(codebook.getNClasses());
    for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
-      svms[svmIdx] = SVM(datasetSize, codebook.getNClasses() * codebook.getNCentroids(), learningRate, svmIdx, codebook.getNCentroids());
+      svms.push_back(SVM(dataset.getSize(), codebook.getNClasses() * codebook.getNCentroids(), learningRate, svmIdx, codebook.getNCentroids()));
    }
 }
 
@@ -72,9 +72,44 @@ void CSVMClassifier::constructCodebook(){
       codebook.constructCodebook(pretrainDump[cl],cl);
       cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << nPatches << " patches each: " << nPatches * nImages<<" in total.\n";
    }
-  
+   pretrainDump.clear();
 }
 
 void CSVMClassifier::trainSVMs(){
+   unsigned int datasetSize = dataset.getSize();
+   vector < vector < Feature > > datasetActivations;
+   vector < Feature > dataFeatures;
+   vector < Patch > patches;
    
+   //allocate space for more vectors
+   datasetActivations.reserve(datasetSize);
+   
+   //for all trainings imagages:
+   for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
+      
+      //extract patches
+      patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx), 8, 8, 1, 1);
+      
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+      patches.clear();
+      
+      Feature* f = &dataFeatures[0];
+      
+      //cout << "datacontent: " << f->size << endl;
+      //get cluster activations for the features
+      //cout << "pushing back " << codebook.getActivations(dataFeatures)[0].content.size() << "act feats\n";
+      datasetActivations.push_back(codebook.getActivations(dataFeatures));
+   }
+   cout << "I can get activations me!\n";
+   //train the SVMs with the gained activations
+   for(size_t svmIdx = 0; svmIdx < svms.size(); ++svmIdx){
+      svms[svmIdx].train(datasetActivations);
+   }
 }

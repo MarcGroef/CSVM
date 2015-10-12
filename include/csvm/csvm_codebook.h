@@ -13,16 +13,16 @@ using namespace std;
 namespace csvm{
   
    enum CodebookClusterMethod{
-   LVQ_Clustering = 0,
-   KMeans_Clustering = 1,
+      LVQ_Clustering = 0,
+      KMeans_Clustering = 1,
 
    };
 
    struct Codebook_settings{
-   LVQ_Settings lvqSettings;
-   KMeans_settings kmeansSettings;
-   CodebookClusterMethod method;
-   unsigned int numberVisualWords;
+      LVQ_Settings lvqSettings;
+      KMeans_settings kmeansSettings;
+      CodebookClusterMethod method;
+      unsigned int numberVisualWords;
    };
 
    

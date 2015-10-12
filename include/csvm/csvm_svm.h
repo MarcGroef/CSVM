@@ -20,18 +20,19 @@ namespace csvm{
     //State variables
     SVM_Settings settings;
     vector <double> alphaData;
-    vector<vector <double> > alphaClusters;
+    vector<vector <double> > alphaCentroids;
     double learningRate;
     unsigned int classId;
-    double updateAlphaData(vector<Feature> data, unsigned int dataIdx, Codebook* cb);
-    double kernel(Feature data, Feature centroid);
+    double updateAlphaData(vector<Feature> clActivations, unsigned int dataIdx);
+    double updateAlphaCentroid(vector< vector< Feature> > clActivations, unsigned int centrClass, int centr);
+    
     vector <double> finalDataWeights;
     unsigned int dataDims;
   public:
      
-     SVM(int datasetSize, int nClusters, double learningRate, unsigned labelId, int dataDims);
-     void train(vector<Feature> data, Codebook* cb);
-     int classify(Feature f);
+     SVM(int datasetSize, int nClusters, double learningRate, unsigned int labelId, int dataDims);
+     void train(vector< vector<Feature> > activations);
+     int classify(vector<Feature> f, Codebook* cb);
       
   };
    
