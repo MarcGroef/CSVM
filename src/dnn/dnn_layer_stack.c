@@ -28,7 +28,7 @@ void initLayerStack(LayerStack* net,int nLayers,int* layerSizes){
 		net->layers[i] = malloc(layerSizes[i]*sizeof(double));
 		assert(net->layers[i]!=NULL);
 		net->layerSizes[i] = layerSizes[i];
-		printf("layersizes[%d] = %d\n",i,layerSizes[i]);
+		//printf("layersizes[%d] = %d\n",i,layerSizes[i]);
 	}
 	net->weights = malloc((net->nLayers-1)*sizeof(double**));
 	assert(net->weights!=NULL);

@@ -30,6 +30,7 @@ namespace csvm{
       
       bool hasLabel;
       string label;
+      unsigned int labelId;
       
       //private methods:
       Image UCHAR_RGB2UCHAR_RGBA();
@@ -58,7 +59,9 @@ namespace csvm{
       Image getROI(int x,int y,int RegionWidth,int RegionHeight);
       bool isLabeled();
       string getLabel();
+      int getLabelId();
       void setLabel(string l);
+      void setLabelId(int id);
       Image convertTo(ImageFormat f);
      
    };

@@ -4,6 +4,14 @@
 #include <time.h>
 
 
+/*Optimze technique
+ * use -pg compile flag
+ * run as :
+ * gprof -bp <program name > <output name>
+ * 
+ * 
+ */
+
 using namespace csvm;
 using namespace std;
 
@@ -56,7 +64,9 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
-   //c.trainRBM();
+   c.exportCodebook("codebook.bin");
+
+   //c.importCodebook("codebook.bin");
 
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 

@@ -22,7 +22,8 @@ namespace csvm{
       ImageScanner imageScanner;
       ClusterAnalyser analyser;
       FeatureExtractor featExtr;
-      vector<Feature> pretrainDump;
+      vector< vector<Feature> > pretrainDump;
+      vector< Feature> pretrainDump1D;
    public:
       //public vars
       CSVMDataset dataset;
@@ -30,7 +31,8 @@ namespace csvm{
       CSVMClassifier();
       void setSettings(string settingsFile);
       void constructCodebook();
-      void trainRBM();
+      void exportCodebook(string filename);
+      void importCodebook(string filename);
       //CSVMClassifier();
       
       

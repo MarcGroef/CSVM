@@ -4,6 +4,10 @@ using namespace std;
 using namespace csvm;
 
 
+CSVMDataset::CSVMDataset(){
+   settings.nImages = 1000;
+}
+
 void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
    cifar10.readLabels(labelsDir);
    int imDirs = imageDirs.size();
@@ -13,7 +17,8 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
       cifar10.loadImages(imageDirs[i]);
       
    }
-   
+   splitDatasetToClasses();
+   //cout << "dataset split to classes\n";
 }
 
 Image CSVMDataset::getImage(int index){
@@ -26,4 +31,27 @@ Image* CSVMDataset::getImagePtr(int index){
 
 int CSVMDataset::getSize(){
    return cifar10.getSize();
+}
+
+void CSVMDataset::splitDatasetToClasses(){
+   nClasses = 10;
+   trainImagesIdx.clear();
+   trainImagesIdx.resize(nClasses);
+   unsigned int datasetSize = (unsigned int)cifar10.getSize();
+   int id;
+   
+   
+   for(size_t idx = 0; idx < settings.nImages && idx < datasetSize; ++idx){
+      id = (cifar10.getImagePtr(idx))->getLabelId();
+      trainImagesIdx[id].push_back(idx);    
+   }
+   
+}
+
+int CSVMDataset::getNumberClasses(){
+   return nClasses;
+}
+
+int CSVMDataset::getNumberImagesInClass(int labelId){
+   return trainImagesIdx[labelId].size();
 }

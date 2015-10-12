@@ -15,75 +15,57 @@ void CSVMClassifier::setSettings(string settingsFile){
    imageScanner.setSettings(settings.scannerSettings);
 }
 
-void CSVMClassifier::trainRBM(){
-   
-   unsigned int nImages = dataset.getSize();
-   cout << "Collecting RBM data ...\n";
-   vector<Patch> patches;
-   vector<Feature> features;
-   bool dumpAlloced = false;
-   pretrainDump.clear();
-   unsigned int nPatches;
-   
-   //nImages = 100;
-   unsigned int batchSize = 1000;
-   for(size_t batch = 0; batch+batchSize < nImages; batch+= batchSize){
-      cout << "Processing batch " << batch/batchSize << endl;
-      for(size_t idx = batch; idx < batch + batchSize; ++idx){
-         //cout << "processing image " << idx << endl;
-         patches = imageScanner.scanImage(dataset.getImagePtr(idx),8,8,1,1);
-         features.clear();
-         
-         if(!dumpAlloced){
-            nPatches = patches.size();
-            //cout << "allocated " << nPatches << " patches\n";
-            pretrainDump.reserve(batchSize * nPatches);
-            features.reserve(nPatches);
-            dumpAlloced = true;
-         }
-         
-         for(size_t patchIdx = 0; patchIdx < nPatches; ++patchIdx){
-            Feature feat = featExtr.extract(patches[patchIdx]);
-            features.push_back(codebook.getActivations(&feat));
-            
-         }
-         //cout << "inserting " << features.size() << " features to dump\n";
-         pretrainDump.insert(pretrainDump.end(),features.begin(),features.end());
-      }
-      cout << "Training RBM batch " << batch/batchSize  <<" out of " << (nImages/batchSize) << " on " << pretrainDump.size() << " features ..\n";
-      analyser.studyFeaturesRBM(pretrainDump);
-      pretrainDump.clear();
-      dumpAlloced=false;
-   }
-   features.clear();
+
+void CSVMClassifier::exportCodebook(string filename){
+   codebook.exportCodebook(filename);
 }
 
+void CSVMClassifier::importCodebook(string filename){
+   codebook.importCodebook(filename);
+}
+
+
 void CSVMClassifier::constructCodebook(){
-   int nPatches = 10;
-   pretrainDump.clear();
-   pretrainDump.reserve(nPatches * dataset.getSize());
+   unsigned int nPatches = 10;  //number of random patches from each image
+   unsigned int nClasses = dataset.getNumberClasses();
+   
+
    
    vector<Patch> patches;
    vector<Feature> features;
    
    features.reserve(nPatches);
    
-  
-   int nImages = dataset.getSize();
-   nImages = 10;
-   for(int im = 0; im < nImages; ++im){
-      patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % nImages), nPatches, 8, 8);
+   pretrainDump.clear();
+   pretrainDump.resize(nClasses);
+   unsigned int nImages = dataset.getSize();
+   cout << "constructing codebooks for " << nClasses << " classes using " << nImages << " images in total\n";
+   for(size_t cl = 0; cl < nClasses; ++cl){
       
-      features.clear();
+      //cout << "parsing class " << cl << endl;
+      nImages = dataset.getNumberImagesInClass(cl);
+      //cout << nImages << " images\n";
       
-      for(size_t patchIdx = 0; patchIdx < nPatches; ++patchIdx)
-         features.push_back(featExtr.extract(patches[patchIdx]));
-      
-      pretrainDump.insert(pretrainDump.end(),features.begin(),features.end());
-      
+      pretrainDump[cl].reserve(nPatches * nImages);
+      //cout << "space reserved\n";
+      for(size_t im = 0; im < nImages; ++im){
+         //cout << "scanning patches\n";
+         patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % nImages), nPatches, 8, 8);
+         
+         features.clear();
+         //cout << "extracting patches..\n";
+         for(size_t patchIdx = 0; patchIdx < nPatches; ++patchIdx)
+            features.push_back(featExtr.extract(patches[patchIdx]));
+         
+         pretrainDump[cl].insert(pretrainDump[cl].end(),features.begin(),features.end());
+         
+      }
+      //cout << pretrainDump[cl].size() << " features extracted for class " << cl << "\n";
+      codebook.constructCodebook(pretrainDump[cl],cl);
+      cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << nPatches << " patches each: " << nPatches * nImages<<" in total.\n";
    }
-   cout << pretrainDump.size() << " features extracted\n";
    
-   codebook.constructCodebook(pretrainDump);
+   
+   
    
 }

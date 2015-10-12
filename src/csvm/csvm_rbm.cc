@@ -2,6 +2,16 @@
 
 using namespace std;
 using namespace csvm;
+
+   union charInt{
+      unsigned char chars[4];
+      int intVal;
+   };
+   
+   union charDouble{
+      char chars[8];
+      double doubleVal;
+   };
    
    RBM::RBM(){
       settings.nLayers = 2;
@@ -76,4 +86,117 @@ using namespace csvm;
       }
       flowUp(&layers);
       return getOutput();
+   }
+   
+   void RBM::exportNetwork(string filename){
+      /* Format:
+      * 4 bytes: int : number of layers
+      * for each of layer: 4 bytes int layerSize;
+      * 
+      *
+      */
+      charDouble fancyDouble;
+      charInt fancyInt;
+      
+      ofstream file(filename.c_str(), ios::out | ios::binary);
+      
+      
+      //write number of layers
+      fancyInt.intVal = settings.nLayers;
+      for(size_t idx = 0; idx < 4; ++idx){
+         file << fancyInt.chars[idx];      
+      }
+      //write layer sizes
+      for(size_t layer = 0; layer < (unsigned int)settings.nLayers; ++layer){
+         fancyInt.intVal = settings.layerSizes[layer];
+         for(size_t idx = 0; idx < 4; ++idx){
+            file << fancyInt.chars[idx];    
+         }
+      }
+      //write weights 
+      
+      for(size_t layer = 0; layer < (unsigned int)settings.nLayers - 1; ++layer){
+         for(size_t lIdx1 = 0; lIdx1 < (unsigned int) settings.layerSizes[layer]; ++lIdx1){  //source neuron index
+            for(size_t lIdx2 = 0; lIdx2 < (unsigned int)settings.layerSizes[layer]; ++lIdx2){  //target neuron
+               fancyDouble.doubleVal = layers.weights[layer][lIdx1][lIdx2];
+               for(size_t idxt = 0; idxt < 8; ++ idxt)
+                  file << fancyDouble.chars[idxt];
+            }
+         }
+      }
+      
+      file.close();
+         
+   }
+   
+   void RBM::importNetwork(string filename){
+      charDouble fancyDouble;
+      charInt fancyInt;
+      
+      ifstream file(filename.c_str(), ios::in | ios::binary);
+      
+      
+      //free weights in advance since we still have info about it
+      for(size_t layer = 0; layer < (unsigned int)(layers.nLayers); ++layer){
+         for(size_t neuron = 0; neuron <  (unsigned int)(layers.layerSizes[layer]); ++neuron)
+            free(layers.weights[layer][neuron]);
+         free(layers.weights[layer]);
+      }
+      free(layers.weights);
+      
+      //read int4 number of layers
+      for(size_t idx = 0; idx < 4; ++idx)
+         file >> fancyInt.chars[idx];
+      settings.nLayers = fancyInt.intVal;
+      layers.nLayers = settings.nLayers;
+      
+      //allocate layerSizes;
+      free(layers.layerSizes);
+      free(settings.layerSizes);
+      layers.layerSizes = (int*) malloc(layers.nLayers * sizeof(int));
+      assert(layers.layerSizes != NULL);
+      settings.layerSizes = layers.layerSizes;  
+      
+      //read layerSizes
+      for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers); ++layer){
+         for(size_t idx = 0; idx < 4; ++idx)
+            file >> fancyInt.chars[idx];
+         layers.layerSizes[layer] = fancyInt.intVal;
+      }
+      
+      //allocate layers
+      for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers); ++layer)
+         free(layers.layers[layer]);
+      free(layers.layers);
+      layers.layers = (double**) malloc(layers.nLayers * sizeof(double*));
+      assert(layers.layers != NULL);
+      
+      
+      for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers); ++layer){
+         layers.layers[layer] = (double*) malloc(layers.layerSizes[layer] * sizeof(double));
+         assert(layers.layers[layer] != NULL);
+      }
+      
+      //allocate weights
+      layers.weights = (double***) malloc ((layers.nLayers - 1)* sizeof(double**));
+      assert(layers.weights != NULL);
+      for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers - 1); ++layer){
+         for(size_t idxL1 = 0; idxL1 <  (unsigned int)(layers.layerSizes[layer]); ++idxL1){
+            layers.weights[layer] = (double**) malloc(layers.layerSizes[layer] * sizeof(double*));
+            assert(layers.weights[layer] != NULL); 
+            for(size_t idxL2 = 0; idxL2 < (unsigned int)( layers.layerSizes[layer + 1]); ++idxL2){
+               layers.weights[layer][idxL1] = (double*) malloc(layers.layerSizes[layer + 1] * sizeof(double));
+               assert(layers.weights[layer][idxL1] != NULL);
+               for(size_t weight = 0; weight <  (unsigned int)(layers.layerSizes[layer + 1]); ++weight){
+                  for(size_t idxDouble = 0; idxDouble < 4; ++ idxDouble){
+                     file >> fancyDouble.chars[idxDouble];
+                  }
+                  layers.weights[layer][idxL1][idxL2] = fancyDouble.doubleVal;
+               }
+            }
+         }
+      }
+      
+      
+      
    }

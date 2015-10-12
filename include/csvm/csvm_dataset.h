@@ -17,18 +17,25 @@ namespace csvm{
    
    struct CSVMDataset_Settings{
       CSVMDatasetType type;
-      int nImages;
+      unsigned int nImages;
    };
    
    class CSVMDataset{
+      CSVMDataset_Settings settings;
       CIFAR10 cifar10;
       vector<Image> images;
-      
+      vector<int> testImagesIdx;
+      vector< vector<unsigned int> > trainImagesIdx;   //[labelId][image]
+      int nClasses;
    public:
+      CSVMDataset();
       void loadCifar10(string labelsDir,vector<string> imageDirs);
       Image getImage(int index);
       Image* getImagePtr(int index);
       int getSize();
+      void splitDatasetToClasses();
+      int getNumberImagesInClass(int labelId);
+      int getNumberClasses();
    };
 }
 #endif
