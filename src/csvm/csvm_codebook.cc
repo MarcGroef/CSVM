@@ -27,7 +27,7 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
    settings.numberVisualWords = 300;
    switch(settings.method){
       case LVQ_Clustering:
-         bow[labelId] = lvq.cluster(featureset, settings.numberVisualWords, 0.1,120);
+         bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
          break;
       case KMeans_Clustering:
          bow[labelId] = kmeans.cluster(featureset, 8);
@@ -57,12 +57,14 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
          meanDist += distances[word];
       }
       meanDist /= (double)settings.numberVisualWords;
-      
+      cout << "nVisuals = " << settings.numberVisualWords << endl;
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          //dev = meanDist - distances[word];
+         //cout << "dist: " << distances[word] << endl; 
          dev = meanDist - distances[word];
+         //cout << "dev:" << dev << endl;
          activations[cl].content[word] += dev > 0 ? dev : 0;
-         //out << act.content[word] << endl;
+         //cout <<  "act:" << activations[cl].content[word] << endl;
       }
       activations[cl].label = f->label;
    }
@@ -96,7 +98,7 @@ void Codebook::importCodebook(string filename){
    char c;
    file.read(&c,1);
    typesize = c;
-   cout << "read typesize = " << typesize << endl;
+   //cout << "read typesize = " << typesize << endl;
    //read feature dimensionality
    //for(size_t idx = 0; idx < 4; ++idx){
       file.read(fancyInt.chars, 4);
@@ -114,6 +116,7 @@ void Codebook::importCodebook(string filename){
             //for(size_t doubleIdx = 0; doubleIdx < 8; ++doubleIdx)
                file.read(fancyDouble.chars, 8);
             f.content[featIdx] = fancyDouble.doubleVal;
+           // cout << "reading double = " << fancyDouble.doubleVal << endl;
             
          }
          bow[cl].push_back(f);
@@ -164,13 +167,14 @@ void Codebook::exportCodebook(string filename){
    fancyInt.intVal = wordSize;
    //file << fancyInt.chars[0] << fancyInt.chars[1] << fancyInt.chars[2] << fancyInt.chars[3];
    file.write(fancyInt.chars, 4);
-   cout << "I just wrote wordSize = " << wordSize << endl;
+   //cout << "I just wrote wordSize = " << wordSize << endl;
    for(size_t cl = 0; cl < nClasses; ++cl){
       //features
       for(size_t word = 0; word < settings.numberVisualWords; ++word){
          for (size_t val = 0; val < wordSize; ++val){
             fancyDouble.doubleVal = bow[cl][word].content[val];
             file.write(fancyDouble.chars, 8);
+            //cout << "writing double = " << fancyDouble.doubleVal << endl;
             //file << fancyDouble.chars[0] << fancyDouble.chars[1] << fancyDouble.chars[2] << fancyDouble.chars[3] << fancyDouble.chars[4] << fancyDouble.chars[5] << fancyDouble.chars[6] << fancyDouble.chars[7];
          }
       } 

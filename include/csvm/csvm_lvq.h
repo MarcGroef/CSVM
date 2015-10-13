@@ -18,11 +18,11 @@ namespace csvm{
 
     class LVQ{
       LVQ_Settings settings;
-      vector<Feature> initPrototypes(vector<Feature> collection, unsigned int nProtos);
+      vector<Feature> initPrototypes(vector<Feature> collection, unsigned int labelId, unsigned int nProtos);
       
     public:
       LVQ();
-      vector<Feature> cluster(vector<Feature> collection, unsigned int numberPrototypes, double learningRate, int epochs);
+      vector<Feature> cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, double learningRate, int epochs);
     };
 }
 

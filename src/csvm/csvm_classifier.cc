@@ -12,7 +12,7 @@ void CSVMClassifier::initSVMs(){
    double learningRate = 0.05;
    svms.reserve(codebook.getNClasses());
    for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
-      svms.push_back(SVM(dataset.getSize(), codebook.getNClasses() * codebook.getNCentroids(), learningRate, svmIdx, codebook.getNCentroids()));
+      svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), learningRate, svmIdx, codebook.getNCentroids()));
    }
 }
 
@@ -100,7 +100,7 @@ void CSVMClassifier::trainSVMs(){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
       patches.clear();
       
-      Feature* f = &dataFeatures[0];
+      //Feature* f = &dataFeatures[0];
       
       //cout << "datacontent: " << f->size << endl;
       //get cluster activations for the features

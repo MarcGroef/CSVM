@@ -34,8 +34,10 @@ double Feature::getDistanceSq(Feature* f){
    double dist;
    for(int dim = 0; dim < size; ++dim){
       dist = (f->content[dim] - content[dim]);
+      //if(dim==0)cout << "delta: " << dist << " between " << f->content[dim] << " and " << content[dim] << endl;
       distance += dist * dist;
    }
+   //cout << "dist = " << distance << endl;
    return distance;
 }
 

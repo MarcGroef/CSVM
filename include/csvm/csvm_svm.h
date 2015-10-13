@@ -30,7 +30,7 @@ namespace csvm{
     unsigned int dataDims;
   public:
      
-     SVM(int datasetSize, int nClusters, double learningRate, unsigned int labelId, int dataDims);
+     SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, unsigned int labelId, int dataDims);
      void train(vector< vector<Feature> > activations);
      int classify(vector<Feature> f, Codebook* cb);
       
