@@ -7,6 +7,8 @@
 #include <vector>
 #include "csvm_feature.h"
 #include <cmath>
+#include <limits>
+
 
 using namespace std;
 

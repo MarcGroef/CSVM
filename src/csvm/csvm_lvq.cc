@@ -9,26 +9,27 @@ LVQ::LVQ(){
 }
 
 //DEBUG
-void checkEquals(vector< Feature> dictionary){
+void checkEquals(vector< Feature>& dictionary){
    unsigned int dictSize = dictionary.size();
    int nEquals = 0;
-   bool isEqual;
-   unsigned int wordSize = dictionary[0].content.size();;
    
+   unsigned int wordSize = dictionary[0].content.size();;
+   double distance = 0.0;
    for(size_t word = 0; word < dictSize; ++word){
       
-      for(size_t word1 = word + 1; word1 < dictSize; ++word1){
+      for(size_t word1 = word; word1 < dictSize; ++word1){
+         distance = 0.0;
          if(word1==word) continue;
-         isEqual = true;
+         
          for(size_t d = 0; d < wordSize; ++d){
-            
-            if(abs(dictionary[word].content[d] - dictionary[word1].content[d])< 1/(dictionary[word].content[d]))  //hard way for double comparrison
-               isEqual = false;
+            //cout << "absdist between " << dictionary[word].content[d] << " and " << dictionary[word1].content[d] << "= " << abs(dictionary[word].content[d] - dictionary[word1].content[d]) << endl;
+            distance += abs(dictionary[word].content[d] - dictionary[word1].content[d]) ; //hard way for double comparrison    
          }
-         //if(isEqual)
-           // cout << "cluster " << word << " and " << word1 << " are equal\n";
-         if (isEqual)
-         ++nEquals;
+         cout << distance << endl;
+         if(distance < 0.1){
+            cout << "cluster " << word << " and " << word1 << " are equal\n";
+            ++nEquals;
+         }
       }
       
    }
@@ -67,38 +68,54 @@ vector<Feature> LVQ::initPrototypes(vector<Feature> collection, unsigned int lab
    return dictionary;
 }
 
+void printCollection(vector<Feature> vec){
+   size_t nFeatures = vec.size();
+   size_t dims = vec[0].content.size();
+   
+   for(size_t feat = 0; feat < nFeatures; ++feat){
+      cout << "Word " << feat << ":";
+      for(size_t d = 0; d < dims; ++d){
+         cout << vec[feat].content[d] << ", ";
+      }
+      cout << endl;
+   }
+   
+}
+
 vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, double learningRate, int epochs){
    vector<Feature> dictionary;
    unsigned int collectionSize = collection.size();
-   vector<double> distances(numberPrototypes, 0);
+   
    unsigned int featureDims = collection[0].size;
    
    dictionary = initPrototypes(collection, labelId, numberPrototypes);
    //cout << "sanity\n";
    //checkEquals(dictionary);
-   
+   //printCollection(dictionary);
+   //getchar();
    double minDist;
    unsigned int closestProto;
-   
+   double distance;
    for(int epoch = 0; epoch < epochs ; ++epoch){
       //cout << "Epoch " << epoch << "\n";
       for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints
          
-         minDist = 9999999999;
+         minDist = sqrt(dictionary[0].getDistanceSq( &collection[idx]));
          closestProto = 0;
          //calc distances and closest prototype
-         for(size_t proto = 0; proto < numberPrototypes; ++proto){
+         for(size_t proto = 1; proto < numberPrototypes; ++proto){
             
-            distances[proto] = dictionary[proto].getDistanceSq( &collection[idx]);
+            distance = sqrt(dictionary[proto].getDistanceSq( &collection[idx]));
+            //cout << "dists: proto" << proto << ": " << distance << endl;
             
-            
-            if(distances[proto] < minDist){
-               minDist = distances[proto];
+            if(distance < minDist){
+               minDist = distance;
                closestProto = proto;
             }
          }
-         
+         //cout << "closestProto= " << closestProto << endl;
          for(size_t dim = 0; dim < featureDims; ++dim){
+            
             dictionary[closestProto].content[dim] += learningRate * (collection[idx].content[dim] - dictionary[closestProto].content[dim]);               
          }
          
@@ -118,8 +135,6 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int labelId, u
       //checkEquals(dictionary);
       //getchar();
    }
-   //cout << "Final situation:\n";
-   checkEquals(dictionary);
-   getchar();
+  
    return dictionary;
 }

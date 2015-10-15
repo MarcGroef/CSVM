@@ -87,7 +87,7 @@ void SVM::train(vector< vector<Feature> >activations){
    unsigned int size = activations.size();
    double sumDeltaAlpha = 1.0f;
 
-   double prevSumDeltaAlpha = 1;
+   double prevSumDeltaAlpha = 1.0f;
    double deltaAlphaData, deltaAlphaCentroid;
    double convergenceThreshold = 0.1;
    cout << "Yay! I'm a learning SVM, learing on " << size << " data\n";

@@ -4,7 +4,7 @@ using namespace std;
 using namespace csvm;
 
 FeatureExtractor::FeatureExtractor(){
-   settings.featureType = LBP;CLEAN;  
+   settings.featureType = LBP;//CLEAN;  
 }
 
 Feature FeatureExtractor::extract(Patch p){
