@@ -17,7 +17,7 @@ Feature CleanDescriptor::describe(Patch p){
    
    for(size_t idxX = 0; idxX < imWidth; ++idxX){
       for(size_t idxY = 0; idxY < imHeight; ++idxY){
-         f.content[idxY * imWidth + idxX] = (double)(p.getGreyPixel(idxX,idxY));
+         f.content[idxY * imWidth + idxX] = (double)(p.getGreyPixel(idxX,idxY)) / 255.0;
       }
    }
    
