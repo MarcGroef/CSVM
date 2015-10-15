@@ -16,6 +16,7 @@ union charDouble{
 Codebook::Codebook(){
    nClasses = 10;
    bow.resize(nClasses);
+   settings.similaritySigma = .4;
 }
 
 Feature Codebook::getCentroid(int cl, int centrIdx){
@@ -46,26 +47,29 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
    vector<Feature> activations(nClasses,Feature(settings.numberVisualWords, 0));
    
    vector<double> distances(settings.numberVisualWords);
-   double meanDist = 0;
+   //double meanDist = 0;
    double dev;
    Feature* f = &features[0];
    //cout << "bow has [" << bow.size() << "][" << bow[0].size() << "][" << bow[0][0].content.size() << "]\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
       f = &features[cl];
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         distances[word] = bow[cl][word].getDistanceSq(f);
-         meanDist += distances[word];
+         distances[word] = sqrt(bow[cl][word].getDistanceSq(f));
+         //meanDist += distances[word];
       }
-      meanDist /= (double)settings.numberVisualWords;
-      cout << "nVisuals = " << settings.numberVisualWords << endl;
+      //meanDist /= (double)settings.numberVisualWords;
+      //cout << "nVisuals = " << settings.numberVisualWords << endl;
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          //dev = meanDist - distances[word];
-         //cout << "dist: " << distances[word] << endl; 
-         dev = meanDist - distances[word];
+         //cout << "************************************************************\n";
+         cout << "dist: " << distances[word] << endl; 
+         dev = exp(-1 * distances[word] / settings.similaritySigma);
          //cout << "dev:" << dev << endl;
-         activations[cl].content[word] += dev > 0 ? dev : 0;
+         activations[cl].content[word] += dev;//dev > 0 ? dev : 0;
+        
          //cout <<  "act:" << activations[cl].content[word] << endl;
       }
+      
       activations[cl].label = f->label;
    }
    

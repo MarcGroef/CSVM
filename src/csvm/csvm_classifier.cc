@@ -106,6 +106,11 @@ void CSVMClassifier::trainSVMs(){
       //get cluster activations for the features
       //cout << "pushing back " << codebook.getActivations(dataFeatures)[0].content.size() << "act feats\n";
       datasetActivations.push_back(codebook.getActivations(dataFeatures));
+      
+      for(size_t pIdx = 0; pIdx < datasetActivations[dataIdx].size(); ++pIdx){
+         for(size_t centr = 0; centr < datasetActivations[dataIdx][pIdx].content.size(); ++centr)
+            cout << "activation image " << dataIdx << " from class " << pIdx << " at centroid " << centr << " = " << datasetActivations[dataIdx][pIdx].content[centr] << endl;
+      }
    }
    cout << "I can get activations me!\n";
    //train the SVMs with the gained activations

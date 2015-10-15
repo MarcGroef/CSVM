@@ -23,6 +23,7 @@ namespace csvm{
       KMeans_settings kmeansSettings;
       CodebookClusterMethod method;
       unsigned int numberVisualWords;
+      double similaritySigma;
    };
 
    
