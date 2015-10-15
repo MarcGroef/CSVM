@@ -66,7 +66,7 @@ int main(int argc,char**argv){
    //c.constructCodebook();
    //c.exportCodebook("codebook.bin");
 
-   c.importCodebook("codebook.bin");
+   c.importCodebook("goodcodebook.bin");
 
    //svm stuff
    c.initSVMs();
