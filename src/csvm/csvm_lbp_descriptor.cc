@@ -6,25 +6,83 @@ using namespace std;
 using namespace csvm;
 
 LBPDescriptor::LBPDescriptor() {
-	
+	//cout << "we reached 1!";
+	int findex = 1;
+	featureIndex = vector<int>(256,0);
+	for (int idx = 0; idx < 256; ++idx) {
+		//if a number is uniform, then we want to record it. 
+		if (isUniform(idx)) {
+			featureIndex[idx] = findex;
+			++findex;
+		}
+		else {
+			//if it is not uniform, we refer to index 0, where we put in all non-uniform lbps
+			featureIndex[idx] = 0;
+		}
+	}
+	//cout << "we reached 2!";
 }
+
+
+//this function is used to check whether a certain value is uniform or not. 
+bool LBPDescriptor::isUniform(int lbp) {
+	//cout << "isUniform called";
+	int numberOfTrans = 0;
+	bitset<8> lbpbits(lbp);
+	for (int idx = 0; idx < 7; ++idx) {
+		if (lbpbits[idx] != lbpbits[idx + 1]){
+			++numberOfTrans;
+		}
+	}
+
+	return (numberOfTrans <= 2);
+}
+
+
+
+//is used to check the uniform equivalent of a function. 
+int LBPDescriptor::uniformValue(int lbp) {
+	//cout << "uniformvalue called with " << lbp << '\n';
+	//iterate down a byte
+	int uniformval = 0;
+	int lbpvalue = lbp;
+	for (int bit = 7; bit > 0; --bit) {
+		//if we are at a 1-bit
+		if (lbpvalue - pow(2, bit) >= 0) {
+			lbpvalue -= pow(2, bit);
+			uniformval += (bit*(bit-1)) + 2;
+		}
+	}
+	//cout << "uniformvalue returned " << uniformval << '\n';
+	return uniformval;
+}
+
 
 
 //This function implements basic Local Binary Patterns, and returns a feature vector.
 Feature LBPDescriptor::getLBP(Patch patch, int channel) {
-
+	//cout << "getLBP called" << '\n';
 	int patchWidth = patch.getWidth();
 	int patchHeight = patch.getHeight();
 	//const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
 	
 	bitset<(8)> pixelFeatures;
-   Feature histogram(256,0);
+	int biggestvalue = 0;
+	for (int idx = 0; idx < featureIndex.size(); ++idx) {
+		biggestvalue = (featureIndex[idx] > biggestvalue ? featureIndex[idx] : biggestvalue);
+	}
+   Feature histogram( biggestvalue +1 ,0);
    histogram.label = patch.getLabel();
 	//vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
 	//cout << " patch width is: " << patchWidth;
 	//for now 
 
 	//iterate ofer the whole patch, with boundary setoff of 1 
+   //cout << "we reached 1!" << '\n';
+
+   //for (size_t idx = 0; idx < featureIndex.size(); ++idx) {
+//	   cout << "< " << idx << " , " << featureIndex[idx] << ">	||	 ";
+ //  }
 	for (int x = 1;x < patchWidth-1;++x) { 
 		for (int y = 1;y < patchHeight-1;++y) {
 			//get the pixel intensity value of the central pixel we occupy ourselves with..
@@ -59,11 +117,15 @@ Feature LBPDescriptor::getLBP(Patch patch, int channel) {
 			//cout << "test";
 			//cout << pixelFeatures.to_ulong() << "\n";
 
-			histogram.content[(int)pixelFeatures.to_ulong()] += 1;
+			histogram.content[ featureIndex[(int)pixelFeatures.to_ulong()]] += 1;
 
 		}
 	}
-
+	//cout << "we reached 2!" << '\n';
+	//for (size_t idx = 0; idx < histogram.content.size(); ++idx) {
+	//	cout << "element " << idx << " = " << histogram.content[idx] << " , ";
+	//}
+	//cout << '\n';
 	return histogram;
 }
 

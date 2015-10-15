@@ -56,7 +56,7 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
       
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          distances[word] = sqrt(bow[cl][word].getDistanceSq(f));
-         if(word>0)cout << "difference with prev word  = " << sqrt(bow[cl][word-1].getDistanceSq(&bow[cl][word])) << endl;
+         //if(word>0)cout << "difference with prev word  = " << sqrt(bow[cl][word-1].getDistanceSq(&bow[cl][word])) << endl;
       }
       //meanDist /= (double)settings.numberVisualWords;
       //cout << "nVisuals = " << settings.numberVisualWords << endl;

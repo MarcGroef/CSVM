@@ -5,6 +5,7 @@ using namespace csvm;
 
 
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, unsigned int labelId, int dataDims){
+   
    alphaData = vector<double>(datasetSize,0.5f);
    //cout << "alphaData =  " << alphaData[0] << endl;
    alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,0.5f));
@@ -13,8 +14,7 @@ SVM::SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, un
    this->classId = labelId;
    finalDataWeights = vector <double> (dataDims,0);
    this->dataDims = dataDims;
-   
-   
+
 }
 
 double SVM::updateAlphaData(vector<Feature> clActivations, unsigned int dataIdx){
@@ -35,6 +35,7 @@ double SVM::updateAlphaData(vector<Feature> clActivations, unsigned int dataIdx)
   
    return learningRate * (-0.5 * diff);
 }
+
 //activations are just used to check labels here.
 void SVM::contstrainAlphaData(vector< vector< Feature > > activations, unsigned int nIterations, double cost, double maxAlphaVal){
    double sum;
@@ -85,14 +86,15 @@ void SVM::train(vector< vector<Feature> >activations){
    //cout << "[1,1] act = " << activations[0][0].content[0] << endl;
    unsigned int size = activations.size();
    double sumDeltaAlpha = 1.0f;
-   //double prevSumDeltaAlpha = 1;
+
+   double prevSumDeltaAlpha = 1;
    double deltaAlphaData, deltaAlphaCentroid;
    double convergenceThreshold = 0.1;
    cout << "Yay! I'm a learning SVM, learing on " << size << " data\n";
    while(sumDeltaAlpha > convergenceThreshold){
       
-      
-      cout << "Yay, SVM training iteration round! Delta = " << sumDeltaAlpha << " \n";
+      prevSumDeltaAlpha = sumDeltaAlpha;
+      cout << "Yay, SVM training iteration round! Sum of Change  = " << sumDeltaAlpha << " DeltaSOC = " << abs(prevSumDeltaAlpha - sumDeltaAlpha) << endl;
       sumDeltaAlpha = 0.0;
       for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
          //cout << "update alphaData's\n";
@@ -102,7 +104,7 @@ void SVM::train(vector< vector<Feature> >activations){
          alphaData[dataIdx] += deltaAlphaData;
          //cout << "delta = " << sumDeltaAlpha << endl;
       }
-      cout << "intermediate sum delta alpha = " << sumDeltaAlpha << endl;
+      //cout << "intermediate sum delta alpha = " << sumDeltaAlpha << endl;
       contstrainAlphaData(activations, 4, 1, 1);
       
       for(size_t cl = 0; cl < nClasses; ++cl){
@@ -113,7 +115,7 @@ void SVM::train(vector< vector<Feature> >activations){
             sumDeltaAlpha += abs(deltaAlphaCentroid);
             alphaCentroids[cl][centr] += deltaAlphaCentroid;
          }
-         cout << "intermediate sum delta alpha, @cl " << cl << " = " << sumDeltaAlpha << endl;
+         //cout << "intermediate sum delta alpha, @cl " << cl << " = " << sumDeltaAlpha << endl;
       }
       
    }

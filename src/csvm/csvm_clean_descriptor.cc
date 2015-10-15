@@ -12,8 +12,8 @@ Feature CleanDescriptor::describe(Patch p){
    
    Feature f(imSize,0);
    
-   f.content.reserve(imSize);
    
+   f.content = vector<double>(imSize,0);
    
    for(size_t idxX = 0; idxX < imWidth; ++idxX){
       for(size_t idxY = 0; idxY < imHeight; ++idxY){

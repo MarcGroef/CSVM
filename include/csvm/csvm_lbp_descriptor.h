@@ -18,13 +18,16 @@ using namespace std;
 namespace csvm {
 
 	class LBPDescriptor {
-		
-
+		vector<int> featureIndex;
 	public:
 		LBPDescriptor();
 		Feature getLBP(Patch patch, int channel);
-
+	private:
+		bool isUniform(int lbp);
+		int uniformValue(int lbp);
 	};
+
+	
 
 
 }

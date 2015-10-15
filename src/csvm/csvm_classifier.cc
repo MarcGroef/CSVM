@@ -1,5 +1,5 @@
 #include <csvm/csvm_classifier.h>
-
+//
 using namespace std;
 using namespace csvm;
 
@@ -32,6 +32,33 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
+//DEBUG
+void checkEqualFeatures(vector< Feature> dictionary){
+   //cout << "Begin sanity meditation. I see " << dictionary.size() << " features\n";
+   unsigned int dictSize = dictionary.size();
+   int nEquals = 0;
+   bool isEqual;
+   unsigned int wordSize = dictionary[0].content.size();;
+   
+   for(size_t word = 0; word < dictSize; ++word){
+      
+      for(size_t word1 = word; word1 < dictSize; ++word1){
+         if(word1==word) continue;
+         isEqual = true;
+         for(size_t d = 0; d < wordSize; ++d){
+            if(dictionary[word].content[d] != dictionary[word1].content[d])
+               isEqual = false;
+         }
+         //if(isEqual)
+           // cout << "cluster " << word << " and " << word1 << " are equal\n";
+         if (isEqual)
+         ++nEquals;
+      }
+      
+   }
+   //cout << "I found " << nEquals << " equal features, out of " << dictSize << " features\n";
+   
+}
 
 void CSVMClassifier::constructCodebook(){
    unsigned int nPatches = 10;  //number of random patches from each image
@@ -56,6 +83,7 @@ void CSVMClassifier::constructCodebook(){
       
       pretrainDump[cl].reserve(nPatches * nImages);
       //cout << "space reserved\n";
+      cout << "Scanning " << nImages << " images\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
          patches = imageScanner.getRandomPatches(dataset.getImagePtr(im), nPatches, 8, 8);
@@ -68,6 +96,8 @@ void CSVMClassifier::constructCodebook(){
          pretrainDump[cl].insert(pretrainDump[cl].end(),features.begin(),features.end());
          
       }
+      //checkEqualFeatures(pretrainDump[cl]);
+      //cout << "end feature meditation\n";
       //cout << pretrainDump[cl].size() << " features extracted for class " << cl << "\n";
       codebook.constructCodebook(pretrainDump[cl],cl);
       cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << nPatches << " patches each: " << nPatches * nImages<<" in total.\n";
