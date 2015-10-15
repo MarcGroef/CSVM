@@ -73,7 +73,7 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> > clActivations, unsign
       sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass].content[centr];
    }
    //sum =  
-   cout << ((0.5 * (double)sum)) << endl;
+   //cout << ((0.5 * (double)sum)) << endl;
    return learningRate * ((double)1 - (0.5 * (double)sum));
 }
 

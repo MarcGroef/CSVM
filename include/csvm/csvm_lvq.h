@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <vector>
 #include "csvm_feature.h"
+#include <cmath>
 
 using namespace std;
 
