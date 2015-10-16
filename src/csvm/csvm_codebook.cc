@@ -24,7 +24,7 @@ Feature Codebook::getCentroid(int cl, int centrIdx){
 }
 
 void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
-   settings.method = /*KMeans_Clustering;*/LVQ_Clustering;
+   settings.method = KMeans_Clustering; //LVQ_Clustering;
    settings.numberVisualWords = 300;
    switch(settings.method){
       case LVQ_Clustering:
