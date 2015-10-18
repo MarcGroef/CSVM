@@ -47,10 +47,10 @@ int main(int argc,char**argv){
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
-   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
-   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
-   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
-   //imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
+   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
+   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
+   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
+   imDirs.push_back("../datasets/cifar-10-batches-bin/test_batch.bin");
    
    //load cifar10
    c.dataset.loadCifar10("../datasets/cifar-10-batches-bin/batches.meta.txt",imDirs);
@@ -64,13 +64,25 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
-   //c.exportCodebook("codebook.bin");
+   c.exportCodebook("codebook.bin");
 
-   //c.importCodebook("codebook.bin");
+   //c.importCodebook("superawesomecodebook.bin");
 
    //svm stuff
-   //c.initSVMs();
-   //c.trainSVMs();
+   c.initSVMs();
+   c.trainSVMs();
+   
+   unsigned int nCorrect = 0;
+   unsigned int nFalse = 0;
+   for(size_t im = 0; im < 1000; ++im){
+      unsigned int result = c.classify(c.dataset.getImagePtr(im));
+      cout << "classifying image " << im << ": " << c.dataset.getImagePtr(im)->getLabelId() << " is classified as " << result << endl;
+      if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == im)
+         ++nCorrect;
+      else 
+         ++nFalse;
+   }
+   cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << 1000 << "images\n";
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;

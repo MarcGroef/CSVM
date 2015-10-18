@@ -9,7 +9,7 @@ CSVMClassifier::CSVMClassifier(){
 }
 
 void CSVMClassifier::initSVMs(){
-   double learningRate = 0.05;
+   double learningRate = 0.005;
    svms.reserve(codebook.getNClasses());
    for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
       svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), learningRate, svmIdx, codebook.getNCentroids()));
@@ -107,7 +107,7 @@ void CSVMClassifier::trainSVMs(){
    
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
-   
+   cout << "collecting activations for trainingsdata..\n";
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
@@ -141,4 +141,39 @@ void CSVMClassifier::trainSVMs(){
    for(size_t svmIdx = 0; svmIdx < svms.size(); ++svmIdx){
       svms[svmIdx].train(datasetActivations);
    }
+}
+
+unsigned int CSVMClassifier::classify(Image* image){
+   unsigned int nClasses = codebook.getNClasses();
+   cout << "nClasses = " << nClasses << endl;
+   vector<Patch> patches;
+   vector<Feature> dataFeatures;
+   //extract patches
+   patches = imageScanner.scanImage(image, 8, 8, 1, 1);
+   
+
+   //allocate for new
+   dataFeatures.reserve(patches.size());
+   
+   //extract features from all patches
+   for(size_t patch = 0; patch < patches.size(); ++patch)
+      dataFeatures.push_back(featExtr.extract(patches[patch]));
+   
+   patches.clear();
+
+   
+   vector<double> results(nClasses, 0);
+   double maxResult = -99999;
+   unsigned int maxLabel=0;
+   for(size_t cl = 0; cl < nClasses; ++cl){
+      results[cl] = svms[cl].classify(codebook.getActivations(dataFeatures), &codebook);
+      
+      cout << "SVM " << cl << " says " << results[cl] << endl;  
+      if(results[cl] > maxResult){
+         maxResult = results[cl];
+
+         maxLabel = cl;
+      }
+   }
+   return maxLabel;
 }

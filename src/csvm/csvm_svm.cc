@@ -6,20 +6,23 @@ using namespace csvm;
 
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, unsigned int labelId, int dataDims){
    
-   alphaData = vector<double>(datasetSize,0.5f);
+   alphaData = vector<double>(datasetSize,1.0 / datasetSize);
    //cout << "alphaData =  " << alphaData[0] << endl;
-   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,0.5f));
+   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,0.01f));
    //cout << "alphaCentr =  " << alphaCentroids[0][0] << endl;
    this->learningRate = learningRate;
    this->classId = labelId;
    finalDataWeights = vector <double> (dataDims,0);
    this->dataDims = dataDims;
+   
+   settings.SVM_C = 1.0;
 
 }
 
 double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx){
    unsigned int dataLabel = clActivations[0].getLabelId();
    double diff = 0.0;
+   double target;
    unsigned int nClasses = clActivations.size();
    unsigned int nCentroids = clActivations[0].content.size();
    
@@ -32,12 +35,18 @@ double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx
          //cout << "diff = " << clActivations[cl].content[centr] << endl;
       }
    }
-  
-   return learningRate * (-0.5 * diff);
+   
+   target = alphaData[dataIdx] + learningRate * ( -0.5 * diff);
+   //cout << "target = " << target << endl;
+   target = target < 0.0 ? 0.0 : target;
+   target = target > settings.SVM_C ? settings.SVM_C : target;
+   diff = alphaData[dataIdx] - target;
+   alphaData[dataIdx] = target;
+   return diff;
 }
 
 //activations are just used to check labels here.
-void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost, double maxAlphaVal){
+void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost){
    double sum;
    unsigned int size = alphaData.size();
    int yData;
@@ -49,15 +58,24 @@ void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, unsigned
       for(size_t dIdx0 = 0; dIdx0 < size; ++dIdx0){
          yData = (unsigned int)(activations[dIdx0][0].getLabelId()) == classId ? 1.0 : -1.0;
          sum += alphaData[dIdx0] * yData;
-         for(size_t dIdx1 = 0; dIdx1 < size; ++dIdx1){
-            oldVal = alphaData[dIdx1];
-            deltaAlpha = -2.0 * cost * sum * yData;
-            target = alphaData[dIdx1] + deltaAlpha * learningRate;
-            target = target < 0.0 ? 0.0 : target;
-            target = target > maxAlphaVal ? maxAlphaVal : target;
-            sum += ( alphaData[dIdx1] - oldVal ) * yData;
-         }
+         //cout << "sum = " << alphaData[dIdx0] << endl;
+        // getchar();
       }
+      
+      for(size_t dIdx1 = 0; dIdx1 < size; ++dIdx1){
+         yData = (unsigned int)(activations[dIdx1][0].getLabelId()) == classId ? 1.0 : -1.0;
+         oldVal = alphaData[dIdx1];
+         deltaAlpha = -2.0 * cost * sum * yData;
+         target = alphaData[dIdx1] + deltaAlpha * learningRate;
+         //cout << "constrain target: " << target << endl;
+         target = target < 0.0 ? 0.0 : target;
+         target = target > settings.SVM_C ? settings.SVM_C : target;
+         
+         alphaData[dIdx1] = target;
+         sum += ( alphaData[dIdx1] - oldVal ) * yData;
+         //getchar();
+      }
+      
    }
 }
 
@@ -65,19 +83,24 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsig
    double sum = 0.0;
    unsigned int nData = clActivations.size();
    double yData, yCentroid;
-   
+   double target;
+   double diff;
    
    yCentroid = (centrClass == classId ? 1.0 : -1.0);
    
    for(size_t dataIdx = 0; dataIdx < nData; ++dataIdx){
       yData = ((clActivations[dataIdx][0].getLabelId()) == classId ? 1.0 : -1.0);
-      //cout << "alphaData = " << alphaData[dataIdx] <<"\n";
+      //cout << "activations = " << clActivations[dataIdx][centrClass].content[centr] << endl;
       sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass].content[centr];
-      //cout << "sum is now : " << sum << ", the update was: " << alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass].content[centr] <<  endl;
    }
-   //sum =  
-   //cout << "update alphaCentr: " << ((0.5 * (double)sum)) << ", sum was: " << sum << endl;
-   return learningRate * ((double)1.0 - (0.5 * (double)sum));
+   //cout << "sum = " << sum << endl;
+   target = alphaCentroids[centrClass][centr] + learningRate * ((double)1.0 - ( (double)sum));
+   target = target < 0.0 ? 0.0 : target;
+   target = target > settings.SVM_C ? settings.SVM_C : target;
+   diff = alphaCentroids[centrClass][centr] - target;
+   //cout << "centroid alpha target = " << target << ", which has a difference of " << diff << endl;
+   alphaCentroids[centrClass][centr] = target;
+   return diff;
 }
 
 
@@ -91,51 +114,55 @@ void SVM::train(vector< vector<Feature> >& activations){
 
    double prevSumDeltaAlpha = 1.0f;
    double deltaAlphaData, deltaAlphaCentroid;
-   double convergenceThreshold = 0.1;
+   double convergenceThreshold = 0.0005;
    cout << "Yay! I'm a learning SVM, learing on " << size << " data\n";
    while(sumDeltaAlpha > convergenceThreshold){
       
       
-      cout << "Yay, SVM training iteration round! Sum of Change  = " << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
+      
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
          //cout << "update alphaData's\n";
          deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx);
-         //cout << "update : " << deltaAlphaData << endl;
-         sumDeltaAlpha += abs(deltaAlphaData);
-         alphaData[dataIdx] += deltaAlphaData;
-         //cout << "delta = " << sumDeltaAlpha << endl;
+         //cout << "delta = " << deltaAlphaData << endl;
+         deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
+         sumDeltaAlpha += deltaAlphaData;
+         //cout << "delta = " << deltaAlphaData << endl;
       }
-      //cout << "intermediate sum delta alpha = " << sumDeltaAlpha << endl;
-      contstrainAlphaData(activations, 4, 1, 1);
+      //getchar();
+      //cout << "intermediate sum delta alpha = " << fixed << sumDeltaAlpha << endl;
+      contstrainAlphaData(activations, 4, 1);
       
       for(size_t cl = 0; cl < nClasses; ++cl){
          //cout << "update alhpaCentroid class " << cl << endl;
          for(size_t centr = 0; centr < nCentroids; ++centr){
             //cout << "update alhpaCentroid centrIdx " << centr << endl;
             deltaAlphaCentroid = updateAlphaCentroid(activations, cl, centr);
+            deltaAlphaCentroid = deltaAlphaCentroid < 0.0 ? deltaAlphaCentroid * -1.0 : deltaAlphaCentroid;
             //cout << "delta = " << deltaAlphaCentroid << endl;
-            sumDeltaAlpha += deltaAlphaCentroid < 0.0 ? -1.0 * deltaAlphaCentroid : deltaAlphaCentroid;
-            alphaCentroids[cl][centr] += deltaAlphaCentroid;
+            sumDeltaAlpha += deltaAlphaCentroid;
          }
          //cout << "intermediate sum delta alpha, @cl " << cl << " = " << sumDeltaAlpha << endl;
       }
+      
+      cout << "Yay, SVM training iteration round! Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
       
    }
  
 }
 
-int SVM::classify(vector<Feature>& f, Codebook* cb){
+double SVM::classify(vector<Feature> f, Codebook* cb){
    double result = 0;
    unsigned int nClasses = cb->getNClasses();
    unsigned int nCentroids = cb->getNCentroids();
-   int yCentroid;
+   double yCentroid;
    
    for(size_t cl = 0; cl < nClasses; ++cl){
-      yCentroid = (cl == classId ? 1 : -1);
+      yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
          result += alphaCentroids[cl][centr] * yCentroid * f[cl].content[centr];
+         
       }
    }
    return result;

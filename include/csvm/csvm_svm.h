@@ -12,7 +12,7 @@ namespace csvm{
   
   
   struct SVM_Settings{
-
+      double SVM_C;
   };
    
   class SVM{
@@ -32,8 +32,8 @@ namespace csvm{
      
      SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, unsigned int labelId, int dataDims);
      void train(vector< vector<Feature> >& activations);
-     int classify(vector<Feature>& f, Codebook* cb);
-     void contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost, double maxAlphaVal);
+     double classify(vector<Feature> f, Codebook* cb);
+     void contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost);
   };
    
 }
