@@ -31,7 +31,7 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
          bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
          break;
       case KMeans_Clustering:
-         bow[labelId] = kmeans.cluster(featureset, 8);
+         bow[labelId] = kmeans.cluster(featureset, settings.numberVisualWords);
          break;
    }
    
@@ -49,14 +49,14 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
    vector<double> distances(settings.numberVisualWords);
    //double meanDist = 0;
    double dev;
-   Feature* f = &features[0];
+  
    //cout << "bow has [" << bow.size() << "][" << bow[0].size() << "][" << bow[0][0].content.size() << "]\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
-      f = &features[cl];
+      
       
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         distances[word] = sqrt(bow[cl][word].getDistanceSq(f));
-         //if(word>0)cout << "difference with prev word  = " << sqrt(bow[cl][word-1].getDistanceSq(&bow[cl][word])) << endl;
+         distances[word] = sqrt(bow[cl][word].getDistanceSq(features[cl]));
+         //cout << "difference with word  = " << sqrt(bow[cl][word].getDistanceSq(features[cl])) << endl;
       }
       //meanDist /= (double)settings.numberVisualWords;
       //cout << "nVisuals = " << settings.numberVisualWords << endl;
@@ -64,14 +64,14 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
          //dev = meanDist - distances[word];
          //cout << "************************************************************\n";
          //cout << "dist: " << distances[word] << endl; 
-         dev = exp(-1 * distances[word] / settings.similaritySigma);
+         dev = exp(-1.0 * distances[word] / settings.similaritySigma);
          //cout << "dev:" << dev << endl;
          activations[cl].content[word] += dev;//dev > 0 ? dev : 0;
         
          //cout <<  "act:" << activations[cl].content[word] << endl;
       }
       
-      activations[cl].label = f->label;
+      activations[cl].label = features[cl].label;
    }
    
    

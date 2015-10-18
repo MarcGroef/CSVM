@@ -100,12 +100,12 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int labelId, u
       //cout << "Epoch " << epoch << "\n";
       for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints
          
-         minDist = sqrt(dictionary[0].getDistanceSq( &collection[idx]));
+         minDist = sqrt(dictionary[0].getDistanceSq( collection[idx]));
          closestProto = 0;
          //calc distances and closest prototype
          for(size_t proto = 1; proto < numberPrototypes; ++proto){
             
-            distance = sqrt(dictionary[proto].getDistanceSq( &collection[idx]));
+            distance = sqrt(dictionary[proto].getDistanceSq( collection[idx]));
             //cout << "dists: proto" << proto << ": " << distance << endl;
             
             if(distance < minDist){

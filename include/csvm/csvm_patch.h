@@ -17,6 +17,8 @@ namespace csvm{
       Patch(Image* source, int x, int y, int width,int height);
       Patch();
       Patch(Image* source);
+      int getX();
+      int getY();
       void setArea(int x,int y,int width,int height);
       unsigned char getPixel(int x,int y,int channel);
       void setPixel(int x,int y,int channel,unsigned char value);
@@ -24,6 +26,8 @@ namespace csvm{
       int getHeight();
       unsigned char getGreyPixel(int x,int y);
       string getLabel();
+      bool equals(Patch p);
+      Image* getSource();
    };
 }
 #endif

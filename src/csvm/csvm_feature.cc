@@ -24,9 +24,9 @@ void Feature::setLabelId(int id){
 int Feature::getLabelId(){
    return labelId;
 }
-double Feature::getDistanceSq(Feature* f){
+double Feature::getDistanceSq(Feature& f){
    //cout << "My size = " << size << ", the other one's = " << f->size << endl;
-   if(f->size != size){
+   if(f.size != size){
       cout << "csvm::Feature::getDistance() Error! Different feature sizes!\n";
       exit(-1);
    }
@@ -34,12 +34,12 @@ double Feature::getDistanceSq(Feature* f){
    double distance = 0;
    double dist;
    for(int dim = 0; dim < size; ++dim){
-      dist = (f->content[dim] - content[dim]);
-      //if(dist == 0) cout << "exactly the same element! Namely " << f->content[dim] << " and " << content[dim] << "\n";
+      dist = (f.content[dim] - content[dim]);
+      //if(dist == 0.f) cout << "exactly the same element! Namely " << f.content[dim] << " and " << content[dim] << "\n";
       //if(dim==0)cout << "delta: " << dist << " between " << f->content[dim] << " and " << content[dim] << endl;
       distance += dist * dist;
    }
-  // cout << "dist = " << distance << endl;
+   //cout << "dist = " << distance << endl;
    return distance;
 }
 

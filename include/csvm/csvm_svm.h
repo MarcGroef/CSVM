@@ -23,17 +23,17 @@ namespace csvm{
     vector<vector <double> > alphaCentroids;
     double learningRate;
     unsigned int classId;
-    double updateAlphaData(vector<Feature> clActivations, unsigned int dataIdx);
-    double updateAlphaCentroid(vector< vector< Feature> > clActivations, unsigned int centrClass, int centr);
+    double updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx);
+    double updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsigned int centrClass, int centr);
     
     vector <double> finalDataWeights;
     unsigned int dataDims;
   public:
      
      SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, unsigned int labelId, int dataDims);
-     void train(vector< vector<Feature> > activations);
-     int classify(vector<Feature> f, Codebook* cb);
-     void contstrainAlphaData(vector< vector< Feature > > activations, unsigned int nIterations, double cost, double maxAlphaVal);
+     void train(vector< vector<Feature> >& activations);
+     int classify(vector<Feature>& f, Codebook* cb);
+     void contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost, double maxAlphaVal);
   };
    
 }

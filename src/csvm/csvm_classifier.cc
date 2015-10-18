@@ -33,31 +33,19 @@ void CSVMClassifier::importCodebook(string filename){
 }
 
 //DEBUG
-void checkEqualFeatures(vector< Feature> dictionary){
-   //cout << "Begin sanity meditation. I see " << dictionary.size() << " features\n";
-   unsigned int dictSize = dictionary.size();
-   int nEquals = 0;
-   bool isEqual;
-   unsigned int wordSize = dictionary[0].content.size();;
+
+
+void checkEqualPatches(vector<Patch> patches){
+   unsigned int nEquals = 0;
+   unsigned int nPatches = patches.size();
    
-   for(size_t word = 0; word < dictSize; ++word){
-      
-      for(size_t word1 = word; word1 < dictSize; ++word1){
-         if(word1==word) continue;
-         isEqual = true;
-         for(size_t d = 0; d < wordSize; ++d){
-            if(dictionary[word].content[d] != dictionary[word1].content[d])
-               isEqual = false;
-         }
-         //if(isEqual)
-           // cout << "cluster " << word << " and " << word1 << " are equal\n";
-         if (isEqual)
-         ++nEquals;
+   for(size_t pIdx = 0 ; pIdx < nPatches - 1; ++ pIdx){
+      for(size_t pIdx1 = pIdx + 1; pIdx1 < nPatches; ++ pIdx1){
+         if(patches[pIdx].equals(patches[pIdx1]))
+            ++nEquals;
       }
-      
    }
-   //cout << "I found " << nEquals << " equal features, out of " << dictSize << " features\n";
-   
+   cout << "There are " << nEquals << " equal patches\n";
 }
 
 void CSVMClassifier::constructCodebook(){
@@ -87,19 +75,25 @@ void CSVMClassifier::constructCodebook(){
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
          patches = imageScanner.getRandomPatches(dataset.getImagePtr(im), nPatches, 8, 8);
-         
+         //checkEqualPatches(patches);
          features.clear();
+         features.reserve(nPatches);
          //cout << "extracting patches..\n";
-         for(size_t patchIdx = 0; patchIdx < nPatches; ++patchIdx)
-            features.push_back(featExtr.extract(patches[patchIdx]));
-         
+         for(size_t patchIdx = 0; patchIdx < nPatches; ++patchIdx){
+            Feature newFeat = featExtr.extract(patches[patchIdx]);
+            features.push_back(newFeat);
+            //cout << "first element from new Feature = " << newFeat.content[0] << ", which should equal " << features[patchIdx].content[0] << endl;
+         }
+         //checkEqualFeatures(features);
          pretrainDump[cl].insert(pretrainDump[cl].end(),features.begin(),features.end());
          
       }
       //checkEqualFeatures(pretrainDump[cl]);
       //cout << "end feature meditation\n";
       //cout << pretrainDump[cl].size() << " features extracted for class " << cl << "\n";
+      //checkEqualFeatures(pretrainDump[cl]);
       codebook.constructCodebook(pretrainDump[cl],cl);
+      //checkEqualFeatures(pretrainDump[cl]);
       cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << nPatches << " patches each: " << nPatches * nImages<<" in total.\n";
    }
    pretrainDump.clear();

@@ -1,8 +1,9 @@
 #ifndef CSVM_KMEANS_H
 #define CSVM_KMEANS_H
 
+#include <limits>
 #include <vector>
-#include <iomanip>
+//#include <iomanip>
 #include "csvm_feature.h"
 
 using namespace std;
@@ -24,7 +25,7 @@ namespace csvm{
 		  cout << '\n';
 		  for (int idx = 0; idx < lastPosition.size; ++idx)
 		  {
-			  cout << fixed << setprecision(0) << lastPosition.content[idx]*1000 << " ";
+			  //cout << fixed << setprecision(0) << lastPosition.content[idx]*1000 << " ";
 		  }
 	  }
 
@@ -69,7 +70,7 @@ namespace csvm{
   class KMeans{
     KMeans_settings settings;
 	vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
-
+   vector<Feature> initCentroids(vector<Feature> collection, unsigned int nClusters);
     
   public:
     vector<Feature> cluster(vector<Feature> collection, unsigned int nClusters);

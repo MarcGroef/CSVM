@@ -22,7 +22,7 @@ namespace csvm{
       
       void setLabelId(int id);
       int getLabelId();
-      double getDistanceSq(Feature* f);
+      double getDistanceSq(Feature& f);
       double getManhDist(Feature* f);
   };
   

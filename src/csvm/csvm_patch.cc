@@ -37,11 +37,25 @@ void Patch::setPixel(int x,int y,int channel,unsigned char value){
    source->setPixel(offsetX+x,offsetY+y,channel,value);
 }
 
+Image* Patch::getSource(){
+   return source;
+}
+
 int Patch::getWidth(){
    return width;
 }
 
+int Patch::getX(){
+   return offsetX;
+}
 
+int Patch::getY(){
+   return offsetY;
+}
+
+bool Patch::equals(Patch p){
+    return (p.getSource() == source) && (offsetX == p.getX()) && ( offsetY == p.getY());
+}
 int Patch::getHeight(){
    return height;
 }

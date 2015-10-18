@@ -1,5 +1,5 @@
 #include <csvm/csvm_kmeans.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 
 
 using namespace std;
@@ -30,10 +30,64 @@ vector<ClusterCentroid> KMeans::initPrototypes(vector<Feature> featureSamples, u
 	return centroids;
 }
 
+vector<Feature> KMeans::initCentroids(vector<Feature> collection, unsigned int nClusters){
+   int collectionSize = collection.size();
+   unsigned int featureSize = collection[0].content.size();
+   vector<Feature> dictionary(nClusters,Feature(featureSize, 0));
+   
+   //getchar();
+      
+   unsigned int randomInt;
+   //cout <<"initProto's\n";
+   
+   for(size_t idx = 0; idx < nClusters; ++idx){
+      randomInt = rand() % collectionSize;
+      
+      while(randomInt < 0) randomInt += collectionSize;
+      
+      for(size_t d = 0; d < collection[0].content.size(); ++d){
+         
+         dictionary[idx].content[d] = collection[randomInt].content[d];
+      }
+   }
+   
+   return dictionary;
 
+}
+
+void checkEqualFeatures(vector< Feature>& dictionary){
+   //cout << "Begin sanity meditation. I see " << dictionary.size() << " features\n";
+   unsigned int dictSize = dictionary.size();
+   double dist = 0; 
+   double delta;
+   unsigned int wordSize = dictionary[0].content.size();
+   unsigned int nEquals = 0;
+   
+   
+   for(size_t word = 0; word < dictSize ; ++word){
+      
+      for(size_t word1 = 0; word1 < dictSize; ++word1){
+         dist = 0.0f;
+         if(word1==word) continue;
+         
+         for(size_t d = 0; d < wordSize; ++d){
+            delta = (dictionary[word].content[d] - dictionary[word1].content[d]);
+            //cout << "delta = " << (dictionary[word].content[d] - dictionary[word1].content[d]) << endl;
+            dist += delta < 0 ? delta * -1 : delta;
+            //cout << "now dist = " << dist << endl;
+         }
+         //cout << "dist = " << dist << endl;;
+         if(dist <= 0) ++nEquals;
+      }
+      
+      
+   }
+   cout << "I found " << nEquals << " equal features, out of " << dictSize << " features\n";
+   
+}
 
 vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nClusters){
-   
+   /*
 	//cout << "we got into clustering!" << '\n';
 
     unsigned int featureDims = featureSamples[0].size;
@@ -47,18 +101,19 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
 	double smallestDistance = 999999999;	//used to compare the smallest Distances between several clusters and a single feature.
 
    //cout << "print cluster 0 at start";
-   //centroids[0].printValues();
+   centroids[0].printValues();
 
 	//while there is a change in the centroids..
-   while (centroidsChanged)
+   for (size_t it = 0; centroidsChanged; ++it)
    {
-	   /*cout << "\nnext iteration\n";
-		   for(int idx = 0; idx < centroids.size(); ++idx) {
-			   cout << "\ncentroid " << idx << "values : ";
-			   centroids[idx].printValues();
-		   }
-		   //cout << "started clustering" << '\n';
-		   */
+      cout << "kmeans iteration " << it<< "\n";
+	  // cout << "\nnext iteration\n";
+	//	   for(int idx = 0; idx < centroids.size(); ++idx) {
+	//		   cout << "\ncentroid " << idx << "values : ";
+	//		   centroids[idx].printValues();
+		//   }
+		 //  //cout << "started clustering" << '\n';
+		   
 	   //reset the bool variable
 	   centroidsChanged = 0;
 
@@ -74,7 +129,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
 		   for (clusterLabel = 0; clusterLabel < centroids.size(); ++clusterLabel)
 		   {
 			   //and determine label of winning cluster using the distanceSq as indicated
-			   double featureDistance = featureSamples[fidx].getDistanceSq( &centroids[clusterLabel].lastPosition );
+			   double featureDistance = featureSamples[fidx].getDistanceSq(centroids[clusterLabel].lastPosition );
 			   if (featureDistance < smallestDistance)
 			   {
 				   newWinningCentroid = clusterLabel;
@@ -119,7 +174,75 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    }
    cout << " returned results " << '\n';
    return finalClusters;
+   */
+   unsigned int nData = featureSamples.size(); 
+   vector<Feature> centroids0 = initCentroids(featureSamples, nClusters);
+   vector<Feature> centroids1(nClusters, Feature(centroids0[0].content.size(), 0));
+   
+   vector<Feature>* centroids = &centroids0;
+   vector<Feature>* newCentroids = &centroids1;
+   int curCentroids = 1;
+   unsigned int dataDims = centroids0[0].content.size();
+   
+
+   vector< unsigned int > nMembers(nClusters,0);
+ 
+   double curDist;
+
+   double prevTotalDistance = 2;
+   double totalDistance = 1;
+   double deltaDist = 1;
+   double closestDist;
+   for(; deltaDist > 0; curCentroids *= -1){
+
+      prevTotalDistance = totalDistance;
+      totalDistance = 0;
+      
+      centroids = (curCentroids == 1 ? &centroids0: &centroids1);
+      newCentroids = (curCentroids == 1 ? &centroids1 : &centroids0);
+      
+      for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
+         for(size_t dim = 0; dim < dataDims; ++dim)
+            (*newCentroids)[cIdx].content[dim] = 0;
+         nMembers[cIdx] = 0;
+      }
+         
+      for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+         closestDist = 999.0f;
+         unsigned int closestCentr = 0;
+         
+         for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
+            curDist = (*centroids)[cIdx].getDistanceSq(featureSamples[dIdx]);
+            //cout << "curDist = " << curDist << endl;
+            if(curDist < closestDist){
+               closestDist = curDist;
+               closestCentr = cIdx;
+               
+            }
+         }
+         //cout << "closestDist = " << closestDist << endl;
+         //cout << "closestCentr =" << closestCentr << " at dist: " << closestDist << endl;
+         totalDistance += closestDist;
+         
+         for(size_t dim = 0; dim < dataDims; ++dim)
+            (*newCentroids)[closestCentr].content[dim] += featureSamples[dIdx].content[dim];
+         ++nMembers[closestCentr];
+      }
+      
+      for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
+         for(size_t dim = 0; dim < dataDims; ++dim)
+            if(nMembers[cIdx] > 0)(*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
+         
+      }
+   deltaDist = (prevTotalDistance - totalDistance);
+   deltaDist = deltaDist < 0 ? deltaDist * -1 : deltaDist;
+   
+   }
+   
+   
+   return (*newCentroids);
 }
+
 
 
 

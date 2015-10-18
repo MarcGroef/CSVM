@@ -46,7 +46,7 @@ int main(int argc,char**argv){
    vector<string> imDirs;
    
    imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_1.bin");
-   //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
+   imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_2.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_3.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_4.bin");
    //imDirs.push_back("../datasets/cifar-10-batches-bin/data_batch_5.bin");
@@ -64,13 +64,13 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
-   c.exportCodebook("codebook.bin");
+   //c.exportCodebook("codebook.bin");
 
    //c.importCodebook("codebook.bin");
 
    //svm stuff
-   c.initSVMs();
-   c.trainSVMs();
+   //c.initSVMs();
+   //c.trainSVMs();
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;
