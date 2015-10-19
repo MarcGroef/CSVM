@@ -1,5 +1,5 @@
 #include <csvm/csvm_hog_descriptor.h>
-
+#include <iomanip> //for setprecision couting
 
 using namespace std;
 using namespace csvm;
@@ -32,16 +32,22 @@ HOGDescriptor::HOGDescriptor(int nBins = 9, int numberOfCells = 9, int blockSize
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y) {
 	double result=0;
+	//for now, implement zero-padding hardcoded.
 	if (settings.useGreyPixel) {
-		result = patch.getGreyPixel(x + 1, y) - patch.getGreyPixel(x - 1, y);
+		double xPlus = (x + 1 > patch.getWidth() ? 0 : patch.getGreyPixel(x + 1, y));
+		double xMin = (x - 1 < 0 ? 0 : patch.getGreyPixel(x - 1, y));
+		result = xPlus - xMin;
 	}
 	return result;
 }
 
 double HOGDescriptor::computeYGradient(Patch patch, int x, int y) {
 	double result=0;
+	//for now, implement zero padding hardcoded
 	if (settings.useGreyPixel) {
-		result = patch.getGreyPixel(x, y+1) - patch.getGreyPixel(x, y-1);
+		double yPlus = (y + 1 > patch.getHeight() ? 0 : patch.getGreyPixel(x, y+1));
+		double yMin = (y - 1 < 0 ? 0 : patch.getGreyPixel(x, y-1));
+		result = yPlus - yMin;
 	}
 	return result;
 }
@@ -68,8 +74,8 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 	   cout << "patch size is wrong!" << '\n';
    }
    unsigned int cellStride = patchWidth / 2.0;
-   this->settings.cellSize= patchWidth / 2;
-   this->settings.cellStride = patchWidth / 2;
+   this->settings.cellSize= patchWidth / 2.0;
+   this->settings.cellStride = patchWidth / 2.0;
    this->settings.blockSize = patchWidth;
    //this->blockStride = blockStride;
    this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
@@ -82,15 +88,21 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 
    //iterate through block with a cell, with stride cellstride. 
    //double cellNumber = 0;
-   for (int cellX = 0; cellX + settings.cellSize < patchWidth; cellX += cellStride) {
-	   for (int cellY = 0; cellY+ settings.cellSize < patchHeight; cellY += cellStride) {
-
+   /*
+   cout << "\n\nexecuting HOG" << '\n';
+   cout << "cellsize : " << settings.cellSize <<
+	   "\ncellStride : " << settings.cellStride <<
+	   "\nblockSize : " << settings.blockSize << '\n';
+	   */
+   for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += cellStride) {
+	   for (int cellY = 0; cellY+ settings.cellSize <= patchHeight; cellY += cellStride) {
+		   //cout << "cell: " << cellX << ", " << cellY << '\n';
 
 		   vector <double> cellOrientationHistogram(settings.nBins, 0);
 		   //now for every cell, compute histogram of features. 
-		   for (int X = 1; X < settings.cellSize - 1; ++X)
+		   for (int X = 0; X < settings.cellSize; ++X)
 		   {
-			   for (int Y = 1; Y < settings.cellSize -1; ++Y)
+			   for (int Y = 0; Y < settings.cellSize; ++Y)
 			   {
 				   double xGradient = computeXGradient(block, X + cellX, Y + cellY);
 				   double yGradient = computeYGradient(block, X + cellX, Y + cellY);
@@ -99,13 +111,21 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 				   double gradientOrientation = computeOrientation(xGradient, yGradient);
 				   //size_t bin = static_cast<size_t>(floor(gradientOrientation / (180.0 / settings.nBins)));
                size_t bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-               cout << "bin = " << bin <<  "at gradientOri: " << gradientOrientation << endl;
+               //cout << "bin = " << bin <<  "at gradientOri: " << gradientOrientation << endl;
 				   cellOrientationHistogram[bin > 8 ? 8 : bin] += gradientMagnitude;
 			   }
 		   }
+		   //cout << "\nsingle cell feature vect:" << '\n';
+		   //for (size_t idx = 0; idx < settings.nBins; ++idx) {
+			//   cout << std::setprecision(3) << cellOrientationHistogram[idx] << " | " ;
+		   //}
+		   
 		   //now we have fully processed a single cell. let's append it to our to-be feature vector.
 		   blockHistogram.insert(blockHistogram.end(), cellOrientationHistogram.begin(), cellOrientationHistogram.end());
-
+		   //cout << "\nblockHistogram: " << '\n';
+		   //for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+		//	   cout << blockHistogram[idx] << " | ";
+		  // }
 	   }
    }
    //now we have processed all cells, whose histograms are all appended to one another in blockHistrogram. 
@@ -139,7 +159,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    result.content = blockHistogram;
    result.label = block.getLabel();
    result.labelId = block.getLabelId();
-   cout << "HOG passed the label " << result.labelId << endl;
+   //cout << "HOG passed the label " << result.labelId << endl;
    return result;
    /*
    vector< vector<double> > histograms;   //collection of HOG histograms
