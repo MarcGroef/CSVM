@@ -27,7 +27,7 @@ unsigned int Feature::getLabelId(){
 double Feature::getDistanceSq(Feature& f){
    //cout << "My size = " << size << ", the other one's = " << f->size << endl;
    if(f.size != size){
-      cout << "csvm::Feature::getDistance() Error! Different feature sizes!\n";
+      cout << "csvm::Feature::getDistance() Error! Different feature sizes! Namely " << f.size << " vs. " << size << endl;
       exit(-1);
    }
    //if(f->content == this->content) cout << "Same pointer also!!!\n";

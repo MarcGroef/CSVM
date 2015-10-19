@@ -9,7 +9,7 @@ using namespace csvm;
 HOGDescriptor::HOGDescriptor() {
    this->settings.nBins=9;
    this->settings.cellSize=3;
-   //this->cellStride = cellStride;
+   //this->settings.cellStride = ;
    this->settings.blockSize = 9;
    //this->blockStride = blockStride;
    this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
@@ -51,7 +51,11 @@ double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
 }
 
 double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
-	return atan2(yGradient, xGradient) * 180.0 / M_PI;
+   double ori = atan2(yGradient, xGradient) * 180.0 / M_PI;
+   while(ori < 0.0)
+      ori += 180.0;
+   
+	return ori;
 }
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
@@ -60,6 +64,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    vector <double> gx,gy;
    int patchWidth = block.getWidth();
    int patchHeight = block.getHeight();
+   unsigned int cellStride = patchWidth / 2.0;
    //const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
    //for now we assume 4 cells
    vector <double> blockHistogram(0, 0);
@@ -68,9 +73,9 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    //for now 
 
    //iterate through block with a cell, with stride cellstride. 
-   double cellNumber = 0;
-   for (int cellX = 1; cellX + settings.cellSize < patchWidth-1; cellX += settings.cellStride) {
-	   for (int cellY = 1; cellY+ settings.cellSize < patchHeight-1; cellY += settings.cellStride) {
+   //double cellNumber = 0;
+   for (int cellX = 1; cellX + settings.cellSize < patchWidth-1; cellX += cellStride) {
+	   for (int cellY = 1; cellY+ settings.cellSize < patchHeight-1; cellY += cellStride) {
 
 
 		   vector <double> cellOrientationHistogram(settings.nBins, 0);
@@ -84,8 +89,10 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 				   //we add the magnitude of a pixel into the bin wherein its gradient orientation falls. 
 				   double gradientMagnitude = computeMagnitude(xGradient, yGradient);
 				   double gradientOrientation = computeOrientation(xGradient, yGradient);
-				   size_t bin = static_cast<size_t>(floor(gradientOrientation / (180 / settings.nBins)));
-				   cellOrientationHistogram[bin] += gradientMagnitude;
+				   //size_t bin = static_cast<size_t>(floor(gradientOrientation / (180.0 / settings.nBins)));
+               size_t bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+               cout << "bin = " << bin <<  "at gradientOri: " << gradientOrientation << endl;
+				   cellOrientationHistogram[bin > 8 ? 8 : bin] += gradientMagnitude;
 			   }
 		   }
 		   //now we have fully processed a single cell. let's append it to our to-be feature vector.
@@ -162,7 +169,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    gx.exportImage("gx.png");
    gy.exportImage("gy.png");
    
-   /*
+   
    
    
    //devide in blocks.

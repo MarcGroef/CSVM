@@ -18,9 +18,8 @@ namespace csvm{
 	struct HOGSettings {
 		int nBins;                //number of angular orientated histogram bins bins
 		int cellSize;             // assumes square cell
-		int cellStride;           //the steps the cell make across the input
+		//int cellStride;           //the steps the cell make across the input
 		int blockSize;
-		int blockStride;
 		int numberOfCells;
 		bool useGreyPixel;
 
