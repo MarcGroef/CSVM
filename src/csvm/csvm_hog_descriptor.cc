@@ -8,11 +8,11 @@ using namespace csvm;
 //HOGDescriptor::HOGDescriptor(int nBins = 9, int cellSize = 3, int blockSize = 9, bool useGreyPixel = 1) {
 HOGDescriptor::HOGDescriptor() {
    this->settings.nBins=9;
-   this->settings.cellSize=3;
+   //this->settings.cellSize=3;
    //this->settings.cellStride = ;
-   this->settings.blockSize = 9;
+   //this->settings.blockSize = 9;
    //this->blockStride = blockStride;
-   this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
+   //this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
    this->settings.useGreyPixel = true;
 }
 
@@ -64,7 +64,15 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    vector <double> gx,gy;
    int patchWidth = block.getWidth();
    int patchHeight = block.getHeight();
+   if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
+	   cout << "patch size is wrong!" << '\n';
+   }
    unsigned int cellStride = patchWidth / 2.0;
+   this->settings.cellSize= patchWidth / 2;
+   this->settings.cellStride = patchWidth / 2;
+   this->settings.blockSize = patchWidth;
+   //this->blockStride = blockStride;
+   this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
    //const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
    //for now we assume 4 cells
    vector <double> blockHistogram(0, 0);
@@ -74,15 +82,15 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 
    //iterate through block with a cell, with stride cellstride. 
    //double cellNumber = 0;
-   for (int cellX = 1; cellX + settings.cellSize < patchWidth-1; cellX += cellStride) {
-	   for (int cellY = 1; cellY+ settings.cellSize < patchHeight-1; cellY += cellStride) {
+   for (int cellX = 0; cellX + settings.cellSize < patchWidth; cellX += cellStride) {
+	   for (int cellY = 0; cellY+ settings.cellSize < patchHeight; cellY += cellStride) {
 
 
 		   vector <double> cellOrientationHistogram(settings.nBins, 0);
 		   //now for every cell, compute histogram of features. 
-		   for (int X = 0; X < settings.cellSize; ++X)
+		   for (int X = 1; X < settings.cellSize - 1; ++X)
 		   {
-			   for (int Y = 0; Y < settings.cellSize; ++Y)
+			   for (int Y = 1; Y < settings.cellSize -1; ++Y)
 			   {
 				   double xGradient = computeXGradient(block, X + cellX, Y + cellY);
 				   double yGradient = computeYGradient(block, X + cellX, Y + cellY);
@@ -105,28 +113,32 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    
    //we first implement normalization
    //first find the lowest and highest value for a bin:
+   /*
    double lowestValue = 360;
    double highestValue = 0;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
 		highestValue = (blockHistogram[idx] > highestValue ? blockHistogram[idx] : highestValue);
 		lowestValue = (blockHistogram[idx] < highestValue ? blockHistogram[idx] : lowestValue);
    }
+   */
 	//L2 normalization scheme:
    double vTwoSquared = 0;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
 	   vTwoSquared += pow(blockHistogram[idx], 2);
    }
-   vTwoSquared = sqrt(vTwoSquared); //is now vector length
+	//   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
-   double e = 0.3;
+   double e = 0.01;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
-	   blockHistogram[idx] /= sqrt(pow(vTwoSquared, 2) + pow(e, 2));
+	   blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
    }
 
 
    Feature result(settings.nBins*settings.numberOfCells, 0);
    result.content = blockHistogram;
+   result.label = block.getLabel;
+   result.labelId = block.getLabelId;
    return result;
    /*
    vector< vector<double> > histograms;   //collection of HOG histograms
