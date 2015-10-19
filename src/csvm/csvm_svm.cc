@@ -25,18 +25,18 @@ double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx
    double target;
    unsigned int nClasses = clActivations.size();
    unsigned int nCentroids = clActivations[0].content.size();
-   
+   double sum = 0.0;
    double yData = (dataLabel == classId ? 1.0 : -1.0);
    double yCentroid;
    for(size_t cl = 0; cl < nClasses; ++cl){
       yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
-         diff += alphaData[dataIdx] * yData * yCentroid * clActivations[cl].content[centr];
+         sum += alphaData[dataIdx] * yData * yCentroid * clActivations[cl].content[centr];
          //cout << "diff = " << clActivations[cl].content[centr] << endl;
       }
    }
-   
-   target = alphaData[dataIdx] + learningRate * ( -0.5 * diff);
+   sum = -1.0 * sum;
+   target = alphaData[dataIdx] + (learningRate * sum);
    //cout << "target = " << target << endl;
    target = target < 0.0 ? 0.0 : target;
    target = target > settings.SVM_C ? settings.SVM_C : target;
@@ -143,6 +143,93 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsig
 }
 
 
+double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double D2){
+   
+   double diff = 0.0;
+   double deltaDiff = 0.0;
+   double target;
+   double sum = 0.0;
+   double yData0;
+   double yData1;
+   unsigned int nData = simKernel.size();
+   double deltaAlpha;
+
+   
+   for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
+      deltaDiff = 0.0;
+      yData0 = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
+      for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
+         yData1 = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
+         sum += alphaData[dIdx1] * yData0 * yData1 * simKernel[dIdx0].content[dIdx1];
+      }
+      deltaAlpha = 1.0 - sum;
+      target = D2 * alphaData[dIdx0] + deltaAlpha * learningRate;
+      target = target > settings.SVM_C ? settings.SVM_C : target;
+      target = target < 0.0 ? 0.0 : target;
+      deltaDiff = alphaData[dIdx0] - target;
+      diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
+      alphaData[dIdx0] = target;
+      
+   }
+   
+   return diff;
+}
+
+double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double cost, unsigned int nIterations){
+   double sum = 0;
+   double oldVal;
+   unsigned int nData = simKernel.size();
+   double deltaAlpha;
+   double yData; 
+   double target;
+   
+   double diff = 0.0;
+   double deltaDiff = 0.0;
+   
+   for(size_t constItr = 0; constItr < nIterations; ++constItr){
+      for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
+         yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
+         sum += alphaData[dIdx0] * yData;
+      }
+      
+      for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
+         yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
+         oldVal = alphaData[dIdx0];
+         deltaAlpha = -2.0 * cost * sum * yData;
+         target = alphaData[dIdx0] + deltaAlpha * learningRate;
+         target = target > settings.SVM_C ? settings.SVM_C : target;
+         target = target < 0.0 ? 0.0 : target;
+         deltaDiff = alphaData[dIdx0] - target;
+         diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
+         
+         alphaData[dIdx0] = target;
+         sum += (alphaData[dIdx0] - oldVal) * yData;
+      }
+   }
+   return diff;
+}
+
+void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
+   
+   double sumDeltaAlpha = 1000.0;
+   double prevSumDeltaAlpha = 100.0;
+   double deltaAlphaData;
+   double convergenceThreshold = 0.00005;
+   while(((prevSumDeltaAlpha - sumDeltaAlpha) > 0 ? (prevSumDeltaAlpha - sumDeltaAlpha) : (prevSumDeltaAlpha - sumDeltaAlpha) * -1 ) > convergenceThreshold){
+      prevSumDeltaAlpha = sumDeltaAlpha;
+      sumDeltaAlpha = 0.0;
+      deltaAlphaData = updateAlphaDataClassic(simKernel, ds,1);
+      deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
+      sumDeltaAlpha += deltaAlphaData;
+      
+      //constrainAlphaDataClassic(simKernel, ds);
+      cout << "Yay, SVM " << classId << " training iteration round! Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
+   }
+
+}
+
+
+
 void SVM::train(vector< vector<Feature> >& activations){
    unsigned int nClasses = activations[0].size();
    unsigned int nCentroids = activations[0][0].content.size();
@@ -162,15 +249,11 @@ void SVM::train(vector< vector<Feature> >& activations){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
-         //cout << "update alphaData's\n";
          deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx);
-         //cout << "delta = " << deltaAlphaData << endl;
          deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
          sumDeltaAlpha += deltaAlphaData;
-         //cout << "delta = " << deltaAlphaData << endl;
       }
-      //getchar();
-      //cout << "intermediate sum delta alpha = " << fixed << sumDeltaAlpha << endl;
+
       contstrainAlphaData(activations, 4, 1);
       
       for(size_t cl = 0; cl < nClasses; ++cl){
@@ -205,5 +288,36 @@ double SVM::classify(vector<Feature> f, Codebook* cb){
          
       }
    }
+   return result;
+}
+
+double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > datasetActivations, CSVMDataset* ds){
+   double result = 0;
+   unsigned int nData = datasetActivations.size();
+  
+   double yData;
+   double kernel = 0.0;
+   double sigma = 1.0;
+   unsigned int nClasses = datasetActivations[0].size();
+   unsigned int nCentroids = datasetActivations[0][0].content.size();
+   Feature dataKernel(nData,0.0);
+   
+   for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
+   
+      double sum = 0;
+      for(size_t cl = 0; cl < nClasses; ++cl){
+         for(size_t centr = 0; centr < nCentroids; ++centr){
+            sum += (datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr]);
+         }
+      }
+      
+      
+     kernel = exp((-1.0*sqrt(sum))/sigma);
+     yData = (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
+     result += alphaData[dIdx0] * yData * kernel;
+      
+   }
+   
+   
    return result;
 }

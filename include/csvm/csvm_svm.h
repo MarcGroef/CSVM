@@ -5,6 +5,7 @@
 #include <iostream>
 #include "csvm_feature.h"
 #include "csvm_codebook.h"
+#include "csvm_dataset.h"
 
 using namespace std;
 namespace csvm{
@@ -34,6 +35,10 @@ namespace csvm{
      void train(vector< vector<Feature> >& activations);
      double classify(vector<Feature> f, Codebook* cb);
      void contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost);
+     double constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double cost, unsigned int nIterations);
+     double updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double D2);
+     void trainClassic(vector<Feature> simKernel, CSVMDataset* ds);
+     double classifyClassic(vector<Feature> f, vector< vector<Feature> > datasetActivations, CSVMDataset* cb);
   };
    
 }
