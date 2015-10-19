@@ -31,7 +31,7 @@ HOGDescriptor::HOGDescriptor(int nBins = 9, int numberOfCells = 9, int blockSize
 
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y) {
-	double result;
+	double result=0;
 	if (settings.useGreyPixel) {
 		result = patch.getGreyPixel(x + 1, y) - patch.getGreyPixel(x - 1, y);
 	}
@@ -39,7 +39,7 @@ double HOGDescriptor::computeXGradient(Patch patch, int x, int y) {
 }
 
 double HOGDescriptor::computeYGradient(Patch patch, int x, int y) {
-	double result;
+	double result=0;
 	if (settings.useGreyPixel) {
 		result = patch.getGreyPixel(x, y+1) - patch.getGreyPixel(x, y-1);
 	}
@@ -51,7 +51,7 @@ double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
 }
 
 double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
-	return atan2(yGradient, xGradient) * 180 / M_PI;
+	return atan2(yGradient, xGradient) * 180.0 / M_PI;
 }
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
