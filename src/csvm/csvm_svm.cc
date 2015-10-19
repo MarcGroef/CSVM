@@ -15,7 +15,7 @@ SVM::SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, un
    finalDataWeights = vector <double> (dataDims,0);
    this->dataDims = dataDims;
    
-   settings.SVM_C = .001;
+   settings.SVM_C = 9;
 
 }
 
@@ -218,14 +218,14 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
    double convergenceThreshold = 0.00005;
-   while((sumDeltaAlpha) > convergenceThreshold){
+   while(abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds,1);
       deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
       sumDeltaAlpha += deltaAlphaData;
       
-      //constrainAlphaDataClassic(simKernel, ds, 1, 4 );
+      constrainAlphaDataClassic(simKernel, ds, 1, 4 );
       cout << "Yay, SVM " << classId << " training iteration round! Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
    }
 
