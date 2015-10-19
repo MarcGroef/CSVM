@@ -4,7 +4,7 @@ using namespace std;
 using namespace csvm;
 
 FeatureExtractor::FeatureExtractor(){
-    settings.featureType = CLEAN;  
+    settings.featureType = HOG;
 }
 
 Feature FeatureExtractor::extract(Patch p){
@@ -14,6 +14,8 @@ Feature FeatureExtractor::extract(Patch p){
          return lbp.getLBP(p,0);
       case CLEAN:
          return clean.describe(p);
+	  case HOG:
+		  return hog.getHOG(p, 0, true);
    }
    
    return lbp.getLBP(p,0);

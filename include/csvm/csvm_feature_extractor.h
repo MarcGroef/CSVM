@@ -4,7 +4,7 @@
 #include "csvm_clean_descriptor.h"
 #include "csvm_lbp_descriptor.h"
 #include "csvm_feature.h"
-
+#include "csvm_hog_descriptor.h"
 
 using namespace std;
 namespace csvm{
@@ -12,6 +12,7 @@ namespace csvm{
   enum FeatureType{
     LBP,
     CLEAN,
+	HOG,
   };
   
   struct FeatureExtractorSettings{
@@ -21,6 +22,7 @@ namespace csvm{
   class FeatureExtractor{
     FeatureExtractorSettings settings;
     LBPDescriptor lbp;
+	HOGDescriptor hog;
     CleanDescriptor clean;
     
   public:
