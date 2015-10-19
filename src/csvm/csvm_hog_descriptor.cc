@@ -73,6 +73,14 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
 	   cout << "patch size is wrong!" << '\n';
    }
+   /*
+   if p = patch width, and height (pxp patch size)
+   and cell size is c
+   cell stride is cstr, with c % cstr == 0
+   then 
+   number of cells = ( ((p - c) / cstr) + 1 )^2
+   
+   */
    unsigned int cellStride = patchWidth / 2.0;
    this->settings.cellSize= patchWidth / 2.0;
    this->settings.cellStride = patchWidth / 2.0;
