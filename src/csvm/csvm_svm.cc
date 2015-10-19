@@ -160,6 +160,7 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds,
       yData0 = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
          yData1 = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
+         //cout << "yData0 = " << yData0 << ", Ydata1 = " << yData1 << endl;
          sum += alphaData[dIdx1] * yData0 * yData1 * simKernel[dIdx0].content[dIdx1];
       }
       deltaAlpha = 1.0 - sum;
@@ -194,6 +195,7 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
       
       for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
          yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
+         //cout << "yData = " << yData << endl;
          oldVal = alphaData[dIdx0];
          deltaAlpha = -2.0 * cost * sum * yData;
          target = alphaData[dIdx0] + deltaAlpha * learningRate;
@@ -215,14 +217,14 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
    double convergenceThreshold = 0.00005;
-   while(((prevSumDeltaAlpha - sumDeltaAlpha) > 0 ? (prevSumDeltaAlpha - sumDeltaAlpha) : (prevSumDeltaAlpha - sumDeltaAlpha) * -1 ) > convergenceThreshold){
+   while((sumDeltaAlpha) > convergenceThreshold){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds,1);
       deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
       sumDeltaAlpha += deltaAlphaData;
       
-      //constrainAlphaDataClassic(simKernel, ds);
+      //constrainAlphaDataClassic(simKernel, ds, 1, 4 );
       cout << "Yay, SVM " << classId << " training iteration round! Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
    }
 

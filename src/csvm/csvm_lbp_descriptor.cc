@@ -128,8 +128,8 @@ Feature LBPDescriptor::getLBP(Patch patch, int channel) {
 		cout << "element " << idx << " = " << histogram.content[idx] << endl;
 	}*/
 	//cout << '\n';
-	for(size_t b = 0; b < histogram.content.size(); ++b)
-      histogram.content[b] /= ( (patchWidth - 2) * (patchWidth - 2));
+	//for(size_t b = 0; b < histogram.content.size(); ++b)
+   //   histogram.content[b] /= ( (patchWidth - 2) * (patchWidth - 2));
 	return histogram;
 }
 

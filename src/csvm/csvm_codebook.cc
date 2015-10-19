@@ -16,7 +16,7 @@ union charDouble{
 Codebook::Codebook(){
    nClasses = 10;
    bow.resize(nClasses);
-   settings.similaritySigma = .4;
+   settings.similaritySigma = 1;
 }
 
 Feature Codebook::getCentroid(int cl, int centrIdx){

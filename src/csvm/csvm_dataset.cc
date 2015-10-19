@@ -5,7 +5,7 @@ using namespace csvm;
 
 
 CSVMDataset::CSVMDataset(){
-    settings.nImages =10000;
+    settings.nImages =1000;
 }
 
 void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
