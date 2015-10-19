@@ -137,8 +137,9 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 
    Feature result(settings.nBins*settings.numberOfCells, 0);
    result.content = blockHistogram;
-   result.label = block.getLabel;
-   result.labelId = block.getLabelId;
+   result.label = block.getLabel();
+   result.labelId = block.getLabelId();
+   cout << "HOG passed the label " << result.labelId << endl;
    return result;
    /*
    vector< vector<double> > histograms;   //collection of HOG histograms

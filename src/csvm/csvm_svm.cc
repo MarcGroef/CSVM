@@ -94,7 +94,7 @@ void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, unsigned
    for(size_t iter = 0; iter < nIterations; ++iter){
       sum = 0.0;
       for(size_t dIdx0 = 0; dIdx0 < size; ++dIdx0){
-         cout << "update alphaData with label == " << ((unsigned int)(activations[dIdx0][0].getLabelId())) << endl;
+         //cout << "update alphaData with label == " << ((unsigned int)(activations[dIdx0][0].getLabelId())) << endl;
          yData = ((unsigned int)(activations[dIdx0][0].getLabelId())) == classId ? 1.0 : -1.0;
          sum += alphaData[dIdx0] * yData;
          //cout << "sum = " << alphaData[dIdx0] << endl;
@@ -149,13 +149,13 @@ void SVM::train(vector< vector<Feature> >& activations){
    //cout << "I'm reading " << nCentroids << " centroids, and " << nClasses << " classes\n";
    //cout << "[1,1] act = " << activations[0][0].content[0] << endl;
    unsigned int size = activations.size();
-   double sumDeltaAlpha = 1.0f;
+   double sumDeltaAlpha = 1000.0f;
 
-   double prevSumDeltaAlpha = 1.0f;
+   double prevSumDeltaAlpha = 10000.0f;
    double deltaAlphaData, deltaAlphaCentroid;
-   double convergenceThreshold = 0.0005;
+   double convergenceThreshold = 0.00005;
    cout << "Yay! I'm a learning SVM, learing on " << size << " data\n";
-   while(sumDeltaAlpha > convergenceThreshold){
+   while(((prevSumDeltaAlpha - sumDeltaAlpha) > 0 ? (prevSumDeltaAlpha - sumDeltaAlpha) : (prevSumDeltaAlpha - sumDeltaAlpha) * -1 ) > convergenceThreshold){
       
       
       
