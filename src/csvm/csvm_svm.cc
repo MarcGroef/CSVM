@@ -15,7 +15,7 @@ SVM::SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, un
    finalDataWeights = vector <double> (dataDims,0);
    this->dataDims = dataDims;
    
-   settings.SVM_C = 1.0;
+   settings.SVM_C = .001;
 
 }
 
@@ -161,6 +161,7 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds,
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
          yData1 = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
          //cout << "yData0 = " << yData0 << ", Ydata1 = " << yData1 << endl;
+         //cout << "Similarity = " << simKernel[dIdx0].content[dIdx1] << endl; 
          sum += alphaData[dIdx1] * yData0 * yData1 * simKernel[dIdx0].content[dIdx1];
       }
       deltaAlpha = 1.0 - sum;
@@ -299,7 +300,7 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
   
    double yData;
    double kernel = 0.0;
-   double sigma = 1.0;
+   double sigma = 0.001;
    unsigned int nClasses = datasetActivations[0].size();
    unsigned int nCentroids = datasetActivations[0][0].content.size();
    Feature dataKernel(nData,0.0);

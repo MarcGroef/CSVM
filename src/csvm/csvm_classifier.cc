@@ -49,7 +49,7 @@ void checkEqualPatches(vector<Patch> patches){
 }
 
 void CSVMClassifier::constructCodebook(){
-   unsigned int nPatches = 10;  //number of random patches from each image
+   unsigned int nPatches = 20;  //number of random patches from each image
    unsigned int nClasses = dataset.getNumberClasses();
    
 

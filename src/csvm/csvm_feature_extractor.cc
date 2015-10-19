@@ -5,7 +5,7 @@ using namespace csvm;
 
 FeatureExtractor::FeatureExtractor(){
 
-    settings.featureType = LBP;
+    settings.featureType = HOG;
 }
 
 Feature FeatureExtractor::extract(Patch p){
