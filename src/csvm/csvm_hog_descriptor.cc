@@ -129,7 +129,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 	//   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
-   double e = 0.3;
+   double e = 0.01;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
 	   blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
    }
@@ -137,6 +137,8 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 
    Feature result(settings.nBins*settings.numberOfCells, 0);
    result.content = blockHistogram;
+   result.label = block.getLabel;
+   result.labelId = block.getLabelId;
    return result;
    /*
    vector< vector<double> > histograms;   //collection of HOG histograms
