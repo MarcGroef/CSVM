@@ -184,11 +184,11 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    int curCentroids = 1;
    unsigned int dataDims = centroids0[0].content.size();
    
-
+   
    vector< unsigned int > nMembers(nClusters,0);
  
    double curDist;
-
+   cout << "Entering KMeans\n";
    double prevTotalDistance = 2;
    double totalDistance = 1;
    double deltaDist = 1;

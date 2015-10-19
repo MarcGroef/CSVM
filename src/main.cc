@@ -66,16 +66,18 @@ int main(int argc,char**argv){
    c.constructCodebook();
    c.exportCodebook("codebook.bin");
 
-   //c.importCodebook("superawesomecodebook.bin");
+   //c.importCodebook("codebook.bin");
 
    //svm stuff
    c.initSVMs();
-   c.trainSVMs();
+   //c.trainSVMs();
    
+   vector< vector< Feature> > trainActivations = c.trainClassicSVMs(2.0);
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
    for(size_t im = 0; im < 1000; ++im){
-      unsigned int result = c.classify(c.dataset.getImagePtr(im));
+      //unsigned int result = c.classify(c.dataset.getImagePtr(im));
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations);
       cout << "classifying image " << im << ": " << c.dataset.getImagePtr(im)->getLabelId() << " is classified as " << result << endl;
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == im)
          ++nCorrect;

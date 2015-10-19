@@ -72,6 +72,7 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
       }
       
       activations[cl].label = features[cl].label;
+      activations[cl].labelId = features[cl].labelId;
    }
    
    

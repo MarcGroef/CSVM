@@ -67,13 +67,15 @@ Feature LBPDescriptor::getLBP(Patch patch, int channel) {
 	//const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
 	
 	bitset<(8)> pixelFeatures;
-	int biggestvalue = 0;
+	/*int biggestvalue = 0;
 	for (int idx = 0; idx < featureIndex.size(); ++idx) {
 		biggestvalue = (featureIndex[idx] > biggestvalue ? featureIndex[idx] : biggestvalue);
-	}
-   Feature histogram( biggestvalue +1 ,0);
+	}*/
+   Feature histogram( 256 ,0);
+   
+	//vector<int> histogram(256, 0); //initialize a histogram to represent a whole patch
    histogram.label = patch.getLabel();
-	//vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
+   histogram.labelId = patch.getLabelId();
 	//cout << " patch width is: " << patchWidth;
 	//for now 
 
@@ -117,7 +119,7 @@ Feature LBPDescriptor::getLBP(Patch patch, int channel) {
 			//cout << "test";
 			//cout << pixelFeatures.to_ulong() << "\n";
 
-			histogram.content[ featureIndex[(int)pixelFeatures.to_ulong()]] += 1;
+			histogram.content[ (int)pixelFeatures.to_ulong()] += 1;
 
 		}
 	}
