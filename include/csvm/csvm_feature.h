@@ -21,7 +21,7 @@ namespace csvm{
       Feature(Feature* f);
       
       void setLabelId(int id);
-      int getLabelId();
+      unsigned int getLabelId();
       double getDistanceSq(Feature& f);
       double getManhDist(Feature* f);
   };

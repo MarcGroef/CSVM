@@ -61,7 +61,7 @@ int Patch::getHeight(){
 }
 
 unsigned char Patch::getGreyPixel(int x, int y){
-   double val = source->getGreyPixel(offsetX+x,offsetY+y);
+   unsigned char val = source->getGreyPixel(offsetX+x,offsetY+y);
    
     return val > 255 ? 255 : val;
 }

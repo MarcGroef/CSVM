@@ -184,7 +184,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    int curCentroids = 1;
    unsigned int dataDims = centroids0[0].content.size();
    
-
+   
    vector< unsigned int > nMembers(nClusters,0);
  
    double curDist;

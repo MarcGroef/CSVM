@@ -21,7 +21,7 @@ void Feature::setLabelId(int id){
    labelId = id;
 }
 
-int Feature::getLabelId(){
+unsigned int Feature::getLabelId(){
    return labelId;
 }
 double Feature::getDistanceSq(Feature& f){

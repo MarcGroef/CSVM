@@ -321,7 +321,7 @@ namespace csvm{
       unsigned char val;
       for(unsigned int y = 0; y < height; y++){
          for(unsigned int x = 0; x < width; x++){
-            val = 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
+            val = 0.2126 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
             newImage.setPixel(x,y,0,val);
             
          }
