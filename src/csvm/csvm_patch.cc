@@ -69,3 +69,7 @@ unsigned char Patch::getGreyPixel(int x, int y){
 string Patch::getLabel(){
    return source->getLabel();
 }
+
+unsigned int Patch::getLabelId(){
+   return source->getLabelId();
+}

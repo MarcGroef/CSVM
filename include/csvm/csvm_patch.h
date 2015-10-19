@@ -26,6 +26,7 @@ namespace csvm{
       int getHeight();
       unsigned char getGreyPixel(int x,int y);
       string getLabel();
+      unsigned int getLabelId();
       bool equals(Patch p);
       Image* getSource();
    };

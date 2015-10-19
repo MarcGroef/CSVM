@@ -25,7 +25,7 @@ namespace csvm{
     unsigned int classId;
     double updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx);
     double updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsigned int centrClass, int centr);
-    
+    void constrainAlphaCentroid(vector< vector< Feature > >& activations, unsigned int nIterations, double cost);
     vector <double> finalDataWeights;
     unsigned int dataDims;
   public:
