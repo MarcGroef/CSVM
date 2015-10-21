@@ -5,7 +5,7 @@ using namespace csvm;
 
 
 CSVMDataset::CSVMDataset(){
-    settings.nImages =1000;
+    //settings.nImages =5000;
 }
 
 void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
@@ -46,6 +46,14 @@ void CSVMDataset::splitDatasetToClasses(){
       trainImagesIdx[id].push_back(idx);    
    }
    
+}
+
+void CSVMDataset::setSettings(CSVMDataset_Settings s){
+   settings = s;
+}
+
+string CSVMDataset::getLabel(int labelId){
+   return cifar10.getLabel(labelId);
 }
 
 int CSVMDataset::getNumberClasses(){

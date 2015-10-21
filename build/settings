@@ -1,6 +1,7 @@
 Dataset
 method CIFAR10
-nImages 100
+nImages 10000
+
 
 ClusterAnalyser
 method RBM
@@ -10,16 +11,21 @@ learningRate 0.1
 nGibbsSteps 2
 
 Codebook
-method LVQ
-nClusters 100
-learningRate 0.1
+method KMEANS
+nClusters 300
+similaritySigma .2
 
 FeatureExtractor
-method LBP
+method HOG
 
-ImageScanner 
+ImageScanner
 patchHeight 8
 patchWidth 8
 scanStride 1
+nRandomPatches 20
 
-
+SVM
+learningRate 0.0000001
+SVM_C_Data 90
+SVM_C_Centroid 90
+sigmaClassicSimilarity .3

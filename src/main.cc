@@ -66,26 +66,26 @@ int main(int argc,char**argv){
    c.constructCodebook();
    c.exportCodebook("codebook.bin");
 
-   //c.importCodebook("superawesomecodebook.bin");
+   //c.importCodebook("codebook.bin");
 
    //svm stuff
    c.initSVMs();
    //c.trainSVMs();
    
-   vector< vector< Feature> > trainActivations = c.trainClassicSVMs(0.001);
+   vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-   for(size_t im = 000; im < 100; ++im){
+   for(size_t im = 50000; im < 50200; ++im){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 90);
-      cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabelId() << " is classified as " << result << endl;
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 50200 - 10);
+      cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
          ++nCorrect;
       else 
          ++nFalse;
       cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << im << " images\n";
    }
-   
+   cout << "Score: " << (double)nCorrect*100/(nCorrect + nFalse) << "\% correct.\n";
    cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;

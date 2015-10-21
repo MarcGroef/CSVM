@@ -41,6 +41,10 @@ using namespace csvm;
       
       file.close();
    }
+   
+   string CIFAR10::getLabel(int labelId){
+      return labels[labelId];
+   }
 
    void CIFAR10::loadImages(string dir){
       ifstream file(dir.c_str(),ios::in|ios::binary|ios::ate);

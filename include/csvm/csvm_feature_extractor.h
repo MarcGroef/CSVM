@@ -28,6 +28,7 @@ namespace csvm{
   public:
      FeatureExtractor();
      Feature extract(Patch p);
+     void setSettings(FeatureExtractorSettings s);
   };
 }
 #endif
