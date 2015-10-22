@@ -29,6 +29,7 @@ namespace csvm{
 
    public:
 	   HOGDescriptor();
+	   HOGDescriptor(int cellSize, int cellStride, int blockSize);
       //HOGDescriptor(int nBins, int cellSize, int blockSize, bool useGreyPixel); 
 	  //HOGDescriptor(int nBins, int numberOfCells, int blockSize, bool useGreyPixel);
 	  Feature getHOG(Patch patch,int channel, bool useGreyPixel);
