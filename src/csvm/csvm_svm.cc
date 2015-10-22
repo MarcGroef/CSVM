@@ -246,7 +246,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double sumDeltaAlpha = 1000.0;
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
-   double convergenceThreshold = 10 * settings.learningRate;
+   double convergenceThreshold = .1 * settings.learningRate;
    for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -329,7 +329,6 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
   
    double yData;
    double kernel = 0.0;
-   double sigma = .5;
    unsigned int nClasses = datasetActivations[0].size();
    unsigned int nCentroids = datasetActivations[0][0].content.size();
    Feature dataKernel(nData,0.0);

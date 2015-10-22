@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 10000
+nImages 2000
 
 
 ClusterAnalyser
@@ -13,7 +13,7 @@ nGibbsSteps 2
 Codebook
 method KMEANS
 nClusters 300
-similaritySigma .2
+similaritySigma .3
 
 FeatureExtractor
 method HOG
@@ -25,7 +25,7 @@ scanStride 1
 nRandomPatches 20
 
 SVM
-learningRate 0.0000001
-SVM_C_Data 90
-SVM_C_Centroid 90
+learningRate 0.0001
+SVM_C_Data 9
+SVM_C_Centroid 9
 sigmaClassicSimilarity .3
