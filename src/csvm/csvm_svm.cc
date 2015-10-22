@@ -197,7 +197,7 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
          sum += alphaData[dIdx0] * yData;
       }
       
-      for(size_t dIdx0 = 0; /*dIdx0  < nData*/ abs(sum) > 0.0001; ++dIdx0){
+      for(size_t dIdx0 = 0; dIdx0  < nData /*abs(sum) > 0.0001*/; ++dIdx0){
          if(dIdx0 == nData) dIdx0 = 0 ;
          yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
          //cout << "yData = " << yData << endl;
