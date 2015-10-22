@@ -6,7 +6,7 @@ using namespace csvm;
 
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    
-   alphaData = vector<double>(datasetSize,1.0 / datasetSize);
+   alphaData = vector<double>(datasetSize,1.0 /*/ datasetSize*/);
    //cout << "alphaData =  " << alphaData[0] << endl;
    alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,0.01f));
    //cout << "alphaCentr =  " << alphaCentroids[0][0] << endl;
@@ -256,7 +256,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds, 1, 4 );
-      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
+     // cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
    }
    checkCostsAlphaData(ds);
    calculateBiasClassic(simKernel, ds);

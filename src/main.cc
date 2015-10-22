@@ -63,10 +63,10 @@ int main(int argc,char**argv){
    cout << "Start timing\n";
    time_t time0 = clock();
    
-   c.constructCodebook();
-   c.exportCodebook("codebook10000HOG.bin");
+   //c.constructCodebook();
+  // c.exportCodebook("codebook10000HOG.bin");
 
-   //c.importCodebook("codebook.bin");
+   c.importCodebook("maandag.bin");
 
    //svm stuff
    c.initSVMs();
