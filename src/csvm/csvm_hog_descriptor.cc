@@ -68,10 +68,10 @@ double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
 Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    
    vector <double> gx,gy;
-   int patchWidth = block.getWidth();
-   int patchHeight = block.getHeight();
+   unsigned int patchWidth = block.getWidth();
+   unsigned int patchHeight = block.getHeight();
    if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
-	   cout << "patch size is wrong!" << '\n';
+	   cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
    }
    /*
    if p = patch width, and height (pxp patch size)

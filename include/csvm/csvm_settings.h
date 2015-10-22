@@ -41,6 +41,7 @@ namespace csvm{
       void parseCodebookSettings(ifstream& stream);
       void parseFeatureExtractorSettings(ifstream& stream);
       void parseImageScannerSettings(ifstream& stream);
+      void parseSVMSettings(ifstream& stream);
    };
 
 }

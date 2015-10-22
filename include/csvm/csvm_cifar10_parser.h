@@ -29,6 +29,7 @@ namespace csvm{
       Image getImage(int index);
       Image* getImagePtr(int index);
       int getSize();
+      string getLabel(int labelId);
    };
    
    

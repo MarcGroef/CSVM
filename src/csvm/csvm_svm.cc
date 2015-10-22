@@ -4,19 +4,21 @@ using namespace std;
 using namespace csvm;
 
 
-SVM::SVM(int datasetSize, int nClusters, int nCentroids, double learningRate, unsigned int labelId, int dataDims){
+SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    
    alphaData = vector<double>(datasetSize,1.0 / datasetSize);
    //cout << "alphaData =  " << alphaData[0] << endl;
    alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,0.01f));
    //cout << "alphaCentr =  " << alphaCentroids[0][0] << endl;
-   this->learningRate = learningRate;
-   this->classId = labelId;
-   finalDataWeights = vector <double> (dataDims,0);
-   this->dataDims = dataDims;
-   
-   settings.SVM_C = 9;
 
+   this->classId = labelId;
+
+   
+   bias = 0;
+}
+
+void SVM::setSettings(SVM_Settings s){
+   settings = s;
 }
 
 double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx){
@@ -36,10 +38,10 @@ double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx
       }
    }
    sum = -1.0 * sum;
-   target = alphaData[dataIdx] + (learningRate * sum);
+   target = alphaData[dataIdx] + (settings.learningRate * sum);
    //cout << "target = " << target << endl;
    target = target < 0.0 ? 0.0 : target;
-   target = target > settings.SVM_C ? settings.SVM_C : target;
+   target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
    diff = alphaData[dataIdx] - target;
    alphaData[dataIdx] = target;
    return diff;
@@ -69,10 +71,10 @@ void SVM::constrainAlphaCentroid(vector< vector< Feature > >& activations, unsig
             yData = classIdx0 == classId ? 1.0 : -1.0;
             oldVal = alphaCentroids[classIdx0][centrIdx];
             deltaAlpha = -2.0 * cost * sum * yData;
-            target = alphaCentroids[classIdx0][centrIdx] + deltaAlpha * learningRate;
+            target = alphaCentroids[classIdx0][centrIdx] + deltaAlpha * settings.learningRate;
             //cout << "constrain target: " << target << endl;
             target = target < 0.0 ? 0.0 : target;
-            target = target > settings.SVM_C ? settings.SVM_C : target;
+            target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
             
             alphaCentroids[classIdx0][centrIdx] = target;
             sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * yData;
@@ -105,10 +107,10 @@ void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, unsigned
          yData = ((unsigned int)(activations[dIdx1][0].getLabelId())) == classId ? 1.0 : -1.0;
          oldVal = alphaData[dIdx1];
          deltaAlpha = -2.0 * cost * sum * yData;
-         target = alphaData[dIdx1] + deltaAlpha * learningRate;
+         target = alphaData[dIdx1] + deltaAlpha * settings.learningRate;
          //cout << "constrain target: " << target << endl;
          target = target < 0.0 ? 0.0 : target;
-         target = target > settings.SVM_C ? settings.SVM_C : target;
+         target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
          
          alphaData[dIdx1] = target;
          sum += ( alphaData[dIdx1] - oldVal ) * yData;
@@ -133,9 +135,9 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsig
       sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass].content[centr];
    }
    //cout << "sum = " << sum << endl;
-   target = alphaCentroids[centrClass][centr] + learningRate * ((double)1.0 - ( (double)sum));
+   target = alphaCentroids[centrClass][centr] + settings.learningRate * ((double)1.0 - ( (double)sum));
    target = target < 0.0 ? 0.0 : target;
-   target = target > settings.SVM_C ? settings.SVM_C : target;
+   target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
    diff = alphaCentroids[centrClass][centr] - target;
    //cout << "centroid alpha target = " << target << ", which has a difference of " << diff << endl;
    alphaCentroids[centrClass][centr] = target;
@@ -165,8 +167,8 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds,
          sum += alphaData[dIdx1] * yData0 * yData1 * simKernel[dIdx0].content[dIdx1];
       }
       deltaAlpha = 1.0 - sum;
-      target = D2 * alphaData[dIdx0] + deltaAlpha * learningRate;
-      target = target > settings.SVM_C ? settings.SVM_C : target;
+      target = D2 * alphaData[dIdx0] + deltaAlpha * settings.learningRate;
+      target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
       target = target < 0.0 ? 0.0 : target;
       deltaDiff = alphaData[dIdx0] - target;
       diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
@@ -178,6 +180,7 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds,
 }
 
 double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double cost, unsigned int nIterations){
+   
    double sum = 0;
    double oldVal;
    unsigned int nData = simKernel.size();
@@ -199,8 +202,8 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
          //cout << "yData = " << yData << endl;
          oldVal = alphaData[dIdx0];
          deltaAlpha = -2.0 * cost * sum * yData;
-         target = alphaData[dIdx0] + deltaAlpha * learningRate;
-         target = target > settings.SVM_C ? settings.SVM_C : target;
+         target = alphaData[dIdx0] + deltaAlpha * settings.learningRate;
+         target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
          target = target < 0.0 ? 0.0 : target;
          deltaDiff = alphaData[dIdx0] - target;
          diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
@@ -212,13 +215,39 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
    return diff;
 }
 
+void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
+   bias = 0;
+   unsigned int total = 0;
+   unsigned int nData = simKernel.size();
+   double output;
+   double yData;
+   
+   for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
+      //if((alpha_coeff[C][i] > 0.0) && ((alpha_coeff[C][i]) < (SVM_C - 0.000001)  Marco 
+      if((alphaData[dIdx0] > 0) && (alphaData[dIdx0] < settings.SVM_C_Data - 0.000001)){
+         output = 0;
+         for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
+            yData = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.00 : -1.00);
+            output += alphaData[dIdx1] * yData * simKernel[dIdx0].content[dIdx1];
+         }
+         yData = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.00 : -1.00);
+         bias += yData * output;
+         ++total;
+      }
+   }
+   
+   if(total == 0)
+      bias = 0;
+   else 
+      bias /= total;
+}
 void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    
    double sumDeltaAlpha = 1000.0;
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
-   double convergenceThreshold = 0.00005;
-   while(abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold){
+   double convergenceThreshold = 10 * settings.learningRate;
+   for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds,1);
@@ -226,9 +255,9 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds, 1, 4 );
-      cout << "Yay, SVM " << classId << " training iteration round! Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
+      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
    }
-
+   calculateBiasClassic(simKernel, ds);
 }
 
 
@@ -300,7 +329,7 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
   
    double yData;
    double kernel = 0.0;
-   double sigma = 0.001;
+   double sigma = .5;
    unsigned int nClasses = datasetActivations[0].size();
    unsigned int nCentroids = datasetActivations[0][0].content.size();
    Feature dataKernel(nData,0.0);
@@ -315,12 +344,12 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
       }
       
       
-     kernel = exp((-1.0*sqrt(sum))/sigma);
+     kernel = exp((-1.0*sqrt(sum))/settings.sigmaClassicSimilarity);
      yData = (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
      result += alphaData[dIdx0] * yData * kernel;
       
    }
    
-   
+   result += bias;
    return result;
 }

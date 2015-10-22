@@ -36,6 +36,8 @@ namespace csvm{
       void splitDatasetToClasses();
       int getNumberImagesInClass(int labelId);
       int getNumberClasses();
+      void setSettings(CSVMDataset_Settings s);
+      string getLabel(int labelId);
    };
 }
 #endif

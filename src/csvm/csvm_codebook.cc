@@ -16,16 +16,18 @@ union charDouble{
 Codebook::Codebook(){
    nClasses = 10;
    bow.resize(nClasses);
-   settings.similaritySigma = 1;
 }
 
+void Codebook::setSettings(Codebook_settings s){
+   settings = s;
+}
 Feature Codebook::getCentroid(int cl, int centrIdx){
    return bow[cl][centrIdx];
 }
 
 void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
-   settings.method = KMeans_Clustering; //LVQ_Clustering;
-   settings.numberVisualWords = 300;
+   
+   
    switch(settings.method){
       case LVQ_Clustering:
          bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
