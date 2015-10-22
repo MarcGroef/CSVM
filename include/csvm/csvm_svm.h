@@ -44,6 +44,8 @@ namespace csvm{
       double updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double D2);
       void calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds);
       
+      
+      void checkCostsAlphaData(CSVMDataset* ds);
   public:
      
      SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId);
@@ -56,6 +58,8 @@ namespace csvm{
      //functions for the textbook KKT-SVM
      void trainClassic(vector<Feature> simKernel, CSVMDataset* ds);
      double classifyClassic(vector<Feature> f, vector< vector<Feature> > datasetActivations, CSVMDataset* cb);
+     
+     
   };
    
 }

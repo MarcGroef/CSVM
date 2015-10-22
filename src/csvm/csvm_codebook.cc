@@ -51,21 +51,25 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
    vector<double> distances(settings.numberVisualWords);
    //double meanDist = 0;
    double dev;
-  
+   double stdDev = 0;
+   double mean = 0;
    //cout << "bow has [" << bow.size() << "][" << bow[0].size() << "][" << bow[0][0].content.size() << "]\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
       
       
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          distances[word] = sqrt(bow[cl][word].getDistanceSq(features[cl]));
+
          //cout << "difference with word  = " << sqrt(bow[cl][word].getDistanceSq(features[cl])) << endl;
       }
+     
       //meanDist /= (double)settings.numberVisualWords;
       //cout << "nVisuals = " << settings.numberVisualWords << endl;
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          //dev = meanDist - distances[word];
          //cout << "************************************************************\n";
          //cout << "dist: " << distances[word] << endl; 
+         
          dev = exp(-1.0 * distances[word] / settings.similaritySigma);
          //cout << "dev:" << dev << endl;
          activations[cl].content[word] += dev;//dev > 0 ? dev : 0;

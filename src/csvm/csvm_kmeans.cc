@@ -22,6 +22,7 @@ vector<ClusterCentroid> KMeans::initPrototypes(vector<Feature> featureSamples, u
 	//for every cluster..
 	for (size_t idx = 0; idx < nClusters; ++idx)
 	{
+      
 		//assign the position of a random feature...		
 		centroids[idx].newPosition = featureSamples[ rand() % nFeatureSamplesSize];
 		//resetcluster copies content from newposition to lastposition, and assigns 0 to nAssignments
@@ -194,7 +195,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    double deltaDist = 1;
    double closestDist;
    for(; deltaDist > 0; curCentroids *= -1){
-
+      
       prevTotalDistance = totalDistance;
       totalDistance = 0;
       

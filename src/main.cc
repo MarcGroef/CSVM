@@ -63,10 +63,10 @@ int main(int argc,char**argv){
    cout << "Start timing\n";
    time_t time0 = clock();
    
-   c.constructCodebook();
-   c.exportCodebook("codebook.bin");
+   //c.constructCodebook();
+  // c.exportCodebook("codebook10000HOG.bin");
 
-   //c.importCodebook("codebook.bin");
+   c.importCodebook("maandag.bin");
 
    //svm stuff
    c.initSVMs();
@@ -75,10 +75,12 @@ int main(int argc,char**argv){
    vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-   for(size_t im = 50000; im < 50200; ++im){
+
+   for(size_t im = 50000-0; im < 50200-0; ++im){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 50200 - 10);
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 50200 - 0 - 10);
       cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
          ++nCorrect;
       else 
