@@ -197,7 +197,8 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
          sum += alphaData[dIdx0] * yData;
       }
       
-      for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
+      for(size_t dIdx0 = 0; /*dIdx0  < nData*/ abs(sum) > 0.0001; ++dIdx0){
+         if(dIdx0 == nData) dIdx0 = 0 ;
          yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
          //cout << "yData = " << yData << endl;
          oldVal = alphaData[dIdx0];
@@ -224,7 +225,7 @@ void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
    
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
       //if((alpha_coeff[C][i] > 0.0) && ((alpha_coeff[C][i]) < (SVM_C - 0.000001)  Marco 
-      if((alphaData[dIdx0] > 0) && (alphaData[dIdx0] < settings.SVM_C_Data - 0.000001)){
+      //if((alphaData[dIdx0] > 0) && (alphaData[dIdx0] < settings.SVM_C_Data - 0.000001)){
          output = 0;
          for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
             yData = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.00 : -1.00);
@@ -233,7 +234,7 @@ void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
          yData = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.00 : -1.00);
          bias += yData * output;
          ++total;
-      }
+     // }
    }
    
    if(total == 0)
@@ -246,7 +247,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double sumDeltaAlpha = 1000.0;
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
-   double convergenceThreshold = 10 * settings.learningRate;
+   double convergenceThreshold = 0.0010 * settings.learningRate;
    for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -257,6 +258,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       constrainAlphaDataClassic(simKernel, ds, 1, 4 );
       cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
    }
+   checkCostsAlphaData(ds);
    calculateBiasClassic(simKernel, ds);
 }
 
@@ -323,13 +325,25 @@ double SVM::classify(vector<Feature> f, Codebook* cb){
    return result;
 }
 
+void SVM::checkCostsAlphaData(CSVMDataset* ds){
+   double sum = 0;
+   unsigned int nData = alphaData.size();
+   double yData;
+   
+   for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+      yData = (unsigned int)(ds->getImagePtr(dIdx)->getLabelId()) == classId ? 1.0 : -1.0;
+      sum += yData * alphaData[dIdx];
+   }
+   cout << "cost = " << sum << endl;
+   
+}
+
 double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > datasetActivations, CSVMDataset* ds){
    double result = 0;
    unsigned int nData = datasetActivations.size();
   
    double yData;
    double kernel = 0.0;
-   double sigma = .5;
    unsigned int nClasses = datasetActivations[0].size();
    unsigned int nCentroids = datasetActivations[0][0].content.size();
    Feature dataKernel(nData,0.0);

@@ -75,17 +75,12 @@ int main(int argc,char**argv){
    vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-<<<<<<< HEAD
-   for(size_t im = 50000; im < 60000; ++im){
+
+   for(size_t im = 50000-0; im < 50200-0; ++im){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > (60000 - 100));
-      cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabelId() << " is classified as " << result << endl;
-=======
-   for(size_t im = 50000; im < 50200; ++im){
-      //unsigned int result = c.classify(c.dataset.getImagePtr(im));
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 50200 - 10);
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 50200 - 0 - 10);
       cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
->>>>>>> 72d7029501511f3a45e004edcb312c4a1a61ac83
+
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
          ++nCorrect;
       else 
