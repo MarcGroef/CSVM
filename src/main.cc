@@ -64,7 +64,7 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
-   c.exportCodebook("codebook.bin");
+   c.exportCodebook("codebook10000HOG.bin");
 
    //c.importCodebook("superawesomecodebook.bin");
 
@@ -75,9 +75,9 @@ int main(int argc,char**argv){
    vector< vector< Feature> > trainActivations = c.trainClassicSVMs(0.001);
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-   for(size_t im = 000; im < 100; ++im){
+   for(size_t im = 50000; im < 60000; ++im){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > 90);
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, im > (60000 - 100));
       cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabelId() << " is classified as " << result << endl;
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
          ++nCorrect;
