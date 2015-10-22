@@ -8,26 +8,24 @@ using namespace csvm;
 //HOGDescriptor::HOGDescriptor(int nBins = 9, int cellSize = 3, int blockSize = 9, bool useGreyPixel = 1) {
 HOGDescriptor::HOGDescriptor() {
    this->settings.nBins=9;
-   //this->settings.cellSize=3;
-   //this->settings.cellStride = ;
-   //this->settings.blockSize = 9;
-   //this->blockStride = blockStride;
-   //this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
+   this->settings.cellSize = -1;
+   this->settings.cellStride = -1;
+   this->settings.blockSize = -1;
+   //this->blockStride = -1;
+   this->settings.numberOfCells = -1;
    this->settings.useGreyPixel = true;
 }
 
-/*
-HOGDescriptor::HOGDescriptor(int nBins = 9, int numberOfCells = 9, int blockSize = 9, bool useGreyPixel = 1) {
-	this->nBins = nBins;
-	//this->cellSize = cellSize;
-	//this->cellStride = cellStride;
-	this->blockSize = blockSize;
+HOGDescriptor::HOGDescriptor(int cellSize, int cellStride, int blockSize) {
+	this->settings.nBins = 9;
+	this->settings.cellSize = cellSize;
+	this->settings.cellStride = cellStride;
+	this->settings.blockSize = blockSize;
 	//this->blockStride = blockStride;
-	this->cellSize = blockSize / sqrt(numberOfCells);
-	this->useGreyPixel = useGreyPixel;
+	this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
+	this->settings.useGreyPixel = true;
 }
-*/
-//assumes a square uchar (grey) image
+
 
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y) {
@@ -70,9 +68,11 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    vector <double> gx,gy;
    unsigned int patchWidth = block.getWidth();
    unsigned int patchHeight = block.getHeight();
+
    if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
 	   cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
    }
+ 
    /*
    if p = patch width, and height (pxp patch size)
    and cell size is c
@@ -81,19 +81,21 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    number of cells = ( ((p - c) / cstr) + 1 )^2
    
    */
-   unsigned int cellStride = patchWidth / 2.0;
-   this->settings.cellSize= patchWidth / 2.0;
-   this->settings.cellStride = patchWidth / 2.0;
-   this->settings.blockSize = patchWidth;
-   //this->blockStride = blockStride;
-   this->settings.numberOfCells = pow(settings.blockSize / settings.cellSize, 2);
-   //const int scope = 1; //the neighbourhood size we consider. possibly later to be a custom argument
-   //for now we assume 4 cells
-   vector <double> blockHistogram(0, 0);
-   //vector<int> histogram(255, 0); //initialize a histogram to represent a whole patch
-   //cout << " patch width is: " << patchWidth;
-   //for now 
 
+   if(settings.cellSize == -1)
+	   this->settings.cellSize = patchWidth / 2.0;
+   if(settings.cellStride == -1)
+	   this->settings.cellStride = patchWidth / 2.0;
+   if(settings.blockSize == -1)
+	   this->settings.blockSize = patchWidth;
+   //this->blockStride = blockStride;
+   if(settings.cellSize == -1)
+	   this->settings.numberOfCells = pow(((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
+
+  
+   vector <double> blockHistogram(0, 0);
+  
+   //for now 
    //iterate through block with a cell, with stride cellstride. 
    //double cellNumber = 0;
    /*
@@ -102,8 +104,8 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 	   "\ncellStride : " << settings.cellStride <<
 	   "\nblockSize : " << settings.blockSize << '\n';
 	   */
-   for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += cellStride) {
-	   for (int cellY = 0; cellY+ settings.cellSize <= patchHeight; cellY += cellStride) {
+   for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += settings.cellStride) {
+	   for (int cellY = 0; cellY+ settings.cellSize <= patchHeight; cellY += settings.cellStride) {
 		   //cout << "cell: " << cellX << ", " << cellY << '\n';
 
 		   vector <double> cellOrientationHistogram(settings.nBins, 0);

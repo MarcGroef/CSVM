@@ -17,6 +17,9 @@ similaritySigma .3
 
 FeatureExtractor
 method HOG
+cellSize 8 #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
+cellStride #cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
+blockSize #the size of a patch
 
 ImageScanner
 patchHeight 16
