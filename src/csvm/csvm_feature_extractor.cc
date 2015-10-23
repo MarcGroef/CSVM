@@ -24,4 +24,6 @@ Feature FeatureExtractor::extract(Patch p){
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
+   if(settings.featureType == HOG)
+      hog.setSettings(settings.hogSettings);
 }

@@ -44,19 +44,19 @@ namespace csvm{
       Image(int width,int height,ImageFormat f);
       Image(string filename);
       Image(Image* im);
-      Image(Image* ROI_source,int ROI_x,int ROI_y,int ROI_width,int ROI_height);
+      Image(Image* ROI_source,unsigned int ROI_x,unsigned int ROI_y,unsigned int ROI_width,unsigned int ROI_height);
       void loadImage(string filename);
       vector<unsigned char> getImage();
       void exportImage(string filename);
-      unsigned char getPixel(int x,int y,int channel);
-      unsigned char getGreyPixel(int x, int y);
-      void setPixel(int x,int y,int channel,unsigned char value);
-      int getWidth();
-      int getHeight();
+      unsigned char getPixel(unsigned int x,unsigned int y,unsigned int channel);
+      unsigned char getGreyPixel(unsigned int x,unsigned int y);
+      void setPixel(unsigned int x,unsigned int y,unsigned int channel,unsigned char value);
+      unsigned int getWidth();
+      unsigned int getHeight();
       
       ImageFormat getFormat();
       Image clone();
-      Image getROI(int x,int y,int RegionWidth,int RegionHeight);
+      Image getROI(unsigned int x,unsigned int y,unsigned int RegionWidth,unsigned int RegionHeight);
       bool isLabeled();
       string getLabel();
       int getLabelId();

@@ -12,17 +12,18 @@ namespace csvm{
   enum FeatureType{
     LBP,
     CLEAN,
-	HOG,
+    HOG,
   };
   
   struct FeatureExtractorSettings{
     FeatureType featureType;
+    HOGSettings hogSettings;
   };
   
   class FeatureExtractor{
     FeatureExtractorSettings settings;
     LBPDescriptor lbp;
-	HOGDescriptor hog;
+	 HOGDescriptor hog;
     CleanDescriptor clean;
     
   public:

@@ -160,8 +160,34 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
     featureSettings.featureType = LBP;  
   }else if(method == "HOG"){
     featureSettings.featureType = HOG;
+    
+    stream >> setting;
+    if(setting == "cellSize"){  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
+       stream >> featureSettings.hogSettings.cellSize;
+       
+    } else {
+      cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "cellStride"){ //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
+       stream >> featureSettings.hogSettings.cellStride;
+       
+    } else {
+      cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "blockSize"){//#the size of a patch
+       stream >> featureSettings.hogSettings.blockSize;
+    } else {
+      cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+    }
   }
-  
+
   
   
 }
@@ -225,6 +251,22 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
   stream >> setting;
   if(setting == "SVM_C_Centroid"){
     stream >> svmSettings.SVM_C_Centroid;   
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "Cost"){
+    stream >> svmSettings.cost;   
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "D2"){
+    stream >> svmSettings.D2;   
   }else{
     cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
     exit(-1);

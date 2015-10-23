@@ -3,6 +3,8 @@
 using namespace std;
 using namespace csvm;
 
+
+//simply copy all pixels in grey-value towards a feature vector
 Feature CleanDescriptor::describe(Patch p){  
    
    unsigned int imHeight = p.getHeight();

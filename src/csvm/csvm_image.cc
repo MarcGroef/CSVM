@@ -42,12 +42,12 @@ namespace csvm{
       }
    }
    
-   Image::Image(Image* ROI_source,int ROI_x,int ROI_y,int ROI_width,int ROI_height){
+   Image::Image(Image* ROI_source,unsigned int ROI_x,unsigned int ROI_y,unsigned int ROI_width,unsigned int ROI_height){
       width = ROI_width;
       height = ROI_height;
       format = ROI_source->getFormat();
       
-      if(ROI_x+ROI_width>ROI_source->getWidth()||ROI_y+ROI_height>ROI_source->getHeight()){
+      if(ROI_x+ROI_width > ROI_source->getWidth() || ROI_y + ROI_height > ROI_source->getHeight()){
          cout << "csvm::Image::ROI Constructor: Error! Region out of bounds!\n";
          exit(-1);
          return;
@@ -59,9 +59,9 @@ namespace csvm{
             return;
          case CSVM_IMAGE_UCHAR_RGBA:
             image.resize(ROI_height*ROI_width*4);
-            for(int x = 0; x < ROI_width; x++){
-               for(int y = 0; y < ROI_height;y++){
-                  for(int ch = 0; ch < 4; ch++){
+            for(size_t x = 0; x < ROI_width; x++){
+               for(size_t y = 0; y < ROI_height;y++){
+                  for(size_t ch = 0; ch < 4; ch++){
                      setPixel(x,y,ch,ROI_source->getPixel(ROI_x+x,ROI_y+y,ch));
                   }
                }
@@ -69,9 +69,9 @@ namespace csvm{
             break;
          case CSVM_IMAGE_UCHAR_RGB:
             image.resize(ROI_height*ROI_width*3);
-            for(int x = 0; x < ROI_width; x++){
-               for(int y = 0; y < ROI_height;y++){
-                  for(int ch = 0; ch < 3; ch++){
+            for(size_t x = 0; x < ROI_width; x++){
+               for(size_t y = 0; y < ROI_height;y++){
+                  for(size_t ch = 0; ch < 3; ch++){
                      setPixel(x,y,ch,ROI_source->getPixel(ROI_x+x,ROI_y+y,ch));
                   }
                }
@@ -79,8 +79,8 @@ namespace csvm{
             break;
          case CSVM_IMAGE_UCHAR_GREY:
             image.resize(ROI_height*ROI_width);
-            for(int x = 0; x < ROI_width; x++){
-               for(int y = 0; y < ROI_height; y++){
+            for(size_t x = 0; x < ROI_width; x++){
+               for(size_t y = 0; y < ROI_height; y++){
                   setPixel(x,y,0,ROI_source->getPixel(ROI_x+x,ROI_y+y,0));
                }
             }
@@ -108,7 +108,7 @@ namespace csvm{
       
    }
    
-   unsigned char Image::getPixel(int x,int y,int channel){
+   unsigned char Image::getPixel(unsigned int x,unsigned int y,unsigned int channel){
       if( x < 0 || x >= width || y < 0 || y >= width){
          cout << "csvm::Image::getPixel() Warning! coordinate out of bounds! returning 0\n";
          return 0;
@@ -127,7 +127,7 @@ namespace csvm{
       return 0;
    }
    
-   void Image::setPixel(int x,int y,int channel,unsigned char value){
+   void Image::setPixel(unsigned int x,unsigned int y,unsigned int channel,unsigned char value){
       switch(format){
          case CSVM_IMAGE_EMPTY:
             cout << "csvm::Image::setPixel() Warning! Image not set!\n";
@@ -173,11 +173,11 @@ namespace csvm{
         
    }
    
-   int Image::getWidth(){
+   unsigned int Image::getWidth(){
       return width;
    }
       
-   int Image::getHeight(){
+   unsigned int Image::getHeight(){
       return height;
    }
    
@@ -190,7 +190,7 @@ namespace csvm{
       return clone;
    }
    
-   Image Image::getROI(int x,int y,int regionWidth,int regionHeight){
+   Image Image::getROI(unsigned int x,unsigned int y,unsigned int regionWidth,unsigned int regionHeight){
       Image roi(this,x,y,regionWidth,regionHeight);
       return roi;
    }
@@ -264,7 +264,7 @@ namespace csvm{
       return labelId;
    }
    
-   unsigned char Image::getGreyPixel(int x, int y){
+   unsigned char Image::getGreyPixel(unsigned int x,unsigned int y){
       return 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
    }
    

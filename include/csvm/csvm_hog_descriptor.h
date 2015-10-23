@@ -16,11 +16,11 @@ using namespace std;
 namespace csvm{
 
 	struct HOGSettings {
-		int nBins;                //number of angular orientated histogram bins bins
-		int cellSize;             // assumes square cell
-		int cellStride;           //the steps the cell make across the input
-		int blockSize;			
-		int numberOfCells;
+		unsigned int nBins;                //number of angular orientated histogram bins bins
+		unsigned int cellSize;             // assumes square cell
+		unsigned int cellStride;           //the steps the cell make across the input
+		unsigned int blockSize;			
+		unsigned int numberOfCells;
 		bool useGreyPixel;
 
 	};
@@ -30,6 +30,7 @@ namespace csvm{
    public:
 	   HOGDescriptor();
 	   HOGDescriptor(int cellSize, int cellStride, int blockSize);
+      void setSettings(HOGSettings s);
       //HOGDescriptor(int nBins, int cellSize, int blockSize, bool useGreyPixel); 
 	  //HOGDescriptor(int nBins, int numberOfCells, int blockSize, bool useGreyPixel);
 	  Feature getHOG(Patch patch,int channel, bool useGreyPixel);

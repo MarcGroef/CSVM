@@ -17,6 +17,8 @@ namespace csvm{
       double SVM_C_Centroid;
       double learningRate;
       double sigmaClassicSimilarity;
+      double cost;
+      double D2;
   };
    
   class SVM{
@@ -37,23 +39,21 @@ namespace csvm{
     //functions Convolutional SVM    
       double updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx);
       double updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsigned int centrClass, int centr);
-      void constrainAlphaCentroid(vector< vector< Feature > >& activations, unsigned int nIterations, double cost);
-    
+      void constrainAlphaCentroid(vector< vector< Feature > >& activations);
+      void contstrainAlphaData(vector< vector< Feature > >& activations, CSVMDataset* ds);
+      
     //functions for KKT-SVM
-      double constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double cost, unsigned int nIterations);
-      double updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds, double D2);
+      double constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds);
+      double updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds);
       void calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds);
       
-      
-      void checkCostsAlphaData(CSVMDataset* ds);
   public:
      
      SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId);
      void setSettings(SVM_Settings s);
      //functions for the convolutional svm
-     void train(vector< vector<Feature> >& activations);
+     void train(vector< vector<Feature> >& activations, CSVMDataset* ds);
      double classify(vector<Feature> f, Codebook* cb);
-     void contstrainAlphaData(vector< vector< Feature > >& activations, unsigned int nIterations, double cost);
      
      //functions for the textbook KKT-SVM
      void trainClassic(vector<Feature> simKernel, CSVMDataset* ds);

@@ -1,11 +1,6 @@
 Dataset
 method CIFAR10
-<<<<<<< HEAD
-nImages 2000
-=======
 nImages 1000
->>>>>>> b178bb9e8347816d181e941bd0d0c43276ace570
-
 
 ClusterAnalyser
 method RBM
@@ -21,24 +16,20 @@ similaritySigma .3
 
 FeatureExtractor
 method HOG
-cellSize 8 #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-cellStride #cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-blockSize #the size of a patch
+cellSize 8
+cellStride 1
+blockSize 8
 
 ImageScanner
-patchHeight 16
-patchWidth 16
+patchHeight 8
+patchWidth 8
 scanStride 1
 nRandomPatches 100
 
 SVM
-<<<<<<< HEAD
-learningRate 0.0001
+learningRate 0.00001
 SVM_C_Data 9
 SVM_C_Centroid 9
-=======
-learningRate 0.00001
-SVM_C_Data 90
-SVM_C_Centroid 90
->>>>>>> b178bb9e8347816d181e941bd0d0c43276ace570
+Cost 1
+D2 1
 sigmaClassicSimilarity .3

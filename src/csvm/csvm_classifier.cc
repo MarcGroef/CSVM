@@ -3,11 +3,13 @@
 using namespace std;
 using namespace csvm;
 
+//initialize random
 CSVMClassifier::CSVMClassifier(){
-   srand(time(NULL));
-   
+   srand(time(NULL)); 
 }
 
+
+//initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
    svms.reserve(codebook.getNClasses());
    for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
@@ -16,7 +18,7 @@ void CSVMClassifier::initSVMs(){
    }
 }
 
-
+//read settings file, and pass the settings to respective modules
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
    analyser.setSettings(settings.analyserSettings);
@@ -26,31 +28,16 @@ void CSVMClassifier::setSettings(string settingsFile){
    featExtr.setSettings(settings.featureSettings);
 }
 
-
+//export the current codebook
 void CSVMClassifier::exportCodebook(string filename){
    codebook.exportCodebook(filename);
 }
-
+//import the current codebook
 void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
-//DEBUG
-
-
-void checkEqualPatches(vector<Patch> patches){
-   unsigned int nEquals = 0;
-   unsigned int nPatches = patches.size();
-   
-   for(size_t pIdx = 0 ; pIdx < nPatches - 1; ++ pIdx){
-      for(size_t pIdx1 = pIdx + 1; pIdx1 < nPatches; ++ pIdx1){
-         if(patches[pIdx].equals(patches[pIdx1]))
-            ++nEquals;
-      }
-   }
-   cout << "There are " << nEquals << " equal patches\n";
-}
-
+//construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
    
    unsigned int nClasses = dataset.getNumberClasses();
@@ -65,7 +52,7 @@ void CSVMClassifier::constructCodebook(){
    pretrainDump.clear();
    pretrainDump.resize(nClasses);
    unsigned int nImages = dataset.getSize();
-   cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
+   //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
       
       //cout << "parsing class " << cl << endl;
@@ -87,6 +74,7 @@ void CSVMClassifier::constructCodebook(){
             features.push_back(newFeat);
             //cout << "first element from new Feature = " << newFeat.content[0] << ", which should equal " << features[patchIdx].content[0] << endl;
          }
+         //cout << "extracted " << features[0].content.size() << "x1 features\n";
          //checkEqualFeatures(features);
          pretrainDump[cl].insert(pretrainDump[cl].end(),features.begin(),features.end());
          
@@ -97,19 +85,22 @@ void CSVMClassifier::constructCodebook(){
       //checkEqualFeatures(pretrainDump[cl]);
       codebook.constructCodebook(pretrainDump[cl],cl);
       //checkEqualFeatures(pretrainDump[cl]);
-      cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << settings.scannerSettings.nRandomPatches << " patches each: " << settings.scannerSettings.nRandomPatches * nImages<<" in total.\n";
+      //cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << settings.scannerSettings.nRandomPatches << " patches each: " << settings.scannerSettings.nRandomPatches * nImages<<" in total.\n";
    }
    pretrainDump.clear();
 }
 
+//train the KKT-SVM
 vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    unsigned int datasetSize = dataset.getSize();
+   unsigned int nClasses; 
+   unsigned int nCentroids; 
+   
    vector < vector < Feature > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    vector < Feature> dataKernel(datasetSize, Feature(datasetSize,0.0));
-   unsigned int nClasses; 
-   unsigned int nCentroids; 
+   
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
    cout << "collecting activations for trainingsdata..\n";
@@ -129,16 +120,14 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
       patches.clear();
       
-      //Feature* f = &dataFeatures[0];
-      
-      //cout << "datacontent: " << f->size << endl;
       //get cluster activations for the features
-      //cout << "pushing back " << codebook.getActivations(dataFeatures)[0].content.size() << "act feats\n";
       datasetActivations.push_back(codebook.getActivations(dataFeatures));
    }
+   
    nClasses = datasetActivations[0].size();
    nCentroids = datasetActivations[0][0].content.size();
    
+   //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       for(size_t dIdx1 = 0; dIdx1 < datasetSize; ++dIdx1){
          double sum = 0;
@@ -147,14 +136,11 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
                sum += (datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr]);
             }
          }
-         
-         //cout << "dist = " << sqrt(sum) << endl;
          dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sqrt(sum))/settings.svmSettings.sigmaClassicSimilarity);
-         
       }
    }
    
-   //we have similarity kernel
+   //we have a similarity kernel, now train the SVM's
    
    for(size_t cl = 0; cl < nClasses; ++cl){
       svms[cl].trainClassic(dataKernel, &dataset);  
@@ -162,6 +148,7 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    return datasetActivations;
 }
 
+//train the convolutional SVMs
 void CSVMClassifier::trainSVMs(){
    unsigned int datasetSize = dataset.getSize();
    vector < vector < Feature > > datasetActivations;
@@ -170,7 +157,6 @@ void CSVMClassifier::trainSVMs(){
    
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
-   cout << "collecting activations for trainingsdata..\n";
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
@@ -179,7 +165,7 @@ void CSVMClassifier::trainSVMs(){
       
       //clear previous features
       dataFeatures.clear();
-      //allocate for new
+      //allocate for new features
       dataFeatures.reserve(patches.size());
       
       //extract features from all patches
@@ -187,28 +173,20 @@ void CSVMClassifier::trainSVMs(){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
       patches.clear();
       
-      //Feature* f = &dataFeatures[0];
-      
-      //cout << "datacontent: " << f->size << endl;
       //get cluster activations for the features
-      //cout << "pushing back " << codebook.getActivations(dataFeatures)[0].content.size() << "act feats\n";
-      datasetActivations.push_back(codebook.getActivations(dataFeatures));
-      
-      for(size_t pIdx = 0; pIdx < datasetActivations[dataIdx].size(); ++pIdx){
-         for(size_t centr = 0; centr < datasetActivations[dataIdx][pIdx].content.size(); ++centr)
-            ;//cout << "activation image " << dataIdx << " from class " << pIdx << " at centroid " << centr << " = " << datasetActivations[dataIdx][pIdx].content[centr] << endl;
-      }
+      datasetActivations.push_back(codebook.getActivations(dataFeatures)); 
    }
-   cout << "I can get activations me!\n";
+   
    //train the SVMs with the gained activations
    for(size_t svmIdx = 0; svmIdx < svms.size(); ++svmIdx){
-      svms[svmIdx].train(datasetActivations);
+      svms[svmIdx].train(datasetActivations, &dataset);
    }
 }
 
+//classify an image using the convolutional SVMs
 unsigned int CSVMClassifier::classify(Image* image){
    unsigned int nClasses = codebook.getNClasses();
-   cout << "nClasses = " << nClasses << endl;
+   //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
    //extract patches
@@ -224,26 +202,28 @@ unsigned int CSVMClassifier::classify(Image* image){
    
    patches.clear();
 
-   
+   //reserve space for all SVM results
    vector<double> results(nClasses, 0);
    double maxResult = -99999;
    unsigned int maxLabel=0;
+   //get max results
    for(size_t cl = 0; cl < nClasses; ++cl){
       results[cl] = svms[cl].classify(codebook.getActivations(dataFeatures), &codebook);
       
-      cout << "SVM \t" << cl << " says " << results[cl] << endl;  
       if(results[cl] > maxResult){
          maxResult = results[cl];
 
          maxLabel = cl;
       }
    }
+   //return labelId of max-output-SVM
    return maxLabel;
 }
 
+//classify an image using the KKT-SVM
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector<Feature> > trainActivations, bool printResults){
    unsigned int nClasses = codebook.getNClasses();
-   cout << "nClasses = " << nClasses << endl;
+   //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
    //extract patches
@@ -259,10 +239,13 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector<F
    
    patches.clear();
 
-   
+   //reserve space for results
    vector<double> results(nClasses, 0);
+   
    double maxResult = -99999;
    unsigned int maxLabel=0;
+   
+   //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
       results[cl] = svms[cl].classifyClassic(codebook.getActivations(dataFeatures), trainActivations, &dataset);
       

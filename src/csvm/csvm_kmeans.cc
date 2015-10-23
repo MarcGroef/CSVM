@@ -189,7 +189,6 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    vector< unsigned int > nMembers(nClusters,0);
  
    double curDist;
-   //cout << "Entering KMeans\n";
    double prevTotalDistance = 2;
    double totalDistance = 1;
    double deltaDist = 1;
@@ -209,7 +208,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
       }
          
       for(size_t dIdx = 0; dIdx < nData; ++dIdx){
-         closestDist = 999.0f;
+         closestDist = 99999.0f;
          unsigned int closestCentr = 0;
          
          for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
