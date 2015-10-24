@@ -20,24 +20,24 @@ void initLayerStack(LayerStack* net,int nLayers,int* layerSizes){
 	int i,j;
 	net->nLayers = nLayers; 
 	
-	net->layers = malloc(net->nLayers*sizeof(double*)); //alloc layers
+	net->layers = (double**)malloc(net->nLayers*sizeof(double*)); //alloc layers
 	assert(net->layers!=NULL);
-	net->layerSizes = malloc(net->nLayers*sizeof(int));
+	net->layerSizes = (int*)malloc(net->nLayers*sizeof(int));
 	assert(net->layerSizes!=NULL);
 	for(i=0;i<net->nLayers;i++){
-		net->layers[i] = malloc(layerSizes[i]*sizeof(double));
+		net->layers[i] = (double*)malloc(layerSizes[i]*sizeof(double));
 		assert(net->layers[i]!=NULL);
 		net->layerSizes[i] = layerSizes[i];
 		//printf("layersizes[%d] = %d\n",i,layerSizes[i]);
 	}
-	net->weights = malloc((net->nLayers-1)*sizeof(double**));
+	net->weights = (double***)malloc((net->nLayers-1)*sizeof(double**));
 	assert(net->weights!=NULL);
 	
 	for(i=0;i<net->nLayers-1;i++){
-		net->weights[i] = malloc(net->layerSizes[i]*sizeof(double*));
+		net->weights[i] = (double**)malloc(net->layerSizes[i]*sizeof(double*));
 		assert(net->weights[i]!=NULL);
 		for(j=0;j<net->layerSizes[i];j++){
-			net->weights[i][j] = malloc(net->layerSizes[i+1]*sizeof(double));
+			net->weights[i][j] = (double*)malloc(net->layerSizes[i+1]*sizeof(double));
 			assert(net->weights!=NULL);
 		}
 	}

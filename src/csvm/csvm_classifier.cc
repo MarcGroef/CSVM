@@ -21,7 +21,7 @@ void CSVMClassifier::initSVMs(){
 //read settings file, and pass the settings to respective modules
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
-   analyser.setSettings(settings.analyserSettings);
+   //analyser.setSettings(settings.analyserSettings);
    imageScanner.setSettings(settings.scannerSettings);
    dataset.setSettings(settings.datasetSettings);
    codebook.setSettings(settings.codebookSettings);

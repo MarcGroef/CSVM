@@ -9,7 +9,7 @@
 #include "csvm_dataset.h"
 #include "csvm_codebook.h"
 #include "csvm_image_scanner.h"
-#include "csvm_cluster_analyser.h"
+//#include "csvm_cluster_analyser.h"
 #include "csvm_feature.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_svm.h"
@@ -21,7 +21,7 @@ namespace csvm{
       CSVMSettings settings;
       Codebook codebook;
       ImageScanner imageScanner;
-      ClusterAnalyser analyser;
+      //ClusterAnalyser analyser;
       FeatureExtractor featExtr;
       vector< vector<Feature> > pretrainDump;
       vector< Feature> pretrainDump1D;

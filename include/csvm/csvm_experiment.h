@@ -8,11 +8,7 @@
 using namespace std;
 namespace csvm{
 
-  class Experiment{
-    CSVMDataset dataset;
-    
-    
-  };
+  void runExperiment();
   
 }
 

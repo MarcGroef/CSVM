@@ -21,10 +21,10 @@
 double** allocViHj(int vSize,int hSize){
 	int i;
 	printf("alloc vihj: %dx%d\n",vSize,hSize);
-	double** d = malloc(vSize*sizeof(double*));
+	double** d = (double**)malloc(vSize*sizeof(double*));
 	assert(d!=NULL);
 	for(i=0;i<vSize;i++){
-		d[i] = malloc(hSize*sizeof(double));
+		d[i] = (double*)malloc(hSize*sizeof(double));
 		assert(d[i]!=NULL);
 	}
 	return d;

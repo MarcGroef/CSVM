@@ -10,7 +10,7 @@
 #include "csvm_codebook.h"
 #include "csvm_image_scanner.h"
 #include "csvm_dataset.h"
-#include "csvm_cluster_analyser.h"
+//#include "csvm_cluster_analyser.h"
 
 using namespace std;
 
@@ -32,12 +32,12 @@ namespace csvm{
       Codebook_settings codebookSettings;
       ImageScannerSettings scannerSettings;
       CSVMDataset_Settings datasetSettings;
-      ClusterAnalyserSettings analyserSettings;
+      //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();
       void parseDatasetSettings(ifstream& stream);
       void readSettingsFile(string dir);
-      void parseClusterAnalserData(ifstream& stream);
+      //void parseClusterAnalserData(ifstream& stream);
       void parseCodebookSettings(ifstream& stream);
       void parseFeatureExtractorSettings(ifstream& stream);
       void parseImageScannerSettings(ifstream& stream);

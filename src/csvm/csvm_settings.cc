@@ -35,7 +35,7 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream){
 }
 
 
-void CSVMSettings::parseClusterAnalserData(ifstream& stream){
+/*void CSVMSettings::parseClusterAnalserData(ifstream& stream){
   string setting;
   string method;
   stream >> setting;
@@ -90,7 +90,7 @@ void CSVMSettings::parseClusterAnalserData(ifstream& stream){
   }
   
 }
-
+*/
 void CSVMSettings::parseCodebookSettings(ifstream& stream){
   string setting;
   string method;
@@ -295,8 +295,8 @@ void CSVMSettings::readSettingsFile(string dir){
    
    while(getline(file,line) && line != "Dataset");
    parseDatasetSettings(file);
-   while(getline(file,line) && line != "ClusterAnalyser");
-   parseClusterAnalserData(file);
+   /*while(getline(file,line) && line != "ClusterAnalyser");
+   parseClusterAnalserData(file);*/
    while(getline(file,line) && line != "Codebook");
    parseCodebookSettings(file);
    while(getline(file,line) && line != "FeatureExtractor");
