@@ -1,0 +1,29 @@
+
+algorithm
+alpha                   0.50000000
+Falpha                  0.00031338
+beta                    1.00000000
+COST                    0.19490004
+FCOST                   10.26595838
+D2                      0.00000000
+FD2                     2.37890509
+SVM_C                   341.92569721
+FSVM_C                  7.06324730
+Y_FRACT                 0.51505121
+Y_INIT                  1.00000000
+ALPHA_ITER              12
+ALPHA_ITER_INIT         11
+FALPHA_ITER             19
+NR_REP1                 1
+NR_REP2                 19
+EPS                     0.00958326
+F_EPS                   0.53435492
+SIGMA                   2.30182312
+FSIGMA                  3.10422766
+INIT_ALPHA              0.98131844
+INIT_ALPHA_1            0.23512179
+INIT_ALPHA_2            0.27098257
+FINIT_ALPHA             0.10724215
+FALPHA_ADDSTART         0.05015588
+EPOCHS                  1
+FLAYER_SIZE             21
