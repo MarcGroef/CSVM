@@ -16,16 +16,16 @@ using namespace csvm;
 using namespace std;
 
 void showUsage(){
-   cout << "CSVM: An experimental platform for the Convolutional Support Vector Machine architecture\n" <<
+	cout << "CSVM: An experimental platform for the Convolutional Support Vector Machine architecture\n" <<
            "Usage: CSVM [settingsFile]\n" <<
            "Where:\n" <<
            "\tsettingsFile: location of settingsFile\n";
-       
-   
 }
 
 int main(int argc,char**argv){
-   //cout << "Starting program..\n";
+	bool debug = true;
+	if (debug) 
+		cout << "Starting program..\n";
   /* if(argc!=2){
       showUsage();
       return 0;
@@ -38,8 +38,11 @@ int main(int argc,char**argv){
    LBPDescriptor localBinPat;
 
    //load settingsFile
+   if (debug)
+	   cout << "loading settingsfile" << '\n';
    c.setSettings(argv[1]);
-   
+   if (debug)
+	   cout << "loaded settingsfile" << '\n';
    
    
    //setup cifar10 data directories
@@ -53,30 +56,41 @@ int main(int argc,char**argv){
    imDirs.push_back(dataDir + "cifar-10-batches-bin/test_batch.bin");
    
    //load cifar10
+   if (debug)
+	   cout << "loading dataset" << '\n';
    c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    //cout << "ready to work!\n";
-  
+   if (debug)
+	   cout << "dataset loaded" << '\n';
+
    unsigned int nImages = (unsigned int) c.dataset.getSize();
-   //cout << nImages << " images loaded.\n";
+   if (debug)
+	   cout << nImages << " images loaded.\n";
    
    //measure cpu time
    //cout << "Start timing\n";
    time_t time0 = clock();
-   
+   if (debug)
+	   cout << "constructing codebook..." << '\n';
    c.constructCodebook();
-   //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
+   if (debug)
+	   cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    
    c.exportCodebook("codebook10000HOG.bin");
-   cout << "Constructed Codebook!\n";
+   //cout << "Constructed Codebook!\n";
    return 0;
    //c.importCodebook("../build/codebook10000HOG.bin");
 
+   if (debug)
+	   cout << "initialize SVMs\n";
    c.initSVMs();
    //cout << "Start training SVMs\n";
    //train convolutional SVMs
    //c.trainSVMs();
    
    //train classic SVM
+   if (debug)
+	   cout << "start training SVMs\n";
    vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
    
    //cout << "Testing on trainingsset:\n";

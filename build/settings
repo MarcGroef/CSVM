@@ -24,7 +24,7 @@ ImageScanner
 patchHeight 8
 patchWidth 8
 scanStride 1
-nRandomPatches 100
+nRandomPatches 10
 
 SVM
 learningRate 0.00001

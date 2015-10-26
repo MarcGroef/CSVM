@@ -33,27 +33,6 @@
     <ClCompile Include="src\lodepng\lodepng.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\csvm\csvm_rbm.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dnn\dnn_data.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dnn\dnn_flow.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dnn\dnn_math.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dnn\dnn_pretrainer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dnn\dnn_weights.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dnn\dnn_layer_stack.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\csvm\csvm_cifar10_parser.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,9 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\csvm\csvm_cluster_analyser.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\csvm\csvm_codebook.cc">
@@ -122,30 +98,6 @@
     <ClInclude Include="include\lodepng\lodepng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\dnn\dnn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dnn\dnn_data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dnn\dnn_flow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dnn\dnn_layer_stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dnn\dnn_math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dnn\dnn_weights.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dnn\dnn_pretrainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\csvm\csvm_rbm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\csvm\csvm_cifar10_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -159,9 +111,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\csvm\csvm_dataset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\csvm\csvm_experiment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\csvm\csvm_feature.h">

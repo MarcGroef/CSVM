@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4E5293FC-8A09-4FCF-971E-A91EB517220C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,7 +83,6 @@
     <ClCompile Include="src\csvm\csvm_cifar10_parser.cc" />
     <ClCompile Include="src\csvm\csvm_classifier.cc" />
     <ClCompile Include="src\csvm\csvm_clean_descriptor.cc" />
-    <ClCompile Include="src\csvm\csvm_cluster_analyser.cc" />
     <ClCompile Include="src\csvm\csvm_codebook.cc" />
     <ClCompile Include="src\csvm\csvm_dataset.cc" />
     <ClCompile Include="src\csvm\csvm_feature.cc" />
@@ -95,15 +95,8 @@
     <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc" />
     <ClCompile Include="src\csvm\csvm_lvq.cc" />
     <ClCompile Include="src\csvm\csvm_patch.cc" />
-    <ClCompile Include="src\csvm\csvm_rbm.cc" />
     <ClCompile Include="src\csvm\csvm_settings.cc" />
     <ClCompile Include="src\csvm\csvm_svm.cc" />
-    <ClCompile Include="src\dnn\dnn_data.c" />
-    <ClCompile Include="src\dnn\dnn_flow.c" />
-    <ClCompile Include="src\dnn\dnn_layer_stack.c" />
-    <ClCompile Include="src\dnn\dnn_math.c" />
-    <ClCompile Include="src\dnn\dnn_pretrainer.c" />
-    <ClCompile Include="src\dnn\dnn_weights.c" />
     <ClCompile Include="src\lodepng\lodepng.cc" />
     <ClCompile Include="src\main.cc" />
   </ItemGroup>
@@ -115,7 +108,6 @@
     <ClInclude Include="include\csvm\csvm_cluster_analyser.h" />
     <ClInclude Include="include\csvm\csvm_codebook.h" />
     <ClInclude Include="include\csvm\csvm_dataset.h" />
-    <ClInclude Include="include\csvm\csvm_experiment.h" />
     <ClInclude Include="include\csvm\csvm_feature.h" />
     <ClInclude Include="include\csvm\csvm_feature_extractor.h" />
     <ClInclude Include="include\csvm\csvm_frequency_matrix.h" />
@@ -126,16 +118,8 @@
     <ClInclude Include="include\csvm\csvm_lbp_descriptor.h" />
     <ClInclude Include="include\csvm\csvm_lvq.h" />
     <ClInclude Include="include\csvm\csvm_patch.h" />
-    <ClInclude Include="include\csvm\csvm_rbm.h" />
     <ClInclude Include="include\csvm\csvm_settings.h" />
     <ClInclude Include="include\csvm\csvm_svm.h" />
-    <ClInclude Include="include\dnn\dnn.h" />
-    <ClInclude Include="include\dnn\dnn_data.h" />
-    <ClInclude Include="include\dnn\dnn_flow.h" />
-    <ClInclude Include="include\dnn\dnn_layer_stack.h" />
-    <ClInclude Include="include\dnn\dnn_math.h" />
-    <ClInclude Include="include\dnn\dnn_pretrainer.h" />
-    <ClInclude Include="include\dnn\dnn_weights.h" />
     <ClInclude Include="include\lodepng\lodepng.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

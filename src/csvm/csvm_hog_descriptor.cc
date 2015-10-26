@@ -18,10 +18,11 @@ HOGDescriptor::HOGDescriptor() {
 }
 
 HOGDescriptor::HOGDescriptor(int cellSize, int cellStride, int blockSize) {
-	this->settings.nBins = 9;
+	this->settings.nBins = 9;				//9 bins was shown to perform optimal in previous experiments
 	this->settings.cellSize = cellSize;
 	this->settings.cellStride = cellStride;
 	this->settings.blockSize = blockSize;
+	//this->settings.padding = ZERO;
 	//this->blockStride = blockStride;
 	this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
 	this->settings.useGreyPixel = true;
@@ -30,28 +31,40 @@ HOGDescriptor::HOGDescriptor(int cellSize, int cellStride, int blockSize) {
 void HOGDescriptor::setSettings(HOGSettings s){
    settings = s;
    //cout << "hog settigns set\n";
+   this->settings.padding = IDENTITY;
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   this->settings.useGreyPixel = true;
+   this->settings.useGreyPixel = false;
 }
 
-double HOGDescriptor::computeXGradient(Patch patch, int x, int y) {
-	double result=0;
-	//for now, implement zero-padding hardcoded.
+double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col = GRAY) {
+	double result;
 	if (settings.useGreyPixel) {
-		double xPlus = (x + 1 > patch.getWidth() ? 0 : patch.getGreyPixel(x + 1, y));
-		double xMin = (x - 1 < 0 ? 0 : patch.getGreyPixel(x - 1, y));
+		double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
+		double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
 		result = xPlus - xMin;
 	}
+	else
+	{
+		double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
+		double xMin = (x - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x - 1, y, col));
+		result = xPlus - xMin;
+	}//patch.getPixel(x,y, channel in 0-2)
 	return result;
 }
 
-double HOGDescriptor::computeYGradient(Patch patch, int x, int y) {
+double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
 	double result=0;
 	//for now, implement zero padding hardcoded
 	if (settings.useGreyPixel) {
-		double yPlus = (y + 1 > patch.getHeight() ? 0 : patch.getGreyPixel(x, y+1));
-		double yMin = (y - 1 < 0 ? 0 : patch.getGreyPixel(x, y-1));
+		double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
+		double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y-1));
+		result = yPlus - yMin;
+	}
+	else
+	{
+		double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
+		double yMin = (y - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y - 1, col));
 		result = yPlus - yMin;
 	}
 	return result;
@@ -80,37 +93,12 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 	   cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
    }
  
-   /*
-   if p = patch width, and height (pxp patch size)
-   and cell size is c
-   cell stride is cstr, with c % cstr == 0
-   then 
-   number of cells = ( ((p - c) / cstr) + 1 )^2
-   
-   */
-
-   /*if(settings.cellSize == -1)
-	   this->settings.cellSize = patchWidth / 2.0;
-   if(settings.cellStride == -1)
-	   this->settings.cellStride = patchWidth / 2.0;
-   if(settings.blockSize == -1)
-	   this->settings.blockSize = patchWidth;
-   //this->blockStride = blockStride;
-   if(settings.cellSize == -1)
-	   this->settings.numberOfCells = pow(((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-*/
+  
   
    vector <double> blockHistogram(0, 0);
   
-   //for now 
    //iterate through block with a cell, with stride cellstride. 
-   //double cellNumber = 0;
-   
-   /*cout << "\n\nexecuting HOG" << '\n';
-   cout << "cellsize : " << settings.cellSize <<
-	   "\ncellStride : " << settings.cellStride <<
-	   "\nblockSize : " << settings.blockSize << '\n' << settings.nBins << " bins\n";*/
-	   
+     
    for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += settings.cellStride) {
 	   for (int cellY = 0; cellY+ settings.cellSize <= patchHeight; cellY += settings.cellStride) {
 		   //cout << "cell: " << cellX << ", " << cellY << '\n';
@@ -118,21 +106,52 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
 		   vector <double> cellOrientationHistogram(settings.nBins, 0);
          //cout << "cellOri set\n";
 		   //now for every cell, compute histogram of features. 
-		   for (size_t X = 0; X < settings.cellSize; ++X)
+		   //adjust for padding type. if no padding, then only iterate over an offset of boundary
+		   for (size_t X = (settings.padding == NONE ? 1 : 0); X < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++X)
 		   {
-			   for (size_t Y = 0; Y < settings.cellSize; ++Y)
+			   for (size_t Y = (settings.padding == NONE ? 1 : 0); Y < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++Y)
 			   {
-				   double xGradient = computeXGradient(block, X + cellX, Y + cellY);
-				   double yGradient = computeYGradient(block, X + cellX, Y + cellY);
-				   //we add the magnitude of a pixel into the bin wherein its gradient orientation falls. 
-				   double gradientMagnitude = computeMagnitude(xGradient, yGradient);
-				   double gradientOrientation = computeOrientation(xGradient, yGradient);
-               //cout << "gained gradients\n";
-				   //size_t bin = static_cast<size_t>(floor(gradientOrientation / (180.0 / settings.nBins)));
-               size_t bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-               //cout << "bin = " << bin <<  "at gradientOri: " << gradientOrientation << endl;
-               //cout << "bin determined: " << bin << "\n";
-				   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+				   double xGradient;
+				   double yGradient;
+				   double gradientMagnitude;
+				   double gradientOrientation;
+				   size_t bin;
+
+				   if (settings.useGreyPixel)
+				   {
+					   xGradient = computeXGradient(block, X + cellX, Y + cellY, GRAY);
+					   yGradient = computeYGradient(block, X + cellX, Y + cellY, GRAY);
+					   gradientMagnitude = computeMagnitude(xGradient, yGradient);
+					   gradientOrientation = computeOrientation(xGradient, yGradient);
+					   bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+					   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+				   }
+				   else
+				   {
+					   xGradient = computeXGradient(block, X + cellX, Y + cellY, RED);
+					   yGradient = computeYGradient(block, X + cellX, Y + cellY, RED);
+					   gradientMagnitude = computeMagnitude(xGradient, yGradient);
+					   gradientOrientation = computeOrientation(xGradient, yGradient);
+					   bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+					   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+
+					   xGradient = computeXGradient(block, X + cellX, Y + cellY, GREEN);
+					   yGradient = computeYGradient(block, X + cellX, Y + cellY, GREEN);
+					   gradientMagnitude = computeMagnitude(xGradient, yGradient);
+					   gradientOrientation = computeOrientation(xGradient, yGradient);
+					   bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+					   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+
+					   xGradient = computeXGradient(block, X + cellX, Y + cellY, BLUE);
+					   yGradient = computeYGradient(block, X + cellX, Y + cellY, BLUE);
+					   gradientMagnitude = computeMagnitude(xGradient, yGradient);
+					   gradientOrientation = computeOrientation(xGradient, yGradient);
+					   bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+					   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+
+				   }
+
+
                //cout << "added to histogram\n";
 			   }
 		   }

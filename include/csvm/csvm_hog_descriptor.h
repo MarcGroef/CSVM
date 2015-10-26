@@ -14,15 +14,28 @@ using namespace std;
 
 
 namespace csvm{
+	enum Colour {
+		GRAY = -1,
+		RED = 0,
+		GREEN = 1,
+		BLUE = 2,
+	};
+
+	enum Padding {
+		ZERO = 0,						//the type of padding used
+		IDENTITY = 1,
+		NONE = 2,
+	};
 
 	struct HOGSettings {
-		unsigned int nBins;                //number of angular orientated histogram bins bins
-		unsigned int cellSize;             // assumes square cell
-		unsigned int cellStride;           //the steps the cell make across the input
-		unsigned int blockSize;			
-		unsigned int numberOfCells;
-		bool useGreyPixel;
-
+		unsigned int nBins;                //number of angular orientated bins which make up the histogram of magnitudes
+		unsigned int cellSize;             // assumes square cell. Best to make it an even divisor of blocksize 
+		unsigned int cellStride;           // the stride the cell window makes when iterating over the patch. (This may also be the cell size itself for a seperation into quadrants)
+		unsigned int blockSize;			   //the size of the patch			
+		unsigned int numberOfCells;			//is internally computed by virtue of cell size, stride, and blocksize.
+		bool useGreyPixel;					//use the gray pixels? or all color channels. If all channels, then feature is 3 times as large. Default is true
+		//bool interpolation;					//whether binning is proportionate (true) or direct (false). Default is false
+		Padding padding;						// what type of padding should be used to deal with 
 	};
    class HOGDescriptor{
 	   HOGSettings settings;
@@ -36,8 +49,8 @@ namespace csvm{
 	  Feature getHOG(Patch patch,int channel, bool useGreyPixel);
 
    private:
-	   double computeXGradient(Patch patch, int x, int y);
-	   double computeYGradient(Patch patch, int x, int y);
+	   double computeXGradient(Patch patch, int x, int y, Colour col);
+	   double computeYGradient(Patch patch, int x, int y, Colour col);
 	   double computeMagnitude(double x, double y);
 	   double computeOrientation(double x, double y);
       
