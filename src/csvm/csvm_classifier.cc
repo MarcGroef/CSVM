@@ -103,7 +103,7 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
-   cout << "collecting activations for trainingsdata..\n";
+   //cout << "collecting activations for trainingsdata..\n";
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       

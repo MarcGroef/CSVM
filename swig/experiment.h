@@ -6,6 +6,6 @@
 #include <iostream>
 #include <time.h>
 
-int run();
+double run(char* settingsDir);
 
 #endif
