@@ -63,13 +63,13 @@ int main(int argc,char**argv){
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   c.constructCodebook();
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    
-   c.exportCodebook("codebook10000HOG.bin");
-   cout << "Constructed Codebook!\n";
-   return 0;
-   //c.importCodebook("../build/codebook10000HOG.bin");
+   //c.exportCodebook("codebook10000HOG.bin");
+   //cout << "Constructed Codebook!\n";
+   //return 0;
+   c.importCodebook("../build/codebook10000HOG.bin");
 
    c.initSVMs();
    //cout << "Start training SVMs\n";
