@@ -30,7 +30,7 @@ int main(int argc,char**argv){
       showUsage();
       return 0;
 //    }*/
-   string dataDir = "../../datasets/";//argv[2];
+   string dataDir = "../datasets/";//argv[2];
    CSVMClassifier c;
    ImageScanner scanner;
    vector<Patch> newPatches;
@@ -66,8 +66,10 @@ int main(int argc,char**argv){
    c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    
-   //c.exportCodebook("codebook10000HOG.bin");
-   //c.importCodebook("maandag.bin");
+   c.exportCodebook("codebook10000HOG.bin");
+   cout << "Constructed Codebook!\n";
+   return 0;
+   //c.importCodebook("../build/codebook10000HOG.bin");
 
    c.initSVMs();
    //cout << "Start training SVMs\n";
@@ -122,7 +124,7 @@ int main(int argc,char**argv){
    }
   // cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    //cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
-   cout << fixed << ((double)nCorrect)/(nCorrect + nFalse);
+   cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
    
    //cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";

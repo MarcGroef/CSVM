@@ -16,8 +16,8 @@ similaritySigma .3
 
 FeatureExtractor
 method HOG
-cellSize 8
-cellStride 1
+cellSize 4
+cellStride 2
 blockSize 8
 
 ImageScanner

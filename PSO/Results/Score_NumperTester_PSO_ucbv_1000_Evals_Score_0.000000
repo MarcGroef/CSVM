@@ -12,7 +12,7 @@ nGibbsSteps 2
 Codebook
 method KMEANS
 nClusters 300
-similaritySigma 0.7789101
+similaritySigma 0.0049056
 
 FeatureExtractor
 method HOG
@@ -28,8 +28,8 @@ nRandomPatches 100
 
 SVM
 learningRate 0.00001
-SVM_C_Data 9.0000000
-SVM_C_Centroid 12.0000000
-Cost 1.6176135
-D2 3.2448907
-sigmaClassicSimilarity 0.0093118
+SVM_C_Data 14.0000000
+SVM_C_Centroid 10.0000000
+Cost 0.3167547
+D2 2.5380548
+sigmaClassicSimilarity 0.0000017

@@ -3,7 +3,7 @@ import time
 import random
 import os
 
-import csvm
+
 from param_tester import ParameterTester
 from generators.randomparameters import RandomParameters
 from generators.xnes_bare import xNES_bare as xNES
@@ -15,10 +15,10 @@ testers = ['NumperTester']
 class NumperTester(ParameterTester):
     file_location = os.path.dirname(os.path.abspath(__file__))
     program_location = os.path.dirname(file_location)
-    SVM_location = os.path.join(program_location, "CSVM")
+    SVM_location = os.path.join(program_location, "../build/CSVM")
 
-    start_command = "csvm.run(%(filename)s)"
-    param_path = "CSVM"
+    start_command = "../build/CSVM %(filename)s"
+    param_path = "../build/CSVM"
     param_names = [ 'Cost', 'D2', 'SVM_C_Data', 'SVM_C_Centroid', 'sigmaClassicSimilarity', 'similaritySigma']
     parameters = {
                     'sigmaClassicSimilarity':           {"type": "float",
@@ -69,9 +69,9 @@ similaritySigma %(similaritySigma).7f
 
 FeatureExtractor
 method HOG
-cellSize 8
-cellStride 1
-blockSize 16
+cellSize 4
+cellStride 2
+blockSize 8
 
 ImageScanner
 patchHeight 8
@@ -107,8 +107,9 @@ sigmaClassicSimilarity %(sigmaClassicSimilarity).7f
             tryCount = 0
             while True:
                 tryCount += 1
-                #answer = os.popen("CSVM" + filename).read()
-                answer = csvm.run(filename)
+                print "Calling : ./CSVM " + filename
+                answer = os.popen("../build/CSVM " + filename).read()
+                #answer = csvm.run(filename)
                 print "Reaction from program = " + answer
                 self.result = float(answer)
                 if self.result < -0.00001:
