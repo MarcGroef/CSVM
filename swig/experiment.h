@@ -6,6 +6,7 @@
 #include <iostream>
 #include <time.h>
 
-double run(char* settingsDir);
-
+void generateCodebook(char* settingsDir, char* codebook, char* dataDir);
+double run(char* settingsDir, char* codebook, char* dataDir);
+void help();
 #endif

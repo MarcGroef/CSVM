@@ -1,0 +1,3 @@
+import csvm
+csvm.generateCodebook("../../build/settings", "codebook.bin", "../../datasets/")
+

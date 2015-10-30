@@ -37,6 +37,7 @@ class ParameterTester(object):
         """
         Returns the result of the last evaluation
         """
+        print "Returning result ", self.result
         return self.result
 
     def write_parameters(self, filename):

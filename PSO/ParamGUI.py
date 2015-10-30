@@ -1,6 +1,6 @@
 import wx
 import string
-import testers.SVMTester
+import testers.CSVMTester
 
 class ParamGUI(wx.Frame):
     """

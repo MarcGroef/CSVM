@@ -91,9 +91,17 @@ except AttributeError:
 
 
 
-def run(settingsDir):
-    return _csvm.run(settingsDir)
+def generateCodebook(settingsDir, codebook, dataDir):
+    return _csvm.generateCodebook(settingsDir, codebook, dataDir)
+generateCodebook = _csvm.generateCodebook
+
+def run(settingsDir, codebook, dataDir):
+    return _csvm.run(settingsDir, codebook, dataDir)
 run = _csvm.run
+
+def help():
+    return _csvm.help()
+help = _csvm.help
 # This file is compatible with both classic and new-style classes.
 
 

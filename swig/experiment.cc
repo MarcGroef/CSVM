@@ -22,19 +22,44 @@ using namespace std;
    
 }*/
 
-double run(char* settingsDir){
+void help(){
+   cout << "CSVM Python Functionality:\nvoid generateCodebook(char* settingsDir, char* codebook,char* dataDir)\ndouble run(char* settingsDir, char* codebook, char* dataDir)\n"  ;
+}
+
+void generateCodebook(char* settingsDir, char* codebook,char* dataDir){
+   string dir(dataDir);
+   string codebookDir(codebook);
+   CSVMClassifier c;
+   c.setSettings(settingsDir);
+   vector<string> imDirs;
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_1.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_2.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_3.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_4.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_5.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/test_batch.bin");
+   
+   //load cifar10
+   c.dataset.loadCifar10(dir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
+   
+   c.constructCodebook();
+   c.exportCodebook(codebookDir);
+   cout << "Done constructing codebook\n";
+}
+
+double run(char* settingsDir, char* codebook, char* dataDir){
    
    /*if(argc!=2){
       showUsage();
       return 0;
    }*/
-   
+   string dir(dataDir);
    CSVMClassifier c;
    ImageScanner scanner;
    vector<Patch> newPatches;
    vector<Patch> patches;
    LBPDescriptor localBinPat;
-
+   
    //load settingsFile
    //c.setSettings("../build/settings");
    c.setSettings(settingsDir);
@@ -44,31 +69,23 @@ double run(char* settingsDir){
    //setup cifar10 data directories
    vector<string> imDirs;
    
-   imDirs.push_back("../../datasets/cifar-10-batches-bin/data_batch_1.bin");
-   imDirs.push_back("../../datasets/cifar-10-batches-bin/data_batch_2.bin");
-   imDirs.push_back("../../datasets/cifar-10-batches-bin/data_batch_3.bin");
-   imDirs.push_back("../../datasets/cifar-10-batches-bin/data_batch_4.bin");
-   imDirs.push_back("../../datasets/cifar-10-batches-bin/data_batch_5.bin");
-   imDirs.push_back("../../datasets/cifar-10-batches-bin/test_batch.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_1.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_2.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_3.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_4.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/data_batch_5.bin");
+   imDirs.push_back(dir + "cifar-10-batches-bin/test_batch.bin");
    
    //load cifar10
-   c.dataset.loadCifar10("../datasets/cifar-10-batches-bin/batches.meta.txt",imDirs);
+   c.dataset.loadCifar10(dir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    
   
    unsigned int nImages = (unsigned int) c.dataset.getSize();
-   //cout << nImages << " images loaded.\n";
-   
-   //measure cpu time
-   //cout << "Start timing\n";
-   //time_t time0 = clock();
-   
-   c.constructCodebook();
-   //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   
-   //c.exportCodebook("codebook10000HOG.bin");
-   //c.importCodebook("maandag.bin");
+
+   c.importCodebook(codebook);
 
    c.initSVMs();
+   
    //cout << "Start training SVMs\n";
    //train convolutional SVMs
    //c.trainSVMs();
@@ -121,7 +138,7 @@ double run(char* settingsDir){
    }
    //cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    //cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
-   
+   //cout << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    return ((double)nCorrect)/(nCorrect + nFalse);
    
   // cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";

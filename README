@@ -1,14 +1,17 @@
-##CSVM
 
+############################ -CSVM- ###################################
 
 This program is an experimental platform exploring new variations on the techniques based on the paper 
 "Recognizing Handwritten Characters with Local Descriptor and Bags of Visual Words" by Surinta e.a.
 
-This is still early work in progress..
 
-Also see te dataset README in /datasets/
+Also see te dataset README in the ./datasets/ folder for download instructions for the required 
+datasets.
 
-Usage: (linux using g++, CMake and Make)
+
+####################### -GNU/Linux Usage- ############################# 
+
+Usage: (linux using g++, CMake, Make, SWIG, python)
 
 1. Download the repository, if not already done so.
 2. Download the dataset as described in the README in the "datasets/" folder.
@@ -18,8 +21,52 @@ Usage: (linux using g++, CMake and Make)
       cd build/                     (change directory to the build folder)
       ./CSVM [settingsfile]         (Execute the program)
       or ./run.sh
+      
 
-Usage: (Windows using Visual Studio)
+#### Parameter optimalisation: ####
+
+## Program description ##
+In the PSO folder a parameter optimalisation program can be found.
+
+This program tries to find optimal parameters for a "tester"-program, which are found in the 
+./PSO/testers/ folder. The tester-file designed for the CSVM program is called CSVMTester.py.
+This tester requires the CSVM program in a Python library form. For this SWIG is used, which is 
+described in the next section.
+
+## Program usage description ##
+
+# Codebook Generation #
+The CSVM wrapper uses a pre-generated codebook for the program. This way a lot of
+codebook regeneration time can be spared during optimisation. Codebook-construction settings are described 
+in ./PSO/testers/codebook-generation-settings .
+
+Set the required settings (ImageScanner, FeatureExtractor, Dataset, Codebook) to the experiment-settings.
+
+
+Next, prepare the codebook-generation python script, called ./PSO/testers/generateCodebook._py, by renaming 
+the file-extention to .py and executing the script. Always change the file-extention back to ._py, otherwise
+the parameter optimalisation program will think it is another 'Tester'.
+
+If all went well, the file codebook.bin will be added to ./PSO/testers.
+
+# Execution #
+The program can be executed by calling the start.sh script in ./PSO/.
+
+
+#### SWIG-wrapping: ####
+For SWIG-wrapping you should first install SWIG (http://www.swig.org/) if not already installed.
+
+The CSVM program is wrapped for Python using SWIG. To adapt the python interface of CSVM,
+go to the "swig" folder. The experiment.[cc/h] files describe functions that will be wrapped to python.
+The wrapping and compilation process is described, and executable in the swig.sh script.
+This script automatically copies the produced python library to the "./PSO/testers/" location,
+where the library is needed for parameter optimalisation.
+
+
+########################## -Windows Usage- ############################
+
+Usage: (Windows using Microsoft Visual Studio)
+
 1. Download the repository, if not already done so.
 2. Open CSVM.sln
 3. To execute: Go to the build folder in terminal, and execute from there
@@ -28,3 +75,5 @@ Usage: (Windows using Visual Studio)
 the main (CSVM) folder. This causes to program to crash in a controlled way, since it cannot find the 
 .png files. Because of this you have to execute the program by hand from the "build" folder. Either by a double-click 
 or in terminal. Using the terminal is adviced, since the program will disappear directly when finished otherwise.)
+
+Further usage regarding SWIG and Parameter-Optimalisation on Windows systems have not yet been tried out.
