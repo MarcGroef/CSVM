@@ -2,7 +2,7 @@
 #include <csvm/csvm.h>
 #include <iostream>
 #include <time.h>
-
+#include <cstdlib>
 
 /*Optimze technique
  * use -pg compile flag
@@ -30,6 +30,7 @@ int main(int argc,char**argv){
       showUsage();
       return 0;
 //    }*/
+   srand(time(NULL));
    string dataDir = "../datasets/";//argv[2];
    CSVMClassifier c;
    ImageScanner scanner;
@@ -56,20 +57,20 @@ int main(int argc,char**argv){
    c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    //cout << "ready to work!\n";
   
-   unsigned int nImages = (unsigned int) c.dataset.getSize();
+   unsigned int nImages = 60000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
    
    //measure cpu time
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   //c.constructCodebook();
+   c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    
    //c.exportCodebook("codebook10000HOG.bin");
    //cout << "Constructed Codebook!\n";
    //return 0;
-   c.importCodebook("../build/codebook10000HOG.bin");
+   //c.importCodebook("../build/codebook10000HOG.bin");
 
    c.initSVMs();
    //cout << "Start training SVMs\n";
@@ -108,19 +109,25 @@ int main(int argc,char**argv){
    //Testing phase
    nCorrect = 0;
    nFalse = 0;
-
-   for(size_t im = 50000-0; im < 50500; ++im){
+   unsigned int image;
+   for(size_t im = 0; im < 500; ++im){
+      image = rand() % nImages;
+      cout << "Testing image " << image << ".. ";
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
+      
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
-      if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
+      if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
-      else 
+         cout << "Correct!\n";
+      }
+      else {
          ++nFalse;
-      
+         cout << "False!\n";
+      }
    }
   // cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    //cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";

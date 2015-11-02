@@ -5,6 +5,7 @@
 //#include <dnn/dnn.h>
 #include <iostream>
 #include <time.h>
+#include <cstdlib>
 
 void generateCodebook(char* settingsDir, char* codebook, char* dataDir);
 double run(char* settingsDir, char* codebook, char* dataDir);

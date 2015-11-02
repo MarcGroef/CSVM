@@ -48,7 +48,7 @@ void generateCodebook(char* settingsDir, char* codebook,char* dataDir){
 }
 
 double run(char* settingsDir, char* codebook, char* dataDir){
-   
+   srand(time(NULL));
    /*if(argc!=2){
       showUsage();
       return 0;
@@ -80,7 +80,7 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    c.dataset.loadCifar10(dir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    
   
-   unsigned int nImages = (unsigned int) c.dataset.getSize();
+   unsigned int nImages = 60000;//(unsigned int) c.dataset.getSize();
 
    c.importCodebook(codebook);
 
@@ -122,15 +122,16 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    //Testing phase
    nCorrect = 0;
    nFalse = 0;
-
-   for(size_t im = 50000-0; im < 50500; ++im){
+   unsigned int image;
+   for(size_t im = 0; im < 200; ++im){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
+      image = rand() % nImages;
+      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
-      if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
+      if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result)
          ++nCorrect;
       else 
          ++nFalse;

@@ -18,47 +18,61 @@ HOGDescriptor::HOGDescriptor() {
 }
 
 HOGDescriptor::HOGDescriptor(int cellSize, int cellStride, int blockSize) {
-	this->settings.nBins = 9;
-	this->settings.cellSize = cellSize;
-	this->settings.cellStride = cellStride;
-	this->settings.blockSize = blockSize;
-	//this->blockStride = blockStride;
-	this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-	this->settings.useGreyPixel = true;
+   this->settings.nBins = 9;           //9 bins was shown to perform optimal in previous experiments
+   this->settings.cellSize = cellSize;
+   this->settings.cellStride = cellStride;
+   this->settings.blockSize = blockSize;
+   //this->settings.padding = ZERO;
+   //this->blockStride = blockStride;
+   this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
+   this->settings.useGreyPixel = true;
 }
 
 void HOGDescriptor::setSettings(HOGSettings s){
    settings = s;
    //cout << "hog settigns set\n";
+   //this->settings.padding = IDENTITY;
+   this->settings.padding = NONE;
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   this->settings.useGreyPixel = true;
+   this->settings.useGreyPixel = false;
 }
 
-double HOGDescriptor::computeXGradient(Patch patch, int x, int y) {
-	double result=0;
-	//for now, implement zero-padding hardcoded.
-	if (settings.useGreyPixel) {
-		double xPlus = (x + 1 > patch.getWidth() ? 0 : patch.getGreyPixel(x + 1, y));
-		double xMin = (x - 1 < 0 ? 0 : patch.getGreyPixel(x - 1, y));
-		result = xPlus - xMin;
-	}
-	return result;
+double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col = GRAY) {
+   double result;
+   if (settings.useGreyPixel) {
+      double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
+      double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
+      result = xPlus - xMin;
+   }
+   else
+   {
+      double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
+      double xMin = (x - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x - 1, y, col));
+      result = xPlus - xMin;
+   }//patch.getPixel(x,y, channel in 0-2)
+   return result;
 }
 
-double HOGDescriptor::computeYGradient(Patch patch, int x, int y) {
-	double result=0;
-	//for now, implement zero padding hardcoded
-	if (settings.useGreyPixel) {
-		double yPlus = (y + 1 > patch.getHeight() ? 0 : patch.getGreyPixel(x, y+1));
-		double yMin = (y - 1 < 0 ? 0 : patch.getGreyPixel(x, y-1));
-		result = yPlus - yMin;
-	}
-	return result;
+double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
+   double result=0;
+   //for now, implement zero padding hardcoded
+   if (settings.useGreyPixel) {
+      double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
+      double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y-1));
+      result = yPlus - yMin;
+   }
+   else
+   {
+      double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
+      double yMin = (y - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y - 1, col));
+      result = yPlus - yMin;
+   }
+   return result;
 }
 
 double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
-	return sqrt(pow(xGradient, 2) + pow(yGradient, 2));
+   return sqrt(pow(xGradient, 2) + pow(yGradient, 2));
 }
 
 double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
@@ -66,7 +80,7 @@ double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
    while(ori < 0.0)
       ori += 180.0;
    
-	return ori;
+   return ori;
 }
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
@@ -77,77 +91,83 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    unsigned int patchHeight = block.getHeight();
 
    if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
-	   cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
+      cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
    }
  
-   /*
-   if p = patch width, and height (pxp patch size)
-   and cell size is c
-   cell stride is cstr, with c % cstr == 0
-   then 
-   number of cells = ( ((p - c) / cstr) + 1 )^2
-   
-   */
-
-   /*if(settings.cellSize == -1)
-	   this->settings.cellSize = patchWidth / 2.0;
-   if(settings.cellStride == -1)
-	   this->settings.cellStride = patchWidth / 2.0;
-   if(settings.blockSize == -1)
-	   this->settings.blockSize = patchWidth;
-   //this->blockStride = blockStride;
-   if(settings.cellSize == -1)
-	   this->settings.numberOfCells = pow(((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-*/
+  
   
    vector <double> blockHistogram(0, 0);
   
-   //for now 
    //iterate through block with a cell, with stride cellstride. 
-   //double cellNumber = 0;
-   
-   /*cout << "\n\nexecuting HOG" << '\n';
-   cout << "cellsize : " << settings.cellSize <<
-	   "\ncellStride : " << settings.cellStride <<
-	   "\nblockSize : " << settings.blockSize << '\n' << settings.nBins << " bins\n";*/
-	   
+     
    for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += settings.cellStride) {
-	   for (int cellY = 0; cellY+ settings.cellSize <= patchHeight; cellY += settings.cellStride) {
-		   //cout << "cell: " << cellX << ", " << cellY << '\n';
+      for (int cellY = 0; cellY+ settings.cellSize <= patchHeight; cellY += settings.cellStride) {
+         //cout << "cell: " << cellX << ", " << cellY << '\n';
 
-		   vector <double> cellOrientationHistogram(settings.nBins, 0);
+         vector <double> cellOrientationHistogram(settings.nBins, 0);
          //cout << "cellOri set\n";
-		   //now for every cell, compute histogram of features. 
-		   for (size_t X = 0; X < settings.cellSize; ++X)
-		   {
-			   for (size_t Y = 0; Y < settings.cellSize; ++Y)
-			   {
-				   double xGradient = computeXGradient(block, X + cellX, Y + cellY);
-				   double yGradient = computeYGradient(block, X + cellX, Y + cellY);
-				   //we add the magnitude of a pixel into the bin wherein its gradient orientation falls. 
-				   double gradientMagnitude = computeMagnitude(xGradient, yGradient);
-				   double gradientOrientation = computeOrientation(xGradient, yGradient);
-               //cout << "gained gradients\n";
-				   //size_t bin = static_cast<size_t>(floor(gradientOrientation / (180.0 / settings.nBins)));
-               size_t bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-               //cout << "bin = " << bin <<  "at gradientOri: " << gradientOrientation << endl;
-               //cout << "bin determined: " << bin << "\n";
-				   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+         //now for every cell, compute histogram of features. 
+         //adjust for padding type. if no padding, then only iterate over an offset of boundary
+         for (size_t X = (settings.padding == NONE ? 1 : 0); X < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++X)
+         {
+            for (size_t Y = (settings.padding == NONE ? 1 : 0); Y < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++Y)
+            {
+               double xGradient;
+               double yGradient;
+               double gradientMagnitude;
+               double gradientOrientation;
+               size_t bin;
+
+               if (settings.useGreyPixel)
+               {
+                  xGradient = computeXGradient(block, X + cellX, Y + cellY, GRAY);
+                  yGradient = computeYGradient(block, X + cellX, Y + cellY, GRAY);
+                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
+                  gradientOrientation = computeOrientation(xGradient, yGradient);
+                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+               }
+               else
+               {
+                  xGradient = computeXGradient(block, X + cellX, Y + cellY, RED);
+                  yGradient = computeYGradient(block, X + cellX, Y + cellY, RED);
+                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
+                  gradientOrientation = computeOrientation(xGradient, yGradient);
+                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+
+                  xGradient = computeXGradient(block, X + cellX, Y + cellY, GREEN);
+                  yGradient = computeYGradient(block, X + cellX, Y + cellY, GREEN);
+                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
+                  gradientOrientation = computeOrientation(xGradient, yGradient);
+                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+
+                  xGradient = computeXGradient(block, X + cellX, Y + cellY, BLUE);
+                  yGradient = computeYGradient(block, X + cellX, Y + cellY, BLUE);
+                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
+                  gradientOrientation = computeOrientation(xGradient, yGradient);
+                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+
+               }
+
+
                //cout << "added to histogram\n";
-			   }
-		   }
-		   //cout << "\nsingle cell feature vect:" << '\n';
-		   //for (size_t idx = 0; idx < settings.nBins; ++idx) {
-			//   cout << std::setprecision(3) << cellOrientationHistogram[idx] << " | " ;
-		   //}
-		   //cout << "made it to histogram insertion\n";
-		   //now we have fully processed a single cell. let's append it to our to-be feature vector.
-		   blockHistogram.insert(blockHistogram.end(), cellOrientationHistogram.begin(), cellOrientationHistogram.end());
-		   //cout << "\nblockHistogram: " << '\n';
-		   //for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
-		//	   cout << blockHistogram[idx] << " | ";
-		  // }
-	   }
+            }
+         }
+         //cout << "\nsingle cell feature vect:" << '\n';
+         //for (size_t idx = 0; idx < settings.nBins; ++idx) {
+         //   cout << std::setprecision(3) << cellOrientationHistogram[idx] << " | " ;
+         //}
+         //cout << "made it to histogram insertion\n";
+         //now we have fully processed a single cell. let's append it to our to-be feature vector.
+         blockHistogram.insert(blockHistogram.end(), cellOrientationHistogram.begin(), cellOrientationHistogram.end());
+         //cout << "\nblockHistogram: " << '\n';
+         //for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      //    cout << blockHistogram[idx] << " | ";
+        // }
+      }
    }
    //now we have processed all cells, whose histograms are all appended to one another in blockHistrogram. 
    //now we should normalize it 
@@ -158,21 +178,21 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    double lowestValue = 360;
    double highestValue = 0;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
-		highestValue = (blockHistogram[idx] > highestValue ? blockHistogram[idx] : highestValue);
-		lowestValue = (blockHistogram[idx] < highestValue ? blockHistogram[idx] : lowestValue);
+      highestValue = (blockHistogram[idx] > highestValue ? blockHistogram[idx] : highestValue);
+      lowestValue = (blockHistogram[idx] < highestValue ? blockHistogram[idx] : lowestValue);
    }
    */
-	//L2 normalization scheme:
+   //L2 normalization scheme:
    double vTwoSquared = 0;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
-	   vTwoSquared += pow(blockHistogram[idx], 2);
+      vTwoSquared += pow(blockHistogram[idx], 2);
    }
-	//   vTwoSquared = sqrt(vTwoSquared); //is now vector length
+   //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
    double e = 0.01;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
-	   blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
+      blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
    }
 
    //Feature result(settings.nBins*settings.numberOfCells, 0);
@@ -190,9 +210,9 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    
 
 
-		   //in a neighbourhood around the centroid pixel: 
-		   histogram.content[(int)pixelFeatures.to_ulong()] += 1;
-	   }
+         //in a neighbourhood around the centroid pixel: 
+         histogram.content[(int)pixelFeatures.to_ulong()] += 1;
+      }
    }
    return histogram;
    */
