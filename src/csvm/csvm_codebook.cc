@@ -55,23 +55,26 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
    
    vector<double> distances(settings.numberVisualWords);
    double dev;
-   for(size_t cl = 0; cl < nClasses; ++cl){
-      
-      
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         distances[word] = sqrt(bow[cl][word].getDistanceSq(features[cl]));
-      }
-      
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         
-         dev = exp(-1.0 * distances[word] / settings.similaritySigma);
-         activations[cl].content[word] += dev;
-        
-      }
-      activations[cl].label = features[cl].label;
-      activations[cl].labelId = features[cl].labelId;
-   }
+   unsigned int nFeatures = features.size();
    
+   for(size_t feat = 0; feat < nFeatures; ++feat){
+      for(size_t cl = 0; cl < nClasses; ++cl){
+         
+         
+         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            distances[word] = sqrt(bow[cl][word].getDistanceSq(features[feat]));
+         }
+         
+         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            
+            dev = exp(-1.0 * distances[word] / settings.similaritySigma);
+            activations[cl].content[word] += dev;
+         
+         }
+         activations[cl].label = features[feat].label;
+         activations[cl].labelId = features[feat].labelId;
+      }
+   }
    
    return activations;
 }

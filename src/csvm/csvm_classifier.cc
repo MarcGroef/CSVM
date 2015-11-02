@@ -130,13 +130,22 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       for(size_t dIdx1 = 0; dIdx1 < datasetSize; ++dIdx1){
+         
          double sum = 0;
-         for(size_t cl = 0; cl < nClasses; ++cl){
+         /*for(size_t cl = 0; cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr]);
             }
          }
          dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sqrt(sum))/settings.svmSettings.sigmaClassicSimilarity);
+         */
+         
+         for(size_t cl = 0; cl < nClasses; ++cl){
+            for(size_t centr = 0; centr < nCentroids; ++centr){
+               sum += (datasetActivations[dIdx0][cl].content[centr] * datasetActivations[dIdx1][cl].content[centr]);
+            }
+         }
+         dataKernel[dIdx0].content[dIdx1] = sum;
       }
    }
    

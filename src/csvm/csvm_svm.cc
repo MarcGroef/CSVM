@@ -277,16 +277,16 @@ void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
    
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
       //if((alpha_coeff[C][i] > 0.0) && ((alpha_coeff[C][i]) < (SVM_C - 0.000001)  Marco 
-      //if((alphaData[dIdx0] > 0) && (alphaData[dIdx0] < settings.SVM_C_Data - 0.000001)){
+      if((alphaData[dIdx0] > 0) && (alphaData[dIdx0] < settings.SVM_C_Data - 0.000001)){
          output = 0;
          for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
             yData = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.00 : -1.00);
             output += alphaData[dIdx1] * yData * simKernel[dIdx0].content[dIdx1];
          }
          yData = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.00 : -1.00);
-         bias += yData * output;
+         bias += yData - output;
          ++total;
-     // }
+      }
    }
    
    if(total == 0)
@@ -400,14 +400,21 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
       double sum = 0;
       //calculate similarity between activation vectors
       
-      for(size_t cl = 0; cl < nClasses; ++cl){
+      /*for(size_t cl = 0; cl < nClasses; ++cl){
          for(size_t centr = 0; centr < nCentroids; ++centr){
             sum += (datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr]);
          }
       }
       //calculate kernel value:
      kernel = exp((-1.0*sqrt(sum))/settings.sigmaClassicSimilarity);
-     
+     */
+      
+      for(size_t cl = 0; cl < nClasses; ++cl){
+         for(size_t centr = 0; centr < nCentroids; ++centr){
+            sum += (datasetActivations[dIdx0][cl].content[centr] * f[cl].content[centr]);
+         }
+      }
+      kernel = sum;
      yData = (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
      //add the result for this alpha
      result += alphaData[dIdx0] * yData * kernel;

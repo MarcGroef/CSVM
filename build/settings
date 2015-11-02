@@ -11,8 +11,8 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 300
-similaritySigma 0.9058187
+nClusters 40
+similaritySigma 0.3
 
 FeatureExtractor
 method HOG
