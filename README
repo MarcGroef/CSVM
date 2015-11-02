@@ -38,14 +38,13 @@ described in the next section.
 # Codebook Generation #
 The CSVM wrapper uses a pre-generated codebook for the program. This way a lot of
 codebook regeneration time can be spared during optimisation. Codebook-construction settings are described 
-in ./PSO/testers/codebook-generation-settings .
+in ./build/settings.
 
 Set the required settings (ImageScanner, FeatureExtractor, Dataset, Codebook) to the experiment-settings.
 
 
-Next, prepare the codebook-generation python script, called ./PSO/testers/generateCodebook._py, by renaming 
-the file-extention to .py and executing the script. Always change the file-extention back to ._py, otherwise
-the parameter optimalisation program will think it is another 'Tester'.
+Next, the codebook should be generated. This can be done by executing /PSO/testers/generateCodebook.sh.
+This script uses the settingsfile from "/build/settings"
 
 If all went well, the file codebook.bin will be added to ./PSO/testers.
 

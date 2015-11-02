@@ -32,7 +32,7 @@ void HOGDescriptor::setSettings(HOGSettings s){
    settings = s;
    //cout << "hog settigns set\n";
    //this->settings.padding = IDENTITY;
-   this->settings.padding = NONE;
+   //this->settings.padding = NONE;
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
    this->settings.useGreyPixel = false;

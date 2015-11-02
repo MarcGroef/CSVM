@@ -150,6 +150,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
 void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
   string setting;
   string method;
+  string enumeration;
   stream >> setting;
   if(setting != "method"){
     cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -182,6 +183,21 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
     stream >> setting;
     if(setting == "blockSize"){//#the size of a patch
        stream >> featureSettings.hogSettings.blockSize;
+    } else {
+      cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
+    if(setting == "padding"){//#the size of a patch
+       stream >> enumeration;
+       if(enumeration == "None")
+           featureSettings.hogSettings.padding = NONE;
+       else if(enumeration == "Identity")
+           featureSettings.hogSettings.padding = IDENTITY;
+       else if (enumeration == "Zero")
+           featureSettings.hogSettings.padding = ZERO;
+          
     } else {
       cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);

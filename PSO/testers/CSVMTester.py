@@ -20,17 +20,22 @@ class NumperTester(ParameterTester):
     
     start_command = "."
     param_path = "."
-    param_names = [ 'SVM_C_Data', 'sigmaClassicSimilarity', 'similaritySigma']
-    parameters = {
-                    'sigmaClassicSimilarity':           {"type": "float",
+    param_names = [ 'SVM_C_Data', 'sigmaClassicSimilarity', 'similaritySigma', 'learningRate']
+    parameters = {  'learningRate':           {"type": "float",
                                         "scaling": "log",
                                         "min": 0.0000001,
-                                        "max": 2.0,
+                                        "max": 0.01,
+                                        "distribution": "uniform",},
+                    
+                    'sigmaClassicSimilarity':           {"type": "float",
+                                        "scaling": "linear",
+                                        "min": 0.001,
+                                        "max": 4.0,
                                         "distribution": "uniform",},
                     'similaritySigma': {"type": "float",
-                                        "scaling": "log",
-                                        "min": 0.0000001,
-                                        "max": 2.0,
+                                        "scaling": "linear",
+                                        "min": 0.001,
+                                        "max": 4.0,
                                         "distribution": "uniform",},
                     
                     'SVM_C_Data':      {"type": "int",
@@ -59,6 +64,7 @@ method HOG
 cellSize 4
 cellStride 2
 blockSize 8
+padding Identity
 
 ImageScanner
 patchHeight 8
@@ -67,7 +73,7 @@ scanStride 1
 nRandomPatches 100
 
 SVM
-learningRate 0.00001
+learningRate %(learningRate).7f
 SVM_C_Data %(SVM_C_Data).7f
 SVM_C_Centroid 1
 Cost 1

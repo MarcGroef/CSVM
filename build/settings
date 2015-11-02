@@ -19,6 +19,7 @@ method HOG
 cellSize 4
 cellStride 2
 blockSize 8
+padding Identity
 
 ImageScanner
 patchHeight 8
