@@ -28,7 +28,7 @@ scanStride 1
 nRandomPatches 100
 
 SVM
-learningRate 0.00001
+learningRate 0.000001
 SVM_C_Data 8.0000000
 SVM_C_Centroid 1
 Cost 1

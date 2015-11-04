@@ -1,4 +1,4 @@
-
+   
 #include <csvm/csvm.h>
 #include <iostream>
 #include <time.h>
@@ -65,7 +65,7 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    c.constructCodebook();
-   //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
+   cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    
    //c.exportCodebook("codebook10000HOG.bin");
    //cout << "Constructed Codebook!\n";
