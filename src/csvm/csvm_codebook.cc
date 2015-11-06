@@ -26,7 +26,7 @@ Feature Codebook::getCentroid(int cl, int centrIdx){
 }
 
 void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
-   
+   cout << "constructing codebook for label " << labelId << " in ";
    switch(settings.method){
       case LVQ_Clustering:
          bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
@@ -56,23 +56,40 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
    vector<double> distances(settings.numberVisualWords);
    double dev;
    unsigned int nFeatures = features.size();
+   double totDist = 0;
+   double classDist;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
+      totDist = 0;
+      //cout << "ACTIVATIONS FEATURE " << feat << ":\n";
       for(size_t cl = 0; cl < nClasses; ++cl){
-         
-         
+         classDist = 0;
+         //cout << "cl" << cl << ": ";
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             distances[word] = sqrt(bow[cl][word].getDistanceSq(features[feat]));
-         }
+            totDist += distances[word];
+            classDist += distances[word];
+           // cout << "distance word " << word << " is : " << distances[word] << endl;
+         //}
          
-         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-            
+         //for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            //cout << "distances class " << cl << ", word: " << word << " = " << distances[word] << endl;
             dev = exp(-1.0 * distances[word] / settings.similaritySigma);
             activations[cl].content[word] += dev;
-         
+            //cout << "activation word " << word << " is : " << activations[cl].content[word] << endl;
+           // cout << dev << ", ";
          }
+         //cout << endl;
          activations[cl].label = features[feat].label;
          activations[cl].labelId = features[feat].labelId;
+         //cout << "totDist class " << cl << " is : " << classDist << endl;
+      }
+      //cout << "totDist feature " << feat << " is : " << totDist << endl;
+   }
+   
+   for(size_t cl = 0; cl < nClasses; ++cl){
+      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+         //cout << "activations class " << cl << ", word: " << word << " = " << activations[cl].content[word] << endl;
       }
    }
    

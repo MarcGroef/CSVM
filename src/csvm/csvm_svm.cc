@@ -8,7 +8,7 @@ using namespace csvm;
  * */
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    //Reserve data for alpha's and set initial values
-   alphaData = vector<double>(datasetSize,1.0 / datasetSize);
+   alphaData = vector<double>(datasetSize,0.1/*1.0 / datasetSize*/);
    alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,1.0 / (nClusters * nCentroids)));
    //Set the class ID of the SVM
    this->classId = labelId;
@@ -303,7 +303,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double convergenceThreshold = 0.0000010 ;
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
-   for(size_t round = 0; round < 1000; ++round){
+   for(size_t round = 0; round < 30; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
@@ -311,9 +311,12 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds);
-      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
+      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
+      for(size_t aIdx = 0; aIdx < alphaData.size(); ++aIdx)
+         cout << "Alpha " << aIdx << " = " << alphaData[aIdx] << endl;
    }
    calculateBiasClassic(simKernel, ds);
+
 }
 
 

@@ -51,7 +51,7 @@ void CSVMClassifier::constructCodebook(){
    
    pretrainDump.clear();
    pretrainDump.resize(nClasses);
-   unsigned int nImages = dataset.getSize();
+   unsigned int nImages;// = dataset.getSize();
    //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
       
@@ -64,7 +64,7 @@ void CSVMClassifier::constructCodebook(){
       //cout << "Scanning " << nImages << " images\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
-         patches = imageScanner.getRandomPatches(dataset.getImagePtr(im));
+         patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
          //checkEqualPatches(patches);
          features.clear();
          features.reserve(settings.scannerSettings.nRandomPatches);

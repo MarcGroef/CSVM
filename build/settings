@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 2000
+nImages 500
 
 ClusterAnalyser
 method RBM
@@ -11,15 +11,15 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 40
-similaritySigma 0.3
+nClusters 10
+similaritySigma 150
 
 FeatureExtractor
 method HOG
 cellSize 4
 cellStride 2
 blockSize 8
-padding Identity
+padding None
 
 ImageScanner
 patchHeight 8
@@ -28,8 +28,8 @@ scanStride 1
 nRandomPatches 100
 
 SVM
-learningRate 0.000001
-SVM_C_Data 8.0000000
+learningRate 0.0001
+SVM_C_Data 1
 SVM_C_Centroid 1
 Cost 1
 D2 1

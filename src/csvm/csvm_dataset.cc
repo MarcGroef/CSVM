@@ -60,6 +60,10 @@ int CSVMDataset::getNumberClasses(){
    return nClasses;
 }
 
+Image* CSVMDataset::getImagePtrFromClass(unsigned int index, unsigned int classId){
+   return cifar10.getImagePtr(trainImagesIdx[classId][index]);
+}
+
 int CSVMDataset::getNumberImagesInClass(int labelId){
    return trainImagesIdx[labelId].size();
 }

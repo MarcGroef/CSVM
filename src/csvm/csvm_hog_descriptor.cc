@@ -183,17 +183,17 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    }
    */
    //L2 normalization scheme:
-   double vTwoSquared = 0;
+   /*double vTwoSquared = 0;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       vTwoSquared += pow(blockHistogram[idx], 2);
    }
    //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
-   double e = 0.01;
+   double e = 0.001;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
-   }
+   }*/
 
    //Feature result(settings.nBins*settings.numberOfCells, 0);
    Feature result(blockHistogram.size(), 0);
