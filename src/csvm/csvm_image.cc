@@ -110,7 +110,7 @@ namespace csvm{
    
    unsigned char Image::getPixel(unsigned int x,unsigned int y,unsigned int channel){
       if( x < 0 || x >= width || y < 0 || y >= width){
-         cout << "csvm::Image::getPixel() Warning! coordinate out of bounds! returning 0\n";
+         cout << "csvm::Image::getPixel() Warning! coordinate out of bounds! : " << x << ", " << y <<" returning 0\n";
          return 0;
       }
       switch(format){

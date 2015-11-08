@@ -42,8 +42,8 @@ void CSVMClassifier::constructCodebook(){
    
    unsigned int nClasses = dataset.getNumberClasses();
    
-
-   
+   bool allocedDump = false;
+   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
    vector<Patch> patches;
    vector<Feature> features;
    
@@ -51,28 +51,34 @@ void CSVMClassifier::constructCodebook(){
    
    pretrainDump.clear();
    pretrainDump.resize(nClasses);
-   unsigned int nImages;// = dataset.getSize();
+   unsigned int nImages = dataset.getSize();
    //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
-      
+      allocedDump = false;
       //cout << "parsing class " << cl << endl;
-      nImages = dataset.getNumberImagesInClass(cl);
+      //nImages = dataset.getNumberImagesInClass(cl);
       //cout << nImages << " images\n";
       
-      pretrainDump[cl].reserve(settings.scannerSettings.nRandomPatches * nImages);
+      
       //cout << "space reserved\n";
       //cout << "Scanning " << nImages << " images\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
-         patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+         //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+         patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
+         nPatches = patches.size();
          //checkEqualPatches(patches);
          features.clear();
-         features.reserve(settings.scannerSettings.nRandomPatches);
+         features.reserve(nPatches);
          //cout << "extracting patches..\n";
-         for(size_t patchIdx = 0; patchIdx < settings.scannerSettings.nRandomPatches; ++patchIdx){
+         for(size_t patchIdx = 0; patchIdx < nPatches; ++patchIdx){
             Feature newFeat = featExtr.extract(patches[patchIdx]);
             features.push_back(newFeat);
             //cout << "first element from new Feature = " << newFeat.content[0] << ", which should equal " << features[patchIdx].content[0] << endl;
+         }
+         if(!allocedDump){
+            pretrainDump[cl].reserve(nPatches * nImages);
+            allocedDump = true;
          }
          //cout << "extracted " << features[0].content.size() << "x1 features\n";
          //checkEqualFeatures(features);
@@ -101,6 +107,8 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    vector < Patch > patches;
    vector < Feature> dataKernel(datasetSize, Feature(datasetSize,0.0));
    
+
+   
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
    //cout << "collecting activations for trainingsdata..\n";
@@ -127,28 +135,39 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    nClasses = datasetActivations[0].size();
    nCentroids = datasetActivations[0][0].content.size();
    
+   
+   
+   
+   
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       for(size_t dIdx1 = 0; dIdx1 < datasetSize; ++dIdx1){
-         
          double sum = 0;
-         /*for(size_t cl = 0; cl < nClasses; ++cl){
+         /*
+         for(size_t cl = 0; cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr]);
             }
          }
-         dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sqrt(sum))/settings.svmSettings.sigmaClassicSimilarity);
-         */
+         dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sqrt(sum))/settings.svmSettings.sigmaClassicSimilarity);*/
+         
          
          for(size_t cl = 0; cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
-               sum += (datasetActivations[dIdx0][cl].content[centr] * datasetActivations[dIdx1][cl].content[centr]);
+               sum = (datasetActivations[dIdx0][cl].content[centr] * datasetActivations[dIdx1][cl].content[centr]);
             }
          }
          dataKernel[dIdx0].content[dIdx1] = sum;
+         
       }
    }
-   
+   //print part of the sim kernel for debugging purposes
+   for(size_t dIdx0 = 0; dIdx0 < 10; ++dIdx0){
+      for(size_t dIdx1 = 0; dIdx1 < 10; ++dIdx1){
+         cout << dataKernel[dIdx0].content[dIdx1] << ", ";
+      }
+      cout << endl;
+   }
    //we have a similarity kernel, now train the SVM's
    
    for(size_t cl = 0; cl < nClasses; ++cl){
@@ -185,7 +204,7 @@ void CSVMClassifier::trainSVMs(){
       //get cluster activations for the features
       datasetActivations.push_back(codebook.getActivations(dataFeatures)); 
    }
-   
+   cout << "Done getting activations\n";
    //train the SVMs with the gained activations
    for(size_t svmIdx = 0; svmIdx < svms.size(); ++svmIdx){
       svms[svmIdx].train(datasetActivations, &dataset);

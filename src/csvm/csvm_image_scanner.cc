@@ -12,34 +12,40 @@ void ImageScanner::setSettings(ImageScannerSettings set){
 }
 
 vector<Patch> ImageScanner::scanImage(Image* image){
-   vector<Patch> patches((image->getWidth()-settings.patchWidth)*(image->getHeight()-settings.patchHeight));
+   unsigned int nPatches = ((image->getWidth()-settings.patchWidth)/settings.stride) * ((image->getHeight()-settings.patchHeight)/settings.stride);
+   vector<Patch> patches(nPatches);
    
    unsigned int scanWidth = image->getWidth() - settings.patchWidth;
    unsigned int scanHeight = image->getHeight() - settings.patchHeight;
    
    unsigned int patchesTaken = 0;
    
-   for(size_t x = 0; x < scanWidth; ++x){
-      for(size_t y = 0; y < scanHeight; ++y){
+   if(scanWidth == 0 || scanHeight == 0){
+      return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
+   }
+   
+   for(size_t x = 0; x < scanWidth; x += settings.stride){
+      for(size_t y = 0; y < scanHeight; y += settings.stride){
          patches[patchesTaken] = Patch(image, x, y, settings.patchWidth, settings.patchHeight);
          ++patchesTaken;
       }
    }
-   
+   //cout << "Patch width = " << patches[patchesTaken - 1].getWidth() << ", height = " << patches[patchesTaken - 1].getHeight() << endl;;
    return patches;
 }
       
 
 
 vector<Patch> ImageScanner::getRandomPatches(Image* image){
-   vector<Patch> patches(settings.nRandomPatches);
+   
    //cout << "imscan\n";
    int scanWidth = image->getWidth() - settings.patchWidth;
    int scanHeight = image->getHeight() - settings.patchHeight;
   
-  
-   
-   
+   if(scanWidth == 0 || scanHeight == 0){
+      return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
+   }
+   vector<Patch> patches(settings.nRandomPatches);
    
    for(size_t idx = 0; idx < settings.nRandomPatches; ++idx){
       //cout << "making patch at " << historyX[idx] << ", " << historyY[idx] << endl;

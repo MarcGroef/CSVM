@@ -236,11 +236,12 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
                (*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
          
       }
-   deltaDist = (prevTotalDistance - totalDistance);
-   deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
+      deltaDist = (prevTotalDistance - totalDistance);
+      deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
    
    }
    cout << itx << " iterations \n";
+   
    /*for(size_t centr = 0; centr < nClusters; ++centr){
        cout << "centroid " << centr << " :\n";
        for(size_t idx = 0; idx < dataDims; ++idx){

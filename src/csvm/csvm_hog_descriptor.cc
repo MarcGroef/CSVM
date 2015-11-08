@@ -35,19 +35,19 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //this->settings.padding = NONE;
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   this->settings.useGreyPixel = false;
+   this->settings.useGreyPixel = true;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col = GRAY) {
    double result;
    if (settings.useGreyPixel) {
-      double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
+      double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
       double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
       result = xPlus - xMin;
    }
    else
    {
-      double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
+      double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
       double xMin = (x - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x - 1, y, col));
       result = xPlus - xMin;
    }//patch.getPixel(x,y, channel in 0-2)
@@ -58,13 +58,13 @@ double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
    double result=0;
    //for now, implement zero padding hardcoded
    if (settings.useGreyPixel) {
-      double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
+      double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
       double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y-1));
       result = yPlus - yMin;
    }
    else
    {
-      double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
+      double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
       double yMin = (y - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y - 1, col));
       result = yPlus - yMin;
    }
@@ -84,7 +84,7 @@ double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
 }
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
-Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
+Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
    
    vector <double> gx,gy;
    unsigned int patchWidth = block.getWidth();
@@ -183,7 +183,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    }
    */
    //L2 normalization scheme:
-   /*double vTwoSquared = 0;
+   double vTwoSquared = 0;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       vTwoSquared += pow(blockHistogram[idx], 2);
    }
@@ -193,7 +193,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    double e = 0.001;
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
-   }*/
+   }
 
    //Feature result(settings.nBins*settings.numberOfCells, 0);
    Feature result(blockHistogram.size(), 0);

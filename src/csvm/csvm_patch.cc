@@ -3,7 +3,7 @@
 using namespace std;
 using namespace csvm;
 
-Patch::Patch(Image* source, int x, int y, int width,int height){
+Patch::Patch(Image* source, int x, int y, int width, int height){
    this->isSet = true;
    offsetX = x;
    offsetY = y;
