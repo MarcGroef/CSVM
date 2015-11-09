@@ -78,16 +78,16 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
          mean = 0.0;
          //cout << "cl" << cl << ": ";
          /*for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-            distances[word] = /*sqrt(//bow[cl][word].getDistanceSq(features[feat]));
-            mean += distances[word];
+            distances[word] = bow[cl][word].getDistanceSq(features[feat]);
+            //mean += distances[word];
          }
-         mean /= (double)(settings.numberVisualWords);
+         //mean /= (double)(settings.numberVisualWords);
          
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             //cout << "distances class " << cl << ", word: " << word << " = " << distances[word] << endl;
-            //dev = exp(-1.0 * distances[word] / (2 * settings.similaritySigma * settings.similaritySigma));
-            //activations[cl].content[word] += dev;
-            dev = mean - distances[word];
+            dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
+            activations[cl].content[word] += dev;
+            /*dev = mean - distances[word];
             activations[cl].content[word] += (dev > 0.0 ? dev : 0.0);
             //cout << "activation word " << word << " is : " << dev << endl;
             

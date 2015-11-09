@@ -1,4 +1,5 @@
 #include <csvm/csvm_classifier.h>
+#include <iomanip>
 //
 using namespace std;
 using namespace csvm;
@@ -56,7 +57,7 @@ void CSVMClassifier::constructCodebook(){
    for(size_t cl = 0; cl < nClasses; ++cl){
       allocedDump = false;
       //cout << "parsing class " << cl << endl;
-      //nImages = dataset.getNumberImagesInClass(cl);
+      nImages = dataset.getNumberImagesInClass(cl);
       //cout << nImages << " images\n";
       
       
@@ -64,8 +65,8 @@ void CSVMClassifier::constructCodebook(){
       //cout << "Scanning " << nImages << " images\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
-         //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-         patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
+         patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+         //patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
          nPatches = patches.size();
          //checkEqualPatches(patches);
          features.clear();
@@ -141,16 +142,17 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
+      //cout << "done with similarity of " << dIdx0 << endl;
       for(size_t dIdx1 = 0; dIdx1 < datasetSize; ++dIdx1){
          double sum = 0;
-         /*
-         for(size_t cl = 0; cl < nClasses; ++cl){
+         
+         /*for(size_t cl = 0; cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr]);
             }
          }
-         dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sqrt(sum))/settings.svmSettings.sigmaClassicSimilarity);*/
-         
+         dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
+         */
          
          for(size_t cl = 0; cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
@@ -162,11 +164,12 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
       }
    }
    //print part of the sim kernel for debugging purposes
-   for(size_t dIdx0 = 0; dIdx0 < 10; ++dIdx0){
-      for(size_t dIdx1 = 0; dIdx1 < 10; ++dIdx1){
-         cout << dataKernel[dIdx0].content[dIdx1] << ", ";
-      }
+   for(size_t dIdx0 = 0; dIdx0 < 15; ++dIdx0){
+      for(size_t dIdx1 = 0; dIdx1 < 15; ++dIdx1){
+         cout << (dIdx0 == dIdx1 ? "*": "") << (dataset.getImagePtr(dIdx0)->getLabelId()==dataset.getImagePtr(dIdx1)->getLabelId() ? "!" : "") << "(" << dataset.getImagePtr(dIdx0)->getLabelId() << ", " << dataset.getImagePtr(dIdx1)->getLabelId() << ")" << setprecision(2) << dataKernel[dIdx0].content[dIdx1] << ",\t";
+      } 
       cout << endl;
+      cout << setprecision(5) ;
    }
    //we have a similarity kernel, now train the SVM's
    

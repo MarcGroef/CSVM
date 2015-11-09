@@ -72,10 +72,12 @@ int main(int argc,char**argv){
    //load cifar10
    c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    //cout << "ready to work!\n";
-   for(size_t lab = 0; lab < 10; ++lab)
-      cout << c.dataset.getLabel(lab) << endl;
+   
    unsigned int nImages = 60000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
+   
+   
+   
    
    //measure cpu time
    //cout << "Start timing\n";
@@ -85,6 +87,7 @@ int main(int argc,char**argv){
    cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
    //c.exportCodebook("codebook10000HOG.bin");
+   //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
    //c.importCodebook("../build/codebook10000HOG.bin");
@@ -95,9 +98,10 @@ int main(int argc,char**argv){
    //c.trainSVMs();
    
    //train classic SVM
+   
    vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
    
-   printKernel(trainActivations);
+   //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
@@ -128,7 +132,7 @@ int main(int argc,char**argv){
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
-   for(size_t im = 0; im < 50; ++im){
+   for(size_t im = 0; im < 200; ++im){
       image = rand() % nImages;
       cout << "Testing image " << image << ".. ";
       //classify using convolutional SVMs

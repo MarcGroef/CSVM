@@ -265,7 +265,7 @@ namespace csvm{
    }
    
    unsigned char Image::getGreyPixel(unsigned int x,unsigned int y){
-      return 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
+      return 0.2126 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
    }
    
    //------------------------------- private methods ------------------------------------//

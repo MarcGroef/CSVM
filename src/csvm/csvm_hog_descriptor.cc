@@ -1,6 +1,6 @@
 #include <csvm/csvm_hog_descriptor.h>
 #include <iomanip> //for setprecision couting
-
+#include <limits>
 using namespace std;
 using namespace csvm;
 
@@ -117,7 +117,7 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
                double gradientMagnitude;
                double gradientOrientation;
                size_t bin;
-
+               
                if (settings.useGreyPixel)
                {
                   xGradient = computeXGradient(block, X + cellX, Y + cellY, GRAY);
@@ -151,8 +151,34 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
                   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
 
                }
+               
+               
+               //int maxBin = -1;
+               //double maxGradient = numeric_limits<double>::min();
+               //L2 normalization scheme:
+               /*double vTwoSquared = 0;
+               for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+                  vTwoSquared += pow(cellOrientationHistogram[idx], 2);
+               }
+               //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
-
+               // e is some magic number still...
+               double e = 0.00000001;
+               for (size_t idx = 0; idx < cellOrientationHistogram.size(); ++idx) {
+                  cellOrientationHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
+               }*/
+               
+               
+               /*for(size_t bIdx = 0; bIdx < settings.nBins; ++bIdx){
+                  blockHistogram[bIdx] += cellOrientationHistogram[bIdx];
+                  if (cellOrientationHistogram[bIdx] > maxGradient){
+                     maxGradient = cellOrientationHistogram[bIdx];
+                     maxBin = bIdx;
+                  }
+               }*/
+               /*if(maxBin == -1)
+                  continue;
+               blockHistogram[maxBin] += maxGradient;//1.0;*/
                //cout << "added to histogram\n";
             }
          }
@@ -190,7 +216,25 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
    //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
-   double e = 0.001;
+   double e = 0.000000000000001;
+   for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
+   }
+   
+   //0.2 clipping as in paper http://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf
+   for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      blockHistogram[idx] > 0.2 ? 0.2 : blockHistogram[idx];
+   }
+   
+   //and normalize again
+   vTwoSquared = 0;
+   for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      vTwoSquared += pow(blockHistogram[idx], 2);
+   }
+   //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
+
+   // e is some magic number still...
+   
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
    }
