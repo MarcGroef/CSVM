@@ -314,7 +314,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double convergenceThreshold = 0.0000010 ;
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
-   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 1500; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 10000; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
@@ -340,9 +340,9 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       correct /= ds->getSize();
       if(round % 1000 == 0 )cout << "Trainingscore : " << correct << endl;*/
       
-      calculateBiasClassic(simKernel, ds);
+      
    }
-   
+   calculateBiasClassic(simKernel, ds);
    //for(size_t aIdx = 0; aIdx < alphaData.size(); ++aIdx)
      //    cout << "Alpha " << aIdx << " = " << alphaData[aIdx] << endl;
 }

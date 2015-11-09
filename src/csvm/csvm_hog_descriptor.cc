@@ -33,7 +33,7 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //cout << "hog settigns set\n";
    //this->settings.padding = IDENTITY;
    //this->settings.padding = NONE;
-   settings.nBins = 9;
+   settings.nBins = 18;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
    this->settings.useGreyPixel = true;
 }
@@ -76,9 +76,9 @@ double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
 }
 
 double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
-   double ori = atan2(yGradient, xGradient) * 180.0 / M_PI;
+   double ori = atan2(yGradient, xGradient) * 360.0 / M_PI;
    while(ori < 0.0)
-      ori += 180.0;
+      ori += 360.0;
    
    return ori;
 }

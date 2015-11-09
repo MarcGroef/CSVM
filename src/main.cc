@@ -132,7 +132,7 @@ int main(int argc,char**argv){
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
-   for(size_t im = 0; im < 200; ++im){
+   for(size_t im = 0; im < 500; ++im){
       image = rand() % nImages;
       cout << "Testing image " << image << ".. ";
       //classify using convolutional SVMs
