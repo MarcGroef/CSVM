@@ -109,6 +109,7 @@ scanStride %(PatchStride)d
 nRandomPatches 50
 
 SVM
+Type CONV
 Kernel LINEAR
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001
