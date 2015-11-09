@@ -76,10 +76,10 @@ using namespace csvm;
    }
    
    Image CIFAR10::getImage(int index){
-      if(index < 0 || index >= (int)images.size()){
+      /*if(index < 0 || index >= (int)images.size()){
          cout << "csvm::CIFAR10::getImage(int index == " << index << ") out of bounds! Exitting..\n";
          exit(-1);
-      }
+      }*/
       return images[index];
    }
    

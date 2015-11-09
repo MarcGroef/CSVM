@@ -1,6 +1,6 @@
 #include <csvm/csvm_hog_descriptor.h>
 #include <iomanip> //for setprecision couting
-
+#include <limits>
 using namespace std;
 using namespace csvm;
 
@@ -33,21 +33,21 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //cout << "hog settigns set\n";
    //this->settings.padding = IDENTITY;
    //this->settings.padding = NONE;
-   settings.nBins = 9;
+   settings.nBins = 18;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   this->settings.useGreyPixel = false;
+   this->settings.useGreyPixel = true;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col = GRAY) {
    double result;
    if (settings.useGreyPixel) {
-      double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
+      double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
       double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
       result = xPlus - xMin;
    }
    else
    {
-      double xPlus = (x + 1 > patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
+      double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
       double xMin = (x - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x - 1, y, col));
       result = xPlus - xMin;
    }//patch.getPixel(x,y, channel in 0-2)
@@ -58,13 +58,13 @@ double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
    double result=0;
    //for now, implement zero padding hardcoded
    if (settings.useGreyPixel) {
-      double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
+      double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
       double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y-1));
       result = yPlus - yMin;
    }
    else
    {
-      double yPlus = (y + 1 > patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
+      double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
       double yMin = (y - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y - 1, col));
       result = yPlus - yMin;
    }
@@ -76,15 +76,15 @@ double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
 }
 
 double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
-   double ori = atan2(yGradient, xGradient) * 180.0 / M_PI;
+   double ori = atan2(yGradient, xGradient) * 360.0 / M_PI;
    while(ori < 0.0)
-      ori += 180.0;
+      ori += 360.0;
    
    return ori;
 }
 
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
-Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
+Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
    
    vector <double> gx,gy;
    unsigned int patchWidth = block.getWidth();
@@ -117,7 +117,7 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
                double gradientMagnitude;
                double gradientOrientation;
                size_t bin;
-
+               
                if (settings.useGreyPixel)
                {
                   xGradient = computeXGradient(block, X + cellX, Y + cellY, GRAY);
@@ -151,8 +151,34 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
                   cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
 
                }
+               
+               
+               //int maxBin = -1;
+               //double maxGradient = numeric_limits<double>::min();
+               //L2 normalization scheme:
+               /*double vTwoSquared = 0;
+               for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+                  vTwoSquared += pow(cellOrientationHistogram[idx], 2);
+               }
+               //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
-
+               // e is some magic number still...
+               double e = 0.00000001;
+               for (size_t idx = 0; idx < cellOrientationHistogram.size(); ++idx) {
+                  cellOrientationHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
+               }*/
+               
+               
+               /*for(size_t bIdx = 0; bIdx < settings.nBins; ++bIdx){
+                  blockHistogram[bIdx] += cellOrientationHistogram[bIdx];
+                  if (cellOrientationHistogram[bIdx] > maxGradient){
+                     maxGradient = cellOrientationHistogram[bIdx];
+                     maxBin = bIdx;
+                  }
+               }*/
+               /*if(maxBin == -1)
+                  continue;
+               blockHistogram[maxBin] += maxGradient;//1.0;*/
                //cout << "added to histogram\n";
             }
          }
@@ -190,7 +216,25 @@ Feature HOGDescriptor::getHOG(Patch block,int channel, bool useGreyPixel=1){
    //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
-   double e = 0.01;
+   double e = 0.000000000000001;
+   for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
+   }
+   
+   //0.2 clipping as in paper http://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf
+   for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      blockHistogram[idx] > 0.2 ? 0.2 : blockHistogram[idx];
+   }
+   
+   //and normalize again
+   vTwoSquared = 0;
+   for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
+      vTwoSquared += pow(blockHistogram[idx], 2);
+   }
+   //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
+
+   // e is some magic number still...
+   
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
    }

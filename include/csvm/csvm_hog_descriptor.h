@@ -46,7 +46,7 @@ namespace csvm{
       void setSettings(HOGSettings s);
       //HOGDescriptor(int nBins, int cellSize, int blockSize, bool useGreyPixel); 
      //HOGDescriptor(int nBins, int numberOfCells, int blockSize, bool useGreyPixel);
-     Feature getHOG(Patch patch,int channel, bool useGreyPixel);
+     Feature getHOG(Patch& patch,int channel, bool useGreyPixel);
 
    private:
       double computeXGradient(Patch patch, int x, int y, Colour col);

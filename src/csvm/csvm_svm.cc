@@ -8,7 +8,7 @@ using namespace csvm;
  * */
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    //Reserve data for alpha's and set initial values
-   alphaData = vector<double>(datasetSize,1.0 / datasetSize);
+   alphaData = vector<double>(datasetSize,0.00000000001/*1.0 / datasetSize*/);
    alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,1.0 / (nClusters * nCentroids)));
    //Set the class ID of the SVM
    this->classId = labelId;
@@ -142,7 +142,8 @@ void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, CSVMData
       
       //update alphas
       for(size_t dIdx1 = 0; dIdx1 < size; ++dIdx1){
-         yData = ((unsigned int)(activations[dIdx1][0].getLabelId())) == classId ? 1.0 : -1.0;
+         //yData = ((unsigned int)(activations[dIdx1][0].getLabelId())) == classId ? 1.0 : -1.0;
+         yData = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId())) == classId ? 1.0 : -1.0;
          oldVal = alphaData[dIdx1];
          deltaAlpha = -2.0 * settings.cost * sum * yData;
          //calc new value
@@ -201,12 +202,21 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds)
    //for all alpha's:
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
       deltaDiff = 0.0;
-      yData0 = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
+      yData0 = ((ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
       
       //calculate the sum
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
-         yData1 = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
+         yData1 = ((ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
          sum += alphaData[dIdx1] * yData0 * yData1 * simKernel[dIdx0].content[dIdx1];
+         
+      }
+      
+      //calculate output:
+      double output = 0;
+      for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
+         output += alphaData[dIdx1] * yData1 * simKernel[dIdx0].content[dIdx1];
+         
+         
       }
       
       deltaAlpha = 1.0 - sum;
@@ -238,7 +248,7 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
    double diff = 0.0;
    double deltaDiff = 0.0;
    double sum = 0;
-   double threshold = 0.001;
+   double threshold = 0.01;
    
    //calculate current sum
    for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
@@ -282,6 +292,7 @@ void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
          for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
             yData = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.00 : -1.00);
             output += alphaData[dIdx1] * yData * simKernel[dIdx0].content[dIdx1];
+            
          }
          yData = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.00 : -1.00);
          bias += yData - output;
@@ -302,7 +313,8 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
 
    double convergenceThreshold = 0.0000010 ;
 
-   for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
+   //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 10000; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
@@ -310,9 +322,29 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds);
-     // cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " DeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;
+      if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
+      //compute trainings-score:
+      
+      /*double correct = 0.0;
+      for(size_t dIdx0 = 0; dIdx0 < ds->getSize(); ++dIdx0){
+         double sum = 0;  
+         for(size_t dIdx1 = 0; dIdx1 < ds->getSize(); ++dIdx1){
+            double Ydata = ds->getImagePtr(dIdx1)->getLabelId() == classId ? 1.0 : -1.0;
+            sum += alphaData[dIdx1] * Ydata * simKernel[dIdx0].content[dIdx1];
+         }
+         sum += bias;
+         if(sum > 0.0 && ds->getImagePtr(dIdx0)->getLabelId() == classId)
+            ++correct;
+         
+      }
+      correct /= ds->getSize();
+      if(round % 1000 == 0 )cout << "Trainingscore : " << correct << endl;*/
+      
+      
    }
    calculateBiasClassic(simKernel, ds);
+   //for(size_t aIdx = 0; aIdx < alphaData.size(); ++aIdx)
+     //    cout << "Alpha " << aIdx << " = " << alphaData[aIdx] << endl;
 }
 
 
@@ -334,22 +366,22 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
    double convergenceThreshold = 0.01;
    
    //while the sum of changes in alphas is above threshold:
-   while(abs(sumDeltaAlpha) > convergenceThreshold){
+   for(size_t round = 0; abs(sumDeltaAlpha) > convergenceThreshold; ++round){
       
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       
       //update all alphaData's and count how much they have changed
-      for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
+      /*for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
          deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx);
          deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
          sumDeltaAlpha += deltaAlphaData;
-      }
+      }*/
       //make sure sum(alphaData * yData) is below threshold
-      contstrainAlphaData(activations, ds);
+      //contstrainAlphaData(activations, ds);
       
       //update all alphaCentroid's
-      for(size_t cl = 0; cl < nClasses; ++cl){
+      for(size_t cl = 0;  cl < nClasses; ++cl){
          for(size_t centr = 0; centr < nCentroids; ++centr){
             //update alpha, and measure the change
             deltaAlphaCentroid = updateAlphaCentroid(activations, cl, centr);
@@ -358,8 +390,8 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
          }
       }
       //make sure sum(alphaCentroid * yData) is below threshold
-      constrainAlphaCentroid(activations);
-      
+      //constrainAlphaCentroid(activations);
+      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
    }
  
 }
@@ -394,34 +426,50 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
    unsigned int nCentroids = datasetActivations[0][0].content.size();
    Feature dataKernel(nData,0.0);
    
+
+   
+   
    //update sum with similarity between image activations
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
-   
+      
       double sum = 0;
       //calculate similarity between activation vectors
       
-      /*for(size_t cl = 0; cl < nClasses; ++cl){
+      
+      
+      
+      
+      
+      //RBF kernel:
+      
+      /*for(size_t cl = 0;  cl < nClasses; ++cl){
          for(size_t centr = 0; centr < nCentroids; ++centr){
             sum += (datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr]);
          }
       }
       //calculate kernel value:
-     kernel = exp((-1.0*sqrt(sum))/settings.sigmaClassicSimilarity);
-     */
+     kernel = exp((-1.0* sum)/settings.sigmaClassicSimilarity);*/
+     //cout << "Test kernel value : " << kernel << endl;
       
+     
+      //Linear kernel
       for(size_t cl = 0; cl < nClasses; ++cl){
          for(size_t centr = 0; centr < nCentroids; ++centr){
             sum += (datasetActivations[dIdx0][cl].content[centr] * f[cl].content[centr]);
          }
       }
       kernel = sum;
-     yData = (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
+      
+      
+      
+     yData = (ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
      //add the result for this alpha
+     //cout << yData << endl;
      result += alphaData[dIdx0] * yData * kernel;
       
    }
    //add bias to result
    result += bias;
-   
+   cout << "SVM " << classId << " has bias " << bias << endl;
    return result;
 }

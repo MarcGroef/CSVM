@@ -43,6 +43,7 @@ void CSVMDataset::splitDatasetToClasses(){
    
    for(size_t idx = 0; idx < settings.nImages && idx < datasetSize; ++idx){
       id = (cifar10.getImagePtr(idx))->getLabelId();
+      //cout << "ID = " << id << endl;
       trainImagesIdx[id].push_back(idx);    
    }
    
@@ -58,6 +59,10 @@ string CSVMDataset::getLabel(int labelId){
 
 int CSVMDataset::getNumberClasses(){
    return nClasses;
+}
+
+Image* CSVMDataset::getImagePtrFromClass(unsigned int index, unsigned int classId){
+   return cifar10.getImagePtr(trainImagesIdx[classId][index]);
 }
 
 int CSVMDataset::getNumberImagesInClass(int labelId){

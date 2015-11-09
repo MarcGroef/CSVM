@@ -32,6 +32,7 @@ namespace csvm{
       void loadCifar10(string labelsDir,vector<string> imageDirs);
       Image getImage(int index);
       Image* getImagePtr(int index);
+      Image* getImagePtrFromClass(unsigned int index, unsigned int classId);
       int getSize();
       void splitDatasetToClasses();
       int getNumberImagesInClass(int labelId);

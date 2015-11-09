@@ -81,8 +81,8 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    
   
    unsigned int nImages = 60000;//(unsigned int) c.dataset.getSize();
-
-   c.importCodebook(codebook);
+   c.constructCodebook();
+   //c.importCodebook(codebook);
 
    c.initSVMs();
    
@@ -123,7 +123,7 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
-   for(size_t im = 0; im < 200; ++im){
+   for(size_t im = 0; im < 60; ++im){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs

@@ -110,7 +110,7 @@ namespace csvm{
    
    unsigned char Image::getPixel(unsigned int x,unsigned int y,unsigned int channel){
       if( x < 0 || x >= width || y < 0 || y >= width){
-         cout << "csvm::Image::getPixel() Warning! coordinate out of bounds! returning 0\n";
+         cout << "csvm::Image::getPixel() Warning! coordinate out of bounds! : " << x << ", " << y <<" returning 0\n";
          return 0;
       }
       switch(format){
@@ -265,7 +265,7 @@ namespace csvm{
    }
    
    unsigned char Image::getGreyPixel(unsigned int x,unsigned int y){
-      return 0.299 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
+      return 0.2126 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
    }
    
    //------------------------------- private methods ------------------------------------//

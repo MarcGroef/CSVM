@@ -193,23 +193,24 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    double totalDistance = 1;
    double deltaDist = 1;
    double closestDist;
-   for(; deltaDist > 0; curCentroids *= -1){
+   size_t itx = 0;
+   for(; deltaDist > 0; curCentroids *= -1, ++itx){
       
       prevTotalDistance = totalDistance;
-      totalDistance = 0;
+      totalDistance = 0.0;
       
       centroids = (curCentroids == 1 ? &centroids0: &centroids1);
       newCentroids = (curCentroids == 1 ? &centroids1 : &centroids0);
       
       for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
          for(size_t dim = 0; dim < dataDims; ++dim)
-            (*newCentroids)[cIdx].content[dim] = 0;
+            (*newCentroids)[cIdx].content[dim] = 0.0;
          nMembers[cIdx] = 0;
       }
          
       for(size_t dIdx = 0; dIdx < nData; ++dIdx){
-         closestDist = 99999.0f;
-         unsigned int closestCentr = 0;
+         closestDist = numeric_limits<double>::max();
+         unsigned int closestCentr = -1;
          
          for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
             curDist = (*centroids)[cIdx].getDistanceSq(featureSamples[dIdx]);
@@ -230,16 +231,24 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
       }
       
       for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
-         for(size_t dim = 0; dim < dataDims; ++dim)
-            if(nMembers[cIdx] > 0)(*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
+         if(nMembers[cIdx] > 0)
+            for(size_t dim = 0; dim < dataDims; ++dim)
+               (*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
          
       }
-   deltaDist = (prevTotalDistance - totalDistance);
-   deltaDist = deltaDist < 0 ? deltaDist * -1 : deltaDist;
+      deltaDist = (prevTotalDistance - totalDistance);
+      deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
    
    }
+   cout << itx << " iterations \n";
    
-   
+   /*for(size_t centr = 0; centr < nClusters; ++centr){
+       cout << "centroid " << centr << " :\n";
+       for(size_t idx = 0; idx < dataDims; ++idx){
+          cout << (*newCentroids)[centr].content[idx] << ", " << endl;
+       }
+       cout << endl;
+   }*/
    return (*newCentroids);
 }
 
