@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 2000
+nImages 30
 
 ClusterAnalyser
 method RBM
@@ -22,9 +22,9 @@ blockSize 8
 padding None
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 1
+patchHeight 24
+patchWidth 24
+scanStride 6
 nRandomPatches 50
 
 SVM

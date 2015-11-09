@@ -13,7 +13,7 @@ void ImageScanner::setSettings(ImageScannerSettings set){
 
 vector<Patch> ImageScanner::scanImage(Image* image){
    unsigned int nPatches = ((image->getWidth()-settings.patchWidth)/settings.stride) * ((image->getHeight()-settings.patchHeight)/settings.stride);
-   vector<Patch> patches(nPatches);
+   vector<Patch> patches;//(nPatches);
    
    unsigned int scanWidth = image->getWidth() - settings.patchWidth;
    unsigned int scanHeight = image->getHeight() - settings.patchHeight;
@@ -26,10 +26,12 @@ vector<Patch> ImageScanner::scanImage(Image* image){
    
    //for(size_t x = 0; x < scanWidth; x += settings.stride){
       //for(size_t y = 0; y < scanHeight; y += settings.stride){
-   for(size_t x = 0; x + settings.patchWidth < image->getWidth(); x += settings.stride){
-      for(size_t y = 0; y + settings.patchHeight < image->getHeight(); y += settings.stride){
-         patches[patchesTaken] = Patch(image, x, y, settings.patchWidth, settings.patchHeight);
-         ++patchesTaken;
+   for(size_t x = 0; x + settings.patchWidth < image->getWidth() - 1; x += settings.stride){
+      for(size_t y = 0; y + settings.patchHeight < image->getHeight() - 1; y += settings.stride){
+         //cout << "x: " << x << " till " << x+settings.patchWidth << endl;
+         //patches[patchesTaken] = Patch(image, x, y, settings.patchWidth, settings.patchHeight);
+         patches.push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
+         //++patchesTaken;
       }
    }
    //cout << "Patch width = " << patches[patchesTaken - 1].getWidth() << ", height = " << patches[patchesTaken - 1].getHeight() << endl;;

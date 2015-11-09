@@ -30,6 +30,8 @@ void Patch::setArea(int x,int y,int width,int height){
 }
 
 unsigned char Patch::getPixel(int x,int y,int channel){
+   if(x > width || y > height)
+      cout << "Patch get picel out of bounds!\n";
    return source->getPixel(offsetX+x,offsetY+y,channel);
 }
 
