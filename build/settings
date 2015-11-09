@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 2000
+nImages 500
 
 ClusterAnalyser
 method RBM
@@ -11,7 +11,7 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 40
+nClusters 10
 similaritySigma 0.3
 
 FeatureExtractor
