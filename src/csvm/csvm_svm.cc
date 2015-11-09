@@ -314,11 +314,9 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double convergenceThreshold = 0.001 ;
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
-<<<<<<< HEAD
-   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 1000; ++round){
-=======
+
    for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < settings.nIterations; ++round){
->>>>>>> c7cfe14975caf3415969dbe80e54f5b01b1c2de6
+
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
