@@ -8,7 +8,7 @@ using namespace csvm;
  * */
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    //Reserve data for alpha's and set initial values
-   alphaData = vector<double>(datasetSize,0.00000000001/*1.0 / datasetSize*/);
+   alphaData = vector<double>(datasetSize,0.01/*1.0 / datasetSize*/);
    alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,1.0 / (nClusters * nCentroids)));
    //Set the class ID of the SVM
    this->classId = labelId;
@@ -311,10 +311,10 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
 
-   double convergenceThreshold = 0.0000010 ;
+   double convergenceThreshold = 0.001 ;
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
-   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 10000; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 1000; ++round){
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
