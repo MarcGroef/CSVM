@@ -8,8 +8,8 @@ using namespace csvm;
  * */
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    //Reserve data for alpha's and set initial values
-   alphaData = vector<double>(datasetSize,0.01/*1.0 / datasetSize*/);
-   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,1.0 / (nClusters * nCentroids)));
+   alphaData = vector<double>(datasetSize,settings.alphaDataInit);
+   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,settings.alphaCentroidInit));
    //Set the class ID of the SVM
    this->classId = labelId;
 
@@ -314,7 +314,11 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
    double convergenceThreshold = 0.001 ;
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
+<<<<<<< HEAD
    for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < 1000; ++round){
+=======
+   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < settings.nIterations; ++round){
+>>>>>>> c7cfe14975caf3415969dbe80e54f5b01b1c2de6
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
@@ -322,7 +326,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds);
-      if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
+      //if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
       //compute trainings-score:
       
       /*double correct = 0.0;
@@ -366,17 +370,17 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
    double convergenceThreshold = 0.01;
    
    //while the sum of changes in alphas is above threshold:
-   for(size_t round = 0; abs(sumDeltaAlpha) > convergenceThreshold; ++round){
+   for(size_t round = 0; round < settings.nIterations; ++round){
       
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       
       //update all alphaData's and count how much they have changed
-      /*for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
+      for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
          deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx);
          deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
          sumDeltaAlpha += deltaAlphaData;
-      }*/
+      }
       //make sure sum(alphaData * yData) is below threshold
       //contstrainAlphaData(activations, ds);
       
@@ -390,8 +394,8 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
          }
       }
       //make sure sum(alphaCentroid * yData) is below threshold
-      //constrainAlphaCentroid(activations);
-      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
+      constrainAlphaCentroid(activations);
+      //cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
    }
  
 }
@@ -441,24 +445,27 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
       
       
       //RBF kernel:
-      
-      /*for(size_t cl = 0;  cl < nClasses; ++cl){
-         for(size_t centr = 0; centr < nCentroids; ++centr){
-            sum += (datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr]);
+      if(settings.kernelType == RBF){
+         for(size_t cl = 0;  cl < nClasses; ++cl){
+            for(size_t centr = 0; centr < nCentroids; ++centr){
+               sum += (datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - f[cl].content[centr]);
+            }
          }
-      }
-      //calculate kernel value:
-     kernel = exp((-1.0* sum)/settings.sigmaClassicSimilarity);*/
-     //cout << "Test kernel value : " << kernel << endl;
-      
+         //calculate kernel value:
+         kernel = exp((-1.0* sum)/settings.sigmaClassicSimilarity);
+         //cout << "Test kernel value : " << kernel << endl;
+      }else if (settings.kernelType == LINEAR){
      
-      //Linear kernel
-      for(size_t cl = 0; cl < nClasses; ++cl){
-         for(size_t centr = 0; centr < nCentroids; ++centr){
-            sum += (datasetActivations[dIdx0][cl].content[centr] * f[cl].content[centr]);
+         //Linear kernel
+         for(size_t cl = 0; cl < nClasses; ++cl){
+            for(size_t centr = 0; centr < nCentroids; ++centr){
+               sum += (datasetActivations[dIdx0][cl].content[centr] * f[cl].content[centr]);
+            }
          }
+         kernel = sum;
+      }else{
+         cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
       }
-      kernel = sum;
       
       
       
@@ -470,6 +477,6 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
    }
    //add bias to result
    result += bias;
-   cout << "SVM " << classId << " has bias " << bias << endl;
+   //cout << "SVM " << classId << " has bias " << bias << endl;
    return result;
 }

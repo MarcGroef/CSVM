@@ -240,7 +240,6 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
    
    }
-   cout << itx << " iterations \n";
    
    /*for(size_t centr = 0; centr < nClusters; ++centr){
        cout << "centroid " << centr << " :\n";

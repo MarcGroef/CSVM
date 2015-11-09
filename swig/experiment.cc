@@ -91,7 +91,12 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    //c.trainSVMs();
    
    //train classic SVM
-   vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
+   vector< vector< Feature> > trainActivations;
+   
+   if(c.useClassicSVM())
+      trainActivations = c.trainClassicSVMs();
+   else
+      c.trainSVMs();
    
    //cout << "Testing on trainingsset:\n";
    //Testing phase
@@ -123,14 +128,17 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
-   for(size_t im = 0; im < 60; ++im){
+   for(size_t im = 0; im < 200; ++im){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       image = rand() % nImages;
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-      //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
-
+      unsigned int result;
+      if(c.useClassicSVM())
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+      else
+         result = c.classify(c.dataset.getImagePtr(image));
+      
       if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result)
          ++nCorrect;
       else 

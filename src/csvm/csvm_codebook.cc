@@ -26,7 +26,7 @@ Feature Codebook::getCentroid(int cl, int centrIdx){
 }
 
 void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
-   cout << "constructing codebook for label " << labelId << " in ";
+   //cout << "constructing codebook for label " << labelId << " in ";
    switch(settings.method){
       case LVQ_Clustering:
          bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
@@ -77,48 +77,49 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
          classDist = 0;
          mean = 0.0;
          //cout << "cl" << cl << ": ";
-         /*for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-            distances[word] = bow[cl][word].getDistanceSq(features[feat]);
-            //mean += distances[word];
-         }
-         //mean /= (double)(settings.numberVisualWords);
          
-         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-            //cout << "distances class " << cl << ", word: " << word << " = " << distances[word] << endl;
-            dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
-            activations[cl].content[word] += dev;
-            /*dev = mean - distances[word];
-            activations[cl].content[word] += (dev > 0.0 ? dev : 0.0);
-            //cout << "activation word " << word << " is : " << dev << endl;
+         if(settings.simFunction == CB_RBF){
+            for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               distances[word] = bow[cl][word].getDistanceSq(features[feat]);
+               //mean += distances[word];
+            }
+            //mean /= (double)(settings.numberVisualWords);
             
-         }*/
+            for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               //cout << "distances class " << cl << ", word: " << word << " = " << distances[word] << endl;
+               dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
+               activations[cl].content[word] += dev;
+               dev = mean - distances[word];
+               activations[cl].content[word] += (dev > 0.0 ? dev : 0.0);
+               //cout << "activation word " << word << " is : " << dev << endl;
+               
+            }
+         } else if (settings.simFunction = SOFT_ASSIGNMENT){
          
          //As done by Ng:
-         
-         
-         
-         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-            cc = 0.0;
-            xc = 0.0;
-            for(size_t dim = 0; dim < dataDims; ++dim){
-               cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
-               xc += bow[cl][word].content[dim] * features[feat].content[dim];
+            for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               cc = 0.0;
+               xc = 0.0;
+               for(size_t dim = 0; dim < dataDims; ++dim){
+                  cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
+                  xc += bow[cl][word].content[dim] * features[feat].content[dim];
+               }
+               
+               distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+               mean += distances[word];
+            }
+            mean /= (double)(settings.numberVisualWords);
+            
+            for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
+               activations[cl].content[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
             }
             
-            distances[word] = sqrt(cc + (xx - (2 * xc))) ;
-            mean += distances[word];
+            //cout << endl;
+            activation[cl].label = features[feat].label;
+            activation[cl].labelId = features[feat].labelId;
+            //cout << "totDist class " << cl << " is : " << classDist << endl;
          }
-         mean /= (double)(settings.numberVisualWords);
-         
-         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-            //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
-            activations[cl].content[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
-         }
-         
-         //cout << endl;
-         activation[cl].label = features[feat].label;
-         activation[cl].labelId = features[feat].labelId;
-         //cout << "totDist class " << cl << " is : " << classDist << endl;
       }
       //normalize activations
       /*for(size_t cl = 0; cl < nClasses; ++cl){
