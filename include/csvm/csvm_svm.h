@@ -10,7 +10,15 @@
 using namespace std;
 namespace csvm{
   
+  enum SVM_Kernel{
+      RBF,
+      LINEAR,
+  };
   
+  enum SVM_Type{
+      CLASSIC,
+      CONV,
+  };
   
   struct SVM_Settings{
       double SVM_C_Data;
@@ -19,6 +27,11 @@ namespace csvm{
       double sigmaClassicSimilarity;
       double cost;
       double D2;
+      unsigned int nIterations;
+      double alphaCentroidInit;
+      double alphaDataInit;
+      SVM_Kernel kernelType;
+      SVM_Type type;
   };
    
   class SVM{

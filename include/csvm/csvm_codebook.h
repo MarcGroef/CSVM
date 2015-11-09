@@ -17,6 +17,11 @@ namespace csvm{
       KMeans_Clustering = 1,
 
    };
+   
+   enum SimilarityFunction{
+      CB_RBF,
+      SOFT_ASSIGNMENT,
+   };
 
    struct Codebook_settings{
       LVQ_Settings lvqSettings;
@@ -24,6 +29,7 @@ namespace csvm{
       CodebookClusterMethod method;
       unsigned int numberVisualWords;
       double similaritySigma;
+      SimilarityFunction simFunction;
    };
 
    

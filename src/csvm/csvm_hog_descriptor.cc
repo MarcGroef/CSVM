@@ -112,6 +112,7 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
          {
             for (size_t Y = (settings.padding == NONE ? 1 : 0); Y < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++Y)
             {
+               
                double xGradient;
                double yGradient;
                double gradientMagnitude;

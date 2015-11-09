@@ -41,7 +41,7 @@ namespace csvm{
       unsigned int classify(Image* image);
       //CSVMClassifier();
       unsigned int classifyClassicSVMs(Image* im, vector < vector<Feature> > trainActivations, bool printResults);
-      
+      bool useClassicSVM();
    };
    
 }

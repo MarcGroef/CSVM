@@ -98,21 +98,27 @@ int main(int argc,char**argv){
    //c.trainSVMs();
    
    //train classic SVM
-   
-   vector< vector< Feature> > trainActivations = c.trainClassicSVMs();
-   
+   vector< vector< Feature> > trainActivations;
+   if(c.useClassicSVM())
+      trainActivations = c.trainClassicSVMs();
+   else
+      c.trainSVMs();
    //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
 
-   for(size_t im = 0; im < 20 && im < nImages; ++im){
+   for(size_t im = 0; im < 200 && im < nImages; ++im){
       //classify using convolutional SVMs 
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
-      cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+      unsigned int result;
+      if(c.useClassicSVM())
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
+      else
+         result = c.classify(c.dataset.getImagePtr(im));
+      //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
          ++nCorrect;
@@ -134,25 +140,28 @@ int main(int argc,char**argv){
    unsigned int image;
    for(size_t im = 0; im < 500; ++im){
       image = rand() % nImages;
-      cout << "Testing image " << image << ".. ";
+      //cout << "Testing image " << image << ".. ";
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       
-      unsigned int result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, true /*im > 50200 - 0 - 10*/);
-      cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabelId() << " is classified as " << result/*c.dataset.getLabel(result)*/ << endl;
-
+      unsigned int result;
+      if(c.useClassicSVM())
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+      else
+         result = c.classify(c.dataset.getImagePtr(image));
+      
       if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
-         cout << "Correct!\n";
+         //cout << "Correct!\n";
       }
       else {
          ++nFalse;
-         cout << "False!\n";
+         //cout << "False!\n";
       }
    }
-  // cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   //cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+   cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
    

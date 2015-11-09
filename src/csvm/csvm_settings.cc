@@ -135,6 +135,20 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     }
     
     stream >> setting;
+    if(setting == "SimilarityFunction"){
+      stream >> method;
+      if(method == "RBF")
+         codebookSettings.simFunction = CB_RBF;
+      else if (method == "SOFT_ASSIGNMENT")
+         codebookSettings.simFunction = SOFT_ASSIGNMENT;
+      else
+         cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
     if(setting == "similaritySigma"){
       stream >> codebookSettings.similaritySigma;
     }else{
@@ -248,6 +262,61 @@ void CSVMSettings::parseImageScannerSettings(ifstream& stream){
 void CSVMSettings::parseSVMSettings(ifstream& stream){
   string setting;
   string method;
+  
+  stream >> setting;
+  if(setting == "Type"){
+    stream >> method;
+    if(method == "CLASSIC")
+       svmSettings.type = CLASSIC;
+    else if(method == "CONV")
+       svmSettings.type = CONV;
+    else
+       cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "Kernel"){
+    stream >> method;
+    if(method == "RBF")
+       svmSettings.kernelType = RBF;
+    else if(method == "LINEAR")
+       svmSettings.kernelType = LINEAR;
+    else
+       cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "AlphaDataInit"){
+    stream >> svmSettings.alphaDataInit;   
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "AlphaCentroidInit"){
+    stream >> svmSettings.alphaCentroidInit;   
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
+  stream >> setting;
+  if(setting == "nIterations"){
+    stream >> svmSettings.nIterations;   
+  }else{
+    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+    exit(-1);
+  }
+  
   stream >> setting;
   if(setting == "learningRate"){
     stream >> svmSettings.learningRate;   
