@@ -73,7 +73,7 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
       for(size_t dim = 0; dim < dataDims; ++dim){
          xx += features[feat].content[dim] * features[feat].content[dim];
       }
-      for(size_t cl = 0; cl < nClasses; ++cl){
+      for(size_t cl = 0;  cl < nClasses; ++cl){
          classDist = 0;
          mean = 0.0;
          //cout << "cl" << cl << ": ";
@@ -81,62 +81,71 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
          if(settings.simFunction == CB_RBF){
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                distances[word] = bow[cl][word].getDistanceSq(features[feat]);
+               
                //mean += distances[word];
-            }
+            //}
             //mean /= (double)(settings.numberVisualWords);
             
-            for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            //for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //cout << "distances class " << cl << ", word: " << word << " = " << distances[word] << endl;
                dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
                activations[cl].content[word] += dev;
-               dev = mean - distances[word];
+               //c = mean - distances[word];
                activations[cl].content[word] += (dev > 0.0 ? dev : 0.0);
-               //cout << "activation word " << word << " is : " << dev << endl;
+               //cout << "activation word " << word << " is : " << (dev > 0.0 ? dev : 0.0) << "totsum = " <<  activations[cl].content[word]<< endl;
                
             }
-         } else if (settings.simFunction = SOFT_ASSIGNMENT){
-         
+         } else if (settings.simFunction == SOFT_ASSIGNMENT){
+               
          //As done by Ng:
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                cc = 0.0;
                xc = 0.0;
+               //cout << "\nComparing features:\n";
                for(size_t dim = 0; dim < dataDims; ++dim){
                   cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
                   xc += bow[cl][word].content[dim] * features[feat].content[dim];
+                  //cout << bow[cl][word].content[dim] << ", " << features[feat].content[dim] << endl;
                }
                
                distances[word] = sqrt(cc + (xx - (2 * xc))) ;
                mean += distances[word];
+               //cout << "distance = " << distances[word] << endl;
             }
             mean /= (double)(settings.numberVisualWords);
             
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
                activations[cl].content[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+               
             }
             
+            
             //cout << endl;
-            activation[cl].label = features[feat].label;
-            activation[cl].labelId = features[feat].labelId;
+            
             //cout << "totDist class " << cl << " is : " << classDist << endl;
          }
+         activation[cl].label = features[feat].label;
+         activation[cl].labelId = features[feat].labelId;
       }
       //normalize activations
-      /*for(size_t cl = 0; cl < nClasses; ++cl){
+      
+      /*
+      for(size_t cl = 0; cl < nClasses; ++cl){
          mean = 0.0;
          dev = 0.0;
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             mean += activation[cl].content[word];
          }
-
-         mean /= (double)(nClasses * settings.numberVisualWords);
-         
+      //}
+         mean /= (double)(settings.numberVisualWords * nClasses);
+      //for(size_t cl = 0; cl < nClasses; ++cl){
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             dev += (mean - activation[cl].content[word]) * (mean - activation[cl].content[word]);
          }
-         
-         dev = sqrt(dev) + 0.001;
-
+      //}
+         dev = sqrt(dev) + .001;
+      //for(size_t cl = 0; cl < nClasses; ++cl){
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             activations[cl].content[word] += (activation[cl].content[word] - mean) / dev;
          }

@@ -56,9 +56,9 @@ namespace csvm{
       void contstrainAlphaData(vector< vector< Feature > >& activations, CSVMDataset* ds);
       
     //functions for KKT-SVM
-      double constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds);
-      double updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds);
-      void calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds);
+      double constrainAlphaDataClassic(vector< Feature >& simKernel, CSVMDataset* ds);
+      double updateAlphaDataClassic(vector< Feature >& simKernel, CSVMDataset* ds);
+      void calculateBiasClassic(vector<Feature>& simKernel, CSVMDataset* ds);
       
   public:
      
@@ -69,8 +69,8 @@ namespace csvm{
      double classify(vector<Feature> f, Codebook* cb);
      
      //functions for the textbook KKT-SVM
-     void trainClassic(vector<Feature> simKernel, CSVMDataset* ds);
-     double classifyClassic(vector<Feature> f, vector< vector<Feature> > datasetActivations, CSVMDataset* cb);
+     void trainClassic(vector<Feature>& simKernel, CSVMDataset* ds);
+     double classifyClassic(vector<Feature> f, vector< vector<Feature> >& datasetActivations, CSVMDataset* cb);
      
      
   };

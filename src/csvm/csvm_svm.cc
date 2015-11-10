@@ -188,7 +188,7 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsig
 }
 
 //update alphaData for dual obj. SVM with alpha_i, alpha_j, given a similarity kernal between two activation vectors:
-double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds){
+double SVM::updateAlphaDataClassic(vector< Feature >& simKernel, CSVMDataset* ds){
    
    double diff = 0.0;
    double deltaDiff = 0.0;
@@ -236,7 +236,7 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds)
 }
 
 //make sure  sum(alphaCentroid * yCentroid) == 0, or below threshold
-double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds){
+double SVM::constrainAlphaDataClassic(vector< Feature >& simKernel, CSVMDataset* ds){
    
    
    double oldVal;
@@ -278,7 +278,7 @@ double SVM::constrainAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* 
    return diff;
 }
 
-void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
+void SVM::calculateBiasClassic(vector<Feature>& simKernel, CSVMDataset* ds){
    bias = 0;
    unsigned int total = 0;
    unsigned int nData = simKernel.size();
@@ -305,7 +305,7 @@ void SVM::calculateBiasClassic(vector<Feature> simKernel, CSVMDataset* ds){
    else 
       bias /= total;
 }
-void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
+void SVM::trainClassic(vector<Feature>& simKernel, CSVMDataset* ds){
    
    double sumDeltaAlpha = 1000.0;
    double prevSumDeltaAlpha = 100.0;
@@ -418,7 +418,7 @@ double SVM::classify(vector<Feature> f, Codebook* cb){
 }
 
 //Classify an image, represented by a set of features, using the classic (alpha_i, alpha_j) SVM
-double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > datasetActivations, CSVMDataset* ds){
+double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> >& datasetActivations, CSVMDataset* ds){
    
    double result = 0;
    unsigned int nData = datasetActivations.size();
