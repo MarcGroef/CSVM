@@ -2,7 +2,7 @@
 #define CSVM_DATASET_H
 
 #include <vector>
-
+#include <cstdlib>
 #include "csvm_cifar10_parser.h"
 #include "csvm_image.h"
 

@@ -39,12 +39,14 @@ void CSVMDataset::splitDatasetToClasses(){
    trainImagesIdx.resize(nClasses);
    unsigned int datasetSize = (unsigned int)cifar10.getSize();
    int id;
+   unsigned int image;
    
-   
-   for(size_t idx = 0; idx < settings.nImages && idx < datasetSize; ++idx){
-      id = (cifar10.getImagePtr(idx))->getLabelId();
+   for(size_t idx = 0; /*idx < settings.nImages&& */idx < 10000 && idx < datasetSize; ++idx){
+      image = rand() % cifar10.getSize();
+      id = (cifar10.getImagePtr(image))->getLabelId();
+      
       //cout << "ID = " << id << endl;
-      trainImagesIdx[id].push_back(idx);    
+      trainImagesIdx[id].push_back(image);    
    }
    
 }

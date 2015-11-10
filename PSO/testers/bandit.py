@@ -24,9 +24,9 @@ class BanditTester(ParameterTester):
     param_names = [
        'SVM_C_Data',
        'HOG_cellSize',
-       'HOG_cellStride',
+       #'HOG_cellStride',
        #'PatchSize',
-       'PatchStride',
+       #'PatchStride',
        #'sigmaClassicSimilarity',
        #'similaritySigma',
        #'SVM_Iterations',
@@ -52,21 +52,21 @@ class BanditTester(ParameterTester):
                                         "min": 2,
                                         "max": 12,
                                         "distribution": "uniform",},
-                    'HOG_cellStride': {"type": "int",
-                                        "scaling": "linear",
-                                        "min": 2,
-                                        "max": 12,
-                                        "distribution": "uniform",},
+                    #'HOG_cellStride': {"type": "int",
+                    #                    "scaling": "linear",
+                    #                    "min": 2,
+                    #                    "max": 12,
+                    #                    "distribution": "uniform",},
                     #'PatchSize': {"type": "int",
                     #                    "scaling": "linear",
                     #                    "min": 8,
                     #                    "max": 32,
                     #                    "distribution": "uniform",},
-                    'PatchStride': {"type": "int",
-                                        "scaling": "linear",
-                                        "min": 1,
-                                        "max": 12,
-                                        "distribution": "uniform",},
+                    #'PatchStride': {"type": "int",
+                    #                    "scaling": "linear",
+                    #                    "min": 1,
+                    #                    "max": 12,
+                    #                    "distribution": "uniform",},
                     #'SVM_Iterations': {"type": "int",
                     #                    "scaling": "log",
                     #                    "min": 1000,
@@ -98,22 +98,22 @@ similaritySigma 0.0001
 FeatureExtractor
 method HOG
 cellSize %(HOG_cellSize)d
-cellStride %(HOG_cellStride)d
+cellStride %(HOG_cellSize)d
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride %(PatchStride)d
-nRandomPatches 50
+patchHeight 32
+patchWidth 32
+scanStride 1
+nRandomPatches 1
 
 SVM
-Type CONV
+Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001
-nIterations 2000
+nIterations 1000
 learningRate %(learningRate).7f
 SVM_C_Data %(SVM_C_Data)d
 SVM_C_Centroid 1
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
-    result = tst.set_options(gen, BanditTester, 4, 10000, processing_timeout = 66000) # number of threads and single function evaluations
+    result = tst.set_options(gen, BanditTester, 7, 100, processing_timeout = 66000) # number of threads and single function evaluations
     if not result is True:
         print result
         tst.stop_running()

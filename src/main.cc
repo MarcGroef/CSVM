@@ -73,7 +73,7 @@ int main(int argc,char**argv){
    c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    //cout << "ready to work!\n";
    
-   unsigned int nImages = 60000;//(unsigned int) c.dataset.getSize();
+   unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
    
    
@@ -115,7 +115,7 @@ int main(int argc,char**argv){
       //classify using classic SVMs
       unsigned int result;
       if(c.useClassicSVM())
-         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, true /*im > 50200 - 0 - 10*/);
       else
          result = c.classify(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;

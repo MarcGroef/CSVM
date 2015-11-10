@@ -1,43 +1,43 @@
 Dataset
 method CIFAR10
-nImages 500
+nImages 10000
 
 
 ClusterAnalyser
 method RBM
 nLayers 2
-layerSizes 100
+layerSizes 600
 learningRate 0.1
 nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 60
+nClusters 100
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.0001
 
 FeatureExtractor
 method HOG
-cellSize 3
-cellStride 3
+cellSize 4
+cellStride 4
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 16
-patchWidth 16
-scanStride 16
-nRandomPatches 50
+patchHeight 12
+patchWidth 12
+scanStride 4
+nRandomPatches 10
 
 SVM
-Type CONV
+Type CLASSIC
 Kernel LINEAR
-AlphaDataInit 0.0001
+AlphaDataInit 0.05
 AlphaCentroidInit 0.0001
-nIterations 2000
-learningRate 0.0001
-SVM_C_Data 10000000
+nIterations 10000
+learningRate 0.000001
+SVM_C_Data 1000
 SVM_C_Centroid 1
 Cost 1
 D2 1
-sigmaClassicSimilarity 100
+sigmaClassicSimilarity 100000

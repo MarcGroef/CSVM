@@ -8,8 +8,8 @@ using namespace csvm;
  * */
 SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
    //Reserve data for alpha's and set initial values
-   alphaData = vector<double>(datasetSize,settings.alphaDataInit);
-   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,settings.alphaCentroidInit));
+   alphaData = vector<double>(datasetSize,settings.alphaDataInit * settings.SVM_C_Data);
+   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,settings.alphaCentroidInit * settings.SVM_C_Centroid));
    //Set the class ID of the SVM
    this->classId = labelId;
 
@@ -203,7 +203,7 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds)
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
       deltaDiff = 0.0;
       yData0 = ((ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
-      
+      sum = 0.0;
       //calculate the sum
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
          yData1 = ((ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
@@ -212,12 +212,12 @@ double SVM::updateAlphaDataClassic(vector< Feature > simKernel, CSVMDataset* ds)
       }
       
       //calculate output:
-      double output = 0;
+      /*double output = 0;
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
          output += alphaData[dIdx1] * yData1 * simKernel[dIdx0].content[dIdx1];
          
          
-      }
+      }*/
       
       deltaAlpha = 1.0 - sum;
       //calc new value
@@ -324,7 +324,7 @@ void SVM::trainClassic(vector<Feature> simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds);
-      //if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
+      if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
       //compute trainings-score:
       
       /*double correct = 0.0;
@@ -436,10 +436,6 @@ double SVM::classifyClassic(vector<Feature> f, vector< vector<Feature> > dataset
       
       double sum = 0;
       //calculate similarity between activation vectors
-      
-      
-      
-      
       
       
       //RBF kernel:
