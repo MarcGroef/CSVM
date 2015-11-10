@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 700
+nImages 1000
 
 
 ClusterAnalyser
@@ -34,13 +34,13 @@ Type CLASSIC
 Kernel RBF
 AlphaDataInit 0.001
 AlphaCentroidInit 0.0001
-nIterations 200000
-learningRate 0.0001
+nIterations 1000
+learningRate 0.05
 SVM_C_Data 1000
 SVM_C_Centroid 10
 Cost 1
 D2 1
-sigmaClassicSimilarity 20
+sigmaClassicSimilarity 15
 
 
 SOFT_ASSIGNMENT

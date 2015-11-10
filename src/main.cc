@@ -115,7 +115,7 @@ int main(int argc,char**argv){
       //classify using classic SVMs
       unsigned int result;
       if(c.useClassicSVM())
-         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, true /*im > 50200 - 0 - 10*/);
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
       else
          result = c.classify(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
