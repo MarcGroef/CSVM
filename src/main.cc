@@ -104,18 +104,18 @@ int main(int argc,char**argv){
    else
       c.trainSVMs();
    //printKernel(trainActivations);
-   cout << "Testing on trainingsset:\n";
+   //cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
 
-   for(size_t im = 0; im < 200 && im < nImages; ++im){
+   /*for(size_t im = 0; im < 200 && im < nImages; ++im){
       //classify using convolutional SVMs 
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
       if(c.useClassicSVM())
-         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false /*im > 50200 - 0 - 10*/);
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
       else
          result = c.classify(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
@@ -128,7 +128,7 @@ int main(int argc,char**argv){
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
-   
+   */
    
    //*********************************************************************************************************************
    

@@ -148,7 +148,7 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    //cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    //cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    //cout << ((double)nCorrect)/(nCorrect + nFalse) << endl;
-   return ((double)nCorrect)/(nCorrect + nFalse);
+   return ((double)nFalse)/(nCorrect + nFalse);
    
   // cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 

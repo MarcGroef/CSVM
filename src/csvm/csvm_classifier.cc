@@ -166,13 +166,13 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
       }
    }
    //print part of the sim kernel for debugging purposes
-   for(size_t dIdx0 = 0; dIdx0 < 14; ++dIdx0){
+   /*for(size_t dIdx0 = 0; dIdx0 < 14; ++dIdx0){
       for(size_t dIdx1 = 0; dIdx1 < 14; ++dIdx1){
          cout << (dIdx0 == dIdx1 ? "*": "") << (dataset.getImagePtr(dIdx0)->getLabelId()==dataset.getImagePtr(dIdx1)->getLabelId() ? "!" : "") << "(" << dataset.getImagePtr(dIdx0)->getLabelId() << ", " << dataset.getImagePtr(dIdx1)->getLabelId() << ")" << setprecision(2) << dataKernel[dIdx0].content[dIdx1] << ",\t";
       } 
       cout << endl;
       cout << setprecision(5) ;
-   }
+   }*/
    //we have a similarity kernel, now train the SVM's
    
    for(size_t cl = 0; cl < nClasses; ++cl){

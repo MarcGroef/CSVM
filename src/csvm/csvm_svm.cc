@@ -315,7 +315,7 @@ void SVM::trainClassic(vector<Feature>& simKernel, CSVMDataset* ds){
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
 
-   for(size_t round = 0; /*sumDeltaAlpha > 0.0001*/round < settings.nIterations; ++round){
+   for(size_t round = 0; sumDeltaAlpha > 0.00001 && round < settings.nIterations; ++round){
 
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -324,7 +324,7 @@ void SVM::trainClassic(vector<Feature>& simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds);
-      if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
+      //if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
       //compute trainings-score:
       
       /*double correct = 0.0;
