@@ -16,6 +16,7 @@ void CSVMClassifier::initSVMs(){
    for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
       svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);
+      cout << "I gave the SVMS alphainit = " << settings.svmSettings.alphaDataInit << endl;
    }
 }
 

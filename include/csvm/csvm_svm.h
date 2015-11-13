@@ -41,7 +41,9 @@ namespace csvm{
 
     
     unsigned int classId;  
-
+    
+    unsigned int nCentroids, nClasses, datasetSize;
+    
     
     //internal state
     vector <double> alphaData;

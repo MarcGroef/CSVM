@@ -6,10 +6,14 @@ using namespace csvm;
 /*
  * SVM Constructor: It initializes the SVM.
  * */
-SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
+SVM::SVM(int datasetSize, int nClasses, int nCentroids, unsigned int labelId){
    //Reserve data for alpha's and set initial values
-   alphaData = vector<double>(datasetSize,settings.alphaDataInit * settings.SVM_C_Data);
-   alphaCentroids = vector < vector<double> >(nClusters, vector<double>(nCentroids,settings.alphaCentroidInit * settings.SVM_C_Centroid));
+   //cout << "Init alpha data " << settings.alphaDataInit << endl;
+   this->nCentroids = nCentroids;
+   this->datasetSize = datasetSize;
+   this->nClasses = nClasses;
+   //alphaData = vector<double>(datasetSize,0 /** settings.SVM_C_Data*/);
+   //alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,0));
    //Set the class ID of the SVM
    this->classId = labelId;
 
@@ -21,7 +25,10 @@ SVM::SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId){
  * Aquire parameters from the settings file
  * */
 void SVM::setSettings(SVM_Settings s){
+   cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
+   alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
+   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit * settings.SVM_C_Centroid));
 }
 
 /*
@@ -175,7 +182,10 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsig
    for(size_t dataIdx = 0; dataIdx < nData; ++dataIdx){
       yData = ((clActivations[dataIdx][0].getLabelId()) == classId ? 1.0 : -1.0);
       sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass].content[centr];
+      //cout << "alphaData " << alphaData[dataIdx] << endl;
+      //cout << "Activ: " <<clActivations[dataIdx][centrClass].content[centr] << endl;
    }
+  //cout << "sum " << sum << endl;
    //set new value
    target = alphaCentroids[centrClass][centr] + settings.learningRate * ((double)1.0 - ( (double)sum));
    //keep it in boundaries
@@ -392,7 +402,7 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
          }
       }
       //make sure sum(alphaCentroid * yData) is below threshold
-      constrainAlphaCentroid(activations);
+      //constrainAlphaCentroid(activations);
       cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
    }
  

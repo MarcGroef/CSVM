@@ -119,7 +119,7 @@ Kernel RBF
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001
 nIterations 2000
-learningRate 0.2
+learningRate 0.05
 SVM_C_Data %(SVM_C_Data)d
 SVM_C_Centroid 1
 Cost 1

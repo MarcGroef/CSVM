@@ -35,7 +35,7 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //this->settings.padding = NONE;
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   this->settings.useGreyPixel = true;
+   this->settings.useGreyPixel = false;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col = GRAY) {
