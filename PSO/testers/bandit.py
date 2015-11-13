@@ -161,11 +161,8 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
-<<<<<<< HEAD
     result = tst.set_options(gen, BanditTester, 4, 200, processing_timeout = 66000) # number of threads and single function evaluations
-=======
-    result = tst.set_options(gen, BanditTester, 7, 1000, processing_timeout = (1200)) # number of threads and single function evaluations
->>>>>>> 99079b6c151b73f5aa269378347f97fd0e6444b5
+
     if not result is True:
         print result
         tst.stop_running()
