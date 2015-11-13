@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 1000
+nImages 100
 
 
 ClusterAnalyser
@@ -30,7 +30,7 @@ scanStride 16
 nRandomPatches 50
 
 SVM
-Type CONV
+Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001

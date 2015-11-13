@@ -99,10 +99,15 @@ int main(int argc,char**argv){
    
    //train classic SVM
    vector< vector< Feature> > trainActivations;
-   if(c.useClassicSVM())
+   if(c.useClassicSVM()){
+      cout << "Training classic SVM\n";
       trainActivations = c.trainClassicSVMs();
-   else
+      
+   }else{
+      
+      cout << "Training Conv SVM\n";
       c.trainSVMs();
+   }
    //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
