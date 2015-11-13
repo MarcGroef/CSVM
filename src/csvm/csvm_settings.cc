@@ -296,7 +296,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
   stream >> setting;
   if(setting == "AlphaDataInit"){
     stream >> svmSettings.alphaDataInit; 
-    cout << "I just read alphaInit shold be " << svmSettings.alphaDataInit << endl;
+    
   }else{
     cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
     exit(-1);

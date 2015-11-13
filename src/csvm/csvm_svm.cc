@@ -25,7 +25,7 @@ SVM::SVM(int datasetSize, int nClasses, int nCentroids, unsigned int labelId){
  * Aquire parameters from the settings file
  * */
 void SVM::setSettings(SVM_Settings s){
-   cout << "I recieved " << s.alphaDataInit << endl;
+   //cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
    alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
    alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit * settings.SVM_C_Centroid));
@@ -36,10 +36,10 @@ void SVM::setSettings(SVM_Settings s){
  * clActivations: Centroid activations of a given image.
  * dataIdx: Index in the dataset of the given Image
  * */
-double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx){
+double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx, CSVMDataset* ds){
    
    //Aquire the label of the image
-   unsigned int dataLabel = clActivations[0].getLabelId();
+   unsigned int dataLabel = ds->getImagePtr(dataIdx)->getLabelId();//clActivations[0].getLabelId();
    
    //Scan the aquired activations for the amount of classes present in the dataset
    unsigned int nClasses = clActivations.size();
@@ -63,13 +63,16 @@ double SVM::updateAlphaData(vector<Feature>& clActivations, unsigned int dataIdx
    for(size_t cl = 0; cl < nClasses; ++cl){
       yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
-         sum += alphaData[dataIdx] * yData * yCentroid * clActivations[cl].content[centr];
+         sum += /*alphaData[dataIdx]*/alphaCentroids[cl][centr] * yData * yCentroid * clActivations[cl].content[centr];
+         //cout << "alp : " << alphaData[dataIdx] << "yData = " << yData << "yCentr = " << yCentroid << ", act = " << clActivations[cl].content[centr] << endl;
       }
    }
+   //cout << "sum = " << sum << endl;
    //make the sum negative
    sum = -1.0 * sum;
    //calculate new value for alphaData[dataIdx]
    target = alphaData[dataIdx] + (settings.learningRate * sum);
+   //cout << "target = ********************************************************** " << target << endl;
    //make sure that 0 <= alphaData[dataIdx] <= SVM_C_Data
    target = target < 0.0 ? 0.0 : target;
    target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
@@ -123,7 +126,7 @@ void SVM::constrainAlphaCentroid(vector< vector< Feature > >& activations){
             sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * yData;
          }
       }
-      cout << "constrCentrIter\n";
+      //cout << "constrCentrIter\n";
    }
 }
 
@@ -163,7 +166,7 @@ void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, CSVMData
          //adjust sum
          sum += ( alphaData[dIdx1] - oldVal ) * yData;
       }
-      cout << "constrAlpData\n";
+      //cout << "constrAlpData\n";
    }
 }
 
@@ -187,7 +190,7 @@ double SVM::updateAlphaCentroid(vector< vector< Feature> >& clActivations, unsig
    }
   //cout << "sum " << sum << endl;
    //set new value
-   target = alphaCentroids[centrClass][centr] + settings.learningRate * ((double)1.0 - ( (double)sum));
+   target = alphaCentroids[centrClass][centr] + settings.learningRate * ((double)1.0- ( (double)sum));
    //keep it in boundaries
    target = target < 0.0 ? 0.0 : target;
    target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
@@ -376,7 +379,7 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
    
    //set a convergenceThreshold
    double convergenceThreshold = 0.01;
-   
+   double learnInit = settings.learningRate;
    //while the sum of changes in alphas is above threshold:
    for(size_t round = 0; sumDeltaAlpha > 0.00001 && round < settings.nIterations; ++round){
       
@@ -384,11 +387,12 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
       sumDeltaAlpha = 0.0;
       
       //update all alphaData's and count how much they have changed
-      /*for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
-         deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx);
+      for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
+         deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx, ds);
+         //cout << "alphaData[" << dataIdx << "] = " << alphaData[dataIdx] << endl;
          deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
          sumDeltaAlpha += deltaAlphaData;
-      }*/
+      }
       //make sure sum(alphaData * yData) is below threshold
       //contstrainAlphaData(activations, ds);
       
@@ -401,9 +405,23 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
             sumDeltaAlpha += deltaAlphaCentroid;
          }
       }
+      
+      
+      //Measure 
+      double obj = 0.0;
+      for(size_t dIdx = 0; dIdx < alphaData.size(); ++dIdx)
+         for(size_t cl = 0;  cl < nClasses; ++cl){
+            for(size_t centr = 0; centr < nCentroids; ++centr){
+               obj += alphaCentroids[cl][centr] * (ds->getImagePtr(dIdx)->getLabelId() == classId ? 1.0 : -1.0 ) * activations[dIdx][cl].content[centr] * (cl == classId ? 1.0 : -1.0);
+            }
+         }
+      //cout << "obective == " << obj << endl;
+      settings.learningRate = (1.0 / round < 0.0001 ? 0.0001 : 1.0/round);
+      //settings.learningRate = learnInit*(settings.nIterations - round ) / settings.nIterations;
+      
       //make sure sum(alphaCentroid * yData) is below threshold
-      //constrainAlphaCentroid(activations);
-      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
+      constrainAlphaCentroid(activations);
+      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " Objective : " << obj << endl;   
    }
  
 }
@@ -417,14 +435,18 @@ double SVM::classify(vector<Feature> f, Codebook* cb){
    unsigned int nCentroids = cb->getNCentroids();
    
    double yCentroid;
-   
+   double max = 0;
+   //double min = 
    for(size_t cl = 0; cl < nClasses; ++cl){
       yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
          result += alphaCentroids[cl][centr] * yCentroid * f[cl].content[centr];      
+         max += alphaCentroids[cl][centr];// * yCentroid ; 
       }
    }
-   return result;
+   cout << "SVM " << classId << " says: " << result << endl; 
+   return result;///max;
+   
 }
 
 //Classify an image, represented by a set of features, using the classic (alpha_i, alpha_j) SVM
