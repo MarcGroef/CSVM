@@ -23,40 +23,41 @@ class BanditTester(ParameterTester):
     param_path = "."
     param_names = [
        'SVM_C_Data',
-       'HOG_cellSize',
-       'HOG_cellStride',
+       #'SVM_C_Centroid',
+       #'HOG_cellSize',
+       #'HOG_cellStride',
        #'PatchSize',
        'PatchStride',
-       #'sigmaClassicSimilarity',
-       #'similaritySigma',
+       'sigmaClassicSimilarity',
+       'similaritySigma']
        #'SVM_Iterations',
-       'learningRate']
-    parameters = {  'learningRate':           {"type": "float",
-                                        "scaling": "log",
-                                        "min": 0.0000001,
-                                        "max": 0.01,
-                                        "distribution": "uniform",},
+       #'learningRate']
+    parameters = {  #'learningRate':           {"type": "float",
+                    #                    "scaling": "log",
+                    #                    "min": 0.0000001,
+                    #                    "max": 0.01,
+                    #                    "distribution": "uniform",},
                      
-                    #'sigmaClassicSimilarity':           {"type": "float",
-                    #                    "scaling": "linear",
-                    #                    "min": 0.001,
-                    #                    "max": 4.0,
-                    #                    "distribution": "uniform",},
-                    #'similaritySigma': {"type": "float",
-                    #                    "scaling": "linear",
-                    #                    "min": 0.001,
-                    #                    "max": 4.0,
-                    #                    "distribution": "uniform",},
-                    'HOG_cellSize': {"type": "int",
-                                        "scaling": "linear",
-                                        "min": 2,
-                                        "max": 12,
+                    'sigmaClassicSimilarity':           {"type": "float",
+                                         "scaling": "linear",
+                                        "min": 0.001,
+                                        "max": 100.0,
                                         "distribution": "uniform",},
-                    'HOG_cellStride': {"type": "int",
+                    'similaritySigma': {"type": "float",
                                         "scaling": "linear",
-                                        "min": 2,
-                                        "max": 12,
+                                        "min": 0.001,
+                                        "max": 100.0,
                                         "distribution": "uniform",},
+                    #'HOG_cellSize': {"type": "int",
+                    #                    "scaling": "linear",
+                    #                    "min": 2,
+                    #                    "max": 12,
+                    #                    "distribution": "uniform",},
+                    #'HOG_cellStride': {"type": "int",
+                    #                    "scaling": "linear",
+                    #                    "min": 2,
+                    #                    "max": 12,
+                    #                    "distribution": "uniform",},
                     #'PatchSize': {"type": "int",
                     #                    "scaling": "linear",
                     #                    "min": 8,
@@ -65,17 +66,21 @@ class BanditTester(ParameterTester):
                     'PatchStride': {"type": "int",
                                         "scaling": "linear",
                                         "min": 1,
-                                        "max": 12,
+                                        "max": 8,
                                         "distribution": "uniform",},
                     #'SVM_Iterations': {"type": "int",
                     #                    "scaling": "log",
                     #                    "min": 1000,
                     #                    "max": 50000,
                     #                    "distribution": "uniform",},
+                    #'SVM_C_Centroid':  {"type": "int",
+                    #                    "scaling": "log",
+                    #                    "min": 1.0,
+                    #                    "max": 1000000},
                     'SVM_C_Data':      {"type": "int",
                                         "scaling": "log",
                                         "min": 1.0,
-                                        "max": 100000000}}
+                                        "max": 1000000}}
     config_file = \
 """Dataset
 method CIFAR10
@@ -91,35 +96,35 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 60
-SimilarityFunction SOFT_ASSIGNMENT
-similaritySigma 0.0001
+nClusters 1000
+SimilarityFunction RBF
+similaritySigma %(similaritySigma).7f
 
 FeatureExtractor
 method HOG
-cellSize %(HOG_cellSize)d
-cellStride %(HOG_cellStride)d
+cellSize 4
+cellStride 4
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 12
-patchWidth 12
+patchHeight 16
+patchWidth 16
 scanStride %(PatchStride)d
-nRandomPatches 50
+nRandomPatches 10
 
 SVM
-Type CONV
-Kernel LINEAR
+Type CLASSIC
+Kernel RBF
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001
 nIterations 2000
-learningRate %(learningRate).7f
+learningRate 0.2
 SVM_C_Data %(SVM_C_Data)d
 SVM_C_Centroid 1
 Cost 1
 D2 1
-sigmaClassicSimilarity 100
+sigmaClassicSimilarity %(sigmaClassicSimilarity).7f
 """
 
     def run_algorithm(self):
@@ -156,7 +161,11 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
+<<<<<<< HEAD
     result = tst.set_options(gen, BanditTester, 4, 200, processing_timeout = 66000) # number of threads and single function evaluations
+=======
+    result = tst.set_options(gen, BanditTester, 7, 1000, processing_timeout = (1200)) # number of threads and single function evaluations
+>>>>>>> 99079b6c151b73f5aa269378347f97fd0e6444b5
     if not result is True:
         print result
         tst.stop_running()

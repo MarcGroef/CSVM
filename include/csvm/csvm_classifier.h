@@ -40,7 +40,7 @@ namespace csvm{
       void initSVMs();
       unsigned int classify(Image* image);
       //CSVMClassifier();
-      unsigned int classifyClassicSVMs(Image* im, vector < vector<Feature> > trainActivations, bool printResults);
+      unsigned int classifyClassicSVMs(Image* im, vector < vector<Feature> >& trainActivations, bool printResults);
       bool useClassicSVM();
    };
    

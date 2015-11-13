@@ -128,11 +128,12 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
+   unsigned int trainSize = (unsigned int)c.dataset.getSize();
    for(size_t im = 0; im < 200; ++im){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      image = rand() % nImages;
+      image = trainSize + (rand() % (nImages-trainSize));
       unsigned int result;
       if(c.useClassicSVM())
          result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
@@ -148,7 +149,7 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    //cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    //cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    //cout << ((double)nCorrect)/(nCorrect + nFalse) << endl;
-   return ((double)nCorrect)/(nCorrect + nFalse);
+   return ((double)nFalse)/(nCorrect + nFalse);
    
   // cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 

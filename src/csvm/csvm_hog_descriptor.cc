@@ -33,7 +33,7 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //cout << "hog settigns set\n";
    //this->settings.padding = IDENTITY;
    //this->settings.padding = NONE;
-   settings.nBins = 18;
+   settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
    this->settings.useGreyPixel = true;
 }
@@ -76,9 +76,9 @@ double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
 }
 
 double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
-   double ori = atan2(yGradient, xGradient) * 360.0 / M_PI;
+   double ori = atan2(yGradient, xGradient) * 180.0 / M_PI;
    while(ori < 0.0)
-      ori += 360.0;
+      ori += 180.0;
    
    return ori;
 }
@@ -183,6 +183,11 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
                //cout << "added to histogram\n";
             }
          }
+         
+         /*cout << "Cell:\n";
+         for (size_t idx = 0; idx < cellOrientationHistogram.size(); ++idx) {
+            cout << cellOrientationHistogram[idx] << endl;;
+         }*/
          //cout << "\nsingle cell feature vect:" << '\n';
          //for (size_t idx = 0; idx < settings.nBins; ++idx) {
          //   cout << std::setprecision(3) << cellOrientationHistogram[idx] << " | " ;
@@ -235,9 +240,10 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
    //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
    // e is some magic number still...
-   
+   //cout << "Feature :\n";
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
+      //cout << blockHistogram[idx] << endl;
    }
 
    //Feature result(settings.nBins*settings.numberOfCells, 0);

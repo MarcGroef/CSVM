@@ -1,6 +1,10 @@
 Dataset
 method CIFAR10
+<<<<<<< HEAD
 nImages 100
+=======
+nImages 500
+>>>>>>> 99079b6c151b73f5aa269378347f97fd0e6444b5
 
 
 ClusterAnalyser
@@ -12,9 +16,9 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 60
-SimilarityFunction SOFT_ASSIGNMENT
-similaritySigma 0.0001
+nClusters 1000
+SimilarityFunction RBF
+similaritySigma 10
 
 FeatureExtractor
 method HOG
@@ -24,12 +28,13 @@ blockSize 8
 padding None
 
 ImageScanner
-patchHeight 16
-patchWidth 16
-scanStride 16
-nRandomPatches 50
+patchHeight 12
+patchWidth 12
+scanStride 8
+nRandomPatches 12
 
 SVM
+<<<<<<< HEAD
 Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.0001
@@ -38,6 +43,19 @@ nIterations 2000
 learningRate 0.0001
 SVM_C_Data 10000000
 SVM_C_Centroid 1
+=======
+Type CONV
+Kernel RBF
+AlphaDataInit 0.05
+AlphaCentroidInit 0.05
+nIterations 1000
+learningRate 0.005
+SVM_C_Data 10000
+SVM_C_Centroid 1000
+>>>>>>> 99079b6c151b73f5aa269378347f97fd0e6444b5
 Cost 1
 D2 1
-sigmaClassicSimilarity 100
+sigmaClassicSimilarity 25
+
+
+SOFT_ASSIGNMENT

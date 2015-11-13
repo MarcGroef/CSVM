@@ -68,6 +68,7 @@ void CSVMClassifier::constructCodebook(){
          patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
          //patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
          nPatches = patches.size();
+         //cout << "Extracted " << nPatches << " patches\n";
          //checkEqualPatches(patches);
          features.clear();
          features.reserve(nPatches);
@@ -118,7 +119,7 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
       
       //extract patches
       patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
-      
+      //cout << "extracted " << patches.size() << " patches\n" ;
       //clear previous features
       dataFeatures.clear();
       //allocate for new
@@ -146,14 +147,14 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
       for(size_t dIdx1 = 0; dIdx1 < datasetSize; ++dIdx1){
          double sum = 0;
          if(settings.svmSettings.kernelType == RBF){
-            for(size_t cl = 0; cl < nClasses; ++cl){
+            for(size_t cl = 0;  cl < nClasses; ++cl){
                for(size_t centr = 0; centr < nCentroids; ++centr){
                   sum += (datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr]);
                }
             }
             dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
          }else if (settings.svmSettings.kernelType == LINEAR){
-            for(size_t cl = 0; cl < nClasses; ++cl){
+            for(size_t cl = 0;  cl < nClasses; ++cl){
                for(size_t centr = 0; centr < nCentroids; ++centr){
                   sum = (datasetActivations[dIdx0][cl].content[centr] * datasetActivations[dIdx1][cl].content[centr]);
                }
@@ -165,8 +166,8 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
       }
    }
    //print part of the sim kernel for debugging purposes
-   /*for(size_t dIdx0 = 0; dIdx0 < 15; ++dIdx0){
-      for(size_t dIdx1 = 0; dIdx1 < 15; ++dIdx1){
+   /*for(size_t dIdx0 = 0; dIdx0 < 14; ++dIdx0){
+      for(size_t dIdx1 = 0; dIdx1 < 14; ++dIdx1){
          cout << (dIdx0 == dIdx1 ? "*": "") << (dataset.getImagePtr(dIdx0)->getLabelId()==dataset.getImagePtr(dIdx1)->getLabelId() ? "!" : "") << "(" << dataset.getImagePtr(dIdx0)->getLabelId() << ", " << dataset.getImagePtr(dIdx1)->getLabelId() << ")" << setprecision(2) << dataKernel[dIdx0].content[dIdx1] << ",\t";
       } 
       cout << endl;
@@ -253,7 +254,7 @@ unsigned int CSVMClassifier::classify(Image* image){
 }
 
 //classify an image using the KKT-SVM
-unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector<Feature> > trainActivations, bool printResults){
+unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector<Feature> >& trainActivations, bool printResults){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
@@ -281,7 +282,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector<F
    for(size_t cl = 0; cl < nClasses; ++cl){
       results[cl] = svms[cl].classifyClassic(codebook.getActivations(dataFeatures), trainActivations, &dataset);
       
-      //if(printResults)cout << "SVM " << cl << " says " << results[cl] << endl;  
+      if(printResults)cout << "SVM " << cl << " says " << results[cl] << endl;  
       if(results[cl] > maxResult){
          maxResult = results[cl];
 

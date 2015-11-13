@@ -26,8 +26,10 @@ vector<Patch> ImageScanner::scanImage(Image* image){
    
    //for(size_t x = 0; x < scanWidth; x += settings.stride){
       //for(size_t y = 0; y < scanHeight; y += settings.stride){
-   for(size_t x = 0; x + settings.patchWidth < image->getWidth(); x += settings.stride){
-      for(size_t y = 0; y + settings.patchHeight < image->getHeight(); y += settings.stride){
+   //cout << "Image width = " << image->getWidth() << endl;;
+   for(size_t x = 0; x + settings.patchWidth  <= image->getWidth(); x += settings.stride){
+      for(size_t y = 0; y + settings.patchHeight  <= image->getHeight(); y += settings.stride){
+         
          //cout << "x: " << x << " till " << x+settings.patchWidth << endl;
          //patches[patchesTaken] = Patch(image, x, y, settings.patchWidth, settings.patchHeight);
          patches.push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
