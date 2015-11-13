@@ -116,7 +116,7 @@ void SVM::constrainAlphaCentroid(vector< vector< Feature > >& activations){
             sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * yData;
          }
       }
-      
+      cout << "constrCentrIter\n";
    }
 }
 
@@ -156,7 +156,7 @@ void SVM::contstrainAlphaData(vector< vector< Feature > >& activations, CSVMData
          //adjust sum
          sum += ( alphaData[dIdx1] - oldVal ) * yData;
       }
-      
+      cout << "constrAlpData\n";
    }
 }
 
@@ -368,17 +368,17 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
    double convergenceThreshold = 0.01;
    
    //while the sum of changes in alphas is above threshold:
-   for(size_t round = 0; round < settings.nIterations; ++round){
+   for(size_t round = 0; sumDeltaAlpha > 0.00001 && round < settings.nIterations; ++round){
       
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       
       //update all alphaData's and count how much they have changed
-      for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
+      /*for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
          deltaAlphaData = updateAlphaData(activations[dataIdx], dataIdx);
          deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
          sumDeltaAlpha += deltaAlphaData;
-      }
+      }*/
       //make sure sum(alphaData * yData) is below threshold
       //contstrainAlphaData(activations, ds);
       
@@ -393,7 +393,7 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
       }
       //make sure sum(alphaCentroid * yData) is below threshold
       constrainAlphaCentroid(activations);
-      //cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
+      cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << endl;   
    }
  
 }

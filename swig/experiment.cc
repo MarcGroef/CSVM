@@ -128,11 +128,12 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
+   unsigned int trainSize = (unsigned int)c.dataset.getSize();
    for(size_t im = 0; im < 200; ++im){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      image = rand() % nImages;
+      image = trainSize + (rand() % (nImages-trainSize));
       unsigned int result;
       if(c.useClassicSVM())
          result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);

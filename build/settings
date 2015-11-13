@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 2000
+nImages 500
 
 
 ClusterAnalyser
@@ -13,7 +13,7 @@ nGibbsSteps 2
 Codebook
 method KMEANS
 nClusters 1000
-SimilarityFunction SOFT_ASSIGNMENT
+SimilarityFunction RBF
 similaritySigma 10
 
 FeatureExtractor
@@ -30,14 +30,14 @@ scanStride 8
 nRandomPatches 12
 
 SVM
-Type CLASSIC
+Type CONV
 Kernel RBF
 AlphaDataInit 0.05
-AlphaCentroidInit 0.0001
-nIterations 500
+AlphaCentroidInit 0.05
+nIterations 1000
 learningRate 0.005
 SVM_C_Data 10000
-SVM_C_Centroid 10
+SVM_C_Centroid 1000
 Cost 1
 D2 1
 sigmaClassicSimilarity 25

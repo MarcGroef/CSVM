@@ -23,6 +23,7 @@ class BanditTester(ParameterTester):
     param_path = "."
     param_names = [
        'SVM_C_Data',
+       #'SVM_C_Centroid',
        #'HOG_cellSize',
        #'HOG_cellStride',
        #'PatchSize',
@@ -38,7 +39,7 @@ class BanditTester(ParameterTester):
                     #                    "distribution": "uniform",},
                      
                     'sigmaClassicSimilarity':           {"type": "float",
-                                        "scaling": "linear",
+                                         "scaling": "linear",
                                         "min": 0.001,
                                         "max": 100.0,
                                         "distribution": "uniform",},
@@ -65,13 +66,17 @@ class BanditTester(ParameterTester):
                     'PatchStride': {"type": "int",
                                         "scaling": "linear",
                                         "min": 1,
-                                        "max": 12,
+                                        "max": 8,
                                         "distribution": "uniform",},
                     #'SVM_Iterations': {"type": "int",
                     #                    "scaling": "log",
                     #                    "min": 1000,
                     #                    "max": 50000,
                     #                    "distribution": "uniform",},
+                    #'SVM_C_Centroid':  {"type": "int",
+                    #                    "scaling": "log",
+                    #                    "min": 1.0,
+                    #                    "max": 1000000},
                     'SVM_C_Data':      {"type": "int",
                                         "scaling": "log",
                                         "min": 1.0,
@@ -79,7 +84,7 @@ class BanditTester(ParameterTester):
     config_file = \
 """Dataset
 method CIFAR10
-nImages 500
+nImages 1000
 
 
 ClusterAnalyser
@@ -91,7 +96,7 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 60
+nClusters 1000
 SimilarityFunction RBF
 similaritySigma %(similaritySigma).7f
 
@@ -103,8 +108,8 @@ blockSize 8
 padding None
 
 ImageScanner
-patchHeight 32
-patchWidth 32
+patchHeight 16
+patchWidth 16
 scanStride %(PatchStride)d
 nRandomPatches 10
 
@@ -113,8 +118,8 @@ Type CLASSIC
 Kernel RBF
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001
-nIterations 1000
-learningRate 0.05
+nIterations 2000
+learningRate 0.2
 SVM_C_Data %(SVM_C_Data)d
 SVM_C_Centroid 1
 Cost 1
