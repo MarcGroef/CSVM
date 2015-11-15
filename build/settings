@@ -19,26 +19,26 @@ similaritySigma 7
 
 FeatureExtractor
 method HOG
-cellSize 3
-cellStride 3
+cellSize 6
+cellStride 6
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 18
-patchWidth 18
+patchHeight 12
+patchWidth 12
 scanStride 8
 nRandomPatches 12
 
 SVM
 Type CONV
 Kernel RBF
-AlphaDataInit 0.05
-AlphaCentroidInit 0.05
-nIterations 3000
-learningRate 0.005
-SVM_C_Data 10000
-SVM_C_Centroid .01
+AlphaDataInit 1
+AlphaCentroidInit 0.001
+nIterations 30000
+learningRate 0.05
+SVM_C_Data 1000
+SVM_C_Centroid 1000
 Cost 1
 D2 1
 sigmaClassicSimilarity 70
