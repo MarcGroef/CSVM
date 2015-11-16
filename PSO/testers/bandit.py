@@ -27,7 +27,7 @@ class BanditTester(ParameterTester):
        #'HOG_cellSize',
        #'HOG_cellStride',
        #'PatchSize',
-       'PatchStride',
+       #'PatchStride',
        'sigmaClassicSimilarity',
        'similaritySigma']
        #'SVM_Iterations',
@@ -63,11 +63,11 @@ class BanditTester(ParameterTester):
                     #                    "min": 8,
                     #                    "max": 32,
                     #                    "distribution": "uniform",},
-                    'PatchStride': {"type": "int",
-                                        "scaling": "linear",
-                                        "min": 1,
-                                        "max": 8,
-                                        "distribution": "uniform",},
+                    #'PatchStride': {"type": "int",
+                    #                    "scaling": "linear",
+                    #                    "min": 1,
+                    #                    "max": 8,
+                    #                    "distribution": "uniform",},
                     #'SVM_Iterations': {"type": "int",
                     #                    "scaling": "log",
                     #                    "min": 1000,
@@ -96,21 +96,21 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 1000
+nClusters 50
 SimilarityFunction RBF
 similaritySigma %(similaritySigma).7f
 
 FeatureExtractor
 method HOG
-cellSize 4
-cellStride 4
+cellSize 8
+cellStride 8
 blockSize 8
 padding None
 
 ImageScanner
 patchHeight 16
 patchWidth 16
-scanStride %(PatchStride)d
+scanStride 8
 nRandomPatches 10
 
 SVM
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
-    result = tst.set_options(gen, BanditTester, 4, 200, processing_timeout = 66000) # number of threads and single function evaluations
+    result = tst.set_options(gen, BanditTester, 4, 1000, processing_timeout = 66000) # number of threads and single function evaluations
 
     if not result is True:
         print result
