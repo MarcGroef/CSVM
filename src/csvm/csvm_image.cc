@@ -260,7 +260,7 @@ namespace csvm{
       labelId = id;
    }
    
-   int Image::getLabelId(){
+   unsigned int Image::getLabelId(){
       return labelId;
    }
    

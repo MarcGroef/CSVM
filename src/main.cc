@@ -109,7 +109,7 @@ int main(int argc,char**argv){
       c.trainSVMs();
    }
    //printKernel(trainActivations);
-   //cout << "Testing on trainingsset:\n";
+   cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
@@ -140,6 +140,7 @@ int main(int argc,char**argv){
    
    //cout << "Testing on Testset:\n";
    //Testing phase
+   cout << "On test set:\n";
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
@@ -156,7 +157,7 @@ int main(int argc,char**argv){
          result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
       else
          result = c.classify(c.dataset.getImagePtr(image));
-      cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+      //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
       if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
          //cout << "Correct!\n";

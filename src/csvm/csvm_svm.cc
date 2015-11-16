@@ -102,8 +102,9 @@ void SVM::constrainAlphaCentroid(vector< vector< Feature > >& activations){
    //calculate current sum
    for(size_t classIdx0 = 0; classIdx0 < nClasses; ++classIdx0){
          for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
-            yData = classIdx0 == classId ? 1.0 : -1.0;
-            sum += alphaCentroids[classIdx0][centrIdx] * yData;
+            //yData = classIdx0 == classId ? 1.0 : -1.0;
+            
+            sum += alphaCentroids[classIdx0][centrIdx] * (classIdx0 == classId ? 1.0 : -1.0);//yData;
          }
    }
    
@@ -117,13 +118,13 @@ void SVM::constrainAlphaCentroid(vector< vector< Feature > >& activations){
             oldVal = alphaCentroids[classIdx0][centrIdx];
             
             
-            deltaAlpha = -2.0 * settings.cost * sum * yData;
+            deltaAlpha = -2.0 * settings.cost * sum * (classIdx0 == classId ? 1.0 : -1.0);//yData;
             target = alphaCentroids[classIdx0][centrIdx] + deltaAlpha * settings.learningRate;
             target = target < 0.0 ? 0.0 : target;
             target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
             
             alphaCentroids[classIdx0][centrIdx] = target;
-            sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * yData;
+            sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * (classIdx0 == classId ? 1.0 : -1.0);//yData;
          }
       }
       //cout << "constrCentrIter\n";
@@ -328,9 +329,12 @@ void SVM::trainClassic(vector<Feature>& simKernel, CSVMDataset* ds){
    double convergenceThreshold = 0.001 ;
 
    //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
-
-   for(size_t round = 0; sumDeltaAlpha > 0.00001 && round < settings.nIterations; ++round){
-
+   double prevObjective = 0.0;
+   double objective = 0.0;
+   double sum0 = 0.0;
+   double sum1 = 0.0;
+   for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ (prevObjective - objective < -0.0001 || round < 10)&& round < settings.nIterations; ++round){
+      prevObjective = objective;
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
@@ -338,24 +342,22 @@ void SVM::trainClassic(vector<Feature>& simKernel, CSVMDataset* ds){
       sumDeltaAlpha += deltaAlphaData;
       
       constrainAlphaDataClassic(simKernel, ds);
-      //if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << endl;   
-      //compute trainings-score:
       
-      /*double correct = 0.0;
-      for(size_t dIdx0 = 0; dIdx0 < ds->getSize(); ++dIdx0){
-         double sum = 0;  
-         for(size_t dIdx1 = 0; dIdx1 < ds->getSize(); ++dIdx1){
-            double Ydata = ds->getImagePtr(dIdx1)->getLabelId() == classId ? 1.0 : -1.0;
-            sum += alphaData[dIdx1] * Ydata * simKernel[dIdx0].content[dIdx1];
+      
+      
+      //calculate objective
+      sum0 = 0.0;
+      sum1 = 0.0;
+      for(size_t dIdx0 = 0; dIdx0 < simKernel.size(); ++dIdx0){
+         sum0 += alphaData[dIdx0];
+         for(size_t dIdx1 = 0; dIdx1 < simKernel.size(); ++dIdx1){
+            sum1 += alphaData[dIdx0] * alphaData[dIdx1] * (ds->getImagePtr(dIdx0)->getLabelId() == classId ? 1.0 : -1.0) * (ds->getImagePtr(dIdx1)->getLabelId() == classId ? 1.0 : -1.0) * simKernel[dIdx0].content[dIdx1];
          }
-         sum += bias;
-         if(sum > 0.0 && ds->getImagePtr(dIdx0)->getLabelId() == classId)
-            ++correct;
-         
       }
-      correct /= ds->getSize();
-      if(round % 1000 == 0 )cout << "Trainingscore : " << correct << endl;*/
-      
+      objective = sum0 - 0.5 * sum1;
+         
+      if(round % 1000 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  Objective : " << objective << endl;   
+      //compute trainings-score:
       
    }
    calculateBiasClassic(simKernel, ds);
@@ -409,6 +411,8 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
          }
       }
       
+      //make sure sum(alphaCentroid * yData) is below threshold
+      constrainAlphaCentroid(activations);
       
       //Measure 
       obj = 0;
@@ -431,8 +435,7 @@ void SVM::train(vector< vector<Feature> >& activations, CSVMDataset* ds){
       //settings.learningRate = (1.0 / round < 0.0001 ? 0.0001 : 1.0/round);
       //settings.learningRate = learnInit*(settings.nIterations - round ) / settings.nIterations;
       
-      //make sure sum(alphaCentroid * yData) is below threshold
-      constrainAlphaCentroid(activations);
+      
       if(round % 100 == 0)cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " Objective : " << obj << endl;   
    }
  
@@ -457,7 +460,7 @@ double SVM::classify(vector<Feature> f, Codebook* cb){
       }
    }
    cout << "SVM " << classId << " says: " << result << endl; 
-   return result;///max;
+   return result;
    
 }
 

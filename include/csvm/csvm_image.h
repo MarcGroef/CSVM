@@ -59,7 +59,7 @@ namespace csvm{
       Image getROI(unsigned int x,unsigned int y,unsigned int RegionWidth,unsigned int RegionHeight);
       bool isLabeled();
       string getLabel();
-      int getLabelId();
+      unsigned int getLabelId();
       void setLabel(string l);
       void setLabelId(int id);
       Image convertTo(ImageFormat f);

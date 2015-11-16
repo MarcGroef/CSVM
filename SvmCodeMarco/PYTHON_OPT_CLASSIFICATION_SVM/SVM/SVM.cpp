@@ -142,42 +142,44 @@ double target;
      for (int alpha_iter = 0; alpha_iter < ALPHA_ITER; ++alpha_iter)
        for (int episode = 0; episode < tot_data; ++episode)
            for (int C = 0; C < CLASSES; ++C)
-                 { 
-                   double sum_1 = 0.0;
-                   for (int i = 0; i < tot_data; ++i)
-                       {
-                                    sum_1 += alpha_coeff[C][i] * y[C][episode] * y[C][i] * kernel_train[episode][i];
-                       }
+           { 
+               double sum_1 = 0.0;
+               for (int i = 0; i < tot_data; ++i)
+               {
+                           sum_1 += alpha_coeff[C][i] * y[C][episode] * y[C][i] * kernel_train[episode][i];
+               }
 	
 				
-                   delta_alpha = 1.0 -  sum_1; 
-                   target = D2 * alpha_coeff[C][episode] + delta_alpha * alpha; 
+               delta_alpha = 1.0 -  sum_1; 
+               target = D2 * alpha_coeff[C][episode] + delta_alpha * alpha; 
 
-                        if (target > SVM_C)
-                            target = SVM_C;
-                        if (target < 0)
-                            target = 0;
-                        alpha_coeff[C][episode] = target;
-                  } 
+               if (target > SVM_C)
+                     target = SVM_C;
+               if (target < 0)
+                     target = 0;
+               alpha_coeff[C][episode] = target;
+            } 
+            
             for(int rep_corr1 = 0 ; rep_corr1 < 5 ; rep_corr1++)            
               for (int C = 0; C < CLASSES; ++C)
-                { 
-               double sum_2 = 0.0;
-               for(int i = 0 ; i < tot_data ; i++)
-                  sum_2 += alpha_coeff[C][i] * y[C][i];
-	     for (int episode = 0; episode < tot_data; ++episode)
+              { 
+                  double sum_2 = 0.0;
+                  for(int i = 0 ; i < tot_data ; i++)
+                     sum_2 += alpha_coeff[C][i] * y[C][i];
+                  
+               for (int episode = 0; episode < tot_data; ++episode)
               {
-                       double old_val = alpha_coeff[C][episode];
-                       delta_alpha = - 2 * COST * sum_2 * y[C][episode];
-                       target = alpha_coeff[C][episode] + delta_alpha * alpha; 
-                       if (target > SVM_C)
-                           target = SVM_C;
-                       if (target < 0)
-                           target = 0;
-                       alpha_coeff[C][episode] = target;
-                       sum_2 += (alpha_coeff[C][episode] - old_val) * y[C][episode];
-                     }
-                }
+                     double old_val = alpha_coeff[C][episode];
+                     delta_alpha = - 2 * COST * sum_2 * y[C][episode];
+                     target = alpha_coeff[C][episode] + delta_alpha * alpha; 
+                     if (target > SVM_C)
+                        target = SVM_C;
+                     if (target < 0)
+                        target = 0;
+                     alpha_coeff[C][episode] = target;
+                     sum_2 += (alpha_coeff[C][episode] - old_val) * y[C][episode];
+                  }
+            }
 }
            
 
