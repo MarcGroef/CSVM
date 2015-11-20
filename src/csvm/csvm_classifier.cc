@@ -241,7 +241,7 @@ unsigned int CSVMClassifier::classify(Image* image){
    double maxResult = -99999;
    unsigned int maxLabel=0;
    //get max results
-   cout << "*************\n";
+   //cout << "*************\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
       results[cl] = svms[cl].classify(codebook.getActivations(dataFeatures), &codebook);
       

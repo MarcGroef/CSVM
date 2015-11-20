@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 1000
+nImages 2000
 
 
 
@@ -32,11 +32,11 @@ nRandomPatches 30
 SVM
 Type CONV
 Kernel RBF
-AlphaDataInit 0.1
+AlphaDataInit 1
 AlphaCentroidInit 0.1
 nIterations 300000
 learningRate 1
-SVM_C_Data 1
+SVM_C_Data 1000
 SVM_C_Centroid 1
 Cost 1
 D2 1
