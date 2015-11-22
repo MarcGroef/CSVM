@@ -98,7 +98,7 @@ int main(int argc,char**argv){
    //c.trainSVMs();
    
    //train classic SVM
-   vector< vector< Feature> > trainActivations;
+   vector< vector< vector<double> > > trainActivations;
    if(c.useClassicSVM()){
       cout << "Training classic SVM\n";
       trainActivations = c.trainClassicSVMs();

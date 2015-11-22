@@ -36,11 +36,11 @@ namespace csvm{
       void exportCodebook(string filename);
       void importCodebook(string filename);
       void trainSVMs();
-      vector < vector<Feature> > trainClassicSVMs();
+      vector < vector< vector<double> > > trainClassicSVMs();
       void initSVMs();
       unsigned int classify(Image* image);
       //CSVMClassifier();
-      unsigned int classifyClassicSVMs(Image* im, vector < vector<Feature> >& trainActivations, bool printResults);
+      unsigned int classifyClassicSVMs(Image* im, vector < vector< vector< double> > >& trainActivations, bool printResults);
       bool useClassicSVM();
    };
    

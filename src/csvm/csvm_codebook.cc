@@ -50,9 +50,10 @@ unsigned int Codebook::getNCentroids(){
 }
 
 
-vector<Feature> Codebook::getActivations(vector<Feature> features){
-   vector<Feature> activations(nClasses,Feature(settings.numberVisualWords, 0.0));
-   vector<Feature> activation(nClasses,Feature(settings.numberVisualWords, 0.0));
+vector< vector< double > > Codebook::getActivations(vector<Feature> features){
+   //vector<Feature> activations(nClasses,Feature(settings.numberVisualWords, 0.0));
+   //vector<Feature> activation(nClasses,Feature(settings.numberVisualWords, 0.0));
+   vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords));
    unsigned int dataDims = features[0].content.size();
    vector<double> distances(settings.numberVisualWords);
    double dev;
@@ -61,18 +62,21 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
    double classDist;
    double mean = 0;
    
-   double xx;
+   double xx = 0.0;
    double cc;
    double xc;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
-      totDist = 0;
-      //cout << "ACTIVATIONS FEATURE " << feat << ":\n";
-      xx = 0.0;
       
-      for(size_t dim = 0; dim < dataDims; ++dim){
-         xx += features[feat].content[dim] * features[feat].content[dim];
+      //cout << "ACTIVATIONS FEATURE " << feat << ":\n";
+      
+      if (settings.simFunction == SOFT_ASSIGNMENT){
+         
+         for(size_t dim = 0; dim < dataDims; ++dim){
+            xx += features[feat].content[dim] * features[feat].content[dim];
+         }
       }
+      
       for(size_t cl = 0;  cl < nClasses; ++cl){
          classDist = 0;
          mean = 0.0;
@@ -89,9 +93,9 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
             //for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //cout << "distances class " << cl << ", word: " << word << " = " << distances[word] << endl;
                dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
-               activations[cl].content[word] += dev;
+               activations[cl][word] += dev;
                //c = mean - distances[word];
-               activations[cl].content[word] += (dev > 0.0 ? dev : 0.0);
+               activations[cl][word] += (dev > 0.0 ? dev : 0.0);
                //cout << "activation word " << word << " is : " << (dev > 0.0 ? dev : 0.0) << "totsum = " <<  activations[cl].content[word]<< endl;
                
             }
@@ -107,8 +111,14 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
                   xc += bow[cl][word].content[dim] * features[feat].content[dim];
                   //cout << bow[cl][word].content[dim] << ", " << features[feat].content[dim] << endl;
                }
+               double dist = 0.0;
+               for(size_t dim = 0; dim < dataDims; ++dim){
+                  dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
+               }
                
-               distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+              // distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+               distances[word] = sqrt(dist);
+               
                mean += distances[word];
                //cout << "distance = " << distances[word] << endl;
             }
@@ -116,8 +126,8 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
             
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
-               activations[cl].content[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
-               
+               activations[cl][word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+               //cout << "activations = " <<  activations[cl][word] << endl;
             }
             
             
@@ -125,8 +135,6 @@ vector<Feature> Codebook::getActivations(vector<Feature> features){
             
             //cout << "totDist class " << cl << " is : " << classDist << endl;
          }
-         activation[cl].label = features[feat].label;
-         activation[cl].labelId = features[feat].labelId;
       }
       //normalize activations
       

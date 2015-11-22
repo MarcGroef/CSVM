@@ -45,7 +45,7 @@ namespace csvm{
     void constructCodebook(vector<Feature> featureset,int labelId);
     void setSettings(Codebook_settings s);
     Feature getCentroid(int cl, int centrIdx);
-    vector<Feature> getActivations(vector<Feature> features);
+    vector<vector < double > > getActivations(vector<Feature> features);
     void exportCodebook(string filename);
     void importCodebook(string filename);
     unsigned int getNClasses();

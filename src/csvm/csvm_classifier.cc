@@ -55,7 +55,7 @@ void CSVMClassifier::constructCodebook(){
    pretrainDump.resize(nClasses);
    unsigned int nImages = dataset.getSize();
    //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
-   for(size_t cl = 0; cl < nClasses; ++cl){
+   for(size_t cl = 0;  cl < nClasses; ++cl){
       allocedDump = false;
       //cout << "parsing class " << cl << endl;
       nImages = dataset.getNumberImagesInClass(cl);
@@ -100,15 +100,15 @@ void CSVMClassifier::constructCodebook(){
 }
 
 //train the KKT-SVM
-vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
+vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    unsigned int datasetSize = dataset.getSize();
    unsigned int nClasses; 
    unsigned int nCentroids; 
    
-   vector < vector < Feature > > datasetActivations;
+   vector < vector < vector<double> > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-   vector < Feature> dataKernel(datasetSize, Feature(datasetSize,0.0));
+   vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
    
 
    
@@ -136,7 +136,7 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    }
    
    nClasses = datasetActivations[0].size();
-   nCentroids = datasetActivations[0][0].content.size();
+   nCentroids = datasetActivations[0][0].size();
    
    
    
@@ -145,22 +145,26 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
-      for(size_t dIdx1 = 0; dIdx1 < datasetSize; ++dIdx1){
+      for(size_t dIdx1 = dIdx0; dIdx1 < datasetSize; ++dIdx1){
          double sum = 0;
          if(settings.svmSettings.kernelType == RBF){
+            
             for(size_t cl = 0;  cl < nClasses; ++cl){
                for(size_t centr = 0; centr < nCentroids; ++centr){
-                  sum += (datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr])*(datasetActivations[dIdx0][cl].content[centr] - datasetActivations[dIdx1][cl].content[centr]);
+                  sum += (datasetActivations[dIdx0][cl][centr] - datasetActivations[dIdx1][cl][centr])*(datasetActivations[dIdx0][cl][centr] - datasetActivations[dIdx1][cl][centr]);
                }
             }
-            dataKernel[dIdx0].content[dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
+            dataKernel[dIdx0][dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
+            dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
+            
          }else if (settings.svmSettings.kernelType == LINEAR){
             for(size_t cl = 0;  cl < nClasses; ++cl){
                for(size_t centr = 0; centr < nCentroids; ++centr){
-                  sum = (datasetActivations[dIdx0][cl].content[centr] * datasetActivations[dIdx1][cl].content[centr]);
+                  sum += (datasetActivations[dIdx0][cl][centr] * datasetActivations[dIdx1][cl][centr]);
                }
             }
-            dataKernel[dIdx0].content[dIdx1] = sum;
+            dataKernel[dIdx0][dIdx1] = sum;
+            dataKernel[dIdx1][dIdx0] = sum;
          }else
             cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
          
@@ -185,7 +189,7 @@ vector < vector<Feature> > CSVMClassifier::trainClassicSVMs(){
 //train the convolutional SVMs
 void CSVMClassifier::trainSVMs(){
    unsigned int datasetSize = dataset.getSize();
-   vector < vector < Feature > > datasetActivations;
+   vector < vector < vector < double > > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    
@@ -256,7 +260,7 @@ unsigned int CSVMClassifier::classify(Image* image){
 }
 
 //classify an image using the KKT-SVM
-unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector<Feature> >& trainActivations, bool printResults){
+unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< vector<double> > >& trainActivations, bool printResults){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
