@@ -4,6 +4,15 @@
 using namespace std;
 using namespace csvm;
 
+   void swapByte(unsigned char* byte){
+      unsigned char newByte = 0;
+      unsigned char bit;
+      for(size_t bIdx = 0; bIdx < 8; ++ bIdx){
+         bit = ((1 << bIdx) & *byte);
+         newByte |= bit << (7 - bIdx);
+      }
+      *byte = newByte;
+   }
    
    void MNISTParser::readTrainImages(string filename){
       basic_ifstream<unsigned char> file(filename.c_str(),ios::in|ios::binary|ios::ate);
