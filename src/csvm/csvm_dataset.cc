@@ -21,6 +21,25 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
    //cout << "dataset split to classes\n";
 }
 
+void CSVMDataset::loadMNIST(string mnistDir){
+   
+   mnistParser.readTrainImages(mnistDir);
+   mnistParser.readTrainLabels(mnistDir);
+   mnistParser.readTestImages(mnistDir);
+   mnistParser.readTestLabels(mnistDir);
+   /*cifar10.readLabels(labelsDir);
+   int imDirs = imageDirs.size();
+
+   for(int i = 0; i < imDirs; i++){
+      
+      cifar10.loadImages(imageDirs[i]);
+      
+   }
+   splitDatasetToClasses();
+   //cout << "dataset split to classes\n";
+   */
+}
+
 Image CSVMDataset::getImage(int index){
    return cifar10.getImage(index);
 }

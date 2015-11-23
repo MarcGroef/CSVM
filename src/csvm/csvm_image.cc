@@ -268,6 +268,10 @@ namespace csvm{
       return 0.2126 * getPixel(x,y,0) + 0.7152 * getPixel(x,y,1) + 0.0722 * getPixel(x,y,2);
    }
    
+   void Image::setImageData(vector<unsigned char> data){
+      image = data;
+   }
+   
    //------------------------------- private methods ------------------------------------//
    
    Image Image::UCHAR_RGB2UCHAR_RGBA(){

@@ -53,6 +53,8 @@ namespace csvm{
       void setPixel(unsigned int x,unsigned int y,unsigned int channel,unsigned char value);
       unsigned int getWidth();
       unsigned int getHeight();
+      void setImageData(vector<unsigned char> data);
+      
       
       ImageFormat getFormat();
       Image clone();

@@ -53,7 +53,7 @@ unsigned int Codebook::getNCentroids(){
 vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    //vector<Feature> activations(nClasses,Feature(settings.numberVisualWords, 0.0));
    //vector<Feature> activation(nClasses,Feature(settings.numberVisualWords, 0.0));
-   vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords));
+   vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords, 0.0));
    unsigned int dataDims = features[0].content.size();
    vector<double> distances(settings.numberVisualWords);
    double dev;
@@ -103,14 +103,14 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
                
          //As done by Ng:
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-               cc = 0.0;
+               /*cc = 0.0;
                xc = 0.0;
                //cout << "\nComparing features:\n";
                for(size_t dim = 0; dim < dataDims; ++dim){
                   cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
                   xc += bow[cl][word].content[dim] * features[feat].content[dim];
                   //cout << bow[cl][word].content[dim] << ", " << features[feat].content[dim] << endl;
-               }
+               }*/
                double dist = 0.0;
                for(size_t dim = 0; dim < dataDims; ++dim){
                   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);

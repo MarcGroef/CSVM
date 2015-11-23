@@ -5,6 +5,9 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
+
+#include <csvm/csvm_image.h>
 
 using namespace std;
 
@@ -60,17 +63,26 @@ namespace csvm{
 
    class MNISTParser{
       
-      MNISTTrainSet trainImages;
-      MNISTTrainLabels trainLabels;
+      MNISTTrainSet* trainImages;
+      MNISTTrainLabels* trainLabels;
+      MNISTTestSet* testImages;
+      MNISTTestLabels* testLabels;
       
-      MNISTTestSet testImages;
-      MNISTTestLabels testLabels;
+      string trainImagesFile;
+      string trainLabelFile;
+      string testImagesFile;
+      string testLabelFile;
       
    public:
+      MNISTParser();
+      
+      vector<Image> convertTrainSetToImages();
+      vector<Image> convertTestSetToImages();
       void readTrainImages(string filename);
       void readTrainLabels(string filename);
       void readTestImages(string filename);
       void readTestLabels(string filename);
+      void deleteUnformattedData();
    };
 }
 

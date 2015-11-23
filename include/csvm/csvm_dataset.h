@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include "csvm_cifar10_parser.h"
 #include "csvm_image.h"
+#include "csvm_mnist_parser.h"
 
 
 using namespace std;
@@ -12,7 +13,7 @@ namespace csvm{
    
    enum CSVMDatasetType{
       DATASET_CIFAR10,
-      
+      DATASET_MNIST,
    };
    
    struct CSVMDataset_Settings{
@@ -23,6 +24,7 @@ namespace csvm{
    class CSVMDataset{
       CSVMDataset_Settings settings;
       CIFAR10 cifar10;
+      MNISTParser mnistParser;
       vector<Image> images;
       vector<int> testImagesIdx;
       vector< vector<unsigned int> > trainImagesIdx;   //[labelId][image]
@@ -30,6 +32,7 @@ namespace csvm{
    public:
       CSVMDataset();
       void loadCifar10(string labelsDir,vector<string> imageDirs);
+      void loadMNIST(string mnistDir);
       Image getImage(int index);
       Image* getImagePtr(int index);
       Image* getImagePtrFromClass(unsigned int index, unsigned int classId);
