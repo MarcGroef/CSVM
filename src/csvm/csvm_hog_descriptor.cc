@@ -36,6 +36,7 @@ void HOGDescriptor::setSettings(HOGSettings s){
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
    this->settings.useGreyPixel = false;
+   this->settings.interpol = INTERPOLATE_LINEAR;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col = GRAY) {
@@ -83,6 +84,40 @@ double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
    return ori;
 }
 
+void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block) {
+	//cout << "binPixel called for x:" << X << ", y:" << Y << "\n";
+	double xGradient = computeXGradient(block, X, Y, col);
+	double yGradient = computeYGradient(block, X, Y, col);
+	double gradientMagnitude = computeMagnitude(xGradient, yGradient);
+	double gradientOrientation = computeOrientation(xGradient, yGradient);
+	if (settings.interpol == INTERPOLATE_BINARY) {
+		size_t bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
+		cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
+	}
+	else if (settings.interpol == INTERPOLATE_LINEAR) {
+		int bandWidth = (180.0 / settings.nBins); // = 20
+		int orientationBin = (int)gradientOrientation; // = 58
+		int base = bandWidth / 2; // = 10 , first bin value, also added mid values of bins
+		int lowerBinIndex = ((orientationBin - base + 180) % 180) / 20;
+		int upperBinIndex = (lowerBinIndex + 1) % 8;
+
+		int lowerBinValue = lowerBinIndex*bandWidth + base; // = 58 - 18 + 10 = 40 + 10 = bin 50 (aka: 40-60)
+		int upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
+		//cout << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
+		cellOrientationHistogram[lowerBinIndex] += gradientMagnitude*(1 - (( (orientationBin - lowerBinValue) > 0 ? 
+																					(orientationBin - lowerBinValue) 
+																					: 
+																					(180 + (orientationBin - lowerBinValue))) / bandWidth));
+		cellOrientationHistogram[upperBinIndex] += gradientMagnitude*(((orientationBin - lowerBinValue) > 0 ?
+																					(orientationBin - lowerBinValue)
+																					:
+																					(180 + (orientationBin - lowerBinValue))) / bandWidth);
+	}
+}
+
+
+
+
 //This function implements classic HOG, including how to partitionize the image. CSVM will do this in another way, so it's not quite finished
 Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
    
@@ -93,11 +128,8 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
    if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
       cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
    }
- 
   
-  
-   vector <double> blockHistogram(0, 0);
-  
+   vector <double> blockHistogram(0, 0); 
    //iterate through block with a cell, with stride cellstride. 
      
    for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += settings.cellStride) {
@@ -111,46 +143,16 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
          for (size_t X = (settings.padding == NONE ? 1 : 0); X < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++X)
          {
             for (size_t Y = (settings.padding == NONE ? 1 : 0); Y < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++Y)
-            {
-               
-               double xGradient;
-               double yGradient;
-               double gradientMagnitude;
-               double gradientOrientation;
-               size_t bin;
-               
+            {  
                if (settings.useGreyPixel)
                {
-                  xGradient = computeXGradient(block, X + cellX, Y + cellY, GRAY);
-                  yGradient = computeYGradient(block, X + cellX, Y + cellY, GRAY);
-                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
-                  gradientOrientation = computeOrientation(xGradient, yGradient);
-                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
-               }
+				   binPixel(X + cellX, Y + cellY, GRAY, cellOrientationHistogram , block );
+			   }
                else
                {
-                  xGradient = computeXGradient(block, X + cellX, Y + cellY, RED);
-                  yGradient = computeYGradient(block, X + cellX, Y + cellY, RED);
-                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
-                  gradientOrientation = computeOrientation(xGradient, yGradient);
-                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
-
-                  xGradient = computeXGradient(block, X + cellX, Y + cellY, GREEN);
-                  yGradient = computeYGradient(block, X + cellX, Y + cellY, GREEN);
-                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
-                  gradientOrientation = computeOrientation(xGradient, yGradient);
-                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
-
-                  xGradient = computeXGradient(block, X + cellX, Y + cellY, BLUE);
-                  yGradient = computeYGradient(block, X + cellX, Y + cellY, BLUE);
-                  gradientMagnitude = computeMagnitude(xGradient, yGradient);
-                  gradientOrientation = computeOrientation(xGradient, yGradient);
-                  bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
-                  cellOrientationHistogram[bin > settings.nBins - 1 ? settings.nBins - 1 : bin] += gradientMagnitude;
-
+				   binPixel(X + cellX, Y + cellY, RED, cellOrientationHistogram, block);
+				   binPixel(X + cellX, Y + cellY, GREEN, cellOrientationHistogram, block);
+				   binPixel(X + cellX, Y + cellY, BLUE, cellOrientationHistogram, block);
                }
                
                
@@ -227,6 +229,7 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
    }
    
+   /*
    //0.2 clipping as in paper http://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf
    for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
       blockHistogram[idx] > 0.2 ? 0.2 : blockHistogram[idx];
@@ -245,7 +248,7 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel=1){
       blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
       //cout << blockHistogram[idx] << endl;
    }
-
+   */
    //Feature result(settings.nBins*settings.numberOfCells, 0);
    Feature result(blockHistogram.size(), 0);
    result.content = blockHistogram;

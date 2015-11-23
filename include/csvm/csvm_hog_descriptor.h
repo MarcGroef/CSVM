@@ -27,6 +27,12 @@ namespace csvm{
       NONE = 2,
    };
 
+   enum INTERPOLATION {
+	   INTERPOLATE_BINARY = 0,
+	   INTERPOLATE_LINEAR = 1,
+	   INTERPOLATE_TRILINEAR = 2,
+   };
+
    struct HOGSettings {
       unsigned int nBins;                //number of angular orientated bins which make up the histogram of magnitudes
       unsigned int cellSize;             // assumes square cell. Best to make it an even divisor of blocksize 
@@ -36,6 +42,7 @@ namespace csvm{
       bool useGreyPixel;               //use the gray pixels? or all color channels. If all channels, then feature is 3 times as large. Default is true
       //bool interpolation;               //whether binning is proportionate (true) or direct (false). Default is false
       Padding padding;                 // what type of padding should be used to deal with 
+	  INTERPOLATION interpol;
    };
    class HOGDescriptor{
       HOGSettings settings;
@@ -53,6 +60,7 @@ namespace csvm{
       double computeYGradient(Patch patch, int x, int y, Colour col);
       double computeMagnitude(double x, double y);
       double computeOrientation(double x, double y);
+	  void binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block);
       
    };
 
