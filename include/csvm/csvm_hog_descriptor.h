@@ -33,6 +33,11 @@ namespace csvm{
 	   INTERPOLATE_TRILINEAR = 2,
    };
 
+   enum HOGGRADIENT {
+	   MAGNITUDE = 0,
+	   ORIENTATION = 1,
+   };
+
    struct HOGSettings {
       unsigned int nBins;                //number of angular orientated bins which make up the histogram of magnitudes
       unsigned int cellSize;             // assumes square cell. Best to make it an even divisor of blocksize 
@@ -61,7 +66,8 @@ namespace csvm{
       double computeMagnitude(double x, double y);
       double computeOrientation(double x, double y);
 	  void binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block);
-      
+	  void binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, double ****imageTranspose);
+	  //void binTranspose(double imageTranspose[], Patch& block);
    };
 
 
