@@ -28,6 +28,7 @@ namespace csvm{
       vector<Image> images;
       vector<int> testImagesIdx;
       vector< vector<unsigned int> > trainImagesIdx;   //[labelId][image]
+      vector<unsigned int> finalTrainIndices;
       int nClasses;
    public:
       CSVMDataset();
@@ -42,6 +43,7 @@ namespace csvm{
       int getNumberClasses();
       void setSettings(CSVMDataset_Settings s);
       string getLabel(int labelId);
+      void appendAndShuffleDataIdxArray();
    };
 }
 #endif

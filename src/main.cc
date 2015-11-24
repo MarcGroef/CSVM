@@ -70,8 +70,8 @@ int main(int argc,char**argv){
    imDirs.push_back(dataDir + "cifar-10-batches-bin/test_batch.bin");
    
    //load cifar10
-   //c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
-   c.dataset.loadMNIST(dataDir + "mnist/");
+   c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
+   //c.dataset.loadMNIST(dataDir + "mnist/");
    //cout << "ready to work!\n";
    
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
@@ -84,14 +84,14 @@ int main(int argc,char**argv){
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   c.constructCodebook();
-   cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
+   //c.constructCodebook();
+   //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
-   //c.exportCodebook("codebook10000HOG.bin");
+   //c.exportCodebook("codebook50000HOG.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
-   //c.importCodebook("../build/codebook10000HOG.bin");
+   c.importCodebook("codebook50000HOG.bin");
 
    c.initSVMs();
    //cout << "Start training SVMs\n";

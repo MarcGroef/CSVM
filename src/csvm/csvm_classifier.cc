@@ -53,7 +53,8 @@ void CSVMClassifier::constructCodebook(){
    
    pretrainDump.clear();
    pretrainDump.resize(nClasses);
-   unsigned int nImages = dataset.getSize();
+   //unsigned int nImages = dataset.getSize();
+   unsigned int nImages;// = 50000;
    //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
    for(size_t cl = 0;  cl < nClasses; ++cl){
       allocedDump = false;
@@ -94,7 +95,7 @@ void CSVMClassifier::constructCodebook(){
       //checkEqualFeatures(pretrainDump[cl]);
       codebook.constructCodebook(pretrainDump[cl],cl);
       //checkEqualFeatures(pretrainDump[cl]);
-      //cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << settings.scannerSettings.nRandomPatches << " patches each: " << settings.scannerSettings.nRandomPatches * nImages<<" in total.\n";
+      cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << settings.scannerSettings.nRandomPatches << " patches each: " << settings.scannerSettings.nRandomPatches * nImages<<" in total.\n";
    }
    pretrainDump.clear();
 }

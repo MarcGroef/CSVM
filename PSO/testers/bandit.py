@@ -39,13 +39,13 @@ class BanditTester(ParameterTester):
                     #                    "distribution": "uniform",},
                      
                     'sigmaClassicSimilarity':           {"type": "float",
-                                         "scaling": "linear",
-                                        "min": 0.001,
+                                         "scaling": "log",
+                                        "min": 0.0001,
                                         "max": 100.0,
                                         "distribution": "uniform",},
                     'similaritySigma': {"type": "float",
-                                        "scaling": "linear",
-                                        "min": 0.001,
+                                        "scaling": "log",
+                                        "min": 0.0001,
                                         "max": 100.0,
                                         "distribution": "uniform",},
                     #'HOG_cellSize': {"type": "int",
@@ -96,7 +96,7 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 50
+nClusters 200
 SimilarityFunction RBF
 similaritySigma %(similaritySigma).7f
 
@@ -118,8 +118,8 @@ Type CLASSIC
 Kernel RBF
 AlphaDataInit 0.0001
 AlphaCentroidInit 0.0001
-nIterations 2000
-learningRate 0.05
+nIterations 20000
+learningRate 0.1
 SVM_C_Data %(SVM_C_Data)d
 SVM_C_Centroid 1
 Cost 1
@@ -143,7 +143,7 @@ sigmaClassicSimilarity %(sigmaClassicSimilarity).7f
             while True:
                 tryCount += 1
                 #self.result = float(os.popen("./SVM.out " + filename).read())
-                self.result = float(csvm.run(filename, "testers/codebook.bin", "../../datasets/"))
+                self.result = float(csvm.run(filename, "codebook50000HOG.bin", "../../datasets/"))
                 if self.result < -0.00001:
                     if tryCount < 5:
                         print "[NOTICE] Unrealistically low result: %.8f for parameters %s. Restarting." % (self.result, repr(self.parameters))

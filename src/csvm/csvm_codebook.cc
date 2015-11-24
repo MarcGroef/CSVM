@@ -95,8 +95,8 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
                dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
                activations[cl][word] += dev;
                //c = mean - distances[word];
-               activations[cl][word] += (dev > 0.0 ? dev : 0.0);
-               //cout << "activation word " << word << " is : " << (dev > 0.0 ? dev : 0.0) << "totsum = " <<  activations[cl].content[word]<< endl;
+               //activations[cl][word] += (dev > 0.0 ? dev : 0.0);
+               //cout << "activation single featurecd  " << word << " is : " << dev << endl;
                
             }
          } else if (settings.simFunction == SOFT_ASSIGNMENT){
@@ -127,7 +127,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
                activations[cl][word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
-               //cout << "activations = " <<  activations[cl][word] << endl;
+               
             }
             
             
@@ -135,7 +135,9 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
             
             //cout << "totDist class " << cl << " is : " << classDist << endl;
          }
+         
       }
+      
       //normalize activations
       
       /*
@@ -159,7 +161,12 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
          }
       }*/
    }
-   
+   /*for(size_t cl = 0;  cl < nClasses; ++cl)
+      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
+               cout << "activation word " << word << " = " << activations[cl][word] << endl;
+               
+      }*/
    //normalize activation summation
    /*for(size_t cl = 0; cl < nClasses; ++cl){
       mean = 0;
@@ -198,11 +205,12 @@ void Codebook::importCodebook(string filename){
    //read number of classes
    file.read(fancyInt.chars,4);
    nClasses = fancyInt.intVal;
-
+   cout << "Codebook import: " << nClasses << " classes\n";
+   
    //read nr of visual words
    file.read(fancyInt.chars, 4);
    settings.numberVisualWords = fancyInt.intVal;
-   
+   cout << "Codebook import: " << settings.numberVisualWords << " words per class\n";
    //read typesize
    char c;
    file.read(&c,1);

@@ -81,8 +81,8 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    
   
    unsigned int nImages = 60000;//(unsigned int) c.dataset.getSize();
-   c.constructCodebook();
-   //c.importCodebook(codebook);
+  // c.constructCodebook();
+   c.importCodebook(codebook);
 
    c.initSVMs();
    
@@ -91,7 +91,7 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    //c.trainSVMs();
    
    //train classic SVM
-   vector< vector< Feature> > trainActivations;
+   vector< vector< vector< double > > > trainActivations;
    
    if(c.useClassicSVM())
       trainActivations = c.trainClassicSVMs();

@@ -180,7 +180,7 @@ double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivatio
    double yData, yCentroid;
    double target;
    double diff;
-   double C = 10;
+   double C = 0.1;
    yCentroid = (centrClass == classId ? 1.0 : -1.0);
    //calculate sum
    for(size_t dataIdx = 0; dataIdx < nData; ++dataIdx){
@@ -197,7 +197,7 @@ double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivatio
    //set new value
    //target = sum;
    double deltaAlphaCentroid = yCentroid * sum;
-   target = alphaCentroids[centrClass][centr] + settings.learningRate * deltaAlphaCentroid;
+   target = alphaCentroids[centrClass][centr] - settings.learningRate * deltaAlphaCentroid;
    //target = (1- settings.learningRate ) * alphaCentroids[centrClass][centr] + settings.learningRate * sum;//((double)1.0- ( (double)sum));
    //keep it in boundaries
    //target = target < 0.0 ? 0.0 : target;
@@ -403,7 +403,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
    double prevObj = 0;
    double obj = 0;
    //while the sum of changes in alphas is above threshold:
-   //for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ prevObj - obj > 0.0 || round < 9; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ prevObj - obj > 0.0 || round < 99; ++round){
       prevObj = obj;
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -472,6 +472,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
       
       vector<double> out(alphaData.size(),0);
       double epsilon = 0.1;
+      
       //set alpha_data to 0 is nessesary
       for(size_t dIdx = 0; dIdx < alphaData.size(); ++dIdx){
          out[dIdx] = 0;
@@ -487,12 +488,14 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
          alphaData[dIdx] = alphaData[dIdx] + settings.learningRate * ( 1 - epsilon - out[dIdx] * yData);
          if(alphaData[dIdx] < 0) alphaData[dIdx] = 0;
          if(alphaData[dIdx] > settings.SVM_C_Data) alphaData[dIdx] = settings.SVM_C_Data;
+         cout << "alphaData[" << dIdx << "] = " << alphaData[dIdx] << endl;
       }
       
       //make sure sum(alphaCentroid * yData) is below threshold
      // constrainAlphaCentroid(activations);
       
       //Measure 
+      double C = 0.1;
       double yData, yCentroid;
       obj = 0;
       double sum0 = 0.0;
@@ -502,29 +505,30 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
             }
       }
       double sum1 = 0.0;
+      double sum2 = 0.0;
       for(size_t dIdx = 0; dIdx < alphaData.size(); ++dIdx){
          
          yData = (ds->getImagePtr(dIdx)->getLabelId() == classId ? 1.0 : -1.0);
       
          
                
-         sum1 += alphaData[dIdx] * (1 - epsilon - out[dIdx] * yData);
-         
+         sum1 += alphaData[dIdx] * (1.0 - epsilon - out[dIdx] * yData);
+         sum2 += (1.0 - out[dIdx] * yData);
       }
          
-      obj = 0.5*sum0 +  sum1;
+      obj = 0.5*sum0 +  sum1 + C * sum2;
       //cout << "obective == " << obj << endl;
       //settings.learningRate = (1.0 / round < 0.0001 ? 0.0001 : 1.0/round);
       //settings.learningRate = learnInit*(settings.nIterations - round ) / settings.nIterations;
       
       
       cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " Objective : " << obj << endl;   
-  // }
+   }
  
 }
 
 //Classify an image, represented by a set of features, using the Convolutional SVM. The codebook pointer is used to get the number of centroids and classes
-double SVM::classify(vector< vector< double > >  f, Codebook* cb){
+double SVM::classify(vector< vector< double > >  activations, Codebook* cb){
    
    double result = 0;
    
@@ -539,7 +543,8 @@ double SVM::classify(vector< vector< double > >  f, Codebook* cb){
       yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
          //cout << "yCentr = " << yCentroid << " alpha = " << alphaCentroids[cl][centr] << endl;
-         result += alphaCentroids[cl][centr] * yCentroid * f[cl][centr];  
+         cout << "SVM " << classId << " :alphaCentr[" << cl << "][" << centr << "] = " <<  alphaCentroids[cl][centr] << endl;
+         result += alphaCentroids[cl][centr] * yCentroid * activations[cl][centr];  
       }
    }
    //cout << "SVM " << classId << " says: " << result << endl; 
