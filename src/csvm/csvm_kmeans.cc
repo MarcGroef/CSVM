@@ -194,7 +194,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    double deltaDist = 1;
    double closestDist;
    size_t itx = 0;
-   for(; deltaDist > 0; curCentroids *= -1, ++itx){
+   for(; /*deltaDist > 0*/ itx < 7; curCentroids *= -1, ++itx){
       
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;

@@ -180,27 +180,30 @@ double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivatio
    double yData, yCentroid;
    double target;
    double diff;
-   
+   double C = 10;
    yCentroid = (centrClass == classId ? 1.0 : -1.0);
    //calculate sum
    for(size_t dataIdx = 0; dataIdx < nData; ++dataIdx){
       //yData = ((clActivations[dataIdx][0].getLabelId()) == classId ? 1.0 : -1.0);
       yData = (ds->getImagePtr(dataIdx)->getLabelId() == classId ? 1.0 : -1.0);
       //if(yData > -1.0) cout << "ydata " << yData << " yCentr " << yCentroid << endl;
-      sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass][centr];
+      //sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass][centr];
       //cout << "alphaData " << alphaData[dataIdx] << endl;
+      sum += (alphaData[dataIdx] + C * yData) * clActivations[dataIdx][centrClass][centr];
       //cout << "Activ: " <<clActivations[dataIdx][centrClass].content[centr] << endl;
    }
    //cout << "Ycentr = " << yCentroid << " sum = " << sum << endl;
   //cout << "sum " << sum << endl;
    //set new value
    //target = sum;
-   
-   target = (1- settings.learningRate ) * alphaCentroids[centrClass][centr] + settings.learningRate * sum;//((double)1.0- ( (double)sum));
+   double deltaAlphaCentroid = yCentroid * sum;
+   target = alphaCentroids[centrClass][centr] + settings.learningRate * deltaAlphaCentroid;
+   //target = (1- settings.learningRate ) * alphaCentroids[centrClass][centr] + settings.learningRate * sum;//((double)1.0- ( (double)sum));
    //keep it in boundaries
    //target = target < 0.0 ? 0.0 : target;
    //cout << "target = " << target << endl;
-   //target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;*/
+   target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
+   target = target < -1 * settings.SVM_C_Centroid ? -1 * settings.SVM_C_Centroid : target;
    diff = alphaCentroids[centrClass][centr] - target;
    //set new value
    alphaCentroids[centrClass][centr] = target;
@@ -416,7 +419,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
       }*/
       
       //inspection for marco
-      for(size_t dIdx = 0; dIdx < size; ++dIdx){
+      /*for(size_t dIdx = 0; dIdx < size; ++dIdx){
          
          if(ds->getImagePtr(dIdx)->getLabelId() == classId){
             cout << "Inspection image " << dIdx << " for svm " << classId << endl;
@@ -442,7 +445,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
                cout << "top " << kIdx << " : kernelValue * y_p = " << kernelArray[kIdx] << " * " << yP << " = " << kernelArray[kIdx] * yP  << endl;
             }
          }
-      }
+      }*/
       
       //update all alphaData's and count how much they have changed
       /*for(size_t dataIdx = 0; dataIdx < size; ++dataIdx){
@@ -481,7 +484,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
             }
          }
          
-         alphaData[dIdx] = 1 - epsilon - out[dIdx] * yData;
+         alphaData[dIdx] = alphaData[dIdx] + settings.learningRate * ( 1 - epsilon - out[dIdx] * yData);
          if(alphaData[dIdx] < 0) alphaData[dIdx] = 0;
          if(alphaData[dIdx] > settings.SVM_C_Data) alphaData[dIdx] = settings.SVM_C_Data;
       }
