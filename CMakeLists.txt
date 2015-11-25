@@ -32,7 +32,8 @@ src/csvm/csvm_feature_extractor.cc
 src/csvm/csvm_clean_descriptor.cc
 src/csvm/csvm_svm.cc
 src/csvm/csvm_mnist_parser.cc
-
+src/csvm/csvm_linear_network.cc
+##src/csvm/csvm_annotated_kmeans.cc
 ##png library
 src/lodepng/lodepng.cc
 
