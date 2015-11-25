@@ -29,7 +29,7 @@ void SVM::setSettings(SVM_Settings s){
    //cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
    alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
-   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit * settings.SVM_C_Centroid));
+   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit));
 }
 
 /*
@@ -89,46 +89,57 @@ double SVM::updateAlphaData(vector< vector<double> >& clActivations, unsigned in
  * 
  * 
  * */
-void SVM::constrainAlphaCentroid(vector< vector< vector<double> > >& activations){
+void SVM::constrainAlphaCentroid(vector< vector< vector<double> > >& activations, CSVMDataset* ds){
 
-   unsigned int nClasses = alphaCentroids.size();
+   /*unsigned int nClasses = alphaCentroids.size();
    unsigned int nCentroids = alphaCentroids[0].size();
-   double yData;
+   unsigned int nData = activations.size();
+   double yCentr, yData;
    double oldVal;
    double deltaAlpha;
    double target;
    double treshold = 0.001;
-   double sum = 0.0;
+   double sumData = 0.0;
+   double sumPatches = 0.0;
+   double epsilon = 0.1;
+   double sum;
    
    //calculate current sum
-   for(size_t classIdx0 = 0; classIdx0 < nClasses; ++classIdx0){
-         for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
-            yData = classIdx0 == classId ? 1.0 : -1.0;
-            sum += alphaCentroids[classIdx0][centrIdx] * yData;
-         }
+   for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+      yData = (ds->getImagePtr(dIdx)->getLabelId() == classId ? 1.0 : -1.0);
+      sumPatches = 0;
+      for(size_t classIdx0 = 0; classIdx0 < nClasses; ++classIdx0){
+            for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
+               yCentr = classIdx0 == classId ? 1.0 : -1.0;
+               sumPatches += alphaCentroids[classIdx0][centrIdx] * yCentr * activations[dIdx][classIdx0][centrIdx];
+            }
+      }
+      sumData += 1 - epsilon - yData * sumPatches;
    }
    
    //while the sum is still above threshold:
-   for(size_t iter = 0; /*iter < nIterations*/ sum > treshold; ++iter){
+   for(size_t iter = 0;  sum > treshold; ++iter){
       
       //adapt deltaAlpha, and update the sum to the new sum:
-      for(size_t classIdx0 = 0; classIdx0 < nClasses; ++classIdx0){
-         for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
-            yData = classIdx0 == classId ? 1.0 : -1.0;
-            oldVal = alphaCentroids[classIdx0][centrIdx];
-            
-            
-            deltaAlpha = -2.0 * settings.cost * sum * yData;
-            target = alphaCentroids[classIdx0][centrIdx] + deltaAlpha * settings.learningRate;
-            target = target < 0.0 ? 0.0 : target;
-            target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
-            
-            alphaCentroids[classIdx0][centrIdx] = target;
-            sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * yData;
+      for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+         for(size_t classIdx0 = 0; classIdx0 < nClasses; ++classIdx0){
+            for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
+               yData = classIdx0 == classId ? 1.0 : -1.0;
+               oldVal = alphaCentroids[classIdx0][centrIdx];
+               
+               
+               deltaAlpha = -2.0 * settings.cost * sum * yData;
+               target = alphaCentroids[classIdx0][centrIdx] + deltaAlpha * settings.learningRate;
+               target = target < 0.0 ? 0.0 : target;
+               target = target > settings.SVM_C_Centroid ? settings.SVM_C_Centroid : target;
+               
+               alphaCentroids[classIdx0][centrIdx] = target;
+               sum += ( alphaCentroids[classIdx0][centrIdx] - oldVal ) * yData;
+            }
          }
       }
       //cout << "constrCentrIter\n";
-   }
+   }*/
 }
 
 //Constrain the alphaData such that: Sum(alphaData * yCentroid ) == 0, or some threshold
@@ -176,11 +187,12 @@ void SVM::contstrainAlphaData(vector< vector< vector<double> > >& activations, C
  * */
 double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivations, unsigned int centrClass, int centr, CSVMDataset* ds){
    double sum = 0.0;
+   double sum1 = 0.0;
    unsigned int nData = clActivations.size();
    double yData, yCentroid;
    double target;
    double diff;
-   double C = 0.1;
+   double C = 0.002;
    yCentroid = (centrClass == classId ? 1.0 : -1.0);
    //calculate sum
    for(size_t dataIdx = 0; dataIdx < nData; ++dataIdx){
@@ -189,15 +201,17 @@ double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivatio
       //if(yData > -1.0) cout << "ydata " << yData << " yCentr " << yCentroid << endl;
       //sum += alphaData[dataIdx] * yData * yCentroid * clActivations[dataIdx][centrClass][centr];
       //cout << "alphaData " << alphaData[dataIdx] << endl;
-      sum += (alphaData[dataIdx] + C * yData) * clActivations[dataIdx][centrClass][centr];
+      sum += alphaData[dataIdx] * clActivations[dataIdx][centrClass][centr];
+      if(alphaData[dataIdx] > 0)
+         sum1 +=   C * yData * clActivations[dataIdx][centrClass][centr];
       //cout << "Activ: " <<clActivations[dataIdx][centrClass].content[centr] << endl;
    }
    //cout << "Ycentr = " << yCentroid << " sum = " << sum << endl;
   //cout << "sum " << sum << endl;
    //set new value
    //target = sum;
-   double deltaAlphaCentroid = yCentroid * sum;
-   target = alphaCentroids[centrClass][centr] - settings.learningRate * deltaAlphaCentroid;
+   double deltaAlphaCentroid = -1* yCentroid * ( sum + sum1 )  ;
+   target = (1.0 - settings.learningRate) * alphaCentroids[centrClass][centr] + settings.learningRate * deltaAlphaCentroid;
    //target = (1- settings.learningRate ) * alphaCentroids[centrClass][centr] + settings.learningRate * sum;//((double)1.0- ( (double)sum));
    //keep it in boundaries
    //target = target < 0.0 ? 0.0 : target;
@@ -206,8 +220,10 @@ double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivatio
    target = target < -1 * settings.SVM_C_Centroid ? -1 * settings.SVM_C_Centroid : target;
    diff = alphaCentroids[centrClass][centr] - target;
    //set new value
+   
+   //cout << "target = " << target << ", yCentr = " << yCentroid << "sum = " << sum << ", sum1 = " << sum1 << "delta = " << deltaAlphaCentroid << "alphaCentr = " << alphaCentroids[centrClass][centr]<<endl;
    alphaCentroids[centrClass][centr] = target;
-   return diff;
+   return 0;//diff;
 }
 
 //update alphaData for dual obj. SVM with alpha_i, alpha_j, given a similarity kernel between two activation vectors:
@@ -403,7 +419,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
    double prevObj = 0;
    double obj = 0;
    //while the sum of changes in alphas is above threshold:
-   for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ prevObj - obj > 0.0 || round < 9; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ round < 10 /*prevObj - obj > 0.0 || round < 9*/; ++round){
       prevObj = obj;
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -484,18 +500,25 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
                out[dIdx] += alphaCentroids[cl][centr] * yCentr * activations[dIdx][cl][centr];
             }
          }
+         //constrain alphaCentroid
+         /*for(size_t cl = 0;  cl < nClasses; ++cl){
+            for(size_t centr = 0; centr < nCentroids; ++centr){
+               double yCentr = (cl == classId ? 1.0 : -1.0);
+               
+            }
+         }*/
          
-         alphaData[dIdx] = alphaData[dIdx] + settings.learningRate * ( 1 - epsilon - out[dIdx] * yData);
+         alphaData[dIdx] = (1.0 - settings.learningRate ) * alphaData[dIdx] + settings.learningRate * ( 1 - epsilon - out[dIdx] * yData);
          if(alphaData[dIdx] < 0) alphaData[dIdx] = 0;
          if(alphaData[dIdx] > settings.SVM_C_Data) alphaData[dIdx] = settings.SVM_C_Data;
-         cout << "alphaData[" << dIdx << "] = " << alphaData[dIdx] << endl;
+         //cout << "alphaData[" << dIdx << "] = " << alphaData[dIdx] << endl;
       }
       
       //make sure sum(alphaCentroid * yData) is below threshold
      // constrainAlphaCentroid(activations);
       
       //Measure 
-      double C = 0.1;
+      double C = 0.002;
       double yData, yCentroid;
       obj = 0;
       double sum0 = 0.0;

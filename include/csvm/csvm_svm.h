@@ -54,7 +54,7 @@ namespace csvm{
     //functions Convolutional SVM    
       double updateAlphaData(vector<vector<double> >& clActivations, unsigned int dataIdx, CSVMDataset* ds);
       double updateAlphaCentroid(vector< vector< vector<double> > >& clActivations, unsigned int centrClass, int centr, CSVMDataset* ds);
-      void constrainAlphaCentroid(vector< vector< vector<double> > >& activations);
+      void constrainAlphaCentroid(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
       void contstrainAlphaData(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
       
     //functions for KKT-SVM

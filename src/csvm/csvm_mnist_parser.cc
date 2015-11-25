@@ -152,15 +152,17 @@ using namespace csvm;
          for(size_t imIdx = 0; imIdx < nImages; ++imIdx){
             Image im(width, height, CSVM_IMAGE_UCHAR_GREY);
             im.setImageData(vector<unsigned char>(trainImages->formatted.images[imIdx].pixels, trainImages->formatted.images[imIdx].pixels + sizeof(trainImages->formatted.images[imIdx].pixels) / sizeof(trainImages->formatted.images[imIdx].pixels[0])));
-            char label = trainLabels->formatted.labels[imIdx];
-            im.setLabel(string(&label));
+            string label = "";
+            label += trainLabels->formatted.labels[imIdx];
+            im.setLabel(label);
             im.setLabelId(trainLabels->formatted.labels[imIdx]);
             images.push_back(im);
-            labels.push_back(string(&label));
+            labels.push_back(label);
          }
          
       }
-      
+      delete trainImages;
+      delete trainLabels;
    }
    
    
@@ -175,11 +177,13 @@ using namespace csvm;
          for(size_t imIdx = 0; imIdx < nImages; ++imIdx){
             Image im(width, height, CSVM_IMAGE_UCHAR_GREY);
             im.setImageData(vector<unsigned char>(testImages->formatted.images[imIdx].pixels, testImages->formatted.images[imIdx].pixels + sizeof(testImages->formatted.images[imIdx].pixels) / sizeof(testImages->formatted.images[imIdx].pixels[0])));
-            char label = testLabels->formatted.labels[imIdx];
-            im.setLabel(string(&label));
+            string label = "";
+            label += testLabels->formatted.labels[imIdx];
+            
+            im.setLabel(label);
             im.setLabelId(testLabels->formatted.labels[imIdx]);
             images.push_back(im);
-            labels.push_back(string(&label));
+            labels.push_back(label);
          }
          
       }
