@@ -7,10 +7,12 @@ LinNetwork::LinNetwork(unsigned int nClasses, unsigned int nCentroids, double in
    this->nClasses = nClasses;
    this->nCentroids = nCentroids;
    weights.reserve(nClasses);
-   for(size_t clIdx = 0; clIdx < nClasses; ++ clIdx){
-      weights[clIdx].reserve(nCentroids);
-      for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
-         weights[clIdx][centrIdx] = initWeights;
+   for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
+      for(size_t clIdx = 0; clIdx < nClasses; ++ clIdx){
+         weights[clIdx].reserve(nCentroids);
+         for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
+            weights[networkClassIdx][clIdx][centrIdx] = initWeights;
+         }
       }
    }
 }
@@ -36,10 +38,10 @@ void LinNetwork::train(vector< vector< vector< double > > >& clActivations, CSVM
    double deltaWeight;
    double sumOfChange;
    for(size_t iterIdx = 0; iterIdx < nIter; ++iterIdx){
-      sumOfChange = 0.0
+      sumOfChange = 0.0;
       for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
          for(size_t dataIdx = 0; dataIdx < nData; ++ dataIdx){
-            target = networkClassIdx == ds->getImagePtr(dataIdx) ? 1.0 : -1.0;
+            target = networkClassIdx == ds->getImagePtr(dataIdx)->getLabelId() ? 1.0 : -1.0;
             output = computeOutput(networkClassIdx, clActivations[iterIdx]);
             error = target - output;
             if(error > 0){ //update weight iff not already correct output
@@ -57,12 +59,12 @@ void LinNetwork::train(vector< vector< vector< double > > >& clActivations, CSVM
    }
 }
 
-unsigned int LinNetwork::classify(< vector< vector< double > >& imageActivations)[
+unsigned int LinNetwork::classify(vector< vector< double > >& imageActivations){
    unsigned int maxLabel = 0;
    unsigned int maxOutput = computeOutput(0, imageActivations);
    double output;
-   for(labelIdx = 1; labelIdx < nClasses; ++labelIdx){
-      output = computeOutput(labelIdx);
+   for(size_t labelIdx = 1; labelIdx < nClasses; ++labelIdx){
+      output = computeOutput(labelIdx, imageActivations);
       if(output > maxOutput){
          maxOutput = output;
          maxLabel = labelIdx;

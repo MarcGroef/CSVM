@@ -13,7 +13,7 @@ namespace csvm{
       unsigned int nClasses;
       unsigned int nCentroids;
       double initWeights;
-      vector< vector<double> > weights;
+      vector< vector< vector<double> > >weights;
      
       double computeOutput(unsigned int networkClassIdx, vector< vector<double> >& clActivations);
    public:
