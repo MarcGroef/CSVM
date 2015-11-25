@@ -25,7 +25,7 @@ namespace csvm{
          uint32_t numberofColumns;
          MNISTImage images[60000];  //so total of (4 * 4) + 60000*28*28 = 
       } formatted;
-      unsigned char data[(4 * 4) + 60000*28*28];
+      char data[(4 * 4) + 60000*28*28];
       
    };
 
@@ -35,7 +35,7 @@ namespace csvm{
          uint32_t numberOfImages;
          unsigned char labels[60000];
       } formatted;
-      unsigned char data[2*4 + 60000];
+      char data[2*4 + 60000];
    };
 
    union MNISTTestSet{
@@ -46,7 +46,7 @@ namespace csvm{
          uint32_t numberofColumns;
          MNISTImage images[10000];   
       } formatted;
-      unsigned char data[(4 * 4) + 10000*28*28];
+      char data[(4 * 4) + 10000*28*28];
    };
 
    union MNISTTestLabels{
@@ -55,7 +55,7 @@ namespace csvm{
          uint32_t numberOfImages;
          unsigned char labels[10000];
       } formatted;
-      unsigned char data[10000 + 2*4];
+      char data[10000 + 2*4];
    };
 
 
@@ -73,11 +73,14 @@ namespace csvm{
       string testImagesFile;
       string testLabelFile;
       
+      vector<Image> images;
+      vector<string> labels;
+      
    public:
       MNISTParser();
       
-      vector<Image> convertTrainSetToImages();
-      vector<Image> convertTestSetToImages();
+      void convertTrainSetToImages();
+      void convertTestSetToImages();
       void readTrainImages(string filename);
       void readTrainLabels(string filename);
       void readTestImages(string filename);
