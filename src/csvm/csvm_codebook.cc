@@ -164,7 +164,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    /*for(size_t cl = 0;  cl < nClasses; ++cl)
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
-               cout << "activation word " << word << " = " << activations[cl][word] << endl;
+               cout << "Bow " << cl << ": activation word " << word << " = " << activations[cl][word] << endl;
                
       }*/
    //normalize activation summation

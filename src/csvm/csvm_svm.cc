@@ -403,7 +403,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
    double prevObj = 0;
    double obj = 0;
    //while the sum of changes in alphas is above threshold:
-   for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ prevObj - obj > 0.0 || round < 99; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ prevObj - obj > 0.0 || round < 9; ++round){
       prevObj = obj;
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -543,7 +543,7 @@ double SVM::classify(vector< vector< double > >  activations, Codebook* cb){
       yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
          //cout << "yCentr = " << yCentroid << " alpha = " << alphaCentroids[cl][centr] << endl;
-         cout << "SVM " << classId << " :alphaCentr[" << cl << "][" << centr << "] = " <<  alphaCentroids[cl][centr] << endl;
+         //cout << "SVM " << classId << " :alphaCentr[" << cl << "][" << centr << "] = " <<  alphaCentroids[cl][centr] << endl;
          result += alphaCentroids[cl][centr] * yCentroid * activations[cl][centr];  
       }
    }

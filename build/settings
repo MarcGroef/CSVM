@@ -15,7 +15,7 @@ Codebook
 method KMEANS
 nClusters 200
 SimilarityFunction RBF
-similaritySigma 0.2
+similaritySigma 0.15
 
 FeatureExtractor
 method HOG
