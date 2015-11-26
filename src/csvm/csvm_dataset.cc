@@ -58,7 +58,7 @@ void CSVMDataset::splitDatasetToClasses(){
    trainImagesIdx.clear();
    trainImagesIdx.resize(nClasses);
    //unsigned int datasetSize = (unsigned int)cifar10.getSize();
-   unsigned int datasetSize = 10000;
+   unsigned int datasetSize = 1000;
    int id;
    unsigned int image;
    

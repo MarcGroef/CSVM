@@ -73,7 +73,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
                   for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
                      deltaWeight = learningRate * error * -1 * /*output * (1.0 - output) * */activations[dataIdx][clIdx][centrIdx];
                      //cout << "activations = " << activations[dataIdx][clIdx][centrIdx] << endl;
-                     //cout << "weight = " << weights[networkClassIdx][clIdx][centrIdx] << " deltaWeight = " << deltaWeight << ", error = " << error << ", act = " << activations[dataIdx][clIdx][centrIdx] << endl;
+                     cout << "weight = " << weights[networkClassIdx][clIdx][centrIdx] << " deltaWeight = " << deltaWeight << ", error = " << error << ", act = " << activations[dataIdx][clIdx][centrIdx] << endl;
                      sumOfChange += (deltaWeight < 0 ? deltaWeight * -1 : deltaWeight);
                      
                      weights[networkClassIdx][clIdx][centrIdx] -= deltaWeight;

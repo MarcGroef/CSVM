@@ -28,7 +28,7 @@ vector< vector<Patch> > ImageScanner::scanImage(Image* image){
       //for(size_t y = 0; y < scanHeight; y += settings.stride){
    //cout << "Image width = " << image->getWidth() << endl;;
    unsigned int quadrantSize = image->getWidth()/2;
-   
+   //cout << "quadrant size = " << quadrantSize << endl;
    for(size_t xQuad = 0; xQuad < 2; ++xQuad){
       for(size_t yQuad = 0; yQuad < 2; ++yQuad){
          for(size_t x = xQuad*quadrantSize; x + settings.patchWidth  <= (xQuad + 1) * quadrantSize; x += settings.stride){

@@ -28,7 +28,7 @@ ImageScanner
 patchHeight 8
 patchWidth 8
 scanStride 1
-nRandomPatches 10
+nRandomPatches 20
 
 SVM
 Type CONV
