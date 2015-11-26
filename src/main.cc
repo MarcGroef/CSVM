@@ -84,14 +84,14 @@ int main(int argc,char**argv){
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   //c.constructCodebook();
+   c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
-   //c.exportCodebook("codebook50000HOG.bin");
+   //c.exportCodebook("codebook10000HOG.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
-   c.importCodebook("codebook50000HOG.bin");
+   //c.importCodebook("codebook10000HOG.bin");
 
    c.initSVMs();
    //cout << "Start training SVMs\n";
@@ -100,15 +100,16 @@ int main(int argc,char**argv){
    
    //train classic SVM
    vector< vector< vector<double> > > trainActivations;
-   if(c.useClassicSVM()){
-      cout << "Training classic SVM\n";
-      trainActivations = c.trainClassicSVMs();
-      
-   }else{
-      
-      cout << "Training Conv SVM\n";
-      c.trainSVMs();
-   }
+   //if(c.useClassicSVM()){
+   //   cout << "Training classic SVM\n";
+   //   trainActivations = c.trainClassicSVMs();
+   //   
+   //}else{
+   //   
+   //   cout << "Training Conv SVM\n";
+   //   c.trainSVMs();
+   //}
+   c.trainLinearNetwork();
    //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
@@ -120,10 +121,11 @@ int main(int argc,char**argv){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      if(c.useClassicSVM())
-         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
-      else
-         result = c.classify(c.dataset.getImagePtr(im));
+      //if(c.useClassicSVM())
+      //   result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
+      //else
+      //   result = c.classify(c.dataset.getImagePtr(im));
+      c.lnClassify(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
@@ -154,11 +156,12 @@ int main(int argc,char**argv){
       //classify using classic SVMs
       
       unsigned int result;
-      if(c.useClassicSVM())
-         result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-      else
-         result = c.classify(c.dataset.getImagePtr(image));
+      //if(c.useClassicSVM())
+      //   result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+      //else
+      //   result = c.classify(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+      result = c.lnClassify(c.dataset.getImagePtr(image));
       if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
          //cout << "Correct!\n";

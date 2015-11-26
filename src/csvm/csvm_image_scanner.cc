@@ -11,9 +11,9 @@ void ImageScanner::setSettings(ImageScannerSettings set){
   settings = set;
 }
 
-vector<Patch> ImageScanner::scanImage(Image* image){
+vector< vector<Patch> > ImageScanner::scanImage(Image* image){
    unsigned int nPatches = ((image->getWidth()-settings.patchWidth)/settings.stride) * ((image->getHeight()-settings.patchHeight)/settings.stride);
-   vector<Patch> patches;//(nPatches);
+   vector< vector<Patch> > patches(4);//(nPatches);
    
    unsigned int scanWidth = image->getWidth() - settings.patchWidth;
    unsigned int scanHeight = image->getHeight() - settings.patchHeight;
@@ -27,13 +27,19 @@ vector<Patch> ImageScanner::scanImage(Image* image){
    //for(size_t x = 0; x < scanWidth; x += settings.stride){
       //for(size_t y = 0; y < scanHeight; y += settings.stride){
    //cout << "Image width = " << image->getWidth() << endl;;
-   for(size_t x = 0; x + settings.patchWidth  <= image->getWidth(); x += settings.stride){
-      for(size_t y = 0; y + settings.patchHeight  <= image->getHeight(); y += settings.stride){
-         
-         //cout << "x: " << x << " till " << x+settings.patchWidth << endl;
-         //patches[patchesTaken] = Patch(image, x, y, settings.patchWidth, settings.patchHeight);
-         patches.push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
-         //++patchesTaken;
+   unsigned int quadrantSize = image->getWidth()/2;
+   
+   for(size_t xQuad = 0; xQuad < 2; ++xQuad){
+      for(size_t yQuad = 0; yQuad < 2; ++yQuad){
+         for(size_t x = xQuad*quadrantSize; x + settings.patchWidth  <= (xQuad + 1) * quadrantSize; x += settings.stride){
+            for(size_t y = yQuad * quadrantSize; y + settings.patchHeight  <= (yQuad + 1) * quadrantSize; y += settings.stride){
+               
+               //cout << "x: " << x << " till " << x+settings.patchWidth << endl;
+               //patches[patchesTaken] = Patch(image, x, y, settings.patchWidth, settings.patchHeight);
+               patches[xQuad * 2 + yQuad].push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
+               //++patchesTaken;
+            }
+         }
       }
    }
    //cout << "Patch width = " << patches[patchesTaken - 1].getWidth() << ", height = " << patches[patchesTaken - 1].getHeight() << endl;;

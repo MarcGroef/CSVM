@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nImages 5000
+nImages 500
 
 
 
@@ -13,22 +13,22 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 200
-SimilarityFunction RBF
-similaritySigma 0.15
+nClusters 1000
+SimilarityFunction SOFT_ASSIGNMENT
+similaritySigma 0.010
 
 FeatureExtractor
-method HOG
-cellSize 8
-cellStride 8
+method Clean
+cellSize 4
+cellStride 4
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 16
-patchWidth 16
-scanStride 8
-nRandomPatches 40
+patchHeight 8
+patchWidth 8
+scanStride 1
+nRandomPatches 10
 
 SVM
 Type CONV

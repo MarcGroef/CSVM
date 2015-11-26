@@ -7,6 +7,7 @@ using namespace csvm;
 //initialize random
 CSVMClassifier::CSVMClassifier(){
    srand(time(NULL)); 
+   
 }
 
 
@@ -54,12 +55,12 @@ void CSVMClassifier::constructCodebook(){
    pretrainDump.clear();
    pretrainDump.resize(nClasses);
    //unsigned int nImages = dataset.getSize();
-   unsigned int nImages;// = 50000;
+   unsigned int nImages = 10000;
    //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
-   for(size_t cl = 0;  cl < nClasses; ++cl){
+   for(size_t cl = 0;  cl < 1 && cl < nClasses; ++cl){
       allocedDump = false;
       //cout << "parsing class " << cl << endl;
-      nImages = dataset.getNumberImagesInClass(cl);
+      //nImages = dataset.getNumberImagesInClass(cl);
       //cout << nImages << " images\n";
       
       
@@ -67,8 +68,8 @@ void CSVMClassifier::constructCodebook(){
       //cout << "Scanning " << nImages << " images\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
-         patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-         //patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
+         //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+         patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
          nPatches = patches.size();
          //cout << "Extracted " << nPatches << " patches\n";
          //checkEqualPatches(patches);
@@ -93,6 +94,7 @@ void CSVMClassifier::constructCodebook(){
       //cout << "end feature meditation\n";
       //cout << pretrainDump[cl].size() << " features extracted for class " << cl << "\n";
       //checkEqualFeatures(pretrainDump[cl]);
+      cout << "Collected features\n";
       codebook.constructCodebook(pretrainDump[cl],cl);
       //checkEqualFeatures(pretrainDump[cl]);
       cout << "done constructing codebook for class " << cl << " using " << nImages << " images, " << settings.scannerSettings.nRandomPatches << " patches each: " << settings.scannerSettings.nRandomPatches * nImages<<" in total.\n";
@@ -107,8 +109,8 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    unsigned int nCentroids; 
    
    vector < vector < vector<double> > > datasetActivations;
-   vector < Feature > dataFeatures;
-   vector < Patch > patches;
+   vector< vector < Feature > > dataFeatures(4);
+   vector< vector < Patch > > patches(4);
    vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
    
 
@@ -128,12 +130,17 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
       dataFeatures.reserve(patches.size());
       
       //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
+      for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+         for(size_t patch = 0; patch < patches.size(); ++patch)
+            dataFeatures[qIdx].push_back(featExtr.extract(patches[patch]));
+         vector< vector<double> > activations()
+         
+         datasetActivations.push_back(codebook.getActivations(dataFeatures));
+      }
       patches.clear();
       
       //get cluster activations for the features
-      datasetActivations.push_back(codebook.getActivations(dataFeatures));
+     
    }
    
    nClasses = datasetActivations[0].size();
@@ -301,4 +308,70 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
 
 bool CSVMClassifier::useClassicSVM(){
    return settings.svmSettings.type == CLASSIC;
+}
+
+void CSVMClassifier::trainLinearNetwork(){
+   unsigned int datasetSize = dataset.getSize();
+   vector < vector < vector < double > > > datasetActivations;
+   vector < Feature > dataFeatures;
+   vector< vector < Patch > > patches(4);
+   vector < vector< vector<double> > > dataActivation(4);
+   //allocate space for more vectors
+   datasetActivations.reserve(datasetSize);
+   //for all trainings imagages:
+   for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
+      
+      //extract patches
+      patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+      
+      for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+         //clear previous features
+         dataFeatures.clear();
+         //allocate for new features
+         dataFeatures.reserve(patches[qIdx].size());
+         
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+            dataFeatures.push_back(featExtr.extract(patches[patch]));
+         patches[qIdx].clear();
+         
+         //get cluster activations for the features
+         datasetActivation.push_back(codebook.getActivations(dataFeatures)); 
+      }
+      unsigned int nCentroids = dataActivation[0][0].size();
+      for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+         for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx)
+            datasetActivation[0][0][centrIdx].insert(datasetActivation[0][0][centrIdx].end(),datasetActivation[0][qIdx][centrIdx].begin(), datasetActivation[0][qIdx][centrIdx].end());
+      }
+      datasetActivations.push_back(dataActivation[0]);
+   }
+   //cout << "Done getting activations\n";
+   //train the Linear Netwok with the gained activations
+   linNetwork.train(datasetActivations, &dataset);
+}
+
+unsigned int CSVMClassifier::lnClassify(Image* image){
+   unsigned int nClasses = codebook.getNClasses();
+   //cout << "nClasses = " << nClasses << endl;
+   vector<Patch> patches;
+   vector<Feature> dataFeatures;
+   //extract patches
+   patches = imageScanner.scanImage(image);
+   
+
+   //allocate for new
+   dataFeatures.reserve(patches.size());
+   
+   //extract features from all patches
+   for(size_t patch = 0; patch < patches.size(); ++patch)
+      dataFeatures.push_back(featExtr.extract(patches[patch]));
+   
+   patches.clear();
+
+   //cout << "*************\n";
+
+   return linNetwork.classify(codebook.getActivations(dataFeatures));
+
+   //return labelId of max-output-SVM
+ //  return maxLabel;
 }

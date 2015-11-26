@@ -13,6 +13,7 @@
 #include "csvm_feature.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_svm.h"
+#include "csvm_linear_network.h"
 
 using namespace std;
 namespace csvm{
@@ -26,6 +27,8 @@ namespace csvm{
       vector< vector<Feature> > pretrainDump;
       vector< Feature> pretrainDump1D;
       vector< SVM > svms;
+      
+      LinNetwork linNetwork;
    public:
       //public vars
       CSVMDataset dataset;
@@ -42,6 +45,8 @@ namespace csvm{
       //CSVMClassifier();
       unsigned int classifyClassicSVMs(Image* im, vector < vector< vector< double> > >& trainActivations, bool printResults);
       bool useClassicSVM();
+      void trainLinearNetwork();
+      unsigned int lnClassify(Image* image);
    };
    
 }
