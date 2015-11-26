@@ -106,28 +106,28 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
                cc = 0.0;
                xc = 0.0;
                //cout << "\nComparing features:\n";
-               for(size_t dim = 0; dim < dataDims; ++dim){
+               /*for(size_t dim = 0; dim < dataDims; ++dim){
                   cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
                   xc += bow[cl][word].content[dim] * features[feat].content[dim];
                   //cout << bow[cl][word].content[dim] << ", " << features[feat].content[dim] << endl;
-               }
-               /*double dist = 0.0;
+               }*/
+               double dist = 0.0;
                for(size_t dim = 0; dim < dataDims; ++dim){
                   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
-               }*/
+               }
                
-               distances[word] = sqrt(cc + (xx - (2 * xc))) ;
-              // distances[word] = sqrt(dist);
+               //distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+               distances[word] = sqrt(dist);
                
                mean += distances[word];
                //cout << "distance = " << distances[word] << endl;
             }
             mean /= (double)(settings.numberVisualWords);
-            
+            //cout << "mean = " << mean << endl;
             for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                //activation[cl].content[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
                activations[cl][word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
-               
+               //cout << "activation = "  << ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0) << endl;
             }
             
             

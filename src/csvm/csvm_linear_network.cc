@@ -44,7 +44,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
    double output;
    double error;
    double target;
-   double learningRate = 0.0000041;
+   double learningRate = 0.02;
    double deltaWeight;
    double errorSum = 100;
    double sqErrorSum = 100;
@@ -71,7 +71,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
             //if(error > 0){ //update weight iff not already correct output
                for(size_t clIdx = 0;clIdx < 1 && clIdx < nClasses; ++clIdx){
                   for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
-                     deltaWeight = learningRate * error * -1 * /*output * (1.0 - output) * */activations[dataIdx][clIdx][centrIdx];
+                     deltaWeight = learningRate * error * -1 */* output * (1.0 - output) */ activations[dataIdx][clIdx][centrIdx];
                      //cout << "activations = " << activations[dataIdx][clIdx][centrIdx] << endl;
                      cout << "weight = " << weights[networkClassIdx][clIdx][centrIdx] << " deltaWeight = " << deltaWeight << ", error = " << error << ", act = " << activations[dataIdx][clIdx][centrIdx] << endl;
                      sumOfChange += (deltaWeight < 0 ? deltaWeight * -1 : deltaWeight);
@@ -79,13 +79,13 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
                      weights[networkClassIdx][clIdx][centrIdx] -= deltaWeight;
                   }
                }
-               //double deltaBias =  learningRate * -1 * /* output * (1.0 - output)*/  error;
+               //double deltaBias =  learningRate * -1 *  output * (1.0 - output) *  error;
                //biases[networkClassIdx] -= deltaBias;
                //sumOfChange += deltaBias < 0 ? -1.0 * deltaBias : deltaBias;
             //}
          }
          /*if(iterIdx%100==0)*/
-         biases[networkClassIdx] = -1 * errorSum / nData;
+         biases[networkClassIdx] =  errorSum / nData;
          cout << "Network " << networkClassIdx << " SOC = " << sumOfChange << "\terror = " <<  0.5 * sqErrorSum <<endl;
          //else cout << "this data should be classified correctly\n";
       }
