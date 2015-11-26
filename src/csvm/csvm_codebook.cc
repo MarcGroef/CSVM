@@ -227,7 +227,7 @@ void Codebook::importCodebook(string filename){
    bow.clear();
    bow.resize(nClasses);
    //read centroids
-   for(size_t cl = 0; cl < nClasses; ++cl){
+   for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
       for (size_t idx = 0; idx < settings.numberVisualWords; ++idx){
          Feature f(featDims,0);
          for(size_t featIdx = 0; featIdx < featDims; ++featIdx){
@@ -279,7 +279,7 @@ void Codebook::exportCodebook(string filename){
    fancyInt.intVal = wordSize;
    file.write(fancyInt.chars, 4);
    
-   for(size_t cl = 0; cl < nClasses; ++cl){
+   for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
       for(size_t word = 0; word < settings.numberVisualWords; ++word){
          for (size_t val = 0; val < wordSize; ++val){
             fancyDouble.doubleVal = bow[cl][word].content[val];

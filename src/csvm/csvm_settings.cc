@@ -216,6 +216,8 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
     }
+  }else if (method == "CLEAN"){
+      featureSettings.featureType = CLEAN;
   }
 
   

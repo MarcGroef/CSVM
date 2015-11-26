@@ -109,10 +109,10 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    unsigned int nCentroids; 
    
    vector < vector < vector<double> > > datasetActivations;
-   vector< vector < Feature > > dataFeatures(4);
+   vector < Feature > dataFeatures;
    vector< vector < Patch > > patches(4);
    vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
-   
+   vector < vector< vector<double> > > dataActivation;
 
    
    //allocate space for more vectors
@@ -123,24 +123,29 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
       
       //extract patches
       patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
-      //cout << "extracted " << patches.size() << " patches\n" ;
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new
-      dataFeatures.reserve(patches.size());
       
-      //extract features from all patches
       for(size_t qIdx = 0; qIdx < 4; ++qIdx){
-         for(size_t patch = 0; patch < patches.size(); ++patch)
-            dataFeatures[qIdx].push_back(featExtr.extract(patches[patch]));
-         vector< vector<double> > activations()
+         //clear previous features
+         dataFeatures.clear();
+         //allocate for new features
+         dataFeatures.reserve(patches[qIdx].size());
          
-         datasetActivations.push_back(codebook.getActivations(dataFeatures));
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+            dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+         patches[qIdx].clear();
+         
+         //get cluster activations for the features
+         dataActivation.push_back(codebook.getActivations(dataFeatures)); 
       }
-      patches.clear();
+      //append centroid activations to activations from 0th quadrant
+      unsigned int nCentroids = dataActivation[0][0].size();
+      for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+         dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
+      }
       
       //get cluster activations for the features
-     
+     datasetActivations.push_back(dataActivation[0]);
    }
    
    nClasses = datasetActivations[0].size();
@@ -199,8 +204,9 @@ void CSVMClassifier::trainSVMs(){
    unsigned int datasetSize = dataset.getSize();
    vector < vector < vector < double > > > datasetActivations;
    vector < Feature > dataFeatures;
-   vector < Patch > patches;
+   vector< vector < Patch > > patches(4);
    
+   vector < vector< vector<double> > > dataActivation;
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
@@ -209,18 +215,26 @@ void CSVMClassifier::trainSVMs(){
       //extract patches
       patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
       
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-      patches.clear();
-      
-      //get cluster activations for the features
-      datasetActivations.push_back(codebook.getActivations(dataFeatures)); 
+      for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+         //clear previous features
+         dataFeatures.clear();
+         //allocate for new features
+         dataFeatures.reserve(patches[qIdx].size());
+         
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+            dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+         patches[qIdx].clear();
+         
+         //get cluster activations for the features
+         dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+      }
+      //append centroid activations to activations from 0th quadrant
+      unsigned int nCentroids = dataActivation[0][0].size();
+      for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+         dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
+      }
+      datasetActivations.push_back(dataActivation[0]);
    }
    //cout << "Done getting activations\n";
    //train the SVMs with the gained activations
@@ -233,18 +247,36 @@ void CSVMClassifier::trainSVMs(){
 unsigned int CSVMClassifier::classify(Image* image){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
-   vector<Patch> patches;
+   vector< vector<Patch> > patches(4);
    vector<Feature> dataFeatures;
+   
+   vector < vector< vector<double> > > dataActivation;
    //extract patches
    patches = imageScanner.scanImage(image);
    
 
    //allocate for new
-   dataFeatures.reserve(patches.size());
-   
-   //extract features from all patches
-   for(size_t patch = 0; patch < patches.size(); ++patch)
-      dataFeatures.push_back(featExtr.extract(patches[patch]));
+    patches = imageScanner.scanImage(image);
+      
+   for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches[qIdx].size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+      patches[qIdx].clear();
+      
+      //get cluster activations for the features
+      dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+   }
+   //append centroid activations to activations from 0th quadrant
+   unsigned int nCentroids = dataActivation[0][0].size();
+   for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+         dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
+   }
    
    patches.clear();
 
@@ -255,7 +287,7 @@ unsigned int CSVMClassifier::classify(Image* image){
    //get max results
    //cout << "*************\n";
    for(size_t cl = 0; cl < nClasses; ++cl){
-      results[cl] = svms[cl].classify(codebook.getActivations(dataFeatures), &codebook);
+      results[cl] = svms[cl].classify(dataActivation[0], &codebook);
       
       if(results[cl] > maxResult){
          maxResult = results[cl];
@@ -271,21 +303,34 @@ unsigned int CSVMClassifier::classify(Image* image){
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< vector<double> > >& trainActivations, bool printResults){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
-   vector<Patch> patches;
+   vector < vector<Patch> > patches(4);
    vector<Feature> dataFeatures;
+   
+   vector < vector< vector<double> > > dataActivation;
    //extract patches
    patches = imageScanner.scanImage(image);
+      
+   for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches[qIdx].size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+      patches[qIdx].clear();
+      
+      //get cluster activations for the features
+      dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+   }
+   //append centroid activations to activations from 0th quadrant
+   unsigned int nCentroids = dataActivation[0][0].size();
+   for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+      dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
+      
+   }
    
-
-   //allocate for new
-   dataFeatures.reserve(patches.size());
-   
-   //extract features from all patches
-   for(size_t patch = 0; patch < patches.size(); ++patch)
-      dataFeatures.push_back(featExtr.extract(patches[patch]));
-   
-   patches.clear();
-
    //reserve space for results
    vector<double> results(nClasses, 0);
    
@@ -294,9 +339,10 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
    
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
-      results[cl] = svms[cl].classifyClassic(codebook.getActivations(dataFeatures), trainActivations, &dataset);
+      results[cl] = svms[cl].classifyClassic(dataActivation[0], trainActivations, &dataset);
       
-      if(printResults)cout << "SVM " << cl << " says " << results[cl] << endl;  
+      if(printResults)
+         cout << "SVM " << cl << " says " << results[cl] << endl;  
       if(results[cl] > maxResult){
          maxResult = results[cl];
 
@@ -315,35 +361,40 @@ void CSVMClassifier::trainLinearNetwork(){
    vector < vector < vector < double > > > datasetActivations;
    vector < Feature > dataFeatures;
    vector< vector < Patch > > patches(4);
-   vector < vector< vector<double> > > dataActivation(4);
+   vector < vector< vector<double> > > dataActivation;
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
-      
+      //cout << "scanning image" << dataIdx << endl;
       //extract patches
       patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
-      
+      //cout << "for each quadrant..\n";
       for(size_t qIdx = 0; qIdx < 4; ++qIdx){
          //clear previous features
          dataFeatures.clear();
          //allocate for new features
          dataFeatures.reserve(patches[qIdx].size());
-         
+         //cout << "extract features..\n";
          //extract features from all patches
          for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
-            dataFeatures.push_back(featExtr.extract(patches[patch]));
+            dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
          patches[qIdx].clear();
-         
+         //cout << "get activations..\n";
          //get cluster activations for the features
-         datasetActivation.push_back(codebook.getActivations(dataFeatures)); 
+         dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+         //cout << "dataActivation.size() = " << dataActivation.size() << endl;
       }
+      //append centroid activations to activations from 0th quadrant
+      //cout << "appended activations\n";
       unsigned int nCentroids = dataActivation[0][0].size();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
-         for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx)
-            datasetActivation[0][0][centrIdx].insert(datasetActivation[0][0][centrIdx].end(),datasetActivation[0][qIdx][centrIdx].begin(), datasetActivation[0][qIdx][centrIdx].end());
+        // cout << "append qIdx = " << qIdx << endl;
+         //cout << "activVector size = " << dataActivation[0][0].size();
+         dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
       }
       datasetActivations.push_back(dataActivation[0]);
+      
    }
    //cout << "Done getting activations\n";
    //train the Linear Netwok with the gained activations
@@ -353,24 +404,36 @@ void CSVMClassifier::trainLinearNetwork(){
 unsigned int CSVMClassifier::lnClassify(Image* image){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
-   vector<Patch> patches;
+   vector< vector<Patch> > patches(4);
    vector<Feature> dataFeatures;
+   vector < vector< vector<double> > > dataActivation;
    //extract patches
-   patches = imageScanner.scanImage(image);
-   
-
-   //allocate for new
-   dataFeatures.reserve(patches.size());
-   
-   //extract features from all patches
-   for(size_t patch = 0; patch < patches.size(); ++patch)
-      dataFeatures.push_back(featExtr.extract(patches[patch]));
-   
-   patches.clear();
+  patches = imageScanner.scanImage(image);
+      
+   for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches[qIdx].size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+      patches[qIdx].clear();
+      
+      //get cluster activations for the features
+      dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+   }
+   //append centroid activations to activations from 0th quadrant
+   unsigned int nCentroids = dataActivation[0][0].size();
+   for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+      dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
+      
+   }
 
    //cout << "*************\n";
 
-   return linNetwork.classify(codebook.getActivations(dataFeatures));
+   return linNetwork.classify(dataActivation[0]);
 
    //return labelId of max-output-SVM
  //  return maxLabel;

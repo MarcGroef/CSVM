@@ -21,7 +21,7 @@ vector< vector<Patch> > ImageScanner::scanImage(Image* image){
    unsigned int patchesTaken = 0;
    
    if(scanWidth == 0 || scanHeight == 0){
-      return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
+      return vector< vector<Patch> >(1,vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight)));
    }
    
    //for(size_t x = 0; x < scanWidth; x += settings.stride){

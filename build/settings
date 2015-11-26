@@ -18,7 +18,7 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.010
 
 FeatureExtractor
-method Clean
+method CLEAN
 cellSize 4
 cellStride 4
 blockSize 8
