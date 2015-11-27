@@ -13,21 +13,22 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 300
+nClusters 500
+nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.010
 
 FeatureExtractor
 method HOG
-cellSize 4
-cellStride 4
+cellSize 8
+cellStride 8
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 1
+patchHeight 16
+patchWidth 16
+scanStride 4
 nRandomPatches 200000
 
 SVM

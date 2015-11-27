@@ -13,6 +13,7 @@ namespace csvm{
   struct KMeans_settings{
     int nClusters;
     double alpha;
+    unsigned int nIter;
   };
   
   struct ClusterCentroid {
