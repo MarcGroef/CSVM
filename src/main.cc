@@ -78,14 +78,14 @@ int main(int argc,char**argv){
    //cout << nImages << " images loaded.\n";
    
 
-   c.constructCodebook();
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
-   c.exportCodebook("coates.bin");
+   //c.exportCodebook("coates.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
-   //c.importCodebook("coates.bin");
+   c.importCodebook("coates.bin");
 
    
    
@@ -154,7 +154,7 @@ int main(int argc,char**argv){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      
+      //cout << "classifying image " << image << endl;
       unsigned int result;
       if(!c.useLinNet){
          if(c.useClassicSVM())
@@ -164,7 +164,7 @@ int main(int argc,char**argv){
       }else 
          result = c.lnClassify(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
-      result = c.lnClassify(c.dataset.getImagePtr(image));
+      
       if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
          //cout << "Correct!\n";

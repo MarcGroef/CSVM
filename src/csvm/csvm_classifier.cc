@@ -404,6 +404,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
          }
       }
    //normalize
+   //cout << "Normalizing data" << endl;
    if(normalizeActivations){
       //cout << "nActivations = " << nActivations << endl;
       //cout << "***************** begin image ***********************\n";
@@ -433,7 +434,6 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
    
    double maxResult = -99999;
    unsigned int maxLabel=0;
-   
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
       results[cl] = svms[cl].classifyClassic(dataActivation[0], trainActivations, &dataset);

@@ -29,7 +29,7 @@ void SVM::setSettings(SVM_Settings s){
    //cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
    alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
-   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit));
+   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids * 4,settings.alphaCentroidInit));  //weights to 4 quadrants
 }
 
 /*
@@ -60,7 +60,6 @@ double SVM::updateAlphaData(vector< vector<double> >& clActivations, unsigned in
    
    //calculate the summation:
    double sum = 0.0;
-   
    for(size_t cl = 0; cl < nClasses; ++cl){
       yCentroid = (cl == classId ? 1.0 : -1.0);
       for(size_t centr = 0; centr < nCentroids; ++centr){
@@ -291,7 +290,7 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    }
    
    //while sum is above threshold, update alphas
-   for(size_t constItr = 0; sum > threshold; ++constItr){
+   for(size_t constItr = 0; sum > threshold || sum < 0-threshold; ++constItr){
       for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
          
          yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
@@ -573,7 +572,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
    Feature dataKernel(nData,0.0);
    
 
-   
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    //update sum with similarity between image activations
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
@@ -584,7 +583,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       
       //RBF kernel:
       if(settings.kernelType == RBF){
-         for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
+         for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                //sum of distance squared
                sum += (datasetActivations[dIdx0][cl][centr] - f[cl][centr])*(datasetActivations[dIdx0][cl][centr] - f[cl][centr]);
@@ -596,7 +595,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       }else if (settings.kernelType == LINEAR){
      
          //Linear kernel
-         for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
+         for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][cl][centr] * f[cl][centr]);
             }
