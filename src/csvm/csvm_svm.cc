@@ -250,15 +250,7 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
          //cout << "alphaD = " << alphaData[dIdx1] << " Yi = " << yData0 << " Yj = " << yData1 <<" simkern = " << simKernel[dIdx0][dIdx1] << endl;
          
       }
-      //cout << "sum = " << sum << endl;
-      //calculate output:
-      /*double output = 0;
-      for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
-         output += alphaData[dIdx1] * yData1 * simKernel[dIdx0].content[dIdx1];
-         
-         
-      }*/
-      
+            
       deltaAlpha = 1.0 - sum;
       //calc new value
       target = settings.D2 * alphaData[dIdx0] + deltaAlpha * settings.learningRate;

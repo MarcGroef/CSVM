@@ -14,11 +14,13 @@ nGibbsSteps 2
 Codebook
 method KMEANS
 nClusters 1000
+nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.010
+useDifferentCodebooksPerClass false
 
 FeatureExtractor
-method CLEAN
+method HOG
 cellSize 4
 cellStride 4
 blockSize 8
@@ -28,16 +30,16 @@ ImageScanner
 patchHeight 8
 patchWidth 8
 scanStride 1
-nRandomPatches 20
+nRandomPatches 200000
 
 SVM
-Type CONV
-Kernel RBF
+Type CLASSIC
+Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
 nIterations 5000
 learningRate .05
-SVM_C_Data 1
+SVM_C_Data 100
 SVM_C_Centroid 1000000
 Cost 1
 D2 1

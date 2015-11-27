@@ -55,12 +55,16 @@ void CSVMClassifier::constructCodebook(){
    pretrainDump.clear();
    pretrainDump.resize(nClasses);
    //unsigned int nImages = dataset.getSize();
+   
    unsigned int nImages = 10000;
    //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes using " << nImages << " images in total\n";
-   for(size_t cl = 0;  cl < 1 && cl < nClasses; ++cl){
+   bool oneCl = settings.svmSettings.useDifferentCodebooksPerClass;
+   for(size_t cl = 0;  oneCl ? cl < 1 : cl < nClasses; ++cl){
       allocedDump = false;
       //cout << "parsing class " << cl << endl;
-      //nImages = dataset.getNumberImagesInClass(cl);
+      if(oneCl){
+         nImages = dataset.getNumberImagesInClass(cl);
+      }
       //cout << nImages << " images\n";
       
       
@@ -68,8 +72,13 @@ void CSVMClassifier::constructCodebook(){
       //cout << "Scanning " << nImages << " images\n";
       for(size_t im = 0; im < nImages; ++im){
          //cout << "scanning patches\n";
-         //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-         patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
+         if(oneCl){
+            
+            patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(rand() & nImages, cl));
+            
+         }else
+            patches = imageScanner.getRandomPatches(dataset.getImagePtr(rand() % dataset.getSize()));
+         
          nPatches = patches.size();
          //cout << "Extracted " << nPatches << " patches\n";
          //checkEqualPatches(patches);
@@ -137,6 +146,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
          
          //get cluster activations for the features
          dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+         
       }
       //append centroid activations to activations from 0th quadrant
       unsigned int nCentroids = dataActivation[0][0].size();
@@ -154,7 +164,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    
    
    
-   
+   bool oneCl = settings.svmSettings.useDifferentCodebooksPerClass;
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
@@ -162,7 +172,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
          double sum = 0;
          if(settings.svmSettings.kernelType == RBF){
             
-            for(size_t cl = 0;  cl < nClasses; ++cl){
+            for(size_t cl = 0;   oneCl ? cl < 1 : cl < nClasses; ++cl){
                for(size_t centr = 0; centr < nCentroids; ++centr){
                   sum += (datasetActivations[dIdx0][cl][centr] - datasetActivations[dIdx1][cl][centr])*(datasetActivations[dIdx0][cl][centr] - datasetActivations[dIdx1][cl][centr]);
                }
@@ -171,7 +181,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
             dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
             
          }else if (settings.svmSettings.kernelType == LINEAR){
-            for(size_t cl = 0;  cl < nClasses; ++cl){
+            for(size_t cl = 0;   oneCl ? cl < 1 : cl < nClasses; ++cl){
                for(size_t centr = 0; centr < nCentroids; ++centr){
                   sum += (datasetActivations[dIdx0][cl][centr] * datasetActivations[dIdx1][cl][centr]);
                }
@@ -230,7 +240,6 @@ void CSVMClassifier::trainSVMs(){
          dataActivation.push_back(codebook.getActivations(dataFeatures)); 
       }
       //append centroid activations to activations from 0th quadrant
-      unsigned int nCentroids = dataActivation[0][0].size();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
       }
@@ -273,7 +282,6 @@ unsigned int CSVMClassifier::classify(Image* image){
       dataActivation.push_back(codebook.getActivations(dataFeatures)); 
    }
    //append centroid activations to activations from 0th quadrant
-   unsigned int nCentroids = dataActivation[0][0].size();
    for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
    }
@@ -324,8 +332,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
       //get cluster activations for the features
       dataActivation.push_back(codebook.getActivations(dataFeatures)); 
    }
-   //append centroid activations to activations from 0th quadrant
-   unsigned int nCentroids = dataActivation[0][0].size();
+   //append centroid activations to activations from 0th quadrant.
    for(size_t qIdx = 1; qIdx < 4; ++qIdx){
       dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
       
@@ -425,7 +432,6 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
       dataActivation.push_back(codebook.getActivations(dataFeatures)); 
    }
    //append centroid activations to activations from 0th quadrant
-   unsigned int nCentroids = dataActivation[0][0].size();
    for(size_t qIdx = 1; qIdx < 4; ++qIdx){
       dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
       

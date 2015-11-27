@@ -135,6 +135,14 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     }
     
     stream >> setting;
+    if(setting == "nIterations"){
+       stream >> codebookSettings.kmeansSettings.nIter;
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+    }
+    
+    stream >> setting;
     if(setting == "SimilarityFunction"){
       stream >> method;
       if(method == "RBF")
@@ -156,7 +164,18 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
       exit(-1);
     }
     
-    
+    stream >> setting;
+    if(setting == "useDifferentCodebooksPerClass"){
+       stream >> setting;
+      codebookSettings.useDifferentCodebooksPerClass = (setting == "true");
+      scannerSettings.useDifferentCodebooksPerClass = (setting == "true");
+      svmSettings.useDifferentCodebooksPerClass = (setting == "true");
+      datasetSettings.useDifferentCodebooksPerClass = (setting == "true");
+      netSettings.useDifferentCodebooksPerClass = (setting == "true");
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      
+    }
     
   }
 }

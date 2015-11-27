@@ -26,7 +26,8 @@ double sigmoid(double x){
 double LinNetwork::computeOutput(unsigned int networkClassIdx, vector< vector<double> >& clActivations){
    double out = 0.0;
    //for all codebooks from different classes
-   for(size_t clIdx = 0; clIdx < 1 && clIdx < nClasses; ++clIdx){
+   bool oneCl = settings.useDifferentCodebooksPerClass;
+   for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
       for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
         //cout << "weights = " <<  weights[networkClassIdx][clIdx][centrIdx] << endl;
          out += weights[networkClassIdx][clIdx][centrIdx] * clActivations[clIdx][centrIdx];
@@ -49,6 +50,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
    double errorSum = 100;
    double sqErrorSum = 100;
    double sumOfChange;
+   bool oneCl = settings.useDifferentCodebooksPerClass;
    for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
       sumOfChange = 1000.0;
       errorSum = 100;
@@ -69,7 +71,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
             sqErrorSum += error * error;
             errorSum += error;
             //if(error > 0){ //update weight iff not already correct output
-               for(size_t clIdx = 0;clIdx < 1 && clIdx < nClasses; ++clIdx){
+               for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
                   for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
                      deltaWeight = learningRate * error * -1 */* output * (1.0 - output) */ activations[dataIdx][clIdx][centrIdx];
                      //cout << "activations = " << activations[dataIdx][clIdx][centrIdx] << endl;

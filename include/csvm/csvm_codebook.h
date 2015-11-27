@@ -30,6 +30,7 @@ namespace csvm{
       unsigned int numberVisualWords;
       double similaritySigma;
       SimilarityFunction simFunction;
+      bool useDifferentCodebooksPerClass;
    };
 
    

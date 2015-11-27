@@ -65,6 +65,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    double xx = 0.0;
    double cc;
    double xc;
+   bool oneCl = settings.useDifferentCodebooksPerClass;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
       
@@ -77,7 +78,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
          }
       }
       
-      for(size_t cl = 0; cl < 1 &&  cl < nClasses; ++cl){
+      for(size_t cl = 0; oneCl ? cl < 1 :  cl < nClasses; ++cl){
          classDist = 0;
          mean = 0.0;
          //cout << "cl" << cl << ": ";

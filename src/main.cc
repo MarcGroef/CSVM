@@ -78,25 +78,17 @@ int main(int argc,char**argv){
    //cout << nImages << " images loaded.\n";
    
    
-   
-   
-   //measure cpu time
-   //cout << "Start timing\n";
-   time_t time0 = clock();
-   
-   //c.constructCodebook();
+   c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
-   //c.exportCodebook("codebook10000HOG.bin");
+   c.exportCodebook("coates.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
-   c.importCodebook("codebook10000HOG.bin");
+   //c.importCodebook("coates.bin");
 
    c.initSVMs();
-   //cout << "Start training SVMs\n";
-   //train convolutional SVMs
-   //c.trainSVMs();
+  
    
    //train classic SVM
    vector< vector< vector<double> > > trainActivations;

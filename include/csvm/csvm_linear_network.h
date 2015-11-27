@@ -8,6 +8,12 @@ using namespace std;
 
 namespace csvm{
    
+   struct LinNetSettings{
+      double initWeight;
+      double learningRate;
+      bool useSigmoid;
+      bool useDifferentCodebooksPerClass;
+   };
  
    class LinNetwork{
       unsigned int nClasses;
@@ -16,6 +22,8 @@ namespace csvm{
       vector< vector< vector<double> > >weights;
       vector< double > biases;
       double computeOutput(unsigned int networkClassIdx, vector< vector<double> >& clActivations);
+      
+      LinNetSettings settings;
    public:
       LinNetwork();//(unsigned int nClasses,unsigned int nCentroids, double initWeights);
       void train(vector< vector< vector< double > > >& activations, CSVMDataset* ds);
