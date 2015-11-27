@@ -18,6 +18,7 @@ nIterations 1
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.010
 useDifferentCodebooksPerClass false
+normalizeActivations true
 
 FeatureExtractor
 method HOG

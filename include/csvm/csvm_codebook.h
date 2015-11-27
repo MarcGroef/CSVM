@@ -31,6 +31,7 @@ namespace csvm{
       double similaritySigma;
       SimilarityFunction simFunction;
       bool useDifferentCodebooksPerClass;
+      bool normalizeActivations;
    };
 
    

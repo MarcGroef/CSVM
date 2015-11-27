@@ -31,7 +31,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    featExtr.setSettings(settings.featureSettings);
    
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
-   
+   normalizeActivations = settings.codebookSettings.normalizeActivations;
    linNetwork.setSettings(settings.netSettings);
    useLinNet = settings.netSettings.useLinNet;
    
@@ -132,25 +132,30 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
          }
       }
       //normalize data
-      double mean = 0;
-      double stddev = 0;
-      double nActivations = dataActivation[0][0].size();
       
-      //cout << "nActivations = " << nActivations << endl;
-      //cout << "***************** begin image ***********************\n";
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         mean += dataActivation[0][0][actIdx];
-         //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
-      }
-      mean /= nActivations;
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         stddev+= (mean - dataActivation[0][0][actIdx]) * (mean - dataActivation[0][0][actIdx]);
-      }
-      stddev /= nActivations;
-      stddev = sqrt(stddev + 0.01);
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
-         dataActivation[0][0][actIdx] = (dataActivation[0][0][actIdx] - mean)/stddev;
+      if(normalizeActivations){
+         //cout << "nActivations = " << nActivations << endl;
+         //cout << "***************** begin image ***********************\n";
+         for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+            double mean = 0;
+            double stddev = 0;
+            double nActivations = dataActivation[0][0].size();
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               mean += dataActivation[0][clIdx][actIdx];
+               //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+            }
+            mean /= nActivations;
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+            }
+            stddev /= nActivations;
+            stddev = sqrt(stddev + 0.01);
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+               dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+            }
+            
+         }
       }
       //get cluster activations for the features
      datasetActivations.push_back(dataActivation[0]);
@@ -243,25 +248,33 @@ void CSVMClassifier::trainSVMs(){
       unsigned int nClasses = dataActivation[0].size();
       //append centroid activations to activations from 0th quadrant
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
-         for(size_t clIdx = 0; clIdx < nClasses; ++clIdx)
+         for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
             dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
+            dataActivation[qIdx][clIdx].clear();
+         }
       }
-      for(size_t clIdx = 0;  clIdx < nClasses; ++clIdx){
-         double mean = 0;
-         double stddev = 0;
-         double nActivations = dataActivation[0][clIdx].size();
-         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-            mean += dataActivation[0][clIdx][actIdx];
-         }
-         mean /= nActivations;
-         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-            stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
-         }
-         stddev /= nActivations;
-         stddev = sqrt(stddev + 0.01);
-         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+      if(normalizeActivations){
+         //cout << "nActivations = " << nActivations << endl;
+         //cout << "***************** begin image ***********************\n";
+         for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
+            double mean = 0;
+            double stddev = 0;
+            double nActivations = dataActivation[0][0].size();
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               mean += dataActivation[0][clIdx][actIdx];
+               //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+            }
+            mean /= nActivations;
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+            }
+            stddev /= nActivations;
+            stddev = sqrt(stddev + 0.01);
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+               dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+            }
             
-            dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
          }
       }
       datasetActivations.push_back(dataActivation[0]);
@@ -302,47 +315,36 @@ unsigned int CSVMClassifier::classify(Image* image){
       dataActivation.push_back(codebook.getActivations(dataFeatures)); 
    }
    for(size_t qIdx = 1; qIdx < 4; ++qIdx){
-      for(size_t clIdx = 0; clIdx < nClasses; ++clIdx)
+      for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
          dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
-   }
-   //normalize data
-   double mean = 0;
-   double stddev = 0;
-   double nActivations = dataActivation[0][0].size();
-   for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-      mean += dataActivation[0][0][actIdx];
-      
-   }
-   mean /= nActivations;
-   for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-      stddev+= (mean - dataActivation[0][0][actIdx]) * (mean - dataActivation[0][0][actIdx]);
-   }
-   stddev /= nActivations;
-   stddev = sqrt(stddev + 0.01);
-   for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-      dataActivation[0][0][actIdx] = (dataActivation[0][0][actIdx] - mean)/stddev;
-   }
-   //append centroid activations to activations from 0th quadrant
-   for(size_t qIdx = 1; qIdx < 4; ++qIdx){
-         dataActivation[0][0].insert(dataActivation[0][0].end(),dataActivation[qIdx][0].begin(), dataActivation[qIdx][0].end());
+         dataActivation[qIdx][clIdx].clear();
+      }
    }
    
-   for(size_t clIdx = 0;  clIdx < nClasses; ++clIdx){
-      double mean = 0;
-      double stddev = 0;
-      double nActivations = dataActivation[0][clIdx].size();
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         mean += dataActivation[0][clIdx][actIdx];
-      }
-      mean /= nActivations;
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
-      }
-      stddev /= nActivations;
-      stddev = sqrt(stddev + 0.01);
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+   
+   
+   if(normalizeActivations){
+      //cout << "nActivations = " << nActivations << endl;
+      //cout << "***************** begin image ***********************\n";
+      for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
+         double mean = 0;
+         double stddev = 0;
+         double nActivations = dataActivation[0][0].size();
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            mean += dataActivation[0][clIdx][actIdx];
+            //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+         }
+         mean /= nActivations;
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+         }
+         stddev /= nActivations;
+         stddev = sqrt(stddev + 0.01);
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+            dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+         }
          
-         dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
       }
    }
    
@@ -402,22 +404,28 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
          }
       }
    //normalize
-   for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
-      double mean = 0;
-      double stddev = 0;
-      double nActivations = dataActivation[0][clIdx].size();
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         mean += dataActivation[0][clIdx][actIdx];
-      }
-      mean /= nActivations;
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
-      }
-      stddev /= nActivations;
-      stddev = sqrt(stddev + 0.01);
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+   if(normalizeActivations){
+      //cout << "nActivations = " << nActivations << endl;
+      //cout << "***************** begin image ***********************\n";
+      for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+         double mean = 0;
+         double stddev = 0;
+         double nActivations = dataActivation[0][0].size();
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            mean += dataActivation[0][clIdx][actIdx];
+            //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+         }
+         mean /= nActivations;
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+         }
+         stddev /= nActivations;
+         stddev = sqrt(stddev + 0.01);
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+            dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+         }
          
-         dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
       }
    }
    //reserve space for results
@@ -487,22 +495,28 @@ void CSVMClassifier::trainLinearNetwork(){
          }
       }
       //standardize data
-      for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
-         double mean = 0;
-         double stddev = 0;
-         double nActivations = dataActivation[0][clIdx].size();
-         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-            mean += dataActivation[0][clIdx][actIdx];
-         }
-         mean /= nActivations;
-         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-            stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
-         }
-         stddev /= nActivations;
-         stddev = sqrt(stddev + 0.01);
-         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+      if(normalizeActivations){
+         //cout << "nActivations = " << nActivations << endl;
+         //cout << "***************** begin image ***********************\n";
+         for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+            double mean = 0;
+            double stddev = 0;
+            double nActivations = dataActivation[0][0].size();
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               mean += dataActivation[0][clIdx][actIdx];
+               //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+            }
+            mean /= nActivations;
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+            }
+            stddev /= nActivations;
+            stddev = sqrt(stddev + 0.01);
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+               dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+            }
             
-            dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
          }
       }
       datasetActivations.push_back(dataActivation[0]);
@@ -544,22 +558,28 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
          dataActivation[qIdx][clIdx].clear();
       }
    }
-   for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
-      double mean = 0;
-      double stddev = 0;
-      double nActivations = dataActivation[0][clIdx].size();
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         mean += dataActivation[0][clIdx][actIdx];
-      }
-      mean /= nActivations;
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
-         stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
-      }
-      stddev /= nActivations;
-      stddev = sqrt(stddev + 0.01);
-      for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+   if(normalizeActivations){
+      //cout << "nActivations = " << nActivations << endl;
+      //cout << "***************** begin image ***********************\n";
+      for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+         double mean = 0;
+         double stddev = 0;
+         double nActivations = dataActivation[0][0].size();
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            mean += dataActivation[0][clIdx][actIdx];
+            //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+         }
+         mean /= nActivations;
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+         }
+         stddev /= nActivations;
+         stddev = sqrt(stddev + 0.01);
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+            dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+         }
          
-         dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
       }
    }
    //cout << "*************\n";

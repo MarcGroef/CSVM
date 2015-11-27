@@ -211,6 +211,15 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
       
     }
     
+    stream >> setting;
+    if(setting == "normalizeActivations"){
+       stream >> setting;
+      codebookSettings.normalizeActivations = (setting == "true");
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      
+    }
+    
   }
 }
 
