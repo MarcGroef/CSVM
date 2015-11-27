@@ -18,7 +18,7 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
       
    }
    splitDatasetToClasses();
-   appendAndShuffleDataIdxArray();
+   //appendAndShuffleDataIdxArray();
    //cout << "dataset split to classes\n";
 }
 
@@ -62,7 +62,7 @@ void CSVMDataset::splitDatasetToClasses(){
    int id;
    unsigned int image;
    
-   for(size_t idx = 0; /*idx < settings.nImages  /*10000&&*/ idx < datasetSize; ++idx){
+   for(size_t idx = 0; /*idx < settings.nImages  10000&&*/ idx < datasetSize; ++idx){
       image = rand() % cifar10.getSize();
       id = (cifar10.getImagePtr(image))->getLabelId();
       

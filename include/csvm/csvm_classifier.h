@@ -24,10 +24,7 @@ namespace csvm{
       ImageScanner imageScanner;
       //ClusterAnalyser analyser;
       FeatureExtractor featExtr;
-      vector< vector<Feature> > pretrainDump;
-      vector< Feature> pretrainDump1D;
       vector< SVM > svms;
-      
       LinNetwork linNetwork;
    public:
       //public vars
