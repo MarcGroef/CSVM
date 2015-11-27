@@ -43,6 +43,7 @@ namespace csvm{
       void parseFeatureExtractorSettings(ifstream& stream);
       void parseImageScannerSettings(ifstream& stream);
       void parseSVMSettings(ifstream& stream);
+      void parseLinNetSettings(ifstream& stream);
    };
 
 }

@@ -63,7 +63,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    double xx = 0.0;
    double cc;
    double xc;
-   bool oneCl = settings.useDifferentCodebooksPerClass;
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
       
@@ -74,14 +74,11 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
          }
       }
       
-<<<<<<< HEAD
+
       for(size_t cl = 0; oneCl ? cl < 1 :  cl < nClasses; ++cl){
-         classDist = 0;
          mean = 0.0;
          //cout << "cl" << cl << ": ";
-=======
-      for(size_t cl = 0; cl < 1 &&  cl < nClasses; ++cl){
->>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
+
          
          if(settings.simFunction == CB_RBF){
             
@@ -135,7 +132,7 @@ void Codebook::importCodebook(string filename){
    charDouble fancyDouble;
    unsigned int typesize;
    unsigned int featDims;
-   
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    ifstream file(filename.c_str(), ios::binary);
    
    //read number of classes
@@ -163,7 +160,7 @@ void Codebook::importCodebook(string filename){
    bow.clear();
    bow.resize(nClasses);
    //read centroids
-   for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
+   for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       for (size_t idx = 0; idx < settings.numberVisualWords; ++idx){
          Feature f(featDims,0);
          for(size_t featIdx = 0; featIdx < featDims; ++featIdx){
@@ -192,7 +189,7 @@ void Codebook::exportCodebook(string filename){
    
    charInt fancyInt;
    charDouble fancyDouble;
-
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    unsigned int wordSize = bow[0][0].content.size();
    ofstream file(filename.c_str(),  ios::binary);
@@ -215,7 +212,7 @@ void Codebook::exportCodebook(string filename){
    fancyInt.intVal = wordSize;
    file.write(fancyInt.chars, 4);
    
-   for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
+   for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       for(size_t word = 0; word < settings.numberVisualWords; ++word){
          for (size_t val = 0; val < wordSize; ++val){
             fancyDouble.doubleVal = bow[cl][word].content[val];

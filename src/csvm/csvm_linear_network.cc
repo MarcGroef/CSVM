@@ -4,11 +4,11 @@ using namespace std;
 using namespace csvm;
 
 LinNetwork::LinNetwork(){//(unsigned int nClasses, unsigned int nCentroids, double initWeights){
-   nClasses = 10;
-   nCentroids = 200 * 4;
+   //nClasses = 10;
+   //nCentroids = 200 * 4;
    //weights.reserve(nClasses);
-   weights = vector< vector< vector<double> > >(nClasses, vector< vector< double> >(1, vector<double>(nCentroids * 4,0.01)));
-   biases = vector<double>(nClasses,0);
+   
+   
    //for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
       //weights[networkClassIdx] = vector< vector<double> >(nClasses);
       /*for(size_t clIdx = 0; clIdx < nClasses; ++ clIdx){
@@ -20,13 +20,30 @@ LinNetwork::LinNetwork(){//(unsigned int nClasses, unsigned int nCentroids, doub
   // }
 }
 
+void LinNetwork::setSettings(LinNetSettings s){
+   settings = s;
+   //cout << "linset learnRate = " << settings.learningRate << endl;
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
+   
+   settings.nClasses = 10;
+  
+   biases = vector<double>(settings.nClasses,0);
+   
+   weights = vector< vector< vector<double> > >(settings.nClasses, vector< vector< double> >(oneCl ? 1 : settings.nClasses, vector<double>(settings.nCentroids * 4,0.01)));
+   biases = vector<double>(settings.nClasses,0);
+   
+    //cout << "linnet settins set: nCentroids = " << settings.nCentroids << endl;
+   
+  
+}
+
 double sigmoid(double x){
    return 1.0/(1.0 - exp(-1.0 * x));
 }
 double LinNetwork::computeOutput(unsigned int networkClassIdx, vector< vector<double> >& clActivations){
    double out = 0.0;
    //for all codebooks from different classes
-   bool oneCl = settings.useDifferentCodebooksPerClass;
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
       for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
         //cout << "weights = " <<  weights[networkClassIdx][clIdx][centrIdx] << endl;
@@ -45,12 +62,12 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
    double output;
    double error;
    double target;
-   double learningRate = 0.02;
+   double learningRate = settings.learningRate;
    double deltaWeight;
    double errorSum = 100;
    double sqErrorSum = 100;
    double sumOfChange;
-   bool oneCl = settings.useDifferentCodebooksPerClass;
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
       sumOfChange = 1000.0;
       errorSum = 100;

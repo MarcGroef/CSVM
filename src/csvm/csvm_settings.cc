@@ -9,6 +9,38 @@ CSVMSettings::~CSVMSettings(){
   
 }
 
+void CSVMSettings::parseLinNetSettings(ifstream& stream){
+
+  
+  string setting;
+  string method;
+  stream >> setting;
+   if(setting != "useLinNet"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+     stream >> setting;
+      netSettings.useLinNet = (setting == "true");
+   }
+   stream >> setting;
+   if(setting != "initWeight"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> netSettings.initWeight;
+      
+   }
+   stream >> setting;
+   if(setting != "learningRate"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> netSettings.learningRate;
+   }
+   
+
+}
+
 void CSVMSettings::parseDatasetSettings(ifstream& stream){
 
   
@@ -137,11 +169,8 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     
     stream >> setting;
     if(setting == "nIterations"){
-<<<<<<< HEAD
        stream >> codebookSettings.kmeansSettings.nIter;
-=======
-      stream >> codebookSettings.kmeansSettings.nIter;
->>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
+
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
@@ -417,6 +446,9 @@ void CSVMSettings::readSettingsFile(string dir){
    parseImageScannerSettings(file);
    while(getline(file,line) && line != "SVM");
    parseSVMSettings(file);
+   while(getline(file,line) && line != "LinNet");
+   parseLinNetSettings(file);
+   
    // parse values:
    
    /*string temp;
