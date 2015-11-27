@@ -223,7 +223,7 @@ double SVM::updateAlphaCentroid(vector< vector< vector< double> > >& clActivatio
    
    //cout << "target = " << target << ", yCentr = " << yCentroid << "sum = " << sum << ", sum1 = " << sum1 << "delta = " << deltaAlphaCentroid << "alphaCentr = " << alphaCentroids[centrClass][centr]<<endl;
    alphaCentroids[centrClass][centr] = target;
-   return 0;//diff;
+   return diff;
 }
 
 //update alphaData for dual obj. SVM with alpha_i, alpha_j, given a similarity kernel between two activation vectors:
@@ -345,14 +345,11 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
 
-   double convergenceThreshold = 0.001 ;
-
-   //for(size_t round = 0; abs(prevSumDeltaAlpha -sumDeltaAlpha) > convergenceThreshold; ++round){
    double prevObjective = 0.0;
    double objective = 0.0;
    double sum0 = 0.0;
    double sum1 = 0.0;
-   for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ (prevObjective - objective < -0.0001 || round < 100)&& round < settings.nIterations; ++round){
+   for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
       prevObjective = objective;
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
@@ -381,7 +378,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
       }
       objective = sum0 - 0.5 * sum1;
          
-     if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  Objective : " << objective << endl;   
+     if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
       //compute trainings-score:
       
    }
@@ -511,7 +508,7 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
       
       //Measure 
       double C = 0.002;
-      double yData, yCentroid;
+      double yData;
       obj = 0;
       double sum0 = 0.0;
       for(size_t cl = 0;  cl < nClasses; ++cl){
@@ -532,9 +529,6 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
       }
          
       obj = 0.5*sum0 +  sum1 + C * sum2;
-      //cout << "obective == " << obj << endl;
-      //settings.learningRate = (1.0 / round < 0.0001 ? 0.0001 : 1.0/round);
-      //settings.learningRate = learnInit*(settings.nIterations - round ) / settings.nIterations;
       
       
       cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << " Objective : " << obj << endl;   
@@ -590,7 +584,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       
       //RBF kernel:
       if(settings.kernelType == RBF){
-         for(size_t cl = 0;  cl < nClasses; ++cl){
+         for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                //sum of distance squared
                sum += (datasetActivations[dIdx0][cl][centr] - f[cl][centr])*(datasetActivations[dIdx0][cl][centr] - f[cl][centr]);
@@ -602,7 +596,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       }else if (settings.kernelType == LINEAR){
      
          //Linear kernel
-         for(size_t cl = 0; cl < nClasses; ++cl){
+         for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][cl][centr] * f[cl][centr]);
             }

@@ -13,23 +13,39 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
+<<<<<<< HEAD
 nClusters 1000
 nIterations 15
+=======
+nClusters 500
+nIterations 20
+>>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.010
 useDifferentCodebooksPerClass false
 
 FeatureExtractor
 method HOG
+<<<<<<< HEAD
 cellSize 4
 cellStride 4
+=======
+cellSize 8
+cellStride 8
+>>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
 blockSize 8
 padding None
 
 ImageScanner
+<<<<<<< HEAD
 patchHeight 8
 patchWidth 8
 scanStride 1
+=======
+patchHeight 16
+patchWidth 16
+scanStride 4
+>>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
 nRandomPatches 200000
 
 SVM
@@ -37,13 +53,19 @@ Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
+<<<<<<< HEAD
 nIterations 5000
 learningRate .05
 SVM_C_Data 100
+=======
+nIterations 6000
+learningRate .0012
+SVM_C_Data 10000
+>>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
 SVM_C_Centroid 1000000
 Cost 1
 D2 1
-sigmaClassicSimilarity 70
+sigmaClassicSimilarity 200
 
 
 SOFT_ASSIGNMENT

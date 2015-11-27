@@ -78,6 +78,7 @@ int main(int argc,char**argv){
    //cout << nImages << " images loaded.\n";
    
    
+<<<<<<< HEAD
    c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
@@ -87,21 +88,38 @@ int main(int argc,char**argv){
    //return 0;
    //c.importCodebook("coates.bin");
 
+=======
+   
+   
+   //measure cpu time
+   //cout << "Start timing\n";
+   time_t time0 = clock();
+   
+  c.constructCodebook();
+   //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
+   //c.exportCodebook("coates.bin");
+   //c.exportCodebook("codebook10000HOG.bin");
+   //return 0;
+   //cout << "Constructed Codebook!\n";
+   //return 0;
+   //c.importCodebook("codebook10000HOG.bin");
+  // c.importCodebook("coates.bin");
+>>>>>>> 182f122c3708d5a1da183cee457fc1f9e0ed92f1
    c.initSVMs();
   
    
    //train classic SVM
    vector< vector< vector<double> > > trainActivations;
-   //if(c.useClassicSVM()){
-   //   cout << "Training classic SVM\n";
-   //   trainActivations = c.trainClassicSVMs();
-   //   
-   //}else{
-   //   
-   //   cout << "Training Conv SVM\n";
-   //   c.trainSVMs();
-   //}
-   c.trainLinearNetwork();
+   if(c.useClassicSVM()){
+      cout << "Training classic SVM\n";
+      trainActivations = c.trainClassicSVMs();
+      
+   }else{
+      
+      cout << "Training Conv SVM\n";
+      c.trainSVMs();
+   }
+   //c.trainLinearNetwork();
    //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
@@ -113,11 +131,11 @@ int main(int argc,char**argv){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      //if(c.useClassicSVM())
-      //   result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
-      //else
-      //   result = c.classify(c.dataset.getImagePtr(im));
-      c.lnClassify(c.dataset.getImagePtr(im));
+      if(c.useClassicSVM())
+         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
+      else
+         result = c.classify(c.dataset.getImagePtr(im));
+      //c.lnClassify(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)

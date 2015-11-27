@@ -74,6 +74,7 @@ namespace csvm{
    vector<Feature> initCentroids(vector<Feature> collection, unsigned int nClusters);
     
   public:
+     void setSettings(KMeans_settings s);
     vector<Feature> cluster(vector<Feature> collection, unsigned int nClusters);
   };
 }

@@ -10,6 +10,7 @@ Patch::Patch(Image* source, int x, int y, int width, int height){
    this->width = width;
    this->height = height;
    this->source = source;
+   //cout << "Patch from " << x << ", " << y << ", with = " << width << ", height = " << height << endl;
 }
 
 Patch::Patch(){

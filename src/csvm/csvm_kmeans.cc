@@ -5,7 +5,9 @@
 using namespace std;
 using namespace csvm;
 
-
+void KMeans::setSettings(KMeans_settings s){
+   settings = s;
+}
 //here we (attempt) to initialize our prototype centroids.
 vector<ClusterCentroid> KMeans::initPrototypes(vector<Feature> featureSamples, unsigned int nClusters) {
 	
@@ -238,7 +240,7 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
-   
+      cout << "deltaDist =  "  << deltaDist << endl;
    }
    
    /*for(size_t centr = 0; centr < nClusters; ++centr){
