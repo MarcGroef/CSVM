@@ -20,6 +20,7 @@ Codebook::Codebook(){
 
 void Codebook::setSettings(Codebook_settings s){
    settings = s;
+   kmeans.setSettings(s.kmeansSettings);
 }
 Feature Codebook::getCentroid(int cl, int centrIdx){
    return bow[cl][centrIdx];
