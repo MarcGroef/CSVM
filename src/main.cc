@@ -78,7 +78,7 @@ int main(int argc,char**argv){
    //cout << nImages << " images loaded.\n";
    
 
-   //c.constructCodebook();
+   ///c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
    //c.exportCodebook("coates.bin");

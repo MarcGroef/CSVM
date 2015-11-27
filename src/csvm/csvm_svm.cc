@@ -281,7 +281,7 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    double diff = 0.0;
    double deltaDiff = 0.0;
    double sum = 0;
-   double threshold = 0.01;
+   double threshold = 0.001;
    
    //calculate current sum
    for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
@@ -290,7 +290,7 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    }
    
    //while sum is above threshold, update alphas
-   for(size_t constItr = 0; sum > threshold || sum < 0-threshold; ++constItr){
+   for(size_t constItr = 0; sum > threshold /*|| sum < 0-threshold*/; ++constItr){
       for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
          
          yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
