@@ -31,7 +31,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    featExtr.setSettings(settings.featureSettings);
    
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
-   normalizeActivations = settings.codebookSettings.normalizeActivations;
+   standardizeActivations = settings.codebookSettings.standardizeActivations;
    linNetwork.setSettings(settings.netSettings);
    useLinNet = settings.netSettings.useLinNet;
    
@@ -133,7 +133,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
       }
       //normalize data
       
-      if(normalizeActivations){
+      if(standardizeActivations){
          //cout << "nActivations = " << nActivations << endl;
          //cout << "***************** begin image ***********************\n";
          for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
@@ -253,7 +253,7 @@ void CSVMClassifier::trainSVMs(){
             dataActivation[qIdx][clIdx].clear();
          }
       }
-      if(normalizeActivations){
+      if(standardizeActivations){
          //cout << "nActivations = " << nActivations << endl;
          //cout << "***************** begin image ***********************\n";
          for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
@@ -323,7 +323,7 @@ unsigned int CSVMClassifier::classify(Image* image){
    
    
    
-   if(normalizeActivations){
+   if(standardizeActivations){
       //cout << "nActivations = " << nActivations << endl;
       //cout << "***************** begin image ***********************\n";
       for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
@@ -405,7 +405,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
       }
    //normalize
    //cout << "Normalizing data" << endl;
-   if(normalizeActivations){
+   if(standardizeActivations){
       //cout << "nActivations = " << nActivations << endl;
       //cout << "***************** begin image ***********************\n";
       for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
@@ -495,7 +495,7 @@ void CSVMClassifier::trainLinearNetwork(){
          }
       }
       //standardize data
-      if(normalizeActivations){
+      if(standardizeActivations){
          //cout << "nActivations = " << nActivations << endl;
          //cout << "***************** begin image ***********************\n";
          for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
@@ -558,7 +558,7 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
          dataActivation[qIdx][clIdx].clear();
       }
    }
-   if(normalizeActivations){
+   if(standardizeActivations){
       //cout << "nActivations = " << nActivations << endl;
       //cout << "***************** begin image ***********************\n";
       for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){

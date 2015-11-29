@@ -19,8 +19,6 @@ namespace csvm{
    };
  
    class LinNetwork{
-      unsigned int nClasses;
-      unsigned int nCentroids;
       double initWeights;
       vector< vector< vector<double> > >weights;
       vector< double > biases;

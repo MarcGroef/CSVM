@@ -26,7 +26,7 @@ namespace csvm{
       FeatureExtractor featExtr;
       vector< SVM > svms;
       LinNetwork linNetwork;
-      bool normalizeActivations;
+      bool standardizeActivations;
    public:
       //public vars
       bool useLinNet;

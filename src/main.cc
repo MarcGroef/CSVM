@@ -78,22 +78,25 @@ int main(int argc,char**argv){
    //cout << nImages << " images loaded.\n";
    
 
-   ///c.constructCodebook();
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
   
-   //c.exportCodebook("coates.bin");
+   //c.exportCodebook("1000HOG.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
-   c.importCodebook("coates.bin");
+   c.importCodebook("1000HOG.bin");
 
-   
+   //return 0;
    
    
    c.initSVMs();
   
    vector< vector< vector<double> > > trainActivations;
    //train classic SVM
+   if(c.useLinNet)
+      cout << "I'm using the linear network\n";
+
    if(!c.useLinNet){
       
       if(c.useClassicSVM()){
