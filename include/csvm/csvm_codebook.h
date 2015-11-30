@@ -41,6 +41,7 @@ namespace csvm{
     LVQ lvq;
     KMeans kmeans;
     vector< vector<Feature> > bow;
+    vector<Feature> actBow;
     unsigned int nClasses;
   public:
     Codebook();
@@ -52,6 +53,7 @@ namespace csvm{
     void importCodebook(string filename);
     unsigned int getNClasses();
     unsigned int getNCentroids();
+    void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
   };
   
 }

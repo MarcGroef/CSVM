@@ -85,6 +85,8 @@ void CSVMClassifier::constructCodebook(){
    pretrainDump.clear();
 }
 
+
+
 //train the KKT-SVM
 vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    unsigned int datasetSize = dataset.getSize();
