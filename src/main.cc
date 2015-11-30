@@ -78,14 +78,14 @@ int main(int argc,char**argv){
    //cout << nImages << " images loaded.\n";
    
 
-   //c.constructCodebook();
+   c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-  
+   c.exportCodebook("testcb.bin");
    //c.exportCodebook("1000HOG.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
-   c.importCodebook("1000HOG.bin");
+   //c.importCodebook("1000HOG.bin");
 
    //return 0;
    

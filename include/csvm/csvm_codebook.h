@@ -8,6 +8,7 @@
 #include "csvm_feature.h"
 #include "csvm_lvq.h"
 #include "csvm_kmeans.h"
+#include "csvm_centroid.h"
 
 using namespace std;
 namespace csvm{
@@ -40,13 +41,13 @@ namespace csvm{
     Codebook_settings settings;
     LVQ lvq;
     KMeans kmeans;
-    vector< vector<Feature> > bow;
+    vector< vector<Centroid> > bow;
     unsigned int nClasses;
   public:
     Codebook();
     void constructCodebook(vector<Feature> featureset,int labelId);
     void setSettings(Codebook_settings s);
-    Feature getCentroid(int cl, int centrIdx);
+    Centroid getCentroid(int cl, int centrIdx);
     vector<vector < double > > getActivations(vector<Feature> features);
     void exportCodebook(string filename);
     void importCodebook(string filename);

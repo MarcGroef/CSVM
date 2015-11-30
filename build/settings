@@ -33,7 +33,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 200000
+nRandomPatches 50000
 
 SVM
 Type CLASSIC

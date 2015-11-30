@@ -5,6 +5,7 @@
 #include <vector>
 //#include <iomanip>
 #include "csvm_feature.h"
+#include "csvm_centroid.h"
 
 using namespace std;
 
@@ -71,11 +72,11 @@ namespace csvm{
   class KMeans{
     KMeans_settings settings;
 	vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
-   vector<Feature> initCentroids(vector<Feature> collection, unsigned int nClusters);
+   vector<Centroid> initCentroids(vector<Feature> collection, unsigned int nClusters);
     
   public:
      void setSettings(KMeans_settings s);
-    vector<Feature> cluster(vector<Feature> collection, unsigned int nClusters);
+    vector<Centroid> cluster(vector<Feature>& collection, unsigned int nClusters);
   };
 }
 

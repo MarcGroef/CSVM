@@ -22,7 +22,7 @@ void Codebook::setSettings(Codebook_settings s){
    settings = s;
    kmeans.setSettings(s.kmeansSettings);
 }
-Feature Codebook::getCentroid(int cl, int centrIdx){
+Centroid Codebook::getCentroid(int cl, int centrIdx){
    return bow[cl][centrIdx];
 }
 
@@ -30,7 +30,7 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
    //cout << "constructing codebook for label " << labelId << " in ";
    switch(settings.method){
       case LVQ_Clustering:
-         bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
+         //bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
          break;
       case KMeans_Clustering:
          bow[labelId] = kmeans.cluster(featureset, settings.numberVisualWords);
@@ -162,12 +162,14 @@ void Codebook::importCodebook(string filename){
    //read centroids
    for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       for (size_t idx = 0; idx < settings.numberVisualWords; ++idx){
-         Feature f(featDims,0);
+         //Feature f(featDims,0);
+         Centroid c;
+         c.content.resize(featDims);
          for(size_t featIdx = 0; featIdx < featDims; ++featIdx){
             file.read(fancyDouble.chars, 8);
-            f.content[featIdx] = fancyDouble.doubleVal;
+            c.content[featIdx] = fancyDouble.doubleVal;
          }
-         bow[cl].push_back(f);
+         bow[cl].push_back(c);
       }
    }
    
