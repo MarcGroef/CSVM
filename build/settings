@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 3000
+nImages 12000
 
 
 
@@ -19,7 +19,7 @@ nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 useDifferentCodebooksPerClass false
-normalizeActivations true
+standardizeActivations true
 
 
 FeatureExtractor
