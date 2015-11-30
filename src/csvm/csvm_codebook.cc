@@ -39,6 +39,21 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
    
 }
 
+void Codebook::constructActivationCodebook(vector< Feature > activations, unsigned int layerIdx){ //feature clusters is labelIdx == 0, higher levels count from 1
+   //layer index will be used later-on
+   switch(settings.method){
+      case LVQ_Clustering:
+         //actBow = lvq.cluster(activations, labelId, settings.numberVisualWords, 0.1,120);
+         break;
+      case KMeans_Clustering:
+         actBow = kmeans.cluster(activations, settings.numberVisualWords);
+         break;
+   }
+   
+}
+
+
+
 unsigned int Codebook::getNClasses(){
    
    

@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 12000
+nImages 20000
 
 
 
@@ -40,7 +40,7 @@ Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 1500
+nIterations 200
 learningRate 0.000005
 SVM_C_Data 10000
 SVM_C_Centroid 1000000

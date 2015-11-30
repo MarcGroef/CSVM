@@ -41,7 +41,9 @@ namespace csvm{
     Codebook_settings settings;
     LVQ lvq;
     KMeans kmeans;
+
     vector< vector<Centroid> > bow;
+
     unsigned int nClasses;
   public:
     Codebook();
@@ -53,6 +55,7 @@ namespace csvm{
     void importCodebook(string filename);
     unsigned int getNClasses();
     unsigned int getNCentroids();
+    void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
   };
   
 }
