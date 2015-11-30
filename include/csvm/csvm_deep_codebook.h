@@ -29,7 +29,7 @@ namespace csvm{
    public:
       void setSettings(DeepCodebookSettings s);
       void constructPatchLayer(vector<Feature>& patchCollection);
-      void constructHiddenLayers(vector< vector<double> >& imagePatchActivations);
+      void constructHiddenLayers(vector< Feature >& imagePatchActivations);
       Feature getActivations(vector<Feature>& imagePaches);
    };
    

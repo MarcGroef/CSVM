@@ -18,15 +18,15 @@ void DeepCodebook::constructPatchLayer(vector<Feature>& patchCollection){
    layerStack[0] = kmeans.cluster(patchCollection, settings.nPatchCentroids);
 }
 
-void DeepCodebook::constructHiddenLayers(vector< vector<double> >& imagePatchActivations){
+void DeepCodebook::constructHiddenLayers(vector< Feature >& imagePatchActivations){
    vector<Feature> activations;
    
    layerStack[1] = kmeans.cluster(imagePatchActivations, settings.layerSizes[0]);
    imagePatchActivations.clear();
    
-   activations = 
+   //activations = 
    for(size_t layerIdx = 0; layerIdx < settings.nHiddenLayers; ++layerIdx){
-      layerStack[1 + layerIdx] = kmeans.cluster()
+     ;// layerStack[1 + layerIdx] = kmeans.cluster()
    }
 }
 
