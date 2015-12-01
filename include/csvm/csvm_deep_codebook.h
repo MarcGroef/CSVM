@@ -29,6 +29,7 @@ namespace csvm{
       double getCentroidActivation(Centroid& centroid, Feature& f);
       Feature getPatchActivations(vector< vector<Feature> >& imagePatches);
    public:
+      DeepCodebook();
       void setSettings(DeepCodebookSettings* s);
       void constructPatchLayer(vector<Feature>& patchCollection);
       void constructHiddenLayers(vector< vector< vector<Feature> > >& imagePatches);

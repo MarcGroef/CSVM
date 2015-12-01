@@ -3,11 +3,27 @@
 using namespace std;
 using namespace csvm;
 
-
+DeepCodebook::DeepCodebook(){
+   settings.nHiddenLayers  = 3;
+   settings.layerSizes.push_back(100);
+   settings.layerSizes.push_back(100);
+   settings.nPatchCentroids = 100;
+   
+   KMeans_settings mSets;
+   mSets.nClusters = 0;
+   
+   mSets.alpha = 0;
+   mSets.nIter = 15;
+   kmeans.setSettings(mSets);
+   
+   layerStack.resize(settings.nHiddenLayers);
+}
 
 void DeepCodebook::setSettings(DeepCodebookSettings* s){
    this->settings = *s;
    layerStack.resize(settings.nHiddenLayers);
+   
+   
 }
 
 Feature DeepCodebook::flowUpUntil(vector< vector<Feature> >& imagePatches, unsigned int untilThisLayer){
@@ -28,19 +44,24 @@ Feature DeepCodebook::flowUpUntil(vector< vector<Feature> >& imagePatches, unsig
 }
 
 void DeepCodebook::constructPatchLayer(vector<Feature>& patchCollection){
-   layerStack[0] = kmeans.cluster(patchCollection, settings.nPatchCentroids);
+   cout << "constructing patch layer\n"; 
+   vector<Centroid> km = kmeans.cluster(patchCollection, settings.nPatchCentroids);
+   cout << "asigned patch layer\n";
+   layerStack[0] = km;
+   
 }
 
 void DeepCodebook::constructHiddenLayers(vector< vector< vector<Feature> > >& imagePatches){
    unsigned int nImages = imagePatches.size();
-
+   cout << "Constructing hidden layers.\n";
    //activations = 
    for(size_t layerIdx = 1; layerIdx < settings.nHiddenLayers + 1; ++layerIdx){
+      cout << "constructing layer " << layerIdx << endl;
       vector<Feature> activations;
       for(size_t imIdx = 0; imIdx < nImages;++imIdx){
          activations.push_back(flowUpUntil(imagePatches[imIdx], layerIdx));
       }
-      layerStack[layerIdx] = kmeans.cluster(activations, settings.layerSizes[layerIdx - 1]);
+      layerStack[layerIdx] = (kmeans.cluster(activations, settings.layerSizes[layerIdx - 1]));
    }
 }
 

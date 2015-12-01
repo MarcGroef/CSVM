@@ -14,7 +14,7 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 1000
+nClusters 100
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -33,7 +33,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 50000
+nRandomPatches 5000
 
 SVM
 Type CLASSIC

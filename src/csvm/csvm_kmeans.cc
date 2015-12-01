@@ -7,6 +7,8 @@ using namespace csvm;
 
 void KMeans::setSettings(KMeans_settings s){
    settings = s;
+   cout << "kmeans settings set\n";
+   cout << settings.nIter << endl;
 }
 //here we (attempt) to initialize our prototype centroids.
 vector<ClusterCentroid> KMeans::initPrototypes(vector<Feature> featureSamples, unsigned int nClusters) {
@@ -65,7 +67,7 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
 
 
 vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int nClusters){
-
+   cout << "nIter =" << settings.nIter << endl;
    /*
 	//cout << "we got into clustering!" << '\n';
 
@@ -178,8 +180,9 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       centroids1[clIdx].content.resize(dataDims);
    }
    
-   size_t itx = 0;
-   for(; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
+   
+   cout << "nIter =" << settings.nIter << endl;
+   for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
       cout << "kmeans iter " << itx << endl;
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;
@@ -233,6 +236,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
        }
        cout << endl;
    }*/
+   cout << "yay, kmena sis done\n";
    return (*newCentroids);
 }
 

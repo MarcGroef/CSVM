@@ -46,7 +46,7 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
-<<<<<<< HEAD
+
 void CSVMClassifier::constructDeepCodebook(){
    //Construct patch layer
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
@@ -85,11 +85,15 @@ void CSVMClassifier::constructDeepCodebook(){
       }
    }
    //build hidden layers
-=======
+   
+   deepCodebook.constructHiddenLayers(imageFeatures);
+}
+
+
 //return number of classes
 unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
->>>>>>> ca766bacfeb91fb5cdb1247a97903b74c284dac4
+
 }
 
 //construct a codebook using the current dataset

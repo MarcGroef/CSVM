@@ -86,9 +86,11 @@ int main(int argc,char**argv){
    
    //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-
+   //c.constructDeepCodebook();
+   
+   //return 0;
    c.importCodebook("coates.bin");
-   c.exportCodebook("LAST_USED.bin");
+   //c.exportCodebook("LAST_USED.bin");
    //return 0;
    //train convolutional SVMs
    
