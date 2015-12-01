@@ -19,7 +19,7 @@ namespace csvm{
       int size;
       Feature(int size,double initValue);
       Feature(Feature* f);
-      
+      Feature(vector<double>& vect);
       void setLabelId(int id);
       unsigned int getLabelId();
       double getDistanceSq(Feature& f);

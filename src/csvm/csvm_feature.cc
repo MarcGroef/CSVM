@@ -17,6 +17,12 @@ Feature::Feature(Feature* f){
    
 }
 
+Feature::Feature(vector<double>& vect){
+   content = vect;
+   size = vect.size();
+   this->label = "hoi";
+}
+
 void Feature::setLabelId(int id){
    labelId = id;
 }

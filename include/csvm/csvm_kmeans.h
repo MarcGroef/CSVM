@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <vector>
+#include <iostream>
 //#include <iomanip>
 #include "csvm_feature.h"
 #include "csvm_centroid.h"

@@ -46,6 +46,46 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
+void CSVMClassifier::constructDeepCodebook(){
+   //Construct patch layer
+   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+   vector<Feature> pretrainDump;
+   
+   cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids, with " << nPatches << " patches\n";
+
+   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+      
+      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getSize()));
+      Feature newFeat = featExtr.extract(patch);
+      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+
+   }
+
+   cout << "Collected " << pretrainDump.size()<< " features\n";
+   deepCodebook.constructPatchLayer(pretrainDump);
+   
+   cout << "done constructing patchLayer, using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+   pretrainDump.clear();
+   
+   //collect image features
+   unsigned int nData = dataset.getSize();
+   vector< vector<Patch> > imagePatches;
+   vector< vector< vector<Feature> > > imageFeatures(nData, vector< vector<Feature> >(4));
+
+   
+   for(size_t imIdx = 0; imIdx < nData;  ++imIdx){
+      imagePatches = imageScanner.scanImage(dataset.getImagePtr(imIdx));
+      for(size_t quadIdx = 0; quadIdx < nData; ++quadIdx){
+         unsigned int nFeatures = imagePatches[quadIdx].size();
+         for(size_t pIdx = 0;  pIdx <nFeatures; ++pIdx){
+            imageFeatures[imIdx][quadIdx][pIdx] = featExtr.extract(imagePatches[quadIdx][pIdx]);
+         }
+      }
+   }
+   //build hidden layers
+}
+
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
    
@@ -57,6 +97,8 @@ void CSVMClassifier::constructCodebook(){
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    vector< vector<Feature> > pretrainDump(nClasses);
    cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes, with " << nPatches << " patches\n";
+   
+   
    for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       //cout << "parsing class " << cl << endl;
       if(oneCl){
