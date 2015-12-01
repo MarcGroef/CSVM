@@ -77,17 +77,20 @@ int main(int argc,char**argv){
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
    
-
-   c.constructCodebook();
+   
+   
+   
+   //measure cpu time
+   //cout << "Start timing\n";
+   time_t time0 = clock();
+   
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   c.exportCodebook("testcb.bin");
-   //c.exportCodebook("1000HOG.bin");
-   //return 0;
-   //cout << "Constructed Codebook!\n";
-   //return 0;
-   //c.importCodebook("1000HOG.bin");
 
+   c.importCodebook("coates.bin");
+   c.exportCodebook("LAST_USED.bin");
    //return 0;
+   //train convolutional SVMs
    
    
    c.initSVMs();
@@ -151,6 +154,11 @@ int main(int argc,char**argv){
    nFalse = 0;
    unsigned int image;
    unsigned int trainSize = (unsigned int)c.dataset.getSize();
+   unsigned int nClasses = c.getNoClasses();
+
+   vector <vector <int> > classifiedCorrect ( nClasses, vector<int> ( nClasses, 0 ) );
+   vector <vector <int> > classifiedFalse   ( nClasses, vector<int> ( nClasses, 0 ) );
+
    for(size_t im = 0; im < 500; ++im){
       image = trainSize + (rand() % (nImages - trainSize));
       //cout << "Testing image " << image << ".. ";
@@ -170,18 +178,38 @@ int main(int argc,char**argv){
       
       if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
-         //cout << "Correct!\n";
-      }
-      else {
+         ++classifiedCorrect[result][answer];
+      } else {
          ++nFalse;
-         //cout << "False!\n";
+         ++classifiedFalse[result][answer];
       }
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
-   
+   bool printConfusionMatrix = true;
+
+   if (printConfusionMatrix) {
+      int   total;
+      float ratio;
+
+      cout << "\n\n\tActual:\t";
+      for (int i=0; i<nClasses; i++){
+         cout << "\t" << c.dataset.getLabel(i);  
+      }
+      cout << "\n     Predicted:\n";
+      for (int i=0; i<nClasses; ++i){
+         cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         for (int j=0; j<nClasses; ++j){
+            total = classifiedCorrect[i][j] + classifiedFalse[i][j];
+            ratio = classifiedCorrect[i][j] / total * 100;
+            cout << ((((j == 1 | j == 2) && i > 1) | (i < 2 && (j == 1 | j == 2))) ? "\t\t" : "\t") << fixed << classifiedCorrect[i][j] << "/" << total;
+         }
+	cout << "\n\n\n";
+      }
+   }
+ 
    //cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;

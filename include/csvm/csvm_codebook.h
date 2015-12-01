@@ -8,6 +8,7 @@
 #include "csvm_feature.h"
 #include "csvm_lvq.h"
 #include "csvm_kmeans.h"
+#include "csvm_annotated_kmeans.h"
 #include "csvm_centroid.h"
 
 using namespace std;
@@ -16,7 +17,7 @@ namespace csvm{
    enum CodebookClusterMethod{
       LVQ_Clustering = 0,
       KMeans_Clustering = 1,
-
+	   AKMeans_Clustering = 2,
    };
    
    enum SimilarityFunction{
@@ -27,6 +28,7 @@ namespace csvm{
    struct Codebook_settings{
       LVQ_Settings lvqSettings;
       KMeans_settings kmeansSettings;
+	  AKMeans_settings akmeansSettings;
       CodebookClusterMethod method;
       unsigned int numberVisualWords;
       double similaritySigma;
@@ -41,6 +43,7 @@ namespace csvm{
     Codebook_settings settings;
     LVQ lvq;
     KMeans kmeans;
+	AKMeans akmeans;
 
     vector< vector<Centroid> > bow;
 
@@ -56,6 +59,10 @@ namespace csvm{
     unsigned int getNClasses();
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
+
+	//for akmeans:
+	vector<vector <double> > getCentroidByClassContributions();
+	vector<double> getCentroidByClassContributions(int cl);
   };
   
 }

@@ -43,6 +43,7 @@ namespace csvm{
       vector < vector< vector<double> > > trainClassicSVMs();
       void initSVMs();
       unsigned int classify(Image* image);
+      unsigned int getNoClasses();
       //CSVMClassifier();
       unsigned int classifyClassicSVMs(Image* im, vector < vector< vector< double> > >& trainActivations, bool printResults);
       bool useClassicSVM();
