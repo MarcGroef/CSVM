@@ -8,16 +8,26 @@ using namespace std;
 
 namespace csvm{
    
- 
-   class LinNetwork{
+   struct LinNetSettings{
+      double initWeight;
+      double learningRate;
+      bool useSigmoid;
+      bool useDifferentCodebooksPerClass;
       unsigned int nClasses;
       unsigned int nCentroids;
+      bool useLinNet;
+   };
+ 
+   class LinNetwork{
       double initWeights;
       vector< vector< vector<double> > >weights;
       vector< double > biases;
       double computeOutput(unsigned int networkClassIdx, vector< vector<double> >& clActivations);
+      
+      LinNetSettings settings;
    public:
       LinNetwork();//(unsigned int nClasses,unsigned int nCentroids, double initWeights);
+      void setSettings(LinNetSettings s);
       void train(vector< vector< vector< double > > >& activations, CSVMDataset* ds);
       unsigned int classify(vector< vector< double > > imageActivations);
    };

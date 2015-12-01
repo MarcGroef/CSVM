@@ -1,5 +1,5 @@
-#ifndef CSVM_KMEANS_H
-#define CSVM_KMEANS_H
+#ifndef CSVM_ANNOTATED_KMEANS_H
+#define CSVM_ANNOTATED_KMEANS_H
 
 #include <limits>
 #include <vector>
@@ -9,18 +9,23 @@
 
 using namespace std;
 
+/* Algorithm devised by Jonathan Laurens Maas, @RUG groningen, 25-11-2015
+*/
+
 namespace csvm{
-  
-  struct KMeans_settings{
+	
+  struct AKMeans_settings{
     int nClusters;
     double alpha;
-    unsigned int nIter;
+	unsigned int nIter;
   };
-  
+  /*
   struct ClusterCentroid {
 	  Feature lastPosition;
 	  Feature newPosition;
 	  int nAssignments;
+
+
 
 	  void printValues()
 	  {
@@ -69,14 +74,20 @@ namespace csvm{
 	  }
   };
 
-  class KMeans{
-    KMeans_settings settings;
-	vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
-   vector<Centroid> initCentroids(vector<Feature> collection, unsigned int nClusters);
-    
+  */
+
+  class AKMeans{
+    AKMeans_settings settings;
+	vector<Centroid> clusters;
+	vector<vector<double> > clusterByClassContributions;
+	//vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
+   vector<Centroid> initCentroids(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
+   
   public:
-     void setSettings(KMeans_settings s);
-    vector<Centroid> cluster(vector<Feature>& collection, unsigned int nClusters);
+	  void setSettings(AKMeans_settings s);
+    vector<Centroid> cluster(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
+	vector<vector<double> > getClusterClassContributions();
+	vector<double> getClusterClassContributions(int clust);
   };
 }
 

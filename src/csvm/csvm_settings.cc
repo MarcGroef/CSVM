@@ -9,6 +9,38 @@ CSVMSettings::~CSVMSettings(){
   
 }
 
+void CSVMSettings::parseLinNetSettings(ifstream& stream){
+
+  
+  string setting;
+  string method;
+  stream >> setting;
+   if(setting != "useLinNet"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+     stream >> setting;
+      netSettings.useLinNet = (setting == "true");
+   }
+   stream >> setting;
+   if(setting != "initWeight"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> netSettings.initWeight;
+      
+   }
+   stream >> setting;
+   if(setting != "learningRate"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> netSettings.learningRate;
+   }
+   
+
+}
+
 void CSVMSettings::parseDatasetSettings(ifstream& stream){
 
   
@@ -137,7 +169,8 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     
     stream >> setting;
     if(setting == "nIterations"){
-      stream >> codebookSettings.kmeansSettings.nIter;
+       stream >> codebookSettings.kmeansSettings.nIter;
+
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
@@ -165,9 +198,102 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
       exit(-1);
     }
     
+    stream >> setting;
+    if(setting == "useDifferentCodebooksPerClass"){
+       stream >> setting;
+      codebookSettings.useDifferentCodebooksPerClass = (setting == "true");
+      scannerSettings.useDifferentCodebooksPerClass = (setting == "true");
+      svmSettings.useDifferentCodebooksPerClass = (setting == "true");
+      datasetSettings.useDifferentCodebooksPerClass = (setting == "true");
+      netSettings.useDifferentCodebooksPerClass = (setting == "true");
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      
+    }
     
+    stream >> setting;
+    if(setting == "standardizeActivations"){
+       stream >> setting;
+      codebookSettings.standardizeActivations = (setting == "true");
+    }else{
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      
+    }
     
   }
+
+  if (method == "AKMEANS") {
+	  codebookSettings.method = AKMeans_Clustering;
+
+	  stream >> setting;
+	  if (setting == "nClusters") {
+		  stream >> codebookSettings.numberVisualWords;
+	  }
+	  else {
+		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+		  exit(-1);
+	  }
+
+	  stream >> setting;
+	  if (setting == "nIterations") {
+		  stream >> codebookSettings.akmeansSettings.nIter;
+
+	  }
+	  else {
+		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+		  exit(-1);
+	  }
+
+	  stream >> setting;
+	  if (setting == "SimilarityFunction") {
+		  stream >> method;
+		  if (method == "RBF")
+			  codebookSettings.simFunction = CB_RBF;
+		  else if (method == "SOFT_ASSIGNMENT")
+			  codebookSettings.simFunction = SOFT_ASSIGNMENT;
+		  else
+			  cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
+	  }
+	  else {
+		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+		  exit(-1);
+	  }
+
+	  stream >> setting;
+	  if (setting == "similaritySigma") {
+		  stream >> codebookSettings.similaritySigma;
+	  }
+	  else {
+		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+		  exit(-1);
+	  }
+
+	  stream >> setting;
+	  if (setting == "useDifferentCodebooksPerClass") {
+		  stream >> setting;
+		  codebookSettings.useDifferentCodebooksPerClass = (setting == "true");
+		  scannerSettings.useDifferentCodebooksPerClass = (setting == "true");
+		  svmSettings.useDifferentCodebooksPerClass = (setting == "true");
+		  datasetSettings.useDifferentCodebooksPerClass = (setting == "true");
+		  netSettings.useDifferentCodebooksPerClass = (setting == "true");
+	  }
+	  else {
+		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+
+	  }
+
+	  stream >> setting;
+	  if (setting == "standardizeActivations") {
+		  stream >> setting;
+		  codebookSettings.standardizeActivations = (setting == "true");
+	  }
+	  else {
+		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+
+	  }
+
+  }
+
 }
 
 void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
@@ -402,6 +528,9 @@ void CSVMSettings::readSettingsFile(string dir){
    parseImageScannerSettings(file);
    while(getline(file,line) && line != "SVM");
    parseSVMSettings(file);
+   while(getline(file,line) && line != "LinNet");
+   parseLinNetSettings(file);
+   
    // parse values:
    
    /*string temp;

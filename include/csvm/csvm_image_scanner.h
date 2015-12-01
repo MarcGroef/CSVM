@@ -21,6 +21,7 @@ namespace csvm{
       unsigned int patchWidth;
       unsigned int patchHeight;
       unsigned int nRandomPatches;
+      bool useDifferentCodebooksPerClass;
    };
 
 

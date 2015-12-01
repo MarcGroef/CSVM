@@ -156,3 +156,4 @@ $RECYCLE.BIN/
 .DS_Store
 *.bin
 datasets/cifar-10-batches-bin/batches.meta.txt
+datasets/cifar-10-batches-bin/readme.html

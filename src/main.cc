@@ -77,6 +77,7 @@ int main(int argc,char**argv){
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
    
+<<<<<<< HEAD
    
    
    
@@ -85,31 +86,51 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    //c.constructCodebook();
+=======
+
+   c.constructCodebook();
+>>>>>>> 3430a9bf2a0f4149d10ac442bb0f781561751ccd
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   //c.exportCodebook("coates.bin");
-   //c.exportCodebook("codebook10000HOG.bin");
+   c.exportCodebook("testcb.bin");
+   //c.exportCodebook("1000HOG.bin");
    //return 0;
    //cout << "Constructed Codebook!\n";
    //return 0;
+<<<<<<< HEAD
    //c.importCodebook("codebook10000HOG.bin");
    c.importCodebook("coates.bin");
    c.initSVMs();
    //cout << "Start training SVMs\n";
    //train convolutional SVMs
    //c.trainSVMs();
+=======
+   //c.importCodebook("1000HOG.bin");
+
+   //return 0;
+>>>>>>> 3430a9bf2a0f4149d10ac442bb0f781561751ccd
    
-   //train classic SVM
+   
+   c.initSVMs();
+  
    vector< vector< vector<double> > > trainActivations;
-   if(c.useClassicSVM()){
-      cout << "Training classic SVM\n";
-      trainActivations = c.trainClassicSVMs();
+   //train classic SVM
+   if(c.useLinNet)
+      cout << "I'm using the linear network\n";
+
+   if(!c.useLinNet){
       
-   }else{
-      
-      cout << "Training Conv SVM\n";
-      c.trainSVMs();
-   }
-   //c.trainLinearNetwork();
+      if(c.useClassicSVM()){
+         cout << "Training classic SVM\n";
+         trainActivations = c.trainClassicSVMs();
+         
+      }else{
+         
+         cout << "Training Conv SVM\n";
+         c.trainSVMs();
+      }
+   }else
+      c.trainLinearNetwork();
+   
    //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
@@ -121,11 +142,13 @@ int main(int argc,char**argv){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      if(c.useClassicSVM())
-         result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
-      else
-         result = c.classify(c.dataset.getImagePtr(im));
-      //c.lnClassify(c.dataset.getImagePtr(im));
+      if(!c.useLinNet){
+         if(c.useClassicSVM())
+            result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
+         else
+            result = c.classify(c.dataset.getImagePtr(im));
+      }else
+         c.lnClassify(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
@@ -159,15 +182,18 @@ int main(int argc,char**argv){
       //classify using convolutional SVMs
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
-      
-      //if(c.useClassicSVM())
-      //   result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-      //else
-      //   result = c.classify(c.dataset.getImagePtr(image));
+      //cout << "classifying image " << image << endl;
+      unsigned int result;
+      if(!c.useLinNet){
+         if(c.useClassicSVM())
+            result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+         else
+            result = c.classify(c.dataset.getImagePtr(image));
+      }else 
+         result = c.lnClassify(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
-      unsigned int result = c.lnClassify(c.dataset.getImagePtr(image));
-      unsigned int answer = c.dataset.getImagePtr(image)->getLabelId(); 
-      if (result == answer){
+      
+      if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
          ++nCorrect;
          ++classifiedCorrect[result][answer];
       } else {

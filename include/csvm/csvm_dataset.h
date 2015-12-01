@@ -19,6 +19,7 @@ namespace csvm{
    struct CSVMDataset_Settings{
       CSVMDatasetType type;
       unsigned int nImages;
+      bool useDifferentCodebooksPerClass;
    };
    
    class CSVMDataset{

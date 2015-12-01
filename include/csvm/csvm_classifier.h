@@ -26,8 +26,10 @@ namespace csvm{
       FeatureExtractor featExtr;
       vector< SVM > svms;
       LinNetwork linNetwork;
+      bool standardizeActivations;
    public:
       //public vars
+      bool useLinNet;
       CSVMDataset dataset;
       
       CSVMClassifier();

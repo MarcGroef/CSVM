@@ -33,10 +33,14 @@ vector<ClusterCentroid> KMeans::initPrototypes(vector<Feature> featureSamples, u
 	return centroids;
 }
 
-vector<Feature> KMeans::initCentroids(vector<Feature> collection, unsigned int nClusters){
+vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int nClusters){
    int collectionSize = collection.size();
    unsigned int featureSize = collection[0].content.size();
-   vector<Feature> dictionary(nClusters,Feature(featureSize, 0));
+   vector<Centroid> dictionary(nClusters);
+   
+   for(size_t clIdx = 0; clIdx < nClusters; ++clIdx){
+      dictionary[clIdx].content.resize(featureSize);
+   }
    
    //getchar();
       
@@ -58,38 +62,10 @@ vector<Feature> KMeans::initCentroids(vector<Feature> collection, unsigned int n
 
 }
 
-void checkEqualFeatures(vector< Feature>& dictionary){
-   //cout << "Begin sanity meditation. I see " << dictionary.size() << " features\n";
-   unsigned int dictSize = dictionary.size();
-   double dist = 0; 
-   double delta;
-   unsigned int wordSize = dictionary[0].content.size();
-   unsigned int nEquals = 0;
-   
-   
-   for(size_t word = 0; word < dictSize ; ++word){
-      
-      for(size_t word1 = 0; word1 < dictSize; ++word1){
-         dist = 0.0f;
-         if(word1==word) continue;
-         
-         for(size_t d = 0; d < wordSize; ++d){
-            delta = (dictionary[word].content[d] - dictionary[word1].content[d]);
-            //cout << "delta = " << (dictionary[word].content[d] - dictionary[word1].content[d]) << endl;
-            dist += delta < 0 ? delta * -1 : delta;
-            //cout << "now dist = " << dist << endl;
-         }
-         //cout << "dist = " << dist << endl;;
-         if(dist <= 0) ++nEquals;
-      }
-      
-      
-   }
-   cout << "I found " << nEquals << " equal features, out of " << dictSize << " features\n";
-   
-}
 
-vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nClusters){
+
+vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int nClusters){
+
    /*
 	//cout << "we got into clustering!" << '\n';
 
@@ -179,22 +155,29 @@ vector<Feature> KMeans::cluster(vector<Feature> featureSamples, unsigned int nCl
    return finalClusters;
    */
    unsigned int nData = featureSamples.size(); 
-   vector<Feature> centroids0 = initCentroids(featureSamples, nClusters);
-   vector<Feature> centroids1(nClusters, Feature(centroids0[0].content.size(), 0));
+   vector<Centroid> centroids0 = initCentroids(featureSamples, nClusters);
+   vector<Centroid> centroids1(nClusters);
    
-   vector<Feature>* centroids = &centroids0;
-   vector<Feature>* newCentroids = &centroids1;
+   
+   vector<Centroid>* centroids = &centroids0;
+   vector<Centroid>* newCentroids = &centroids1;
    int curCentroids = 1;
    unsigned int dataDims = centroids0[0].content.size();
    
    
    vector< unsigned int > nMembers(nClusters,0);
  
+   
    double curDist;
    double prevTotalDistance = 2;
    double totalDistance = 1;
    double deltaDist = 1;
    double closestDist;
+   
+   for(size_t clIdx = 0; clIdx < nClusters; ++clIdx){
+      centroids1[clIdx].content.resize(dataDims);
+   }
+   
    size_t itx = 0;
    for(; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
       cout << "kmeans iter " << itx << endl;

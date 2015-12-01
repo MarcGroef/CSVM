@@ -21,8 +21,10 @@ Codebook::Codebook(){
 void Codebook::setSettings(Codebook_settings s){
    settings = s;
    kmeans.setSettings(s.kmeansSettings);
+   akmeans.setSettings(s.akmeansSettings);
 }
-Feature Codebook::getCentroid(int cl, int centrIdx){
+
+Centroid Codebook::getCentroid(int cl, int centrIdx){
    return bow[cl][centrIdx];
 }
 
@@ -30,14 +32,20 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
    //cout << "constructing codebook for label " << labelId << " in ";
    switch(settings.method){
       case LVQ_Clustering:
-         bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
+         //bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
          break;
       case KMeans_Clustering:
          bow[labelId] = kmeans.cluster(featureset, settings.numberVisualWords);
          break;
+	  case AKMeans_Clustering:
+		  bow[labelId] = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
+		  break;
    }
    
 }
+
+
+
 
 unsigned int Codebook::getNClasses(){
    
@@ -50,6 +58,13 @@ unsigned int Codebook::getNCentroids(){
    return settings.numberVisualWords;
 }
 
+vector<vector <double> > Codebook::getCentroidByClassContributions() {
+	return akmeans.getClusterClassContributions();
+}
+
+vector<double> Codebook::getCentroidByClassContributions(int cl) {
+	return akmeans.getClusterClassContributions(cl);
+}
 
 vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    
@@ -63,6 +78,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    double xx = 0.0;
    double cc;
    double xc;
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
       
@@ -73,7 +89,11 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
          }
       }
       
-      for(size_t cl = 0; cl < 1 &&  cl < nClasses; ++cl){
+
+      for(size_t cl = 0; oneCl ? cl < 1 :  cl < nClasses; ++cl){
+         mean = 0.0;
+         //cout << "cl" << cl << ": ";
+
          
          if(settings.simFunction == CB_RBF){
             
@@ -127,7 +147,7 @@ void Codebook::importCodebook(string filename){
    charDouble fancyDouble;
    unsigned int typesize;
    unsigned int featDims;
-   
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    ifstream file(filename.c_str(), ios::binary);
    
    //read number of classes
@@ -155,14 +175,16 @@ void Codebook::importCodebook(string filename){
    bow.clear();
    bow.resize(nClasses);
    //read centroids
-   for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
+   for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       for (size_t idx = 0; idx < settings.numberVisualWords; ++idx){
-         Feature f(featDims,0);
+         //Feature f(featDims,0);
+         Centroid c;
+         c.content.resize(featDims);
          for(size_t featIdx = 0; featIdx < featDims; ++featIdx){
             file.read(fancyDouble.chars, 8);
-            f.content[featIdx] = fancyDouble.doubleVal;
+            c.content[featIdx] = fancyDouble.doubleVal;
          }
-         bow[cl].push_back(f);
+         bow[cl].push_back(c);
       }
    }
    
@@ -184,7 +206,7 @@ void Codebook::exportCodebook(string filename){
    
    charInt fancyInt;
    charDouble fancyDouble;
-
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    unsigned int wordSize = bow[0][0].content.size();
    ofstream file(filename.c_str(),  ios::binary);
@@ -207,7 +229,7 @@ void Codebook::exportCodebook(string filename){
    fancyInt.intVal = wordSize;
    file.write(fancyInt.chars, 4);
    
-   for(size_t cl = 0; cl < 1 && cl < nClasses; ++cl){
+   for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       for(size_t word = 0; word < settings.numberVisualWords; ++word){
          for (size_t val = 0; val < wordSize; ++val){
             fancyDouble.doubleVal = bow[cl][word].content[val];

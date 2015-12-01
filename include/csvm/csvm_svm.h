@@ -32,6 +32,7 @@ namespace csvm{
       double alphaDataInit;
       SVM_Kernel kernelType;
       SVM_Type type;
+      bool useDifferentCodebooksPerClass;
   };
    
   class SVM{
