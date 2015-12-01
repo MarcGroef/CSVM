@@ -21,7 +21,9 @@ Codebook::Codebook(){
 void Codebook::setSettings(Codebook_settings s){
    settings = s;
    kmeans.setSettings(s.kmeansSettings);
+   akmeans.setSettings(s.akmeansSettings);
 }
+
 Centroid Codebook::getCentroid(int cl, int centrIdx){
    return bow[cl][centrIdx];
 }
@@ -35,6 +37,9 @@ void Codebook::constructCodebook(vector<Feature> featureset,int labelId){
       case KMeans_Clustering:
          bow[labelId] = kmeans.cluster(featureset, settings.numberVisualWords);
          break;
+	  case AKMeans_Clustering:
+		  bow[labelId] = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
+		  break;
    }
    
 }
@@ -53,6 +58,13 @@ unsigned int Codebook::getNCentroids(){
    return settings.numberVisualWords;
 }
 
+vector<vector <double> > Codebook::getCentroidByClassContributions() {
+	return akmeans.getClusterClassContributions();
+}
+
+vector<double> Codebook::getCentroidByClassContributions(int cl) {
+	return akmeans.getClusterClassContributions(cl);
+}
 
 vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    

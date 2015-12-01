@@ -90,6 +90,21 @@
     <ClCompile Include="src\csvm\csvm_svm.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\csvm\csvm_centroid.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_deep_codebook.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_linear_network.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_annotated_kmeans.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_mnist_parser.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\csvm\csvm.h">
@@ -168,6 +183,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\csvm\csvm_clean_descriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_centroid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_deep_codebook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_linear_network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_annotated_kmeans.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_mnist_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

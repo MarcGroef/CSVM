@@ -65,6 +65,7 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
 
 
 vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int nClusters){
+
    /*
 	//cout << "we got into clustering!" << '\n';
 

@@ -79,11 +79,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\csvm\csvm_annotated_kmeans.cc" />
+    <ClCompile Include="src\csvm\csvm_centroid.cc" />
     <ClCompile Include="src\csvm\csvm_cifar10_parser.cc" />
     <ClCompile Include="src\csvm\csvm_classifier.cc" />
     <ClCompile Include="src\csvm\csvm_clean_descriptor.cc" />
     <ClCompile Include="src\csvm\csvm_codebook.cc" />
     <ClCompile Include="src\csvm\csvm_dataset.cc" />
+    <ClCompile Include="src\csvm\csvm_deep_codebook.cc" />
     <ClCompile Include="src\csvm\csvm_feature.cc" />
     <ClCompile Include="src\csvm\csvm_feature_extractor.cc" />
     <ClCompile Include="src\csvm\csvm_frequency_matrix.cc" />
@@ -92,7 +95,9 @@
     <ClCompile Include="src\csvm\csvm_image_scanner.cc" />
     <ClCompile Include="src\csvm\csvm_kmeans.cc" />
     <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc" />
+    <ClCompile Include="src\csvm\csvm_linear_network.cc" />
     <ClCompile Include="src\csvm\csvm_lvq.cc" />
+    <ClCompile Include="src\csvm\csvm_mnist_parser.cc" />
     <ClCompile Include="src\csvm\csvm_patch.cc" />
     <ClCompile Include="src\csvm\csvm_settings.cc" />
     <ClCompile Include="src\csvm\csvm_svm.cc" />
@@ -107,11 +112,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\csvm\csvm.h" />
+    <ClInclude Include="include\csvm\csvm_annotated_kmeans.h" />
+    <ClInclude Include="include\csvm\csvm_centroid.h" />
     <ClInclude Include="include\csvm\csvm_cifar10_parser.h" />
     <ClInclude Include="include\csvm\csvm_classifier.h" />
     <ClInclude Include="include\csvm\csvm_clean_descriptor.h" />
     <ClInclude Include="include\csvm\csvm_codebook.h" />
     <ClInclude Include="include\csvm\csvm_dataset.h" />
+    <ClInclude Include="include\csvm\csvm_deep_codebook.h" />
     <ClInclude Include="include\csvm\csvm_feature.h" />
     <ClInclude Include="include\csvm\csvm_feature_extractor.h" />
     <ClInclude Include="include\csvm\csvm_frequency_matrix.h" />
@@ -120,7 +128,9 @@
     <ClInclude Include="include\csvm\csvm_image_scanner.h" />
     <ClInclude Include="include\csvm\csvm_kmeans.h" />
     <ClInclude Include="include\csvm\csvm_lbp_descriptor.h" />
+    <ClInclude Include="include\csvm\csvm_linear_network.h" />
     <ClInclude Include="include\csvm\csvm_lvq.h" />
+    <ClInclude Include="include\csvm\csvm_mnist_parser.h" />
     <ClInclude Include="include\csvm\csvm_patch.h" />
     <ClInclude Include="include\csvm\csvm_settings.h" />
     <ClInclude Include="include\csvm\csvm_svm.h" />
