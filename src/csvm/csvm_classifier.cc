@@ -40,6 +40,11 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
+//return number of classes
+unsigned int CSVMClassifier::getNoClasses(){
+   return dataset.getNumberClasses();
+}
+
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
    

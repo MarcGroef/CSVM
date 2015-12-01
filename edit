@@ -1,0 +1,21 @@
+if [ $1 == "main" ] ; then
+    vim ./src/main.cc
+elif [ $1 == "settings" ] ; then
+    vim ./build/settings
+elif [ "${1#*".h"}" != "$1" ] ; then
+    dir="include/csvm/"
+    cd $dir
+    name=$(ls | grep $1)
+    cd ..
+    cd ..
+    echo $name
+    vim $dir$name
+else
+    dir="src/csvm/"
+    cd $dir
+    name=$(ls | grep $1)
+    cd ..
+    cd ..
+    echo $name
+    vim $dir$name
+fi

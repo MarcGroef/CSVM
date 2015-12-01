@@ -1,0 +1,19 @@
+#!/bin/bash
+tmp=$(make | grep "100%")
+
+if [ "${tmp#*"Built target"}" == "$tmp" ] ; then
+   echo ""
+   echo "ERROR found: Execution halted."
+   echo ""
+else
+   echo ""
+   echo ""
+   cd build/
+   logName="LOG"$(date +_%m-%d_%H:%M:%S)
+   ./CSVM settings |& tee ./logs/$logName
+   echo "" >> ./logs/$logName
+   echo "" >> ./logs/$logName
+   echo "SETTINGS:" >> ./logs/$logName
+   echo "" >> ./logs/$logName
+   cat settings >> ./logs/$logName
+fi
