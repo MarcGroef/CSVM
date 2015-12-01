@@ -158,6 +158,7 @@ int main(int argc,char**argv){
 
    vector <vector <int> > classifiedCorrect ( nClasses, vector<int> ( nClasses, 0 ) );
    vector <vector <int> > classifiedFalse   ( nClasses, vector<int> ( nClasses, 0 ) );
+   vector <vector <int> > classifiedAs      ( nClasses, vector<int> ( nClasses, 0 ) );
 
    for(size_t im = 0; im < 500; ++im){
       image = trainSize + (rand() % (nImages - trainSize));
@@ -167,6 +168,7 @@ int main(int argc,char**argv){
       //classify using classic SVMs
       //cout << "classifying image " << image << endl;
       unsigned int result;
+      unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
       if(!c.useLinNet){
          if(c.useClassicSVM())
             result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
@@ -175,14 +177,16 @@ int main(int argc,char**argv){
       }else 
          result = c.lnClassify(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+
       
-      if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
+      if (result == answer){
          ++nCorrect;
          ++classifiedCorrect[result][answer];
       } else {
          ++nFalse;
          ++classifiedFalse[result][answer];
       }
+      ++classifiedAs[answer][result];
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
@@ -192,7 +196,7 @@ int main(int argc,char**argv){
 
    if (printConfusionMatrix) {
       int   total;
-      float ratio;
+      double precision;
 
       cout << "\n\n\tActual:\t";
       for (int i=0; i<nClasses; i++){
@@ -200,13 +204,14 @@ int main(int argc,char**argv){
       }
       cout << "\n     Predicted:\n";
       for (int i=0; i<nClasses; ++i){
+         total = 0;
          cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
          for (int j=0; j<nClasses; ++j){
-            total = classifiedCorrect[i][j] + classifiedFalse[i][j];
-            ratio = classifiedCorrect[i][j] / total * 100;
-            cout << ((((j == 1 | j == 2) && i > 1) | (i < 2 && (j == 1 | j == 2))) ? "\t\t" : "\t") << fixed << classifiedCorrect[i][j] << "/" << total;
+            total += classifiedAs[i][j];
+            cout << ((((j == 1 | j == 2) && i > 1) | (i < 2 && (j == 1 | j == 2))) ? "\t\t" : "\t") << fixed << classifiedAs[i][j];// << "/" << total;
          }
-	cout << "\n\n\n";
+         precision = (double)classifiedAs[i][i] / total * 100;
+	 cout << "\t" << precision << " %" << "\n\n\n";
       }
    }
  
