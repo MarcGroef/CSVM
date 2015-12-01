@@ -77,7 +77,6 @@ int main(int argc,char**argv){
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
    
-<<<<<<< HEAD
    
    
    
@@ -86,28 +85,12 @@ int main(int argc,char**argv){
    time_t time0 = clock();
    
    //c.constructCodebook();
-=======
-
-   c.constructCodebook();
->>>>>>> 3430a9bf2a0f4149d10ac442bb0f781561751ccd
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   c.exportCodebook("testcb.bin");
-   //c.exportCodebook("1000HOG.bin");
-   //return 0;
-   //cout << "Constructed Codebook!\n";
-   //return 0;
-<<<<<<< HEAD
-   //c.importCodebook("codebook10000HOG.bin");
-   c.importCodebook("coates.bin");
-   c.initSVMs();
-   //cout << "Start training SVMs\n";
-   //train convolutional SVMs
-   //c.trainSVMs();
-=======
-   //c.importCodebook("1000HOG.bin");
 
+   c.importCodebook("coates.bin");
+   c.exportCodebook("LAST_USED.bin");
    //return 0;
->>>>>>> 3430a9bf2a0f4149d10ac442bb0f781561751ccd
+   //train convolutional SVMs
    
    
    c.initSVMs();
