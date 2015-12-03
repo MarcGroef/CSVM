@@ -141,6 +141,7 @@ void CSVMClassifier::constructCodebook(){
 
 //train the KKT-SVM
 vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
+   cout << "Enteing classic svm training\n";
    unsigned int datasetSize = dataset.getSize();
    unsigned int nClasses; 
    unsigned int nCentroids; 
@@ -149,21 +150,23 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    vector < Feature > dataFeatures;
    vector< vector < Patch > > patches(4);
    vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
+   cout << "Allocated " << (datasetSize * datasetSize * 8) << " bytes for sim kernel, for " << datasetSize << " images \n"; 
    vector < vector< vector<double> > > dataActivation;
 
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
-   //cout << "collecting activations for trainingsdata..\n";
+   cout << "collecting activations for trainingsdata..\n";
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
       //extract patches
       patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
       dataActivation.clear();
+      dataFeatures.clear();
       for(size_t qIdx = 0; qIdx < 4; ++qIdx){
          //clear previous features
-         dataFeatures.clear();
+         
          //allocate for new features
          dataFeatures.reserve(patches[qIdx].size());
          
@@ -175,8 +178,9 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
          
          //get cluster activations for the features
          dataActivation.push_back(codebook.getActivations(dataFeatures)); 
-         
+         dataFeatures.clear();
       }
+      patches.clear();
       //append centroid activations to activations from 0th quadrant
       nClasses = dataActivation[0].size();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
@@ -213,6 +217,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
       }
       //get cluster activations for the features
      datasetActivations.push_back(dataActivation[0]);
+     dataActivation.clear();
    }
    
    nClasses = datasetActivations[0].size();
@@ -220,7 +225,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    
    
    
-   
+   cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;

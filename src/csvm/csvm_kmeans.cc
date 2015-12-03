@@ -7,8 +7,6 @@ using namespace csvm;
 
 void KMeans::setSettings(KMeans_settings s){
    settings = s;
-   cout << "kmeans settings set\n";
-   cout << settings.nIter << endl;
 }
 //here we (attempt) to initialize our prototype centroids.
 vector<ClusterCentroid> KMeans::initPrototypes(vector<Feature> featureSamples, unsigned int nClusters) {
