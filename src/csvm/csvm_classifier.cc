@@ -149,8 +149,12 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    vector < vector < vector<double> > > datasetActivations;
    vector < Feature > dataFeatures;
    vector< vector < Patch > > patches(4);
+<<<<<<< HEAD
    vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
    cout << "Allocated " << (datasetSize * datasetSize * 8) << " bytes for sim kernel, for " << datasetSize << " images \n"; 
+=======
+   vector < vector<double> > dataKernel(datasetSize);
+>>>>>>> 1963291a28900871c353bf43a9d93de31dce0ba1
    vector < vector< vector<double> > > dataActivation;
 
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
@@ -229,7 +233,8 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
-      for(size_t dIdx1 = dIdx0; dIdx1 < datasetSize; ++dIdx1){
+      for(size_t dIdx1 = 0; dIdx1 <= dIdx0; ++dIdx1){
+         dataKernel[dIdx0].resize(dIdx0 + 1);
          double sum = 0;
          if(settings.svmSettings.kernelType == RBF){
             
@@ -241,7 +246,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
                }
             }
             dataKernel[dIdx0][dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
-            dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
+            //dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
             
          }else if (settings.svmSettings.kernelType == LINEAR){
 
@@ -251,8 +256,9 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
                   sum += (datasetActivations[dIdx0][cl][centr] * datasetActivations[dIdx1][cl][centr]);
                }
             }
+            //cout << "Writing " << sum << " to " << dIdx0 << ", " << dIdx1 << endl;
             dataKernel[dIdx0][dIdx1] = sum;
-            dataKernel[dIdx1][dIdx0] = sum;
+            //dataKernel[dIdx1][dIdx0] = sum;
          }else
             cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
          
