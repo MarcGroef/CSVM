@@ -149,12 +149,8 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    vector < vector < vector<double> > > datasetActivations;
    vector < Feature > dataFeatures;
    vector< vector < Patch > > patches(4);
-<<<<<<< HEAD
-   vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
-   cout << "Allocated " << (datasetSize * datasetSize * 8) << " bytes for sim kernel, for " << datasetSize << " images \n"; 
-=======
+
    vector < vector<double> > dataKernel(datasetSize);
->>>>>>> 1963291a28900871c353bf43a9d93de31dce0ba1
    vector < vector< vector<double> > > dataActivation;
 
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;

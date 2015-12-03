@@ -1,11 +1,8 @@
 
 Dataset
 method CIFAR10
-<<<<<<< HEAD
 nImages 18000
-=======
-nImages 30000
->>>>>>> 1963291a28900871c353bf43a9d93de31dce0ba1
+
 
 
 
