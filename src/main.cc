@@ -98,28 +98,30 @@ int main(int argc,char**argv){
    vector< vector< vector<double> > > trainActivations;
    //train classic SVM
    if(c.useLinNet)
-      cout << "I'm using the linear network\n";
+      cout << "\n\nI'm using the linear network\n";
 
    if(!c.useLinNet){
       
       if(c.useClassicSVM()){
-         cout << "Training classic SVM\n";
+         cout << "\n\nTraining classic SVM\n";
          trainActivations = c.trainClassicSVMs();
          
       }else{
          
-         cout << "Training Conv SVM\n";
+         cout << "\n\nTraining Conv SVM\n";
          c.trainSVMs();
       }
    }else
       c.trainLinearNetwork();
-   
+  
+
+ 
    //printKernel(trainActivations);
-   cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-
+/*
+   cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
       //classify using convolutional SVMs 
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
@@ -142,22 +144,20 @@ int main(int argc,char**argv){
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
-   
+*/   
    
    //*********************************************************************************************************************
    
    
    //cout << "Testing on Testset:\n";
    //Testing phase
-   cout << "On test set:\n";
+   cout << "\n\nOn test set:\n\n";
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
    unsigned int trainSize = (unsigned int)c.dataset.getSize();
    unsigned int nClasses = c.getNoClasses();
 
-   vector <vector <int> > classifiedCorrect ( nClasses, vector<int> ( nClasses, 0 ) );
-   vector <vector <int> > classifiedFalse   ( nClasses, vector<int> ( nClasses, 0 ) );
    vector <vector <int> > classifiedAs      ( nClasses, vector<int> ( nClasses, 0 ) );
 
    for(size_t im = 0; im < 500; ++im){
@@ -181,10 +181,8 @@ int main(int argc,char**argv){
       
       if (result == answer){
          ++nCorrect;
-         ++classifiedCorrect[result][answer];
       } else {
          ++nFalse;
-         ++classifiedFalse[result][answer];
       }
       ++classifiedAs[answer][result];
    }
@@ -198,20 +196,20 @@ int main(int argc,char**argv){
       int   total;
       double precision;
 
-      cout << "\n\n\tActual:\t";
+      cout << "\n\n\t        predicted:\t";
       for (int i=0; i<nClasses; i++){
-         cout << "\t" << c.dataset.getLabel(i);  
+         cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
       }
-      cout << "\n     Predicted:\n";
+      cout << "Average:" << "\n\n    \tActual:\n";
       for (int i=0; i<nClasses; ++i){
          total = 0;
          cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
          for (int j=0; j<nClasses; ++j){
             total += classifiedAs[i][j];
-            cout << ((((j == 1 | j == 2) && i > 1) | (i < 2 && (j == 1 | j == 2))) ? "\t\t" : "\t") << fixed << classifiedAs[i][j];// << "/" << total;
+            cout << ((((j == 1 | j == 2) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
          }
          precision = (double)classifiedAs[i][i] / total * 100;
-	 cout << "\t" << precision << " %" << "\n\n\n";
+	 cout << "\t\t" << precision << " %" << "\n\n\n";
       }
    }
  
