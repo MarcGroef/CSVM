@@ -9,6 +9,62 @@ CSVMSettings::~CSVMSettings(){
   
 }
 
+void CSVMSettings::parseConvSVMSettings(ifstream& stream){
+   string setting;
+   string method;
+   stream >> setting;
+   if(setting != "learningRate"){
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> convSVMSettings.learningRate;
+      
+   }
+   
+   stream >> setting;
+   if(setting != "nIterations"){
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> convSVMSettings.nIter;
+   }
+   
+   stream >> setting;
+   if(setting != "initWeight"){
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> convSVMSettings.initWeight;
+   }
+   
+   stream >> setting;
+   if(setting != "CSVM_C"){
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> convSVMSettings.CSVM_C;
+   }
+   
+   stream >> setting;
+   if(setting != "nClasses"){
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> convSVMSettings.nClasses;
+   }
+   stream >> setting;
+   if(setting != "nCentroids"){
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> convSVMSettings.nCentroids;
+   }
+   
+   
+   
+   
+}
+
 void CSVMSettings::parseLinNetSettings(ifstream& stream){
 
   
@@ -529,7 +585,8 @@ void CSVMSettings::readSettingsFile(string dir){
    parseSVMSettings(file);
    while(getline(file,line) && line != "LinNet");
    parseLinNetSettings(file);
-   
+   while(getline(file,line) && line != "ConvSVM");
+   parseConvSVMSettings(file);
    // parse values:
    
    /*string temp;

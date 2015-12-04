@@ -15,6 +15,7 @@
 #include "csvm_svm.h"
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
+#include "csvm_conv_svm.h"
 
 using namespace std;
 namespace csvm{
@@ -29,6 +30,7 @@ namespace csvm{
       vector< SVM > svms;
       LinNetwork linNetwork;
       bool standardizeActivations;
+      ConvSVM convSVM;
    public:
       //public vars
       bool useLinNet;
@@ -50,6 +52,8 @@ namespace csvm{
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
       void constructDeepCodebook();
+      void trainConvSVMs();
+      unsigned int classifyConvSVM(Image* im);
    };
    
 }

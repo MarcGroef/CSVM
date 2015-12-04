@@ -84,13 +84,13 @@ int main(int argc,char**argv){
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   c.constructCodebook();
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    //c.constructDeepCodebook();
    
    //return 0;
-   //c.importCodebook("coates.bin");
-   c.exportCodebook("10classes1000centr.bin");
+   c.importCodebook("10classes1000centr.bin");
+   //c.exportCodebook("10classes1000centr.bin");
    //return 0;
    //train convolutional SVMs
    
@@ -99,8 +99,10 @@ int main(int argc,char**argv){
   
    vector< vector< vector<double> > > trainActivations;
    //train classic SVM
-   if(c.useLinNet)
-      cout << "\n\nI'm using the linear network\n";
+
+   /*if(c.useLinNet)
+      cout << "I'm using the linear network\n";
+
 
    if(!c.useLinNet){
       
@@ -115,27 +117,30 @@ int main(int argc,char**argv){
       }
    }else
       c.trainLinearNetwork();
-  
 
- 
+   */
+   c.trainConvSVMs();
+
    //printKernel(trainActivations);
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-/*
+
    cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
       //classify using convolutional SVMs 
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      if(!c.useLinNet){
+      /*if(!c.useLinNet){
          if(c.useClassicSVM())
             result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
          else
             result = c.classify(c.dataset.getImagePtr(im));
       }else
-         c.lnClassify(c.dataset.getImagePtr(im));
+         result = c.lnClassify(c.dataset.getImagePtr(im));
+      */
+      result = c.classifyConvSVM(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
@@ -146,7 +151,7 @@ int main(int argc,char**argv){
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
-*/   
+ 
    
    //*********************************************************************************************************************
    
@@ -171,13 +176,14 @@ int main(int argc,char**argv){
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
-      if(!c.useLinNet){
-         if(c.useClassicSVM())
-            result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-         else
-            result = c.classify(c.dataset.getImagePtr(image));
-      }else 
-         result = c.lnClassify(c.dataset.getImagePtr(image));
+      //if(!c.useLinNet){
+       //  if(c.useClassicSVM())
+       //     result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+       //  else
+       //     result = c.classify(c.dataset.getImagePtr(image));
+      //}else 
+      //   result = c.lnClassify(c.dataset.getImagePtr(image));
+      result = c.classifyConvSVM(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       
@@ -202,7 +208,7 @@ int main(int argc,char**argv){
       for (int i=0; i<nClasses; i++){
          cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
       }
-      cout << "Average:" << "\n\n    Actual:\t\n";
+      cout << "Average:" << "\n\n    \tActual:\n";
       for (int i=0; i<nClasses; ++i){
          total = 0;
          cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
@@ -211,7 +217,7 @@ int main(int argc,char**argv){
             cout << ((((j == 1 | j == 2) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
          }
          precision = (double)classifiedAs[i][i] / total * 100;
-	 cout << "\t\t" << precision << " %" << "\n\n\n";
+         cout << "\t\t" << precision << " %" << "\n\n\n";
       }
    }
  
