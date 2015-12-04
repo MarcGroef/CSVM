@@ -66,6 +66,10 @@ vector<double> Codebook::getCentroidByClassContributions(int cl) {
 	return akmeans.getClusterClassContributions(cl);
 }
 
+vector<double> Codebook::getCentroidByClassContributions(Feature feat) {
+	return akmeans.getClusterClassContributions(feat);
+}
+
 vector< vector< double > > Codebook::getActivations(vector<Feature> features){
    
    vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords, 0.0));

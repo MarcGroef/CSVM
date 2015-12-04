@@ -101,26 +101,44 @@ void checkEqualFeatures(vector< Feature>& dictionary){
 */
 
 
-vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int nClusters, unsigned int nClasses){
+vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int pnClusters, unsigned int pnClasses){
 	cout << "akmeans called" << endl;
-	//unsigned int nClasses = 10;
-   unsigned int nData = featureSamples.size(); 
-   unsigned int dataDims = featureSamples[0].content.size();
+	nClusters = pnClusters;
+	nClasses = pnClasses;
+   unsigned int nData = featureSamples.size();		//number of features to cluster
+   unsigned int dataDims = featureSamples[0].content.size();	//feature dimensionality
 
    //centroids0 and centroids1 used to alternate the next array for newCentroids
+   
+
+   //per cluster.. <   Centroid: location	>
    vector<Centroid> centroids0 = initCentroids(featureSamples, nClusters, nClasses);
    vector<Centroid> centroids1(nClusters);
    
-   
+   //per cluster.. 
+   nMembers = vector< unsigned int >(nClusters, 0);	// < number of assigned members	>
+   averageDistances = vector< double >(nClusters, 0.0);	// < average distance to cluster >
+   deviations = vector< double >(nClusters, 0.0);	// < standard deviation to center	>
 
-   //byClassNMember used to track, for every cluster, the number of members assigned per class
-   vector< vector<int> > byClassNMembers(nClusters, vector<int>(nClasses,0));
-   //classavgdistances used to accumulatively gather the average distance to cluster centroid, per class
-   vector< vector<double> > byClassAvgDistances(nClusters, vector<double>(nClasses, 0.0));
+   //per cluster..., per class...
+   byClassNMembers = vector< vector<unsigned int> >(nClusters, vector<unsigned int>(nClasses, 0)); //< number of members present in every class >
+   byClassAverageDistancesToCentroid = vector< vector< double> >(nClusters, vector<double>(nClasses, 0.0)); //average distance to cluster centroid per class
+   byClassDeviationsToCentroid = vector< vector<double> >(nClusters, vector<double>(nClasses, 0.0)); // deviation to cluster centroid per class
+									
+
+   //per classCluster...
+   //vector<vector< Centroid > > 
+   byClassClusters = vector<vector< Centroid> >(nClusters, vector<Centroid>(nClasses)); // centroids of classes
+   byClassAverageDistancesToClassCluster = vector<vector< double > >(nClusters, vector<double>(nClasses, 0.0));	//average distances of class features to classcluster
+   byClassDeviationsToClassCluster = vector<vector<double > >(nClusters, vector<double>(nClasses, 0.0));		//deviations of class features to classcluster
+																												//deviations of class features to classcluster
+   byClassClusterDistanceToCentroid = vector<vector<double> >(nClusters, vector<double>(nClasses, 0.0));
+
    //classrepresentativeness is used to represent how much every cluster represents a class.
    vector< vector<double> > byClassContributions(nClusters, vector<double>(nClasses, 0.0));
-   
    vector< vector<double> > byClassStrengths(nClusters, vector<double>(nClasses, 0.0));
+
+
 
    //centroids and newCentroids are indicative of current and next position.
    vector<Centroid>* centroids = &centroids0;
@@ -131,7 +149,6 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int n
 
    
    
-   vector< unsigned int > nMembers(nClusters,0);
  
    double curDist;
    double prevTotalDistance = 2;
@@ -141,6 +158,10 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int n
    
    for (size_t clIdx = 0; clIdx < nClusters; ++clIdx) {
 	   centroids1[clIdx].content.resize(dataDims);
+	   for (size_t classId = 0; classId < nClasses; ++classId) {
+		   byClassClusters[clIdx][classId].content.resize(dataDims);
+	   }
+
    }
    
    
@@ -152,10 +173,14 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int n
 
 
    //7 iterations... I don't like magic numbers though...
-   cout << "nIter: " << settings.nIter << endl;
+   //cout << "nIter: " << settings.nIter << endl;
    for(; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
-	   if (itx >= (maxIterations - 1))
+	   cout << "iteration: " << itx << endl;
+	   if (itx >= (maxIterations - 1)) {
 		   lastIteration = 1;
+		   cout << "got into last iteration" << endl;
+	   }
+
       prevTotalDistance = totalDistance;
       
 	  totalDistance = 0.0;
@@ -197,10 +222,6 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int n
 		 ++nMembers[closestCentr];
 		 
 		 //only in the last iteration are representational computations relevant
-		 if (lastIteration) {
-			 byClassAvgDistances[closestCentr][featureSamples[dIdx].labelId] += closestDist;
-			 ++byClassNMembers[closestCentr][featureSamples[dIdx].labelId];
-		 }
       }
 	  
 
@@ -211,79 +232,147 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int n
 		  if (nMembers[cIdx] <= 0){
 			  //leave their centre unchanged
 			  //(*newCentroids)[cIdx].content = (*centroids)[cIdx].content;
-			  cout << "cluster " << cIdx << " had 0 members" << endl;
+			  //cout << "cluster " << cIdx << " had 0 members" << endl;
 		  }
 		  else {
 			  //compute their location by division of location with number of members
 			  for (size_t dim = 0; dim < dataDims; ++dim) {
 				  (*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
 			  }
-			  if (lastIteration) {
-				  double totalClassStrengthSum = 0.0;
-				  double currentClassMembers = 0;
-				  double currentClassSumOfDistances = 0.0;
-				  double currentClassStrength = 0.0;
-				  double currentClassAverageDistance = 0.0;
-				  double currentClassRepresentativeness = 0.0;
-				  for (size_t classID = 0; classID < nClasses; ++classID) {
-					  currentClassMembers = byClassNMembers[cIdx][classID];
-					  currentClassSumOfDistances = byClassAvgDistances[cIdx][classID];
-					  if (currentClassMembers == 0) {
-						  //currentClassAverageDistance = 0.0;
-						  //currentClassStrength = 0.0;
-						  //byClassStrengths[cIdx][classID] = 0.0;
-						  byClassContributions[cIdx][classID] = 0.0;
-					  }else {
-						  currentClassAverageDistance = currentClassSumOfDistances / currentClassMembers;
-						  currentClassStrength = currentClassMembers * (1 / currentClassAverageDistance);
-						  byClassContributions[cIdx][classID] = currentClassStrength;
-						  totalClassStrengthSum += currentClassStrength;
-					  }
-				  }
-				  //now we have computed the total sum of strengths, now normalize to attain proportional representativeness
-
-				  for (size_t classID = 0; classID < nClasses; ++classID) {
-					  currentClassMembers = byClassNMembers[cIdx][classID];
-					  if (currentClassMembers == 0) {
-						  //currentClassAverageDistance = 0.0;
-						  //currentClassStrength = 0.0;
-						  //byClassStrengths[cIdx][classID] = 0.0;
-						  //byClassRepresentativeness[cIdx][classID] = 0.0;
-					  }
-					  else {
-						  //currentClassRepresentativeness /= totalClassStrengthSum;
-						  //cout << "cluster " << cIdx << " , class " << classID << " N: " << currentClassMembers << endl;
-						  //cout << "  sum of distances: " << currentClassSumOfDistances << endl;
-						  //cout << "  current class strength : " << currentClassStrength << endl;
-						  //cout << "  sum of strengths of all classes: " << totalClassStrengthSum << endl;
-						  //cout << "  representativeness: " << currentClassRepresentativeness << endl;
-						  byClassContributions[cIdx][classID] /= totalClassStrengthSum;
-					  }
-				  }
-			  }
 		  }
-		  
-         
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
    
    }
    
-   for(size_t centr = 0; centr < nClusters; ++centr){
-       cout << "centroid " << centr << " represents:\n";
-       /*
-	   for(size_t idx = 0; idx < dataDims; ++idx){
-          cout << (*newCentroids)[centr].content[idx] << ", " << endl;
-       }
-	   */
-	   for (size_t classID = 0; classID < nClasses; ++classID) {
-		   cout << "class " << classID << " : " << byClassContributions[centr][classID] << endl;
-	   }
-       cout << endl;
+   ///////////////////////////////////////////////////////
+
+   //now we have the cluster centroids which we consider to be final. 
+   //We will consider additional computation in an extra iteration, without recomputing the
+   // centroids, but only considering how the features are assigned to them.
+
+   clusters = (*newCentroids);
+   unsigned int featclass;
+   vector<int> featureAssignments(nData, -1);
+
+
+   for (size_t cIdx = 0; cIdx < nClusters; ++cIdx) {
+	   nMembers[cIdx] = 0;
    }
+   //we once more iterate over all features
+   for (unsigned int featID = 0; featID < nData; ++featID) {
+
+	   
+
+	   //assigning to cluster:
+	   closestDist = numeric_limits<double>::max();
+	   unsigned int closestCentr = -1;
+
+	   //compute closest cluster of a feature
+	   for (size_t cIdx = 0; cIdx < nClusters; ++cIdx) {
+		   curDist = clusters[cIdx].getDistanceSq(featureSamples[featID]);
+		   //cout << "curDist = " << curDist << endl;
+		   if (curDist < closestDist) {
+			   closestDist = curDist;
+			   closestCentr = cIdx;
+		   }
+	   }
+	   //now we know closestCentr is the closest cluster, to which feature has a distance of closestDist
+	   featclass = featureSamples[featID].getLabelId();
+	   featureAssignments[featID] = closestCentr;
+
+	   averageDistances[closestCentr] += closestDist;
+	   ++nMembers[closestCentr];
+
+	   byClassAverageDistancesToCentroid[closestCentr][featclass] += closestDist;
+	   ++byClassNMembers[closestCentr][featclass];
+
+	   //add to classcluster accumulatively
+	   for (size_t dim = 0; dim < dataDims; ++dim) {
+		   byClassClusters[closestCentr][featclass].content[dim] += featureSamples[featID].content[dim];
+	   }
+
+
+   }
+
+
+   //now we can calculate, for every cluster:
+   for (unsigned int clustID = 0; clustID < nClusters; ++clustID) {
+	   //the average distance of their features
+	   averageDistances[clustID] = nMembers[clustID] == 0 ? 0 : averageDistances[clustID] / nMembers[clustID];
+
+	   for (unsigned int classID = 0; classID < nClasses; ++classID) {
+		   //coopmuting the centroids of the classclusters
+		   //if class has no assignments...
+		   if (byClassNMembers[clustID][classID] == 0) {
+			   byClassClusters[clustID][classID] = clusters[clustID];
+			   byClassAverageDistancesToCentroid[clustID][classID] = 0;
+			   byClassClusterDistanceToCentroid[clustID][classID] = 0;
+		   }else {
+			   for (unsigned int dim = 0;dim < dataDims; ++dim) {
+				   byClassClusters[clustID][classID].content[dim] /= byClassNMembers[clustID][classID];
+			   }
+			   //and for every class the average distance of its features to the centroid 
+			   byClassAverageDistancesToCentroid[clustID][classID] /= byClassNMembers[clustID][classID];
+			   //and the average distance of the classcluster to the centroid:
+			   int count = 0;
+			   for (unsigned int dim = 0; dim < dataDims; ++dim) {
+				   if (clusters[clustID].content[dim] == byClassClusters[clustID][classID].content[dim]) {
+					   ++count;
+				   }
+			   }
+			   byClassClusterDistanceToCentroid[clustID][classID] = clusters[clustID].getDistanceSq(byClassClusters[clustID][classID]); //.getDistanceSq(clusters[clustID]);
+		   }
+		}
+   }
+
+   cout << "third flag!" << endl;
+
+   //now, in order to compute their deviations, we must iterate over the features ones more. 
+   // fortunately, we won't have to recompute all distances, because we saved the assignments previously. 
+   unsigned int clusterAssigned = 0;
+   double featDistClust;
+   for (unsigned int featID = 0; featID < nData; ++featID) {
+	   clusterAssigned = featureAssignments[featID];
+	   
+		
+	   //now we know closestCentr is the closest cluster, to which feature has a distance of closestDist
+	   featclass = featureSamples[featID].getLabelId();
+
+	   featDistClust = (clusters[clusterAssigned].getDistanceSq(featureSamples[featID]) - averageDistances[clusterAssigned]) * (clusters[clusterAssigned].getDistanceSq(featureSamples[featID]) - averageDistances[clusterAssigned]);
+	   deviations[clusterAssigned] += featDistClust;
+	   byClassDeviationsToCentroid[clusterAssigned][featclass] += featDistClust;
+	   byClassAverageDistancesToClassCluster[clusterAssigned][featclass] += byClassClusters[clusterAssigned][featclass].getDistanceSq(featureSamples[featID]);
+
+
+   }
+
+   // now we can compute the accumulative deviation within a cluster, deviations per class to cluster, and for every class average distance to classcluster
+   
+   for (unsigned int clustID = 0; clustID < nClusters; ++clustID) {
+	   //the average distance of their features
+	   deviations[clustID]  = nMembers[clustID] == 0 ? 0 : deviations[clustID] / nMembers[clustID];
+
+	   for (unsigned int classID = 0; classID < nClasses; ++classID) {
+		   
+		   byClassDeviationsToCentroid[clustID][classID] = byClassNMembers[clustID][classID] == 0 ? 0 :  byClassDeviationsToCentroid[clustID][classID] / byClassNMembers[clustID][classID];
+		   byClassAverageDistancesToClassCluster[clustID][classID] = byClassNMembers[clustID][classID]  == 0 ? 0 : byClassAverageDistancesToClassCluster[clustID][classID] / byClassNMembers[clustID][classID];
+		   byClassContributions[clustID][classID] = byClassNMembers[clustID][classID] / nMembers[clustID];
+		   
+	   }
+   }
+
+ 
+
+   
    clusters = (*newCentroids);
    clusterByClassContributions = byClassContributions;
+   
+   //print everything
+   printAllClusterStats();
+
+
 
    return (*newCentroids);
 }
@@ -296,5 +385,88 @@ vector<double>  AKMeans::getClusterClassContributions(int clust) {
 	return clusterByClassContributions[clust];
 }
 
+vector<double>  AKMeans::getClusterClassContributions(Feature feat) {
+
+	double curDist;
+	double prevTotalDistance = 2;
+	double totalDistance = 1;	//used to track cluster changes in mean
+	double deltaDist = 1;
+	double closestDist;
+	unsigned int dataDims = feat.content.size();	//feature dimensionality
+	unsigned int nClusters = clusters.size();
+	closestDist = numeric_limits<double>::max();
+	unsigned int closestCentr = -1;
+
+	//compute closest cluster of a feature
+	for (size_t cIdx = 0; cIdx < nClusters; ++cIdx) {
+		curDist = clusters[cIdx].getDistanceSq(feat);
+		//cout << "curDist = " << curDist << endl;
+		if (curDist < closestDist) {
+			closestDist = curDist;
+			closestCentr = cIdx;
+		}
+	}
+	
+	return clusterByClassContributions[closestCentr];
+}
+
+void AKMeans::printAllClusterStats() {
+	string sep(" | ");
+	for (unsigned int clustID = 0; clustID < nClusters; ++clustID) {
+		cout << "cluster: " << clustID << ":" << endl;
+		cout << "class:" << " | " <<
+			"# members" << " | " <<
+			"avgdist to centr" << " | " <<
+			"std to centr" << " | " <<
+			"avgdist to classclust" << sep <<
+			"dist(centr,classclust)" << sep << 
+			"contributions(prop)"	<< sep << endl;
+		cout << setw(6) << "all" << sep <<
+			setw(9) << nMembers[clustID] << sep <<
+			setw(16) << averageDistances[clustID] << sep <<
+			setw(12) << deviations[clustID] << sep <<
+			endl;
+
+		
+		for (unsigned int classID = 0; classID < nClasses; ++classID) {
+			cout << 
+				setw(6) << classID << sep <<
+				setw(9) << byClassNMembers[clustID][classID] << sep <<
+				setw(16) << byClassAverageDistancesToCentroid[clustID][classID] << sep <<
+				setw(13) << byClassDeviationsToCentroid[clustID][classID] << sep <<
+				setw(21) << byClassAverageDistancesToClassCluster[clustID][classID] << sep << 
+				setw(22) << byClassClusterDistanceToCentroid[clustID][classID]<< sep <<
+				setw(19) << clusterByClassContributions[clustID][classID] << sep << endl;
+		}
+	}
+}
+
+void AKMeans::printClusterStats(unsigned int clustID) {
+	string sep(" | ");
+	cout << "cluster: " << clustID << ":" << endl;
+	cout << "class:" << " | " <<
+		"# members" << " | " <<
+		"avgdist to centr" << " | " <<
+		"std to centr" << " | " <<
+		"avgdist to classclust" << sep <<
+		"dist(centr,classclust)" << sep << endl;
+	cout << setw(6) << "all" << sep <<
+		setw(9) << nMembers[clustID] << sep <<
+		setw(16) << averageDistances[clustID] << sep <<
+		setw(12) << deviations[clustID] << sep <<
+		endl;
+
+
+	for (unsigned int classID = 0; classID < nClasses; ++classID) {
+		cout <<
+			setw(6) << classID << sep <<
+			setw(9) << byClassNMembers[clustID][classID] << sep <<
+			setw(16) << byClassAverageDistancesToCentroid[clustID][classID] << sep <<
+			setw(13) << byClassDeviationsToCentroid[clustID][classID] << sep <<
+			setw(21) << byClassAverageDistancesToClassCluster[clustID][classID] << sep <<
+			setw(22) << byClassClusterDistanceToCentroid[clustID][classID] << sep <<
+			endl;
+	}
+}
 
 
