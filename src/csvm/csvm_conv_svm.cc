@@ -78,7 +78,7 @@ using namespace csvm;
    
    unsigned int ConvSVM::classify(vector< vector<double> >& activations){
       unsigned int maxLabel = 0;
-      double maxOut = numeric_limits<double>::min();
+      double maxOut = output(activations, 0);
       cout << "out 0 = " << maxOut << endl;
       for(size_t svmIdx = 1; svmIdx < settings.nClasses; ++svmIdx){
          double out = output(activations, svmIdx);
