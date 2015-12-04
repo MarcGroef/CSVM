@@ -19,8 +19,8 @@ nClusters 100
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
-useDifferentCodebooksPerClass false
-standardizeActivations true
+useDifferentCodebooksPerClass true
+standardizeActivations false
 
 
 FeatureExtractor
@@ -34,10 +34,10 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 5000
+nRandomPatches 500000
 
 SVM
-Type CLASSIC
+Type CONV
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001

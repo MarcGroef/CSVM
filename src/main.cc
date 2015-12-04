@@ -84,13 +84,13 @@ int main(int argc,char**argv){
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   //c.constructCodebook();
+   c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    //c.constructDeepCodebook();
    
    //return 0;
-   c.importCodebook("coates.bin");
-   //c.exportCodebook("LAST_USED.bin");
+   //c.importCodebook("coates.bin");
+   c.exportCodebook("10classes1000centr.bin");
    //return 0;
    //train convolutional SVMs
    
