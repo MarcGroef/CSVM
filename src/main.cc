@@ -99,13 +99,10 @@ int main(int argc,char**argv){
   
    vector< vector< vector<double> > > trainActivations;
    //train classic SVM
-<<<<<<< HEAD
+
    /*if(c.useLinNet)
       cout << "I'm using the linear network\n";
-=======
-   if(c.useLinNet)
-      cout << "\n\nI'm using the linear network\n";
->>>>>>> ada4e83d2a7df35b3b8842c42e3621576163071b
+
 
    if(!c.useLinNet){
       
@@ -120,19 +117,15 @@ int main(int argc,char**argv){
       }
    }else
       c.trainLinearNetwork();
-<<<<<<< HEAD
+
    */
    c.trainConvSVMs();
-=======
-  
 
- 
->>>>>>> ada4e83d2a7df35b3b8842c42e3621576163071b
    //printKernel(trainActivations);
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-/*
+
    cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
       //classify using convolutional SVMs 
@@ -158,7 +151,7 @@ int main(int argc,char**argv){
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
-*/   
+ 
    
    //*********************************************************************************************************************
    
@@ -211,15 +204,10 @@ int main(int argc,char**argv){
       int   total;
       double precision;
 
-<<<<<<< HEAD
-      cout << "\n\n\tActual:\t";
-      for (size_t i=0; i< nClasses; i++){
-         cout << "\t" << c.dataset.getLabel(i);  
-=======
+
       cout << "\n\n\t       Actual:\t";
       for (int i=0; i<nClasses; i++){
          cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
->>>>>>> ada4e83d2a7df35b3b8842c42e3621576163071b
       }
       cout << "Average:" << "\n\n    \tPredicted:\n";
       for (int i=0; i<nClasses; ++i){
@@ -230,7 +218,7 @@ int main(int argc,char**argv){
             cout << ((((j == 1 | j == 2) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
          }
          precision = (double)classifiedAs[i][i] / total * 100;
-	 cout << "\t\t" << precision << " %" << "\n\n\n";
+         cout << "\t\t" << precision << " %" << "\n\n\n";
       }
    }
  
