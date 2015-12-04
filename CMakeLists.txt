@@ -35,7 +35,8 @@ src/csvm/csvm_mnist_parser.cc
 src/csvm/csvm_linear_network.cc
 src/csvm/csvm_centroid.cc
 src/csvm/csvm_deep_codebook.cc
-##src/csvm/csvm_annotated_kmeans.cc
+src/csvm/csvm_annotated_kmeans.cc
+src/csvm/csvm_conv_svm.cc
 ##png library
 src/lodepng/lodepng.cc
 

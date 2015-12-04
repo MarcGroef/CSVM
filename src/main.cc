@@ -77,58 +77,70 @@ int main(int argc,char**argv){
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
    //cout << nImages << " images loaded.\n";
    
-
-   c.constructCodebook();
+   
+   
+   
+   //measure cpu time
+   //cout << "Start timing\n";
+   time_t time0 = clock();
+   
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   c.exportCodebook("testcb.bin");
-   //c.exportCodebook("1000HOG.bin");
+   //c.constructDeepCodebook();
+   
    //return 0;
-   //cout << "Constructed Codebook!\n";
+   c.importCodebook("10classes1000centr.bin");
+   //c.exportCodebook("10classes1000centr.bin");
    //return 0;
-   //c.importCodebook("1000HOG.bin");
-
-   //return 0;
+   //train convolutional SVMs
    
    
    c.initSVMs();
   
    vector< vector< vector<double> > > trainActivations;
    //train classic SVM
-   if(c.useLinNet)
+
+   /*if(c.useLinNet)
       cout << "I'm using the linear network\n";
+
 
    if(!c.useLinNet){
       
       if(c.useClassicSVM()){
-         cout << "Training classic SVM\n";
+         cout << "\n\nTraining classic SVM\n";
          trainActivations = c.trainClassicSVMs();
          
       }else{
          
-         cout << "Training Conv SVM\n";
+         cout << "\n\nTraining Conv SVM\n";
          c.trainSVMs();
       }
    }else
       c.trainLinearNetwork();
-   
+
+   */
+   c.trainConvSVMs();
+
    //printKernel(trainActivations);
-   cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
 
+   cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
       //classify using convolutional SVMs 
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      if(!c.useLinNet){
+      /*if(!c.useLinNet){
          if(c.useClassicSVM())
             result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
          else
             result = c.classify(c.dataset.getImagePtr(im));
       }else
-         c.lnClassify(c.dataset.getImagePtr(im));
+         result = c.lnClassify(c.dataset.getImagePtr(im));
+      */
+      result = c.classifyConvSVM(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
@@ -139,18 +151,22 @@ int main(int argc,char**argv){
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
-   
+ 
    
    //*********************************************************************************************************************
    
    
    //cout << "Testing on Testset:\n";
    //Testing phase
-   cout << "On test set:\n";
+   cout << "\n\nOn test set:\n\n";
    nCorrect = 0;
    nFalse = 0;
    unsigned int image;
    unsigned int trainSize = (unsigned int)c.dataset.getSize();
+   unsigned int nClasses = c.getNoClasses();
+
+   vector <vector <int> > classifiedAs      ( nClasses, vector<int> ( nClasses, 0 ) );
+
    for(size_t im = 0; im < 500; ++im){
       image = trainSize + (rand() % (nImages - trainSize));
       //cout << "Testing image " << image << ".. ";
@@ -159,29 +175,52 @@ int main(int argc,char**argv){
       //classify using classic SVMs
       //cout << "classifying image " << image << endl;
       unsigned int result;
-      if(!c.useLinNet){
-         if(c.useClassicSVM())
-            result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-         else
-            result = c.classify(c.dataset.getImagePtr(image));
-      }else 
-         result = c.lnClassify(c.dataset.getImagePtr(image));
+      unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
+      //if(!c.useLinNet){
+       //  if(c.useClassicSVM())
+       //     result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+       //  else
+       //     result = c.classify(c.dataset.getImagePtr(image));
+      //}else 
+      //   result = c.lnClassify(c.dataset.getImagePtr(image));
+      result = c.classifyConvSVM(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+
       
-      if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result){
+      if (result == answer){
          ++nCorrect;
-         //cout << "Correct!\n";
-      }
-      else {
+      } else {
          ++nFalse;
-         //cout << "False!\n";
       }
+      ++classifiedAs[answer][result];
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
-   
+   bool printConfusionMatrix = true;
+
+   if (printConfusionMatrix) {
+      int   total;
+      double precision;
+
+      cout << "\n\n\t       Predicted:\t";
+      for (int i=0; i<nClasses; i++){
+         cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+      }
+      cout << "Average:" << "\n\n    \tActual:\n";
+      for (int i=0; i<nClasses; ++i){
+         total = 0;
+         cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         for (int j=0; j<nClasses; ++j){
+            total += classifiedAs[i][j];
+            cout << ((((j == 1 | j == 2) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
+         }
+         precision = (double)classifiedAs[i][i] / total * 100;
+         cout << "\t\t" << precision << " %" << "\n\n\n";
+      }
+   }
+ 
    //cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;

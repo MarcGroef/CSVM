@@ -2,6 +2,7 @@
 #define CSVM_DEEP_CODEBOOK_H
 
 #include <vector>
+#include <cmath>
 
 #include "csvm_feature.h"
 #include "csvm_patch.h"
@@ -17,20 +18,22 @@ namespace csvm{
      unsigned int nHiddenLayers;
      vector<unsigned int> layerSizes;
      unsigned int nPatchCentroids;
-      
    };
    
    class DeepCodebook{
       DeepCodebookSettings settings;
       vector< vector< Centroid > > layerStack;
-      vector<double> flowUpUntil(vector<double>& imagePatchActivations);
       KMeans kmeans;
       
+      Feature flowUpUntil(vector< vector<Feature> >& imagePatches, unsigned int untilThisLayer);
+      double getCentroidActivation(Centroid& centroid, Feature& f);
+      Feature getPatchActivations(vector< vector<Feature> >& imagePatches);
    public:
-      void setSettings(DeepCodebookSettings s);
+      DeepCodebook();
+      void setSettings(DeepCodebookSettings* s);
       void constructPatchLayer(vector<Feature>& patchCollection);
-      void constructHiddenLayers(vector< Feature >& imagePatchActivations);
-      Feature getActivations(vector<Feature>& imagePaches);
+      void constructHiddenLayers(vector< vector< vector<Feature> > >& imagePatches);
+      Feature getActivations(vector< vector<Feature> >& imagePatches);
    };
    
    

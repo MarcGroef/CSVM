@@ -10,6 +10,7 @@
 #include "csvm_codebook.h"
 #include "csvm_image_scanner.h"
 #include "csvm_dataset.h"
+#include "csvm_conv_svm.h"
 //#include "csvm_cluster_analyser.h"
 #include "csvm_linear_network.h"
 using namespace std;
@@ -33,6 +34,7 @@ namespace csvm{
       ImageScannerSettings scannerSettings;
       CSVMDataset_Settings datasetSettings;
       LinNetSettings netSettings;
+      ConvSVMSettings convSVMSettings;
       //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();
@@ -44,6 +46,7 @@ namespace csvm{
       void parseImageScannerSettings(ifstream& stream);
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
+      void parseConvSVMSettings(ifstream& stream);
    };
 
 }

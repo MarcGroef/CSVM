@@ -1,7 +1,8 @@
 
 Dataset
 method CIFAR10
-nImages 20000
+nImages 1000
+
 
 
 
@@ -14,7 +15,7 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 1000
+nClusters 100
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -36,11 +37,11 @@ scanStride 2
 nRandomPatches 50000
 
 SVM
-Type CLASSIC
+Type CONV
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 200
+nIterations 400
 learningRate 0.000005
 SVM_C_Data 10000
 SVM_C_Centroid 1000000
@@ -52,5 +53,13 @@ LinNet
 useLinNet false
 initWeight 0.1
 learningRate 0.002
+
+ConvSVM
+learningRate 0.0002
+nIterations 1000
+initWeight 0.001
+CSVM_C 1
+nClasses 10
+nCentroids 100
 
 SOFT_ASSIGNMENT

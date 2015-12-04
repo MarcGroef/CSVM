@@ -32,7 +32,7 @@ void LinNetwork::setSettings(LinNetSettings s){
    weights = vector< vector< vector<double> > >(settings.nClasses, vector< vector< double> >(oneCl ? 1 : settings.nClasses, vector<double>(settings.nCentroids * 4,settings.initWeight)));
    biases = vector<double>(settings.nClasses,0);
    
-    cout << "linnet settins set: nCentroids = " << settings.nCentroids << "learnRate = " << settings.learningRate <<  endl;
+    //cout << "linnet settins set: nCentroids = " << settings.nCentroids << "learnRate = " << settings.learningRate <<  endl;
    
   
 }

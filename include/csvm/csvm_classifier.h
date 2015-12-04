@@ -14,6 +14,8 @@
 #include "csvm_feature_extractor.h"
 #include "csvm_svm.h"
 #include "csvm_linear_network.h"
+#include "csvm_deep_codebook.h"
+#include "csvm_conv_svm.h"
 
 using namespace std;
 namespace csvm{
@@ -21,12 +23,14 @@ namespace csvm{
    class CSVMClassifier{
       CSVMSettings settings;
       Codebook codebook;
+      DeepCodebook deepCodebook;
       ImageScanner imageScanner;
       //ClusterAnalyser analyser;
       FeatureExtractor featExtr;
       vector< SVM > svms;
       LinNetwork linNetwork;
       bool standardizeActivations;
+      ConvSVM convSVM;
    public:
       //public vars
       bool useLinNet;
@@ -41,11 +45,15 @@ namespace csvm{
       vector < vector< vector<double> > > trainClassicSVMs();
       void initSVMs();
       unsigned int classify(Image* image);
+      unsigned int getNoClasses();
       //CSVMClassifier();
       unsigned int classifyClassicSVMs(Image* im, vector < vector< vector< double> > >& trainActivations, bool printResults);
       bool useClassicSVM();
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
+      void constructDeepCodebook();
+      void trainConvSVMs();
+      unsigned int classifyConvSVM(Image* im);
    };
    
 }

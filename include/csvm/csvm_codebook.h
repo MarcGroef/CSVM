@@ -28,7 +28,7 @@ namespace csvm{
    struct Codebook_settings{
       LVQ_Settings lvqSettings;
       KMeans_settings kmeansSettings;
-	  AKMeans_settings akmeansSettings;
+	   AKMeans_settings akmeansSettings;
       CodebookClusterMethod method;
       unsigned int numberVisualWords;
       double similaritySigma;
@@ -43,7 +43,7 @@ namespace csvm{
     Codebook_settings settings;
     LVQ lvq;
     KMeans kmeans;
-	AKMeans akmeans;
+	 AKMeans akmeans;
 
     vector< vector<Centroid> > bow;
 
