@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 18000
+nImages 1000
 
 
 
@@ -19,8 +19,8 @@ nClusters 100
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
-useDifferentCodebooksPerClass true
-standardizeActivations false
+useDifferentCodebooksPerClass false
+standardizeActivations true
 
 
 FeatureExtractor
@@ -34,7 +34,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 500000
+nRandomPatches 50000
 
 SVM
 Type CONV
@@ -53,5 +53,13 @@ LinNet
 useLinNet false
 initWeight 0.1
 learningRate 0.002
+
+ConvSVM
+learningRate 0.002
+nIterations 1000
+initWeight 0.001
+CSVM_C 1000
+nClasses 10
+nCentroids 100
 
 SOFT_ASSIGNMENT

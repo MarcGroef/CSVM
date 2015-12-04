@@ -84,13 +84,13 @@ int main(int argc,char**argv){
    //cout << "Start timing\n";
    time_t time0 = clock();
    
-   c.constructCodebook();
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    //c.constructDeepCodebook();
    
    //return 0;
-   //c.importCodebook("coates.bin");
-   c.exportCodebook("10classes1000centr.bin");
+   c.importCodebook("10classes1000centr.bin");
+   //c.exportCodebook("10classes1000centr.bin");
    //return 0;
    //train convolutional SVMs
    
@@ -99,7 +99,7 @@ int main(int argc,char**argv){
   
    vector< vector< vector<double> > > trainActivations;
    //train classic SVM
-   if(c.useLinNet)
+   /*if(c.useLinNet)
       cout << "I'm using the linear network\n";
 
    if(!c.useLinNet){
@@ -115,7 +115,8 @@ int main(int argc,char**argv){
       }
    }else
       c.trainLinearNetwork();
-   
+   */
+   c.trainConvSVMs();
    //printKernel(trainActivations);
    cout << "Testing on trainingsset:\n";
    //Testing phase
@@ -127,13 +128,15 @@ int main(int argc,char**argv){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      if(!c.useLinNet){
+      /*if(!c.useLinNet){
          if(c.useClassicSVM())
             result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
          else
             result = c.classify(c.dataset.getImagePtr(im));
       }else
-         c.lnClassify(c.dataset.getImagePtr(im));
+         result = c.lnClassify(c.dataset.getImagePtr(im));
+      */
+      result = c.classifyConvSVM(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
@@ -171,13 +174,14 @@ int main(int argc,char**argv){
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
-      if(!c.useLinNet){
-         if(c.useClassicSVM())
-            result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-         else
-            result = c.classify(c.dataset.getImagePtr(image));
-      }else 
-         result = c.lnClassify(c.dataset.getImagePtr(image));
+      //if(!c.useLinNet){
+       //  if(c.useClassicSVM())
+       //     result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
+       //  else
+       //     result = c.classify(c.dataset.getImagePtr(image));
+      //}else 
+      //   result = c.lnClassify(c.dataset.getImagePtr(image));
+      result = c.classifyConvSVM(c.dataset.getImagePtr(image));
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       
@@ -201,7 +205,7 @@ int main(int argc,char**argv){
       double precision;
 
       cout << "\n\n\tActual:\t";
-      for (int i=0; i<nClasses; i++){
+      for (size_t i=0; i< nClasses; i++){
          cout << "\t" << c.dataset.getLabel(i);  
       }
       cout << "\n     Predicted:\n";

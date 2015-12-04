@@ -34,7 +34,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    standardizeActivations = settings.codebookSettings.standardizeActivations;
    linNetwork.setSettings(settings.netSettings);
    useLinNet = settings.netSettings.useLinNet;
-   
+   convSVM.setSettings(settings.convSVMSettings);
 }
 
 //export the current codebook
@@ -137,8 +137,140 @@ void CSVMClassifier::constructCodebook(){
    pretrainDump.clear();
 }
 
+void CSVMClassifier::trainConvSVMs(){
+      unsigned int datasetSize = dataset.getSize();
+   vector < vector < vector < double > > > datasetActivations;
+   vector < Feature > dataFeatures;
+   vector< vector < Patch > > patches(4);
+   vector < vector< vector<double> > > dataActivation;
+   bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
+   //allocate space for more vectors
+   datasetActivations.reserve(datasetSize);
+   //for all trainings imagages:
+   for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
+      //cout << "scanning image" << dataIdx << endl;
+      //extract patches
+      patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+      //cout << "for each quadrant..\n";
+      for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+         //clear previous features
+         dataFeatures.clear();
+         //allocate for new features
+         dataFeatures.reserve(patches[qIdx].size());
+         //cout << "extract features..\n";
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+            dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+         patches[qIdx].clear();
+         //cout << "get activations..\n";
+         //get cluster activations for the features
+         dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+         //cout << "dataActivation.size() = " << dataActivation.size() << endl;
+      }
+      //append centroid activations to activations from 0th quadrant
+      //cout << "appended activations\n";
+      
+      //normalize summed activations of appended pools
+      unsigned int nClasses = dataActivation[0].size();
+      for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+         for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+            dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
+            dataActivation[qIdx][clIdx].clear();
+         }
+      }
+      //standardize data
+      if(standardizeActivations){
+         //cout << "nActivations = " << nActivations << endl;
+         //cout << "***************** begin image ***********************\n";
+         for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+            double mean = 0;
+            double stddev = 0;
+            double nActivations = dataActivation[0][0].size();
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               mean += dataActivation[0][clIdx][actIdx];
+               //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+            }
+            mean /= nActivations;
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+            }
+            stddev /= nActivations;
+            stddev = sqrt(stddev + 0.01);
+            for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+               //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+               dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+            }
+            
+         }
+      }
+      datasetActivations.push_back(dataActivation[0]);
+      
+   }
+   //cout << "Done getting activations\n";
+   //train the Linear Netwok with the gained activations
+   convSVM.train(datasetActivations, &dataset);
+   
+}
 
+unsigned int CSVMClassifier::classifyConvSVM(Image* image){
+      //cout << "nClasses = " << nClasses << endl;
+   vector< vector<Patch> > patches(4);
+   bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
+   vector<Feature> dataFeatures;
+   vector < vector< vector<double> > > dataActivation;
+   //extract patches
+  patches = imageScanner.scanImage(image);
+      
+   for(size_t qIdx = 0; qIdx < 4; ++qIdx){
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches[qIdx].size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches[qIdx].size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[qIdx][patch]));
+      patches[qIdx].clear();
+      
+      //get cluster activations for the features
+      dataActivation.push_back(codebook.getActivations(dataFeatures)); 
+   }
+   //append centroid activations to activations from 0th quadrant
+   unsigned int nClasses = dataActivation[0].size();
+   for(size_t qIdx = 1; qIdx < 4; ++qIdx){
+      for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+         dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
+         dataActivation[qIdx][clIdx].clear();
+      }
+   }
+   if(standardizeActivations){
+      //cout << "nActivations = " << nActivations << endl;
+      //cout << "***************** begin image ***********************\n";
+      for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
+         double mean = 0;
+         double stddev = 0;
+         double nActivations = dataActivation[0][0].size();
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            mean += dataActivation[0][clIdx][actIdx];
+            //cout << "activation = " << dataActivation[0][0][actIdx] << endl;
+         }
+         mean /= nActivations;
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            stddev+= (mean - dataActivation[0][clIdx][actIdx]) * (mean - dataActivation[0][clIdx][actIdx]);
+         }
+         stddev /= nActivations;
+         stddev = sqrt(stddev + 0.01);
+         for(size_t actIdx = 0; actIdx < nActivations; ++actIdx){
+            //cout << "activ = " << dataActivation[0][0][actIdx] << endl;
+            dataActivation[0][clIdx][actIdx] = (dataActivation[0][clIdx][actIdx] - mean)/stddev;
+         }
+         
+      }
+   }
+   //cout << "*************\n";
 
+   return convSVM.classify(dataActivation[0]);
+}
 //train the KKT-SVM
 vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    cout << "Enteing classic svm training\n";
