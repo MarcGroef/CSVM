@@ -170,7 +170,6 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     stream >> setting;
     if(setting == "nIterations"){
        stream >> codebookSettings.kmeansSettings.nIter;
-
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);

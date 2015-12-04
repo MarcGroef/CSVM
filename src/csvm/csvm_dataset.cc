@@ -17,6 +17,7 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
       cifar10.loadImages(imageDirs[i]);
       
    }
+   cout << "Loading cifar10 data. Splitting to classes..\n";
    splitDatasetToClasses();
    //appendAndShuffleDataIdxArray();
    //cout << "dataset split to classes\n";

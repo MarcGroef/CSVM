@@ -46,9 +46,54 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
+
+void CSVMClassifier::constructDeepCodebook(){
+   //Construct patch layer
+   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+   vector<Feature> pretrainDump;
+   
+   cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids, with " << nPatches << " patches\n";
+
+   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+      
+      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getSize()));
+      Feature newFeat = featExtr.extract(patch);
+      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+
+   }
+
+   cout << "Collected " << pretrainDump.size()<< " features\n";
+   deepCodebook.constructPatchLayer(pretrainDump);
+   
+   cout << "done constructing patchLayer, using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+   pretrainDump.clear();
+   
+   //collect image features
+   unsigned int nData = dataset.getSize();
+   vector< vector<Patch> > imagePatches;
+   vector< vector< vector<Feature> > > imageFeatures(nData, vector< vector<Feature> >(4));
+
+   
+   for(size_t imIdx = 0; imIdx < nData;  ++imIdx){
+      imagePatches = imageScanner.scanImage(dataset.getImagePtr(imIdx));
+      for(size_t quadIdx = 0; quadIdx < nData; ++quadIdx){
+         unsigned int nFeatures = imagePatches[quadIdx].size();
+         for(size_t pIdx = 0;  pIdx <nFeatures; ++pIdx){
+            imageFeatures[imIdx][quadIdx][pIdx] = featExtr.extract(imagePatches[quadIdx][pIdx]);
+         }
+      }
+   }
+   //build hidden layers
+   
+   deepCodebook.constructHiddenLayers(imageFeatures);
+}
+
+
 //return number of classes
 unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
+
 }
 
 //construct a codebook using the current dataset
@@ -62,6 +107,8 @@ void CSVMClassifier::constructCodebook(){
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    vector< vector<Feature> > pretrainDump(nClasses);
    cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes, with " << nPatches << " patches\n";
+   
+   
    for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
       //cout << "parsing class " << cl << endl;
       if(oneCl){
@@ -94,6 +141,7 @@ void CSVMClassifier::constructCodebook(){
 
 //train the KKT-SVM
 vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
+   cout << "Enteing classic svm training\n";
    unsigned int datasetSize = dataset.getSize();
    unsigned int nClasses; 
    unsigned int nCentroids; 
@@ -101,22 +149,24 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    vector < vector < vector<double> > > datasetActivations;
    vector < Feature > dataFeatures;
    vector< vector < Patch > > patches(4);
-   vector < vector<double> > dataKernel(datasetSize, vector<double>(datasetSize,0.0));
+
+   vector < vector<double> > dataKernel(datasetSize);
    vector < vector< vector<double> > > dataActivation;
 
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
-   //cout << "collecting activations for trainingsdata..\n";
+   cout << "collecting activations for trainingsdata..\n";
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
       //extract patches
       patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
       dataActivation.clear();
+      dataFeatures.clear();
       for(size_t qIdx = 0; qIdx < 4; ++qIdx){
          //clear previous features
-         dataFeatures.clear();
+         
          //allocate for new features
          dataFeatures.reserve(patches[qIdx].size());
          
@@ -128,8 +178,9 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
          
          //get cluster activations for the features
          dataActivation.push_back(codebook.getActivations(dataFeatures)); 
-         
+         dataFeatures.clear();
       }
+      patches.clear();
       //append centroid activations to activations from 0th quadrant
       nClasses = dataActivation[0].size();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
@@ -166,6 +217,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
       }
       //get cluster activations for the features
      datasetActivations.push_back(dataActivation[0]);
+     dataActivation.clear();
    }
    
    nClasses = datasetActivations[0].size();
@@ -173,11 +225,12 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    
    
    
-   
+   cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
-      for(size_t dIdx1 = dIdx0; dIdx1 < datasetSize; ++dIdx1){
+      for(size_t dIdx1 = 0; dIdx1 <= dIdx0; ++dIdx1){
+         dataKernel[dIdx0].resize(dIdx0 + 1);
          double sum = 0;
          if(settings.svmSettings.kernelType == RBF){
             
@@ -189,7 +242,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
                }
             }
             dataKernel[dIdx0][dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
-            dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
+            //dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
             
          }else if (settings.svmSettings.kernelType == LINEAR){
 
@@ -199,8 +252,9 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
                   sum += (datasetActivations[dIdx0][cl][centr] * datasetActivations[dIdx1][cl][centr]);
                }
             }
+            //cout << "Writing " << sum << " to " << dIdx0 << ", " << dIdx1 << endl;
             dataKernel[dIdx0][dIdx1] = sum;
-            dataKernel[dIdx1][dIdx0] = sum;
+            //dataKernel[dIdx1][dIdx0] = sum;
          }else
             cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
          

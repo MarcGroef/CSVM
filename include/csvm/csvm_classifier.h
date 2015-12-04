@@ -14,6 +14,7 @@
 #include "csvm_feature_extractor.h"
 #include "csvm_svm.h"
 #include "csvm_linear_network.h"
+#include "csvm_deep_codebook.h"
 
 using namespace std;
 namespace csvm{
@@ -21,6 +22,7 @@ namespace csvm{
    class CSVMClassifier{
       CSVMSettings settings;
       Codebook codebook;
+      DeepCodebook deepCodebook;
       ImageScanner imageScanner;
       //ClusterAnalyser analyser;
       FeatureExtractor featExtr;
@@ -47,6 +49,7 @@ namespace csvm{
       bool useClassicSVM();
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
+      void constructDeepCodebook();
    };
    
 }

@@ -1,7 +1,8 @@
 
 Dataset
 method CIFAR10
-nImages 20000
+nImages 18000
+
 
 
 
@@ -14,12 +15,12 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 1000
+nClusters 100
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
-useDifferentCodebooksPerClass false
-standardizeActivations true
+useDifferentCodebooksPerClass true
+standardizeActivations false
 
 
 FeatureExtractor
@@ -33,14 +34,14 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 50000
+nRandomPatches 500000
 
 SVM
-Type CLASSIC
+Type CONV
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 200
+nIterations 400
 learningRate 0.000005
 SVM_C_Data 10000
 SVM_C_Centroid 1000000
