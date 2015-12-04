@@ -12,7 +12,7 @@ namespace csvm{
    public:
      vector<double> content;
      double getDistanceSq(Feature f);
-      
+	 double getDistanceSq(Centroid c);
    };
    
    

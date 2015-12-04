@@ -3,7 +3,8 @@
 
 #include <limits>
 #include <vector>
-//#include <iomanip>
+#include <iostream>
+#include <iomanip>
 #include "csvm_feature.h"
 #include "csvm_centroid.h"
 
@@ -19,75 +20,53 @@ namespace csvm{
     double alpha;
 	unsigned int nIter;
   };
-  /*
-  struct ClusterCentroid {
-	  Feature lastPosition;
-	  Feature newPosition;
-	  int nAssignments;
 
+  enum ContributionFunction {
+	  PROPORTIONAL,		//purely based on member distributions
+	  STRENGTH,			//also incorporates average distance to mean. Classes closer to a cluster should be represented more
 
-
-	  void printValues()
-	  {
-		  cout << '\n';
-		  for (int idx = 0; idx < lastPosition.size; ++idx)
-		  {
-			  //cout << fixed << setprecision(0) << lastPosition.content[idx]*1000 << " ";
-		  }
-	  }
-
-	  //assigning a feature directly adds its feature values to the feature of it's to-be new position. 
-	  void assignFeature(Feature feature)
-	  {
-		  ++nAssignments;
-		  for (int idx = 0; idx < feature.size;++idx)
-		  {
-			  newPosition.content[idx] += feature.content[idx];
-		  }
-	  }
-
-	  //used to compute the new position of the centroid
-	  void computeNewPosition()
-	  {
-		  for (size_t idx = 0; idx < newPosition.content.size(); ++idx)
-		  {
-			  newPosition.content[idx] = newPosition.content[idx] / nAssignments;
-		  }
-	  }
-	  
-	  //updates the position, and resets the newposition. 
-	  void resetCluster()
-	  {
-		  lastPosition = newPosition;
-		  newPosition = new Feature(lastPosition.size, 0); //is zonder new niet meer nodig toch? //new Feature(lastPosition.size, 0);  //Jonathan, free/delete[] je deze alloc wel?
-		  nAssignments = 0;
-	  }
-
-	  bool hasChanged()
-	  {
-		  for (int idx = 0; idx < lastPosition.size; ++idx) {
-			  if (lastPosition.content[idx] != newPosition.content[idx]) {
-				  return true;
-			  }
-		  }
-		  return false;
-	  }
   };
-
-  */
 
   class AKMeans{
     AKMeans_settings settings;
-	vector<Centroid> clusters;
 	vector<vector<double> > clusterByClassContributions;
 	//vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
    vector<Centroid> initCentroids(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
    
   public:
+	  unsigned int nClusters;
+	  unsigned int nClasses;
 	  void setSettings(AKMeans_settings s);
+	  vector<Centroid> clusters;
+
+	  vector< unsigned int > nMembers;	// < number of assigned members	>
+	  vector< double > averageDistances;	// < average distance to cluster >
+	  vector< double > deviations;	// < standard deviation to center	>
+
+													//per cluster..., per class...
+	  vector< vector<unsigned int> > byClassNMembers; //< number of members present in every class >
+	  vector< vector< double> > byClassAverageDistancesToCentroid; //average distance to cluster centroid per class
+	  vector< vector<double> > byClassDeviationsToCentroid;// deviation to cluster centroid per class
+
+
+																									  //per classCluster...
+	  vector<vector< Centroid > > byClassClusters; // centroids of classes
+	  vector<vector< double > > byClassAverageDistancesToClassCluster;	//average distances of class features to classcluster
+	  vector<vector<double > > byClassDeviationsToClassCluster;		//deviations of class features to classcluster
+	  vector<vector<double> > byClassClusterDistanceToCentroid;
+
+
+
     vector<Centroid> cluster(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
+	
 	vector<vector<double> > getClusterClassContributions();
 	vector<double> getClusterClassContributions(int clust);
+	vector<double> getClusterClassContributions(Feature feat);
+
+	void printAllClusterStats();
+	void printClusterStats(unsigned int clust);
+
+
   };
 }
 
