@@ -55,7 +55,7 @@ initWeight 0.1
 learningRate 0.002
 
 ConvSVM
-learningRate 0.002
+learningRate 0.00000002
 nIterations 1000
 initWeight 0.001
 CSVM_C 1000

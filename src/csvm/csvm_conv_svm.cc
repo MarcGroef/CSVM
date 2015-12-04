@@ -10,7 +10,7 @@ using namespace csvm;
       cout << "nClasses = " << settings.nClasses << endl;
       cout << "initWeight= " << settings.initWeight << endl;
       weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
-      
+      biases = vector<double>(settings.nClasses, 0.0);
       /*for(size_t clIdx = 0; clIdx < settings.nClasses; ++clIdx){
          weights[clIdx].reserve(settings.nCentroids);
          for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
@@ -27,6 +27,7 @@ using namespace csvm;
          //cout << "weights = " << weights[svmIdx][centrIdx] << endl;
          out += weights[svmIdx][centrIdx] * activations[0][centrIdx];
       }
+      out += biases[svmIdx];
       return out;
    }
    
@@ -44,12 +45,12 @@ using namespace csvm;
                double out = output(activations[dIdx], svmIdx);
                double dSlack = 0;
                double weightSum = 0;
-               sumSlack += yData * out;
+               sumSlack += yData * out < 0 ? yData * out * -1 : yData * out;
                //determine slack differential
                if(yData * out < 1){  //otherwise keep it zero
                   for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                      dSlack += activations[dIdx][0][clIdx];
-                     weightSum += weights[svmIdx][clIdx];
+                     weightSum += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
                      
                   }
                   dSlack *= yData;
@@ -57,11 +58,11 @@ using namespace csvm;
                
                //update weights
                for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
-                  weights[svmIdx][clIdx] -= settings.learningRate * (weightSum + settings.CSVM_C * dSlack) ;
+                  weights[svmIdx][clIdx] -= settings.learningRate * (weightSum - settings.CSVM_C * dSlack) ;
                }
                
                            
-               
+               //biases[svmIdx] += 
             }
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
@@ -78,8 +79,10 @@ using namespace csvm;
    unsigned int ConvSVM::classify(vector< vector<double> >& activations){
       unsigned int maxLabel = 0;
       double maxOut = numeric_limits<double>::min();
+      cout << "out 0 = " << maxOut << endl;
       for(size_t svmIdx = 1; svmIdx < settings.nClasses; ++svmIdx){
          double out = output(activations, svmIdx);
+         cout << "out " << svmIdx << " = " << out << endl;
          if(out > maxOut){
             maxOut = out;
             maxLabel = svmIdx;

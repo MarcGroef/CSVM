@@ -205,11 +205,11 @@ int main(int argc,char**argv){
       double precision;
 
 
-      cout << "\n\n\t       Actual:\t";
+      cout << "\n\n\t       Predicted:\t";
       for (int i=0; i<nClasses; i++){
          cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
       }
-      cout << "Average:" << "\n\n    \tPredicted:\n";
+      cout << "Average:" << "\n\n    \tActual:\n";
       for (int i=0; i<nClasses; ++i){
          total = 0;
          cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
