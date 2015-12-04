@@ -1,0 +1,33 @@
+cd build/logs
+rm .tmpFileList
+ls | grep $1 >> .tmpFileList
+
+noFiles=$(wc -l .tmpFileList | grep -o "^[0-9]*")
+first=0
+
+for fileNo in $(seq 1 $noFiles)
+do
+	tmpVar=$fileNo"p"
+	file=$(sed -n $tmpVar < .tmpFileList) 
+
+	line=""
+
+	for arg in ${@:2}
+	do
+		if [ $first == 0 ] ; then
+			line=$line$(grep $arg < $file | grep -o "^[^ ]*")" "
+			fileNo=$fileNo-1
+		else
+			line=$line$(grep $arg < $file | grep -oE "[0123456789]+[.]?[0123456789]*")" "
+		fi
+	done
+	echo $line
+	first=1
+done
+
+
+
+
+
+
+
