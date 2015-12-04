@@ -2,11 +2,12 @@
 #define CSVM_CONV_SVM_H
 
 #include <vector>
+#include <limits>
 #include <iostream>
 
 #include "csvm_codebook.h"
 #include "csvm_dataset.h"
-
+#include "csvm_image.h"
 using namespace std;
 namespace csvm{
 
@@ -24,7 +25,7 @@ namespace csvm{
       vector< vector<double> > weights;
       vector<double> biases;
       ConvSVMSettings settings;
-      double output(vector< vector<double> >& activations);
+      double output(vector< vector<double> >& activations, unsigned int svmIdx);
    public:
       void setSettings(ConvSVMSettings s);
       void train(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
