@@ -46,7 +46,7 @@ using namespace csvm;
                double sumDSlack = 0;
                
                
-               for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
+               /*for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
                   unsigned int label = ds->getImagePtr(dIdx1)->getLabelId();
                   double yData = (label == svmIdx ? 1.0 : -1.0);
                   double updatesdSlack = 0;
@@ -58,7 +58,7 @@ using namespace csvm;
                   }
                   updatesdSlack *= yData;
                   sumDSlack += updatesdSlack;
-               }
+               }*/
                
                
                unsigned int label = ds->getImagePtr(dIdx)->getLabelId();
@@ -76,17 +76,17 @@ using namespace csvm;
                      
                   }
                   //dSlack *= yData;
-               }
                
-               //update weights
-               for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
-                  //cout << "weight = " << weights[svmIdx][clIdx] << ", weightSum = " << weights[svmIdx][clIdx] << "sumDSlack = " << sumDSlack << endl;
-                  weights[svmIdx][clIdx] -= settings.learningRate * ( weights[svmIdx][clIdx] + settings.CSVM_C * sumDSlack) ;
-                  
-               }
                
+                  //update weights
+                  for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
+                     //cout << "weight = " << weights[svmIdx][clIdx] << ", weightSum = " << weights[svmIdx][clIdx] << "sumDSlack = " << sumDSlack << endl;
+                     weights[svmIdx][clIdx] -= settings.learningRate * ( weights[svmIdx][clIdx] + settings.CSVM_C * yData * out) ;
+                     
+                  }
+               }
                            
-               //biases[svmIdx] += settings.learningRate *  yData; 
+               biases[svmIdx] -= settings.learningRate *  yData; 
             }
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
@@ -95,7 +95,7 @@ using namespace csvm;
             objective /= 2.0;
             objective += settings.CSVM_C * sumSlack;
             
-            /*if(itIdx % 100 == 0)*/cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
+            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
          }
       }
    }

@@ -56,7 +56,7 @@ learningRate 0.002
 
 ConvSVM
 learningRate 0.0002
-nIterations 1000
+nIterations 500
 initWeight 0.001
 CSVM_C 1
 nClasses 10
