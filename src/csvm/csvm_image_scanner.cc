@@ -11,28 +11,24 @@ void ImageScanner::setSettings(ImageScannerSettings set){
   settings = set;
 }
 
-vector< vector<Patch> > ImageScanner::scanImage(Image* image){
-   vector< vector<Patch> > patches(4);
+vector<Patch> ImageScanner::scanImage(Image* image){
+   vector<Patch> patches;
    
    unsigned int scanWidth = image->getWidth() - settings.patchWidth;
    unsigned int scanHeight = image->getHeight() - settings.patchHeight;
    
    
    if(scanWidth == 0 || scanHeight == 0){
-      return vector< vector<Patch> >(1,vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight)));
+      return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
    }
 
    unsigned int quadrantSize = image->getWidth()/2;
    //cout << "quadrant size = " << quadrantSize << endl;
-   for(size_t xQuad = 0; xQuad < 2; ++xQuad){
-      for(size_t yQuad = 0; yQuad < 2; ++yQuad){
-         for(size_t x = xQuad*quadrantSize; x + settings.patchWidth  <= (xQuad + 1) * quadrantSize; x += settings.stride){
-            for(size_t y = yQuad * quadrantSize; y + settings.patchHeight  <= (yQuad + 1) * quadrantSize; y += settings.stride){
-               
-               patches[xQuad * 2 + yQuad].push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
-               
-            }
-         }
+   for(size_t x = 0; x + settings.patchWidth  <= scanWidth; x += settings.stride){
+      for(size_t y = 0; y + settings.patchHeight  <= scanHeight; y += settings.stride){
+         
+         patches.push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
+         
       }
    }
    //cout << "Patch width = " << patches[patchesTaken - 1].getWidth() << ", height = " << patches[patchesTaken - 1].getHeight() << endl;;

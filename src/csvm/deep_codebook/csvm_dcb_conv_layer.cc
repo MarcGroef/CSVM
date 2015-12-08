@@ -35,3 +35,7 @@ void ConvLayer::poolFeatureMaps(){
       }
    }
 }
+
+void ConvLayer::parseImagePatches(vector<Patch> patches){
+   
+}

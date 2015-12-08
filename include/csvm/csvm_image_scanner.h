@@ -31,7 +31,7 @@ namespace csvm{
    public:
       ImageScanner();
       void setSettings(ImageScannerSettings set);
-      vector< vector<Patch> > scanImage(Image* image);
+      vector<Patch> scanImage(Image* image);
       Patch getRandomPatch(Image* image);
    };
 

@@ -4,6 +4,8 @@
 #include "csvm_dcb_featuremap.h"
 #include "csvm_dcb_poolmap.h"
 
+#include "../csvm_patch.h"
+
 #include <vector>
 
 using namespace std;
@@ -22,6 +24,7 @@ namespace csvm{
    public:
       ConvLayer(unsigned int nCentroids, unsigned int fmWidth, unsigned int fmHeight, unsigned int poolWidth, unsigned int poolHeight);
       void poolFeatureMaps();
+      void parseImagePatches(vector<Patch> patches);
    };
 
 }

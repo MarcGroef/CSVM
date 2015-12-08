@@ -71,7 +71,9 @@ vector<double> Codebook::getCentroidByClassContributions(Feature feat) {
 }
 
 vector< vector< double > > Codebook::getActivations(vector<Feature> features){
-   
+   //if(features.size() % 4 != 0)
+   //   cout << "Warning: patches do not perfectly fit into quadrants..\n";
+   unsigned int nImagesPerQuadrant = features.size()/4;
    vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords, 0.0));
    unsigned int dataDims = features[0].content.size();
    vector<double> distances(settings.numberVisualWords);

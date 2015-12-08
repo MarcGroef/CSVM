@@ -29,7 +29,7 @@ void SVM::setSettings(SVM_Settings s){
    //cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
    alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
-   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids * 4,settings.alphaCentroidInit));  //weights to 4 quadrants
+   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit));  //weights to 4 quadrants
 }
 
 /*

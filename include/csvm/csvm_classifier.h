@@ -51,7 +51,7 @@ namespace csvm{
       bool useClassicSVM();
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
-      void constructDeepCodebook();
+      //void constructDeepCodebook();
       void trainConvSVMs();
       unsigned int classifyConvSVM(Image* im);
       void train();
