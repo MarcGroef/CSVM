@@ -59,7 +59,8 @@ namespace csvm{
     unsigned int getNClasses();
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
-
+  vector< vector< double > > getQActivations(vector<Feature> features);
+    
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);
 	vector<vector <double> > getCentroidByClassContributions();

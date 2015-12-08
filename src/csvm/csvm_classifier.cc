@@ -14,7 +14,7 @@ CSVMClassifier::CSVMClassifier(){
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
    svms.reserve(codebook.getNClasses());
-   for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
+   for(size_t svmIdx = 0; svmIdx < dataset.getNumberClasses(); ++svmIdx){
       svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);
       //cout << "I gave the SVMS alphainit = " << settings.svmSettings.alphaDataInit << endl;
@@ -307,7 +307,7 @@ void CSVMClassifier::trainClassicSVMs(){
    vector< vector < vector<double> > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-
+cout << "datasetSize = " << datasetSize << endl;
    vector < vector<double> > dataKernel(datasetSize);
    vector< vector<double> > dataActivation;
 
@@ -370,9 +370,10 @@ void CSVMClassifier::trainClassicSVMs(){
      dataActivation.clear();
    }
    nClasses = dataset.getNumberClasses();
-   nCentroids = datasetActivations[0].size();
+   nCentroids = datasetActivations[0][0].size();
    
-   
+   cout << "nClasses = " << nClasses << endl;
+   cout << "nCentroids = " << nCentroids << endl;
    
    cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
@@ -434,6 +435,7 @@ void CSVMClassifier::trainSVMs(){
    
    vector < vector<double> > dataActivation;
    //allocate space for more vectors
+   
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){

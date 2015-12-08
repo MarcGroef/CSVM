@@ -71,6 +71,7 @@ vector<double> Codebook::getCentroidByClassContributions(Feature feat) {
 }
 
 vector< vector< double > > Codebook::getActivations(vector<Feature> features){
+  return getQActivations(features);
    //if(features.size() % 4 != 0)
    //   cout << "Warning: patches do not perfectly fit into quadrants..\n";
    unsigned int nImagesPerQuadrant = features.size()/4;
@@ -144,6 +145,110 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
          
       }
 
+   }
+   return activations;
+}
+
+vector< vector< double > > Codebook::getQActivations(vector<Feature> features){
+   
+    unsigned int nQuadrants = 4; //must be a square!
+    
+   unsigned int nImagesPerQuadrant = features.size()/4;
+   vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords * nQuadrants, 0.0));
+   unsigned int dataDims = features[0].content.size();
+   vector<double> distances(settings.numberVisualWords);
+   double dev;
+   unsigned int nFeatures = features.size();
+   double mean;
+   
+   double xx = 0.0;
+   double cc;
+   double xc;
+   bool oneCl = !settings.useDifferentCodebooksPerClass;
+   
+
+   unsigned int sqrtP = sqrt(features.size());
+   unsigned int quadSize = sqrt(features.size() / nQuadrants);
+   bool overlap = features.size() % nQuadrants != 0;
+   for(size_t cl = 0; oneCl ? cl < 1 :  cl < nClasses; ++cl){
+    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
+	unsigned int qX = qIdx % quadSize;
+	unsigned int qY = (nQuadrants - qX) / quadSize;
+	
+	double activation = 0;
+	
+	for(size_t pX = qX; pX < qX + quadSize + (overlap ? 1 : 0); ++pX){
+	  for(size_t pY = qY; pY < qY + quadSize + (overlap ? 1 : 0); ++pY){
+	    
+	    unsigned int pIdx = pY * sqrtP + pX;
+	    
+	    
+	    //calculate activation;
+	    if(settings.simFunction == SOFT_ASSIGNMENT){
+	      for(size_t dim = 0; dim < dataDims; ++dim){
+		xx += features[pIdx].content[dim] * features[pIdx].content[dim];
+	      }
+	      
+	      mean = 0.0;
+	      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+		cc = 0.0;
+		xc = 0.0;
+
+		for(size_t dim = 0; dim < dataDims; ++dim){
+
+		  cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
+		  xc += bow[cl][word].content[dim] * features[pIdx].content[dim];
+
+		}
+		//double dist = 0.0;
+		//for(size_t dim = 0; dim < dataDims; ++dim){
+		//   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
+		//}
+
+		distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+		//distances[word] = sqrt(dist);
+
+		mean += distances[word];
+	      }
+	      mean /= (double)(settings.numberVisualWords);
+	      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+		activations[cl][qIdx * settings.numberVisualWords + word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+	      }
+	      
+	    }
+	    else if(settings.simFunction == CB_RBF){
+	      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+		
+		distances[word] = bow[cl][word].getDistanceSq(features[pIdx]);
+		dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
+		activations[cl][qIdx * settings.numberVisualWords + word] += dev;
+		
+	      }
+	    }
+	    
+	  }
+	}
+	//standardize data
+	double mean = 0;
+	double stddev = 0;
+	for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+	  mean += activations[cl][qIdx * settings.numberVisualWords + word];
+	}
+	
+	mean /= settings.numberVisualWords;
+	
+	for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+	  stddev += (activations[cl][qIdx * settings.numberVisualWords + word] - mean) * (activations[cl][qIdx * settings.numberVisualWords + word] - mean);
+	}
+	stddev += 0.001; //no devision by zero
+	stddev /= settings.numberVisualWords;
+	stddev = sqrt(stddev);
+	for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+	  activations[cl][qIdx * settings.numberVisualWords + word] = (activations[cl][qIdx * settings.numberVisualWords + word] - mean) / stddev;
+	}
+	
+	
+      }
    }
    return activations;
 }

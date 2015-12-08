@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 1000
+nImages 500
 
 Classifier
 type SVM
@@ -21,7 +21,7 @@ nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 useDifferentCodebooksPerClass false
-standardizeActivations true
+standardizeActivations false
 
 
 FeatureExtractor
@@ -42,8 +42,8 @@ Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 100
-learningRate 0.005
+nIterations 2000
+learningRate 0.0005
 SVM_C_Data 1000
 SVM_C_Centroid 1000000
 Cost 1

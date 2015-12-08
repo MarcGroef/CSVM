@@ -368,7 +368,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    double sum1 = 0.0;
    unsigned int kernelSize = simKernel.size();
    unsigned int kernelIdx0, kernelIdx1;
-   
+   cout << "nIter = " << settings.nIterations << endl;
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
       prevObjective = objective;
       prevSumDeltaAlpha = sumDeltaAlpha;
