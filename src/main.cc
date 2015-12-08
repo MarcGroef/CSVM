@@ -89,7 +89,7 @@ int main(int argc,char**argv){
    //c.constructDeepCodebook();
    
    //return 0;
-   c.importCodebook("10classes1000centr.bin");
+   c.importCodebook("coates.bin");
    //c.exportCodebook("10classes1000centr.bin");
    //return 0;
    //train convolutional SVMs

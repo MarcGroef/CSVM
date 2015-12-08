@@ -38,7 +38,7 @@ using namespace csvm;
          
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
             double sumSlack = 0;
-            
+            double bias = 0;
             
             
             //cout << "sumdSlack = " << sumDSlack << endl;
@@ -81,13 +81,21 @@ using namespace csvm;
                   //update weights
                   for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                      //cout << "weight = " << weights[svmIdx][clIdx] << ", weightSum = " << weights[svmIdx][clIdx] << "sumDSlack = " << sumDSlack << endl;
-                     weights[svmIdx][clIdx] -= settings.learningRate * ( weights[svmIdx][clIdx] + settings.CSVM_C * yData * out) ;
+
+                     //OLD:    weights[svmIdx][clIdx] -= settings.learningRate * ( weights[svmIdx][clIdx] + settings.CSVM_C * yData * out) ;
+		     //EDIT:   changed to Marcos suggestion Notes#2 p.1 r.4
+		     //RESULT: 
+                     weights[svmIdx][clIdx] += settings.learningRate * ( -weights[svmIdx][clIdx] + settings.CSVM_C * yData * out) ;
                      
                   }
+                  //OLD:    biases[svmIdx] -= settings.learningRate *  yData; 
+		  //EDIT:   calculate bias as sum of false clasification orientations during training, then update.
+		  //RESULT: SVM outputs are now centered around zero and have values between -2 and 2.
+		  bias += settings.learningRate * yData;
                }
                            
-               biases[svmIdx] -= settings.learningRate *  yData; 
             }
+	    biases[svmIdx] = bias;
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
