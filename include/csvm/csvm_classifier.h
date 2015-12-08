@@ -34,7 +34,6 @@ namespace csvm{
       vector < vector< vector<double> > > classicTrainActivations;
    public:
       //public vars
-      bool useLinNet;
       CSVMDataset dataset;
       
       CSVMClassifier();

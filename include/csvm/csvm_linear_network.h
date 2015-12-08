@@ -15,7 +15,7 @@ namespace csvm{
       bool useDifferentCodebooksPerClass;
       unsigned int nClasses;
       unsigned int nCentroids;
-      bool useLinNet;
+      
    };
  
    class LinNetwork{

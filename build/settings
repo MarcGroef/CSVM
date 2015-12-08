@@ -51,7 +51,6 @@ D2 1
 sigmaClassicSimilarity 500
 
 LinNet
-useLinNet false
 initWeight 0.1
 learningRate 0.002
 

@@ -70,14 +70,7 @@ void CSVMSettings::parseLinNetSettings(ifstream& stream){
   
   string setting;
   string method;
-  stream >> setting;
-   if(setting != "useLinNet"){
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }else{
-     stream >> setting;
-      netSettings.useLinNet = (setting == "true");
-   }
+  
    stream >> setting;
    if(setting != "initWeight"){
       cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
