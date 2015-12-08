@@ -216,7 +216,7 @@ void Codebook::exportCodebook(string filename){
    ofstream file(filename.c_str(),  ios::binary);
    
    //write nr of classes
-   fancyInt.intVal =(int)nClasses;
+   fancyInt.intVal = oneCl ? 1 : (int)nClasses;
    file.write(fancyInt.chars, 4);
    
    //write nr visual words per class

@@ -37,6 +37,44 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.setSettings(settings.convSVMSettings);
 }
 
+void CSVMClassifier::train(){
+   switch(settings.classifier){
+      case CL_SVM:
+         cout << "Training SVM..\n";
+         trainClassicSVMs();
+         
+         break;
+      case CL_CSVM:
+         cout << "Training Conv SVM..\n";
+         trainConvSVMs();
+         
+         break;
+      case CL_LINNET:
+         cout << "Training LinNet..\n";
+         trainLinearNetwork();
+         
+         break;
+      default:
+         cout << "WARNING! Could recognize selected classifier!\n";
+   }
+}
+
+unsigned int CSVMClassifier::classify(Image* im){
+   unsigned int result;
+   
+   switch(settings.classifier){
+      case CL_SVM:
+         result = classifyClassicSVMs(im, false); //return value should be processed
+         break;
+      case CL_CSVM:
+         classifyConvSVM(im);
+         break;
+      case CL_LINNET:
+         lnClassify(im);
+         break;
+   }
+}
+
 //export the current codebook
 void CSVMClassifier::exportCodebook(string filename){
    codebook.exportCodebook(filename);
@@ -272,7 +310,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
    return convSVM.classify(dataActivation[0]);
 }
 //train the KKT-SVM
-vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
+void CSVMClassifier::trainClassicSVMs(){
    cout << "Enteing classic svm training\n";
    unsigned int datasetSize = dataset.getSize();
    unsigned int nClasses; 
@@ -405,7 +443,7 @@ vector < vector< vector<double> > > CSVMClassifier::trainClassicSVMs(){
    for(size_t cl = 0; cl < nClasses; ++cl){
       svms[cl].trainClassic(dataKernel, &dataset);  
    }
-   return datasetActivations;
+   classicTrainActivations = datasetActivations;
 }
 
 //train the convolutional SVMs
@@ -480,7 +518,7 @@ void CSVMClassifier::trainSVMs(){
 }
 
 //classify an image using the convolutional SVMs
-unsigned int CSVMClassifier::classify(Image* image){
+/*unsigned int CSVMClassifier::classify(Image* image){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
    vector< vector<Patch> > patches(4);
@@ -560,10 +598,10 @@ unsigned int CSVMClassifier::classify(Image* image){
    }
    //return labelId of max-output-SVM
    return maxLabel;
-}
+}*/
 
 //classify an image using the KKT-SVM
-unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< vector<double> > >& trainActivations, bool printResults){
+unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
    vector < vector<Patch> > patches(4);
@@ -629,7 +667,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, vector < vector< 
    unsigned int maxLabel=0;
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
-      results[cl] = svms[cl].classifyClassic(dataActivation[0], trainActivations, &dataset);
+      results[cl] = svms[cl].classifyClassic(dataActivation[0], classicTrainActivations, &dataset);
       
       if(printResults)
          cout << "SVM " << cl << " says " << results[cl] << endl;  

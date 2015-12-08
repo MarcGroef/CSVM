@@ -31,6 +31,7 @@ namespace csvm{
       LinNetwork linNetwork;
       bool standardizeActivations;
       ConvSVM convSVM;
+      vector < vector< vector<double> > > classicTrainActivations;
    public:
       //public vars
       bool useLinNet;
@@ -42,18 +43,20 @@ namespace csvm{
       void exportCodebook(string filename);
       void importCodebook(string filename);
       void trainSVMs();
-      vector < vector< vector<double> > > trainClassicSVMs();
+      void trainClassicSVMs();
       void initSVMs();
-      unsigned int classify(Image* image);
+      //unsigned int classify(Image* image);
       unsigned int getNoClasses();
       //CSVMClassifier();
-      unsigned int classifyClassicSVMs(Image* im, vector < vector< vector< double> > >& trainActivations, bool printResults);
+      unsigned int classifyClassicSVMs(Image* im, bool printResults);
       bool useClassicSVM();
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
       void constructDeepCodebook();
       void trainConvSVMs();
       unsigned int classifyConvSVM(Image* im);
+      void train();
+      unsigned int classify(Image* im);
    };
    
 }

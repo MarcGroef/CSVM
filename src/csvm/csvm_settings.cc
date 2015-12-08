@@ -561,6 +561,28 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
 
 }
 
+void CSVMSettings::parseGeneralSettings(ifstream& stream){
+   string type, value;
+   
+   stream >> type;
+   if(type != "type"){
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> value;
+   
+   if(value == "SVM")
+      classifier = CL_SVM;
+   else if(value == "CSVM")
+      classifier == CL_CSVM;
+   else if(value == "LINNET")
+      classifier == CL_LINNET;
+   else{
+      cout << "csvm::parseGeneralSettings: " << value << " is not a recognized classifier method. Exitting..\n";
+      exit(0);
+   }
+}
+
 void CSVMSettings::readSettingsFile(string dir){
    ifstream file(dir.c_str(),ios::in);
    string line;
@@ -575,6 +597,8 @@ void CSVMSettings::readSettingsFile(string dir){
    parseDatasetSettings(file);
    /*while(getline(file,line) && line != "ClusterAnalyser");
    parseClusterAnalserData(file);*/
+   while(getline(file,line) && line != "Classifier");
+   parseGeneralSettings(file);
    while(getline(file,line) && line != "Codebook");
    parseCodebookSettings(file);
    while(getline(file,line) && line != "FeatureExtractor");

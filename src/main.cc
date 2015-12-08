@@ -94,32 +94,16 @@ int main(int argc,char**argv){
    //return 0;
    //train convolutional SVMs
    
-   
+   cout << "Init svms..\n";
    c.initSVMs();
   
-   vector< vector< vector<double> > > trainActivations;
    //train classic SVM
 
-   /*if(c.useLinNet)
-      cout << "I'm using the linear network\n";
+   cout << "Training..\n";
+   c.train();
 
-
-   if(!c.useLinNet){
-      
-      if(c.useClassicSVM()){
-         cout << "\n\nTraining classic SVM\n";
-         trainActivations = c.trainClassicSVMs();
-         
-      }else{
-         
-         cout << "\n\nTraining Conv SVM\n";
-         c.trainSVMs();
-      }
-   }else
-      c.trainLinearNetwork();
-
-   */
-   c.trainConvSVMs();
+   
+   //c.trainConvSVMs();
 
    //printKernel(trainActivations);
    //Testing phase
@@ -132,15 +116,11 @@ int main(int argc,char**argv){
       //unsigned int result = c.classify(c.dataset.getImagePtr(im));
       //classify using classic SVMs
       unsigned int result;
-      /*if(!c.useLinNet){
-         if(c.useClassicSVM())
-            result = c.classifyClassicSVMs(c.dataset.getImagePtr(im), trainActivations, false );
-         else
-            result = c.classify(c.dataset.getImagePtr(im));
-      }else
-         result = c.lnClassify(c.dataset.getImagePtr(im));
-      */
-      result = c.classifyConvSVM(c.dataset.getImagePtr(im));
+      result = c.classify(c.dataset.getImagePtr(im));
+      
+      
+     
+      //result = c.classifyConvSVM(c.dataset.getImagePtr(im));
       //cout << "classifying image \t" << im << ": " << c.dataset.getImagePtr(im)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
@@ -169,21 +149,12 @@ int main(int argc,char**argv){
 
    for(size_t im = 0; im < 500; ++im){
       image = trainSize + (rand() % (nImages - trainSize));
-      //cout << "Testing image " << image << ".. ";
-      //classify using convolutional SVMs
-      //unsigned int result = c.classify(c.dataset.getImagePtr(im));
-      //classify using classic SVMs
+      
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
-      //if(!c.useLinNet){
-       //  if(c.useClassicSVM())
-       //     result = c.classifyClassicSVMs(c.dataset.getImagePtr(image), trainActivations, false /*im > 50200 - 0 - 10*/);
-       //  else
-       //     result = c.classify(c.dataset.getImagePtr(image));
-      //}else 
-      //   result = c.lnClassify(c.dataset.getImagePtr(image));
-      result = c.classifyConvSVM(c.dataset.getImagePtr(image));
+      result = c.classify(c.dataset.getImagePtr(image));
+      
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       

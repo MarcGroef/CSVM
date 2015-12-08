@@ -21,12 +21,22 @@ namespace csvm{
       CSVM_FEATURE_HOG = 1,
       
    };
+   
+   enum CLASSIFIER{
+      CL_SVM,
+      CL_CSVM,
+      CL_LINNET,
+   };
 
    //this class should be able to read a settingsfile, or write a default settings file.
    //The settingsfile should contain all experiment parameters and relative directories of the datasets.
 
    class CSVMSettings{
      public:
+      CLASSIFIER classifier;
+      
+      
+      
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
       FeatureExtractorSettings featureSettings;
@@ -47,6 +57,7 @@ namespace csvm{
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
       void parseConvSVMSettings(ifstream& stream);
+      void parseGeneralSettings(ifstream& stream);
    };
 
 }
