@@ -59,7 +59,7 @@ void CSVMClassifier::train(){
 }
 
 unsigned int CSVMClassifier::classify(Image* im){
-   unsigned int result;
+   unsigned int result = 0;
    
    switch(settings.classifier){
       case CL_SVM:
@@ -72,6 +72,7 @@ unsigned int CSVMClassifier::classify(Image* im){
          lnClassify(im);
          break;
    }
+   return result;
 }
 
 //export the current codebook

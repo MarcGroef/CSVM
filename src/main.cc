@@ -82,7 +82,7 @@ int main(int argc,char**argv){
    
    //measure cpu time
    //cout << "Start timing\n";
-   time_t time0 = clock();
+   //time_t time0 = clock();
    
    //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
@@ -176,16 +176,16 @@ int main(int argc,char**argv){
       double precision;
 
       cout << "\n\n\t       Predicted:\t";
-      for (int i=0; i<nClasses; i++){
+      for (size_t i=0; i<nClasses; i++){
          cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
-      for (int i=0; i<nClasses; ++i){
+      for (size_t i=0; i<nClasses; ++i){
          total = 0;
          cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
-         for (int j=0; j<nClasses; ++j){
+         for (size_t j=0; j<nClasses; ++j){
             total += classifiedAs[i][j];
-            cout << ((((j == 1 | j == 2) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
+            cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
          }
          precision = (double)classifiedAs[i][i] / total * 100;
          cout << "\t\t" << precision << " %" << "\n\n\n";
