@@ -13,7 +13,7 @@ CSVMClassifier::CSVMClassifier(){
 
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
-   svms.reserve(codebook.getNClasses());
+   svms.reserve(dataset.getNumberClasses());
    for(size_t svmIdx = 0; svmIdx < dataset.getNumberClasses(); ++svmIdx){
       svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);

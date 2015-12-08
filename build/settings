@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 500
+nImages 10000
 
 Classifier
 type SVM
@@ -16,7 +16,7 @@ nGibbsSteps 2
 
 Codebook
 method KMEANS
-nClusters 100
+nClusters 1000
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -35,16 +35,16 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 50000
+nRandomPatches 100000
 
 SVM
 Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 2000
-learningRate 0.0005
-SVM_C_Data 1000
+nIterations 100
+learningRate 0.00005
+SVM_C_Data 100
 SVM_C_Centroid 1000000
 Cost 1
 D2 1

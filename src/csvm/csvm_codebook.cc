@@ -165,23 +165,25 @@ vector< vector< double > > Codebook::getQActivations(vector<Feature> features){
    double cc;
    double xc;
    bool oneCl = !settings.useDifferentCodebooksPerClass;
-   
-
+   //cout << "nFeatures = " << nFeatures << endl;
+   //cout << "nQuads = " << nQuadrants << endl;
+   unsigned int sqrtQ = sqrt(nQuadrants);
    unsigned int sqrtP = sqrt(features.size());
    unsigned int quadSize = sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
    for(size_t cl = 0; oneCl ? cl < 1 :  cl < nClasses; ++cl){
     for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
-	unsigned int qX = qIdx % quadSize;
-	unsigned int qY = (nQuadrants - qX) / quadSize;
-	
+	//cout << "Quadrant " << qIdx << endl;
+	unsigned int qX = qIdx % sqrtQ;
+	unsigned int qY = (qIdx - qX) / sqrtQ;
+	//cout << "qx,qy = " << qX << ", " << qY << endl;
 	double activation = 0;
-	
-	for(size_t pX = qX; pX < qX + quadSize + (overlap ? 1 : 0); ++pX){
-	  for(size_t pY = qY; pY < qY + quadSize + (overlap ? 1 : 0); ++pY){
+	//cout << "quadSize = " << quadSize << endl;
+	for(size_t pX = qX * quadSize; pX < (qX + 1) * quadSize + (overlap ? 1 : 0); ++pX){
+	  for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
 	    
 	    unsigned int pIdx = pY * sqrtP + pX;
-	    
+	    //cout << "pIdx = " << pIdx << endl;
 	    
 	    //calculate activation;
 	    if(settings.simFunction == SOFT_ASSIGNMENT){
@@ -240,8 +242,9 @@ vector< vector< double > > Codebook::getQActivations(vector<Feature> features){
 	for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
 	  stddev += (activations[cl][qIdx * settings.numberVisualWords + word] - mean) * (activations[cl][qIdx * settings.numberVisualWords + word] - mean);
 	}
-	stddev += 0.001; //no devision by zero
+	
 	stddev /= settings.numberVisualWords;
+	stddev += 0.01; //no devision by zero
 	stddev = sqrt(stddev);
 	for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
 	  activations[cl][qIdx * settings.numberVisualWords + word] = (activations[cl][qIdx * settings.numberVisualWords + word] - mean) / stddev;
