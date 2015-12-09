@@ -21,7 +21,6 @@ nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 useDifferentCodebooksPerClass false
-standardizeActivations false
 
 
 FeatureExtractor
