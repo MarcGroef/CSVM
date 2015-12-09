@@ -29,7 +29,6 @@ namespace csvm{
       FeatureExtractor featExtr;
       vector< SVM > svms;
       LinNetwork linNetwork;
-      bool standardizeActivations;
       ConvSVM convSVM;
       vector < vector< vector<double> > > classicTrainActivations;
    public:

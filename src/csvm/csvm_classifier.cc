@@ -31,7 +31,6 @@ void CSVMClassifier::setSettings(string settingsFile){
    featExtr.setSettings(settings.featureSettings);
    
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
-   standardizeActivations = settings.codebookSettings.standardizeActivations;
    linNetwork.setSettings(settings.netSettings);
    convSVM.setSettings(settings.convSVMSettings);
 }
