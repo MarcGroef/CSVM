@@ -79,7 +79,7 @@ int main(int argc,char**argv){
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    c.constructDeepCodebook();
    
-   return 0;
+   //return 0;
    //c.importCodebook("10classes1000centr.bin");
    //c.exportCodebook("10classes1000centr.bin");
    //return 0;

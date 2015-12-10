@@ -9,7 +9,7 @@ DeepCodebook::DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDa
    mSets.nClusters = 0;
    
    mSets.alpha = 0;
-   mSets.nIter = 15;
+   mSets.nIter = 40;
    kmeans.setSettings(mSets);
    
    
@@ -86,6 +86,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
 }
 
 void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, unsigned int stride){
+   
    unsigned int depth = 1;
    unsigned int fmSize = 1 + ((imSize - patchSize) / 2 );
    unsigned int plSize = fmSize / 2;
@@ -93,27 +94,30 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    plSizes.push_back(plSize);
    cout << "fmSize0 = " << fmSize << endl;
    cout << "plSize0 = " << plSize << endl;
-   nRandomPatches.push_back(1000);
+   unsigned int tmpNCentroids = 1000;
+   nCentroids.push_back(tmpNCentroids);
+   nRandomPatches.push_back(200000);
    
    for(size_t dIdx = 0; plSize > 2; ++dIdx, ++depth ){
+      tmpNCentroids /= 2;
+      nCentroids.push_back(tmpNCentroids);
       fmSize = plSize;
       plSize = fmSize / 2;
-      
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
       cout << "fmSize = " << fmSize << endl;
       cout << "plSize = " << plSize << endl;
-      nRandomPatches.push_back(1000);
-      
+      nRandomPatches.push_back(200000);
    }
+   
    nLayers = depth;
    nCentroids = vector<unsigned int>(depth, 100);
    layerStack.resize(nLayers);
    cout << "calculated settings for dcb\n" << "nLayers = " << nLayers << endl;;
 }
 
-vector<double> DeepCodebook::calculatePoolMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
-   cout << "calc poolmap(" << depth << ") at " << x << ", " << y << endl; 
+vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
+   //cout << "calc poolmap(" << depth << ") at " << x << ", " << y << endl; 
    unsigned int scanStride = fmSizes[depth] / plSizes[depth];
    unsigned int scanWidth = fmSizes[depth] % plSizes[depth] == 0 ? scanStride : scanStride + 1;
    
@@ -122,13 +126,25 @@ vector<double> DeepCodebook::calculatePoolMapAt(unsigned int imIdx, unsigned int
    for(size_t cvX = x * scanStride; cvX < (x) * scanStride + scanWidth; ++cvX){
       for(size_t cvY = y * scanStride; cvY < (y + 1) * scanWidth; ++cvY){
          
-         vector<double> cvVals = calculateConvMapAt(imIdx, depth, cvX, cvY);
+         vector<double> cvVals = calculateConvMapAt(im, depth, cvX, cvY);
          for(size_t centrIdx = 0; centrIdx < nCentroids[depth]; ++centrIdx){
             sum[centrIdx] += cvVals[centrIdx];
          }
       }
    }
    return sum;
+}
+
+vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
+   //cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
+   if(depth == 0){//first layer, thus use image-patch extraction
+      Feature f = featExtr->extract(scanner->getPatchAt(im, x, y));
+      return calcSimilarity(f, layerStack[depth]);
+   }else{//recursive step
+      vector<double> pm = calculatePoolMapAt(im, depth - 1, x, y);
+      Feature f(pm);
+      return calcSimilarity(f, layerStack[depth]);
+   }
 }
 
 void DeepCodebook::generateCentroids(){
@@ -151,7 +167,7 @@ void DeepCodebook::generateCentroids(){
          
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
-            vector<double> conv = calculatePoolMapAt(imIdx, depthIdx - 1, rand() % scanWidth, rand() % scanWidth);
+            vector<double> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);
             
             randomPatches.push_back(Feature(conv));
          }
@@ -161,17 +177,37 @@ void DeepCodebook::generateCentroids(){
    }
 }
 
-vector<double> DeepCodebook::calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
-   cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
-   if(depth == 0){//first layer, thus use image-patch extraction
-      Feature f = featExtr->extract(scanner->getPatchAt(dataset->getImagePtr(imIdx), x, y));
-      return calcSimilarity(f, layerStack[depth]);
-      
-   }else{//recursive step
-      vector<double> pm = calculatePoolMapAt(imIdx, depth - 1, x, y);
-      Feature f(pm);
-      return calcSimilarity(f, layerStack[depth]);
+void standardize(vector<double>& vec){
+   double mean;
+   double stddev;
+   
+   unsigned int size = vec.size();
+   for(size_t idx = 0; idx < size; ++idx){
+      mean += vec[idx];
+   }
+   mean /= size;
+   for(size_t idx = 0; idx < size; ++idx){
+      stddev += (vec[idx] - mean) * (vec[idx] - mean);
+   }
+   stddev = sqrt(stddev + 0.001);
+   stddev /= size;
+   for(size_t idx = 0; idx < size; ++idx){
+      vec[idx] = (vec[idx] - mean) / stddev;
    }
 }
+
+vector<double> DeepCodebook::getActivations(Image* im){
+   vector<double> activations;
+   
+   for(size_t pmX = 0; pmX < 2; ++pmX){
+      for(size_t pmY = 0; pmY < 2; ++pmY){
+         vector<double> pmAct = calculatePoolMapAt(im, nLayers - 1, pmX, pmY);
+         standardize(pmAct);
+         activations.insert(activations.begin(), pmAct.begin(), pmAct.end());
+      }
+   }
+   return activations;
+}
+
 
 

@@ -92,6 +92,7 @@ void CSVMClassifier::importCodebook(string filename){
 void CSVMClassifier::constructDeepCodebook(){
    deepCodebook = new DeepCodebook(&featExtr, &imageScanner, &dataset);
    deepCodebook->generateCentroids();
+   cout << "Done constructing deep codebook\n";
 }
 
 
@@ -192,6 +193,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    vector<Feature> dataFeatures;
    vector< vector<double> > dataActivation;
+   
    //extract patches
    patches = imageScanner.scanImage(image);
       
@@ -239,7 +241,7 @@ cout << "datasetSize = " << datasetSize << endl;
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
       //extract patches
-      patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+      /*patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
       dataActivation.clear();
       dataFeatures.clear();
       //clear previous features
@@ -267,6 +269,10 @@ cout << "datasetSize = " << datasetSize << endl;
       //get cluster activations for the features
      datasetActivations.push_back(dataActivation);
      dataActivation.clear();
+     */
+     vector< vector< double > > tmp;
+     tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+     datasetActivations.push_back(tmp);
    }
    nClasses = dataset.getNumberClasses();
    nCentroids = datasetActivations[0][0].size();
@@ -433,7 +439,7 @@ void CSVMClassifier::trainSVMs(){
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = dataset.getNumberClasses();
    //cout << "nClasses = " << nClasses << endl;
-   vector<Patch> patches;
+   /*vector<Patch> patches;
    vector<Feature> dataFeatures;
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    vector< vector<double> > dataActivation;
@@ -449,10 +455,11 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    for(size_t patch = 0; patch < patches.size(); ++patch)
       dataFeatures.push_back(featExtr.extract(patches[patch]));
    patches.clear();
-   
+   */
    //get cluster activations for the features
-   dataActivation = codebook.getActivations(dataFeatures); 
-   
+   //dataActivation = codebook.getActivations(dataFeatures); 
+   vector< vector <double> > tmp;
+   tmp.push_back(deepCodebook->getActivations(image));
    //append centroid activations to activations from 0th quadrant.
    nClasses = dataset.getNumberClasses();   //normalize
    //cout << "Normalizing data" << endl;
@@ -464,7 +471,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    unsigned int maxLabel=0;
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
-      results[cl] = svms[cl].classifyClassic(dataActivation, classicTrainActivations, &dataset);
+      results[cl] = svms[cl].classifyClassic(/*dataActivation*/tmp, classicTrainActivations, &dataset);
       
       if(printResults)
          cout << "SVM " << cl << " says " << results[cl] << endl;  

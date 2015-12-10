@@ -52,11 +52,12 @@ namespace csvm{
       FeatureExtractor* featExtr;
       
       vector<double> calcSimilarity(Feature& p, vector<Centroid>& c);
-      vector<double> calculatePoolMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
-      vector<double> calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
+      vector<double> calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
+      vector<double> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
    public:
       DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
       void generateCentroids();
+      vector<double> getActivations(Image* im);
    };
    
    
