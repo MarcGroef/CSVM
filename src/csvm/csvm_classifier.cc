@@ -282,8 +282,12 @@ cout << "datasetSize = " << datasetSize << endl;
       
       //cout << patches[qIdx].size() << " patches" << endl;
       //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
+      for(size_t patch = 0; patch < patches.size(); ++patch){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
+         //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
+      }
+      
+      //cout << "Extracted " << patches.size() << "patches from the image\n";
       patches.clear();
       
       //get cluster activations for the features

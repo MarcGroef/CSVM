@@ -22,10 +22,9 @@ vector<Patch> ImageScanner::scanImage(Image* image){
       return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
    }
 
-   unsigned int quadrantSize = image->getWidth()/2;
-   //cout << "quadrant size = " << quadrantSize << endl;
-   for(size_t x = 0; x + settings.patchWidth  <= scanWidth; x += settings.stride){
-      for(size_t y = 0; y + settings.patchHeight  <= scanHeight; y += settings.stride){
+  
+   for(size_t x = 0; x + settings.patchWidth  <= image->getWidth(); x += settings.stride){
+      for(size_t y = 0; y + settings.patchHeight  <= image->getHeight(); y += settings.stride){
          
          patches.push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
          
