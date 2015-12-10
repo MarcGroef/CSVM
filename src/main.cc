@@ -70,17 +70,17 @@ int main(int argc,char**argv){
    //load cifar10
    c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
    //c.dataset.loadMNIST(dataDir + "mnist/");
-
+   
    
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
 
    
    //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   //c.constructDeepCodebook();
+   c.constructDeepCodebook();
    
-   //return 0;
-   c.importCodebook("10classes1000centr.bin");
+   return 0;
+   //c.importCodebook("10classes1000centr.bin");
    //c.exportCodebook("10classes1000centr.bin");
    //return 0;
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "csvm_feature.h"
 #include "csvm_patch.h"
@@ -52,7 +53,7 @@ namespace csvm{
       vector<double> calculatePoolMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
       vector<double> calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
    public:
-      DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds,unsigned int imSize, unsigned int patchSize, unsigned int stride);
+      DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
       
    };
    

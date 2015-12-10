@@ -3,7 +3,7 @@
 using namespace std;
 using namespace csvm;
 
-DeepCodebook::DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds,unsigned int imSize, unsigned int patchSize, unsigned int stride){
+DeepCodebook::DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds){
 
    KMeans_settings mSets;
    mSets.nClusters = 0;
@@ -12,11 +12,15 @@ DeepCodebook::DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDa
    mSets.nIter = 15;
    kmeans.setSettings(mSets);
    
-   calculateSizes(imSize, patchSize, stride);
+   
    scanner = imScanner;
    dataset = ds;
    featExtr = fe;
    
+   settings.simFunction = DCB_SOFT_ASSIGNMENT;
+   settings.similaritySigma = 0.05;
+   
+   calculateSizes(dataset->getImagePtr(0)->getWidth(), scanner->settings.patchWidth, scanner->settings.stride);
 }
 
 
@@ -87,17 +91,21 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    unsigned int plSize = fmSize / 2;
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
+   cout << "fmSize0 = " << fmSize << endl;
+   cout << "plSize0 = " << plSize << endl;
    
-   for(size_t dIdx = 0; plSize < 2; ++dIdx, ++depth ){
+   for(size_t dIdx = 0; plSize > 2; ++dIdx, ++depth ){
       fmSize = plSize;
       plSize = fmSize / 2;
       
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
-      
+      cout << "fmSize = " << fmSize << endl;
+      cout << "plSize = " << plSize << endl;
    }
    nLayers = depth;
    nCentroids = vector<unsigned int>(depth, 100);
+   cout << "calculated settings for dcb\n" << "nLayers = " << nLayers << endl;;
 }
 
 vector<double> DeepCodebook::calculatePoolMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
@@ -110,7 +118,7 @@ vector<double> DeepCodebook::calculatePoolMapAt(unsigned int imIdx, unsigned int
       for(size_t cvY = y * scanStride; cvY < (y + 1) * scanWidth; ++cvY){
          
          vector<double> cvVals = calculateConvMapAt(imIdx, depth, cvX, cvY);
-         for(size_t centrIdx = 0; centrIdx < nCentroids[depth], ++centrIdx){
+         for(size_t centrIdx = 0; centrIdx < nCentroids[depth]; ++centrIdx){
             sum[centrIdx] += cvVals[centrIdx];
          }
       }
@@ -122,8 +130,11 @@ vector<double> DeepCodebook::calculateConvMapAt(unsigned int imIdx, unsigned int
    if(depth == 0){//first layer, thus use image-patch extraction
       Feature f = featExtr->extract(scanner->getPatchAt(dataset->getImagePtr(imIdx), x, y));
       return calcSimilarity(f, layerStack[depth]);
-   }else{//recursive step
       
+   }else{//recursive step
+      vector<double> pm = calculatePoolMapAt(imIdx, depth - 1, x, y);
+      Feature f(pm);
+      return calcSimilarity(f, layerStack[depth]);
    }
 }
 
