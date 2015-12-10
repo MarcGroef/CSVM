@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <cstdlib>
+#include <ctime>
+
 #include "csvm_cifar10_parser.h"
 #include "csvm_image.h"
 #include "csvm_mnist_parser.h"
@@ -39,6 +41,7 @@ namespace csvm{
       Image* getImagePtr(int index);
       Image* getImagePtrFromClass(unsigned int index, unsigned int classId);
       int getSize();
+      unsigned int getTotalImages();
       void splitDatasetToClasses();
       int getNumberImagesInClass(int labelId);
       int getNumberClasses();

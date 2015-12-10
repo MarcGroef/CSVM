@@ -14,6 +14,7 @@
 #include "csvm_image.h"
 #include "csvm_dataset.h"
 #include "csvm_feature_extractor.h"
+#include <cstdlib>
 
 using namespace std;
 
@@ -40,6 +41,7 @@ namespace csvm{
       vector<unsigned int> fmSizes;
       vector<unsigned int> plSizes;
       vector<unsigned int> nCentroids;
+      vector<unsigned int> nRandomPatches;
       
       vector< vector< Centroid > > layerStack;
       KMeans kmeans;
@@ -54,7 +56,7 @@ namespace csvm{
       vector<double> calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
    public:
       DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
-      
+      void generateCentroids(unsigned int depth);
    };
    
    

@@ -54,6 +54,10 @@ int CSVMDataset::getSize(){
    return settings.nImages;
 }
 
+unsigned int CSVMDataset::getTotalImages(){
+   return cifar10.getSize();
+}
+
 void CSVMDataset::splitDatasetToClasses(){
    nClasses = 10;
    trainImagesIdx.clear();
