@@ -92,8 +92,7 @@ void CSVMClassifier::importCodebook(string filename){
 
 void CSVMClassifier::constructDeepCodebook(){
    deepCodebook = new DeepCodebook(&featExtr, &imageScanner, &dataset);
-   deepCodebook->generateCentroids(0);
-   deepCodebook->generateCentroids(1);
+   deepCodebook->generateCentroids();
 }
 
 

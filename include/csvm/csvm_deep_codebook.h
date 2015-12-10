@@ -56,7 +56,7 @@ namespace csvm{
       vector<double> calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
    public:
       DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
-      void generateCentroids(unsigned int depth);
+      void generateCentroids();
    };
    
    
