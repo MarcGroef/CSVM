@@ -12,14 +12,26 @@
 #include "csvm_image_scanner.h"
 #include "csvm_image.h"
 #include "csvm_dataset.h"
+#include "csvm_feature_extractor.h"
 
 using namespace std;
 
 namespace csvm{
    
+   enum ActFunction{
+     DCB_RBF,
+     DCB_SOFT_ASSIGNMENT,
+   };
+   
+   struct DCBSettings{
+      ActFunction simFunction;
+      double similaritySigma;
+   };
   
    
    class DeepCodebook{
+      DCBSettings settings;
+      
       unsigned int nTotalImages;
       unsigned int nTrainImages;
       
@@ -34,9 +46,13 @@ namespace csvm{
       void calculateSizes(unsigned int imSize, unsigned int patchSize, unsigned int stride);
       ImageScanner* scanner;
       CSVMDataset* dataset;
+      FeatureExtractor* featExtr;
       
+      vector<double> calcSimilarity(Feature& p, vector<Centroid>& c);
+      vector<double> calculatePoolMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
+      vector<double> calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y);
    public:
-      DeepCodebook(ImageScanner* imScanner, CSVMDataset* ds, unsigned int imSize, unsigned int patchSize, unsigned int stride);
+      DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds,unsigned int imSize, unsigned int patchSize, unsigned int stride);
       
    };
    
