@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 10000
+nImages 1000
 
 Classifier
 type SVM
@@ -60,6 +60,6 @@ nIterations 500
 initWeight 0.001
 CSVM_C 1
 nClasses 10
-nCentroids 100
+nCentroids 1000
 
 SOFT_ASSIGNMENT

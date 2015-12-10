@@ -23,7 +23,7 @@ namespace csvm{
    class CSVMClassifier{
       CSVMSettings settings;
       Codebook codebook;
-      DeepCodebook deepCodebook;
+      //DeepCodebook deepCodebook;
       ImageScanner imageScanner;
       //ClusterAnalyser analyser;
       FeatureExtractor featExtr;

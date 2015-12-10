@@ -9,31 +9,35 @@
 #include "csvm_centroid.h"
 
 #include "csvm_kmeans.h"
+#include "csvm_image_scanner.h"
+#include "csvm_image.h"
+#include "csvm_dataset.h"
 
 using namespace std;
 
 namespace csvm{
    
-   struct DeepCodebookSettings{
-     unsigned int nHiddenLayers;
-     vector<unsigned int> layerSizes;
-     unsigned int nPatchCentroids;
-   };
+  
    
    class DeepCodebook{
-      DeepCodebookSettings settings;
+      unsigned int nTotalImages;
+      unsigned int nTrainImages;
+      
+      unsigned int nLayers;
+      vector<unsigned int> fmSizes;
+      vector<unsigned int> plSizes;
+      vector<unsigned int> nCentroids;
+      
       vector< vector< Centroid > > layerStack;
       KMeans kmeans;
       
-      Feature flowUpUntil(vector< vector<Feature> >& imagePatches, unsigned int untilThisLayer);
-      double getCentroidActivation(Centroid& centroid, Feature& f);
-      Feature getPatchActivations(vector< vector<Feature> >& imagePatches);
+      void calculateSizes(unsigned int imSize, unsigned int patchSize, unsigned int stride);
+      ImageScanner* scanner;
+      CSVMDataset* dataset;
+      
    public:
-      DeepCodebook();
-      void setSettings(DeepCodebookSettings* s);
-      void constructPatchLayer(vector<Feature>& patchCollection);
-      void constructHiddenLayers(vector< vector< vector<Feature> > >& imagePatches);
-      Feature getActivations(vector< vector<Feature> >& imagePatches);
+      DeepCodebook(ImageScanner* imScanner, CSVMDataset* ds, unsigned int imSize, unsigned int patchSize, unsigned int stride);
+      
    };
    
    
