@@ -255,7 +255,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
       datasetSettings.useDifferentCodebooksPerClass = (setting == "true");
       netSettings.useDifferentCodebooksPerClass = (setting == "true");
     }else{
-      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      cout << "csvm::csvm_settings:parseCodebookData(r.258): Error! Invalid settingsfile layout. Exitting...\n";
       
     }
     
@@ -264,7 +264,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
        stream >> setting;
       codebookSettings.standardizeActivations = (setting == "true");
     }else{
-      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      cout << "csvm::csvm_settings:parseCodebookData(r.267): Error! Invalid settingsfile layout. Exitting...\n";
       
     }
     
@@ -326,7 +326,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
 		  netSettings.useDifferentCodebooksPerClass = (setting == "true");
 	  }
 	  else {
-		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+		  cout << "csvm::csvm_settings:parseCodebookData(r.329): Error! Invalid settingsfile layout. Exitting...\n";
 
 	  }
 
@@ -336,7 +336,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
 		  codebookSettings.standardizeActivations = (setting == "true");
 	  }
 	  else {
-		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+		  cout << "csvm::csvm_settings:parseCodebookData(r.339): Error! Invalid settingsfile layout. Exitting...\n";
 
 	  }
 
@@ -456,7 +456,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
     else if(method == "CONV")
        svmSettings.type = CONV;
     else
-       cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+       cout << "csvm::csvm_settings:parseSVMSettings(r.459): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
     
   }else{
     cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
@@ -471,7 +471,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
     else if(method == "LINEAR")
        svmSettings.kernelType = LINEAR;
     else
-       cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+       cout << "csvm::csvm_settings:parseSVMSettings(r.474): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
     
   }else{
     cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";

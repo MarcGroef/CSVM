@@ -26,7 +26,7 @@ SVM::SVM(int datasetSize, int nClasses, int nCentroids, unsigned int labelId){
  * Aquire parameters from the settings file
  * */
 void SVM::setSettings(SVM_Settings s){
-   //cout << "I recieved " << s.alphaDataInit << endl;
+   cout << "Classic SVM receiving Settings." << endl;
    settings = s;
    alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
    alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids * 4,settings.alphaCentroidInit));  //weights to 4 quadrants

@@ -13,9 +13,10 @@ CSVMClassifier::CSVMClassifier(){
 
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
-   svms.reserve(codebook.getNClasses());
-   for(size_t svmIdx = 0; svmIdx < codebook.getNClasses(); ++svmIdx){
-      svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
+   int nClasses = dataset.getNumberClasses();
+   svms.reserve(nClasses);//codebook.getNClasses());
+   for(size_t svmIdx = 0; svmIdx < nClasses; ++svmIdx){
+      svms.push_back(SVM(dataset.getSize(), nClasses, codebook.getNCentroids(), svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);
       //cout << "I gave the SVMS alphainit = " << settings.svmSettings.alphaDataInit << endl;
    }
@@ -54,23 +55,25 @@ void CSVMClassifier::train(){
          
          break;
       default:
-         cout << "WARNING! Could recognize selected classifier!\n";
+         cout << "WARNING! Could not recognize selected classifier!\n";
    }
 }
 
 unsigned int CSVMClassifier::classify(Image* im){
-   unsigned int result = 0;
+   unsigned int result = 99;
    
    switch(settings.classifier){
       case CL_SVM:
          result = classifyClassicSVMs(im, false); //return value should be processed
          break;
       case CL_CSVM:
-         classifyConvSVM(im);
+         result = classifyConvSVM(im);
          break;
       case CL_LINNET:
-         lnClassify(im);
+         result = lnClassify(im);
          break;
+	  default:
+         cout << "WARNING! Could not recognize selected classifier!\n";
    }
    return result;
 }
@@ -209,7 +212,7 @@ void CSVMClassifier::trainConvSVMs(){
       //cout << "appended activations\n";
       
       //normalize summed activations of appended pools
-      unsigned int nClasses = dataActivation[0].size();
+      int nClasses = dataset.getNumberClasses();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
             dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
@@ -274,7 +277,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       dataActivation.push_back(codebook.getActivations(dataFeatures)); 
    }
    //append centroid activations to activations from 0th quadrant
-   unsigned int nClasses = dataActivation[0].size();
+   int nClasses = dataset.getNumberClasses();
    for(size_t qIdx = 1; qIdx < 4; ++qIdx){
       for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
          dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
@@ -352,7 +355,7 @@ void CSVMClassifier::trainClassicSVMs(){
       }
       patches.clear();
       //append centroid activations to activations from 0th quadrant
-      nClasses = dataActivation[0].size();
+      int nClasses = dataset.getNumberClasses();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
             dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
@@ -390,7 +393,7 @@ void CSVMClassifier::trainClassicSVMs(){
      dataActivation.clear();
    }
    
-   nClasses = datasetActivations[0].size();
+   nClasses = dataset.getNumberClasses();
    nCentroids = datasetActivations[0][0].size();
    
    
@@ -476,7 +479,7 @@ void CSVMClassifier::trainSVMs(){
          //get cluster activations for the features
          dataActivation.push_back(codebook.getActivations(dataFeatures)); 
       }
-      unsigned int nClasses = dataActivation[0].size();
+      int nClasses = dataset.getNumberClasses();
       //append centroid activations to activations from 0th quadrant
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
@@ -602,7 +605,9 @@ void CSVMClassifier::trainSVMs(){
 
 //classify an image using the KKT-SVM
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
-   unsigned int nClasses = codebook.getNClasses();
+   //EDIT: Nclasses as lenght of svmarray lenght..
+   int nClasses = dataset.getNumberClasses();
+   //unsigned int nClasses = codebook.getNClasses();
    //cout << "nClasses = " << nClasses << endl;
    vector < vector<Patch> > patches(4);
    vector<Feature> dataFeatures;
@@ -627,7 +632,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    }
    //append centroid activations to activations from 0th quadrant.
 
-   nClasses = dataActivation[0].size();
+   nClasses = dataset.getNumberClasses();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
             dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
@@ -664,7 +669,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    vector<double> results(nClasses, 0);
    
    double maxResult = -99999;
-   unsigned int maxLabel=0;
+   unsigned int maxLabel=999;
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
       results[cl] = svms[cl].classifyClassic(dataActivation[0], classicTrainActivations, &dataset);
@@ -718,7 +723,7 @@ void CSVMClassifier::trainLinearNetwork(){
       //cout << "appended activations\n";
       
       //normalize summed activations of appended pools
-      unsigned int nClasses = dataActivation[0].size();
+      int nClasses = dataset.getNumberClasses();
       for(size_t qIdx = 1; qIdx < 4; ++qIdx){
          for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
             dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());
@@ -782,7 +787,7 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
       dataActivation.push_back(codebook.getActivations(dataFeatures)); 
    }
    //append centroid activations to activations from 0th quadrant
-   unsigned int nClasses = dataActivation[0].size();
+   int nClasses = dataset.getNumberClasses();
    for(size_t qIdx = 1; qIdx < 4; ++qIdx){
       for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < nClasses; ++clIdx){
          dataActivation[0][clIdx].insert(dataActivation[0][clIdx].end(),dataActivation[qIdx][clIdx].begin(), dataActivation[qIdx][clIdx].end());

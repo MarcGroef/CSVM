@@ -89,8 +89,8 @@ int main(int argc,char**argv){
    //c.constructDeepCodebook();
    
    //return 0;
-   c.importCodebook("coates.bin");
-   //c.exportCodebook("10classes1000centr.bin");
+   c.importCodebook("LAST_USED.bin");
+   c.exportCodebook("LAST_USED.bin");
    //return 0;
    //train convolutional SVMs
    

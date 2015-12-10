@@ -1,4 +1,9 @@
 #!/bin/bash
+
+if [ ! -d "./build/logs" ]; then
+  mkdir build/logs
+fi
+
 tmp=$(make | grep "100%")
 
 if [ "${tmp#*"Built target"}" == "$tmp" ] ; then
@@ -25,3 +30,6 @@ else
    		cat settings >> ./logs/$logName
 	done
 fi
+
+type -P say &>/dev/null && say "Experiment Finished." || echo "Done"
+
