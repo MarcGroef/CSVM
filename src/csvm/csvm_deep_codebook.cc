@@ -93,7 +93,7 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    plSizes.push_back(plSize);
    cout << "fmSize0 = " << fmSize << endl;
    cout << "plSize0 = " << plSize << endl;
-   
+   nRandomPatches.push_back(1000);
    for(size_t dIdx = 0; plSize > 2; ++dIdx, ++depth ){
       fmSize = plSize;
       plSize = fmSize / 2;
@@ -102,6 +102,7 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
       plSizes.push_back(plSize);
       cout << "fmSize = " << fmSize << endl;
       cout << "plSize = " << plSize << endl;
+      nRandomPatches.push_back(1000);
    }
    nLayers = depth;
    nCentroids = vector<unsigned int>(depth, 100);
@@ -134,10 +135,11 @@ void DeepCodebook::generateCentroids(unsigned int depth){
    unsigned int totalImages = dataset->getTotalImages();
    
    if(depth == 0){
-      
+      cout << "Collecting patches..\n";
       for(size_t nIm = 0; nIm < nRandomPatches[depth]; ++nIm){
          randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages))));
       }
+      cout << "Clustering at 0th layer..\n";
       layerStack[depth] = kmeans.cluster(randomPatches, nCentroids[depth]);
       
    }else{
