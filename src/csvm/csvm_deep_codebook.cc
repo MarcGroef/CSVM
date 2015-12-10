@@ -104,12 +104,18 @@ vector<double> DeepCodebook::calculatePoolMapAt(unsigned int imIdx, unsigned int
    unsigned int scanStride = fmSizes[depth] / plSizes[depth];
    unsigned int scanWidth = fmSizes[depth] % plSizes[depth] == 0 ? scanStride : scanStride + 1;
    
-   if(depth == 0){  //first layer, thus use image-patch extraction
-      double sum = 0;
-      
-   }else{  //recursive step
-      
+  
+   vector<double> sum(nCentroids[depth], 0);
+   for(size_t cvX = x * scanStride; cvX < (x) * scanStride + scanWidth; ++cvX){
+      for(size_t cvY = y * scanStride; cvY < (y + 1) * scanWidth; ++cvY){
+         
+         vector<double> cvVals = calculateConvMapAt(imIdx, depth, cvX, cvY);
+         for(size_t centrIdx = 0; centrIdx < nCentroids[depth], ++centrIdx){
+            sum[centrIdx] += cvVals[centrIdx];
+         }
+      }
    }
+   return sum;
 }
 
 vector<double> DeepCodebook::calculateConvMapAt(unsigned int imIdx, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
