@@ -10,6 +10,9 @@ CSVMClassifier::CSVMClassifier(){
    
 }
 
+CSVMClassifier::~CSVMClassifier(){
+   delete deepCodebook;
+}
 
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
@@ -33,6 +36,8 @@ void CSVMClassifier::setSettings(string settingsFile){
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
    linNetwork.setSettings(settings.netSettings);
    convSVM.setSettings(settings.convSVMSettings);
+   
+   
 }
 
 void CSVMClassifier::train(){
@@ -83,49 +88,12 @@ void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
 }
 
-/*
+
 void CSVMClassifier::constructDeepCodebook(){
-   //Construct patch layer
-   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-   vector<Feature> pretrainDump;
-   
-   cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids, with " << nPatches << " patches\n";
-
-   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-      
-      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getSize()));
-      Feature newFeat = featExtr.extract(patch);
-      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
-
-   }
-
-   cout << "Collected " << pretrainDump.size()<< " features\n";
-   deepCodebook.constructPatchLayer(pretrainDump);
-   
-   cout << "done constructing patchLayer, using "  << settings.scannerSettings.nRandomPatches << " patches\n";
-   pretrainDump.clear();
-   
-   //collect image features
-   unsigned int nData = dataset.getSize();
-   vector< vector<Patch> > imagePatches;
-   vector< vector< vector<Feature> > > imageFeatures(nData, vector< vector<Feature> >(4));
-
-   
-   for(size_t imIdx = 0; imIdx < nData;  ++imIdx){
-      imagePatches = imageScanner.scanImage(dataset.getImagePtr(imIdx));
-      for(size_t quadIdx = 0; quadIdx < nData; ++quadIdx){
-         unsigned int nFeatures = imagePatches[quadIdx].size();
-         for(size_t pIdx = 0;  pIdx <nFeatures; ++pIdx){
-            imageFeatures[imIdx][quadIdx][pIdx] = featExtr.extract(imagePatches[quadIdx][pIdx]);
-         }
-      }
-   }
-   //build hidden layers
-   
-   deepCodebook.constructHiddenLayers(imageFeatures);
+   deepCodebook = new DeepCodebook(&featExtr, &imageScanner, &dataset);
+   deepCodebook->generateCentroids();
 }
-*/
+
 
 
 //return number of classes
@@ -281,8 +249,12 @@ cout << "datasetSize = " << datasetSize << endl;
       
       //cout << patches[qIdx].size() << " patches" << endl;
       //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
+      for(size_t patch = 0; patch < patches.size(); ++patch){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
+         //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
+      }
+      
+      //cout << "Extracted " << patches.size() << "patches from the image\n";
       patches.clear();
       
       //get cluster activations for the features

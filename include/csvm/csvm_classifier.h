@@ -23,7 +23,7 @@ namespace csvm{
    class CSVMClassifier{
       CSVMSettings settings;
       Codebook codebook;
-      DeepCodebook deepCodebook;
+      DeepCodebook* deepCodebook;
       ImageScanner imageScanner;
       //ClusterAnalyser analyser;
       FeatureExtractor featExtr;
@@ -36,6 +36,7 @@ namespace csvm{
       CSVMDataset dataset;
       
       CSVMClassifier();
+      ~CSVMClassifier();
       void setSettings(string settingsFile);
       void constructCodebook();
       void exportCodebook(string filename);
@@ -50,7 +51,7 @@ namespace csvm{
       bool useClassicSVM();
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
-      //void constructDeepCodebook();
+      void constructDeepCodebook();
       void trainConvSVMs();
       unsigned int classifyConvSVM(Image* im);
       void train();

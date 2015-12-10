@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nImages 30000
+nImages 1000
 
 Classifier
 type SVM
@@ -41,7 +41,7 @@ Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 200
+nIterations 400
 learningRate 0.00005
 SVM_C_Data 100
 SVM_C_Centroid 1000000
@@ -59,6 +59,6 @@ nIterations 500
 initWeight 0.001
 CSVM_C 1
 nClasses 10
-nCentroids 100
+nCentroids 1000
 
 SOFT_ASSIGNMENT

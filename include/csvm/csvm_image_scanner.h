@@ -26,13 +26,16 @@ namespace csvm{
 
 
    class ImageScanner{
-      ImageScannerSettings settings;
+      
       
    public:
+      ImageScannerSettings settings;
+
       ImageScanner();
       void setSettings(ImageScannerSettings set);
       vector<Patch> scanImage(Image* image);
       Patch getRandomPatch(Image* image);
+      Patch getPatchAt(Image* image, unsigned int x, unsigned int y);
    };
 
 }
