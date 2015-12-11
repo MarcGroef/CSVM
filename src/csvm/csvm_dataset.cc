@@ -5,7 +5,7 @@ using namespace csvm;
 
 
 CSVMDataset::CSVMDataset(){
-
+   nClasses = 10;
 }
 
 void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
@@ -24,22 +24,49 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
 }
 
 void CSVMDataset::loadMNIST(string mnistDir){
-   
+   cout << "loading mnist..\n";
    mnist.readTrainImages(mnistDir);
    mnist.readTrainLabels(mnistDir);
    mnist.readTestImages(mnistDir);
    mnist.readTestLabels(mnistDir);
-   /*cifar10.readLabels(labelsDir);
-   int imDirs = imageDirs.size();
+   cout << "read mnist data. Converting..\n";
 
-   for(int i = 0; i < imDirs; i++){
-      
-      cifar10.loadImages(imageDirs[i]);
+   
+
+   mnist.convertTrainSetToImages();
+   cout << "convert testset\n";
+   mnist.convertTestSetToImages();
+   
+   //splitDatasetToClasses();
+   //cout << "dataset split to classes\n";
+   
+}
+
+void CSVMDataset::loadDataset(){
+   
+   vector<string> imDirs;
+   string dataDir = "../datasets/";//argv[2];
+   
+   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_1.bin");
+   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_2.bin");
+   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_3.bin");
+   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_4.bin");
+   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_5.bin");
+   imDirs.push_back(dataDir + "cifar-10-batches-bin/test_batch.bin");
+   
+   
+   
+   switch(settings.type){
+      case DATASET_CIFAR10:
+         cout << "Loading cifar10\n";
+         loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
+         break;
+      case  DATASET_MNIST:
+         cout << "laoding mnist\n";
+         loadMNIST(dataDir + "mnist/");
+         break;
       
    }
-   splitDatasetToClasses();
-   //cout << "dataset split to classes\n";
-   */
 }
 
 Image CSVMDataset::getImage(int index){
@@ -90,7 +117,11 @@ void CSVMDataset::splitDatasetToClasses(){
    unsigned int image;
    
    for(size_t idx = 0; /*idx < settings.nImages  10000&&*/ idx < datasetSize; ++idx){
-      image = rand() % cifar10.getSize();
+      if(settings.type == DATASET_CIFAR10)
+         image = rand() % cifar10.getSize();
+      else if (settings.type == DATASET_MNIST)
+         image = rand() % mnist.getSize();
+      
       id = (getImagePtr(image))->getLabelId();
       
       //cout << "ID = " << id << endl;

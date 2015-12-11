@@ -1,7 +1,7 @@
 
 Dataset
-method CIFAR10
-nImages 2000
+method MNIST
+nImages 1000
 
 General
 Classifier SVM
@@ -25,14 +25,14 @@ useDifferentCodebooksPerClass false
 
 FeatureExtractor
 method HOG
-cellSize 6
-cellStride 6
+cellSize 4
+cellStride 4
 blockSize 8
 padding None
 
 ImageScanner
-patchHeight 12
-patchWidth 12
+patchHeight 8
+patchWidth 8
 scanStride 2
 nRandomPatches 100000
 

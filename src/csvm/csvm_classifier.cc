@@ -7,7 +7,7 @@ using namespace csvm;
 //initialize random
 CSVMClassifier::CSVMClassifier(){
    srand(time(NULL)); 
-   
+   deepCodebook = NULL;
 }
 
 CSVMClassifier::~CSVMClassifier(){
@@ -232,7 +232,7 @@ void CSVMClassifier::trainClassicSVMs(){
    vector< vector < vector<double> > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-cout << "datasetSize = " << datasetSize << endl;
+   cout << "datasetSize = " << datasetSize << endl;
    vector < vector<double> > dataKernel(datasetSize);
    vector< vector<double> > dataActivation;
 

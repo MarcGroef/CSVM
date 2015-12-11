@@ -17,6 +17,7 @@
 #include "csvm_deep_codebook.h"
 #include "csvm_conv_svm.h"
 
+
 using namespace std;
 namespace csvm{
    

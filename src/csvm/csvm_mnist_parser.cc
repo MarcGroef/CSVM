@@ -89,7 +89,7 @@ using namespace csvm;
       swapInt( &(trainImages->formatted.numberOfImages));
       swapInt( &(trainImages->formatted.numberofColumns));
       swapInt( &(trainImages->formatted.numberOfRows));
-      
+      cout <<  "NRROWS = " << trainImages->formatted.numberOfRows << endl;
       if(trainImages->formatted.magicNumber != 2051)
          cout << "csvm::MNISTParser::readTrainImages: Magic number mismatch! It says " << trainImages->formatted.magicNumber << " and reads " << trainImages->formatted.numberOfImages << " images\n";
       
@@ -168,32 +168,36 @@ using namespace csvm;
    
    void MNISTParser::convertTrainSetToImages(){
       
-      if(trainImages == NULL && trainLabels != NULL){
+      //if(trainImages == NULL && trainLabels != NULL){
          size_t nImages = trainImages->formatted.numberOfImages;
          
          size_t width = trainImages->formatted.numberOfRows;
+         //cout << "width = " << width << endl;
          size_t height = trainImages->formatted.numberofColumns;
-         
+         //cout << "width = " << width << ", height = " << height << endl;
          for(size_t imIdx = 0; imIdx < nImages; ++imIdx){
+            //cout << "converting image " << imIdx << endl;
             Image im(width, height, CSVM_IMAGE_UCHAR_GREY);
             im.setImageData(vector<unsigned char>(trainImages->formatted.images[imIdx].pixels, trainImages->formatted.images[imIdx].pixels + sizeof(trainImages->formatted.images[imIdx].pixels) / sizeof(trainImages->formatted.images[imIdx].pixels[0])));
             string label = "";
             label += trainLabels->formatted.labels[imIdx];
             im.setLabel(label);
             im.setLabelId(trainLabels->formatted.labels[imIdx]);
+            //cout << "labelId = " << im.getLabelId();
             images.push_back(im);
             labels.push_back(label);
          }
-         
-      }
-      delete trainImages;
-      delete trainLabels;
+         delete trainImages;
+         delete trainLabels;
+      //}else 
+      //   cout << "WARNING: No images formatted in convertTrainSetToImages!\n";
+      
    }
    
    
    void MNISTParser::convertTestSetToImages(){
-      
-      if(trainImages == NULL && trainLabels != NULL){
+      cout << "converting test images\n";
+      //if(trainImages == NULL && trainLabels != NULL){
          size_t nImages = testImages->formatted.numberOfImages;
          
          size_t width = testImages->formatted.numberOfRows;
@@ -211,7 +215,7 @@ using namespace csvm;
             labels.push_back(label);
          }
          
-      }
+      //}
       
    }
    

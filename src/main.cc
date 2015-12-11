@@ -45,7 +45,7 @@ int main(int argc,char**argv){
       return 0;
 //    }*/
    srand(time(NULL));
-   string dataDir = "../datasets/";//argv[2];
+   
    CSVMClassifier c;
    ImageScanner scanner;
    vector<Patch> newPatches;
@@ -58,19 +58,12 @@ int main(int argc,char**argv){
    
    
    //setup cifar10 data directories
-   vector<string> imDirs;
    
-   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_1.bin");
-   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_2.bin");
-   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_3.bin");
-   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_4.bin");
-   imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_5.bin");
-   imDirs.push_back(dataDir + "cifar-10-batches-bin/test_batch.bin");
    
    //load cifar10
-   c.dataset.loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
-   //c.dataset.loadMNIST(dataDir + "mnist/");
    
+   c.dataset.loadDataset();
+   cout << "loaded mnist\n";
    
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
 
@@ -81,7 +74,7 @@ int main(int argc,char**argv){
    
    //return 0;
    //c.importCodebook("10classes1000centr.bin");
-   //c.exportCodebook("10classes1000centr.bin");
+   c.exportCodebook("10classes1000centr.bin");
    //return 0;
 
    c.initSVMs();

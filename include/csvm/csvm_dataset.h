@@ -48,6 +48,7 @@ namespace csvm{
       void setSettings(CSVMDataset_Settings s);
       string getLabel(int labelId);
       void appendAndShuffleDataIdxArray();
+      void loadDataset();
    };
 }
 #endif
