@@ -85,6 +85,7 @@
     <ClCompile Include="src\csvm\csvm_classifier.cc" />
     <ClCompile Include="src\csvm\csvm_clean_descriptor.cc" />
     <ClCompile Include="src\csvm\csvm_codebook.cc" />
+    <ClCompile Include="src\csvm\csvm_conv_svm.cc" />
     <ClCompile Include="src\csvm\csvm_dataset.cc" />
     <ClCompile Include="src\csvm\csvm_deep_codebook.cc" />
     <ClCompile Include="src\csvm\csvm_feature.cc" />
