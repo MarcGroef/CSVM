@@ -68,13 +68,13 @@ int main(int argc,char**argv){
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
 
    
-   //c.constructCodebook();
+   c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    //c.constructDeepCodebook();
    
    //return 0;
-   c.importCodebook("10classes1000centr.bin");
-   //c.exportCodebook("10classes1000centr.bin");
+   //c.importCodebook("10classes1000centr.bin");
+   c.exportCodebook("cifar.bin");
    //return 0;
 
    c.initSVMs();
@@ -120,8 +120,9 @@ int main(int argc,char**argv){
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
-      result = c.classify(c.dataset.getImagePtr(image));
       
+      result = c.classify(c.dataset.getImagePtr(image));
+      //cout << "result: " << result << endl;
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
       
@@ -149,12 +150,12 @@ int main(int argc,char**argv){
 
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
-         cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+         cout << i /* c.dataset.getLabel(i)*/ << ((i<2) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
          total = 0;
-         cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         cout << " \t" << i/*c.dataset.getLabel(i)*/ << ((i > 1) ? "\t" : "");
          for (size_t j=0; j<nClasses; ++j){
             total += classifiedAs[i][j];
             cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;

@@ -11,12 +11,7 @@ using namespace csvm;
       cout << "initWeight= " << settings.initWeight << endl;
       weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
       biases = vector<double>(settings.nClasses, 0);
-      /*for(size_t clIdx = 0; clIdx < settings.nClasses; ++clIdx){
-         weights[clIdx].reserve(settings.nCentroids);
-         for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
-            weights[clIdx][centrIdx] = settings.initWeight;
-         }
-      }*/
+
    }
    
    double ConvSVM::output(vector< vector<double> >& activations, unsigned int svmIdx){
@@ -34,13 +29,15 @@ using namespace csvm;
    void ConvSVM::train(vector< vector< vector<double> > >& activations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
+      //for all csvms in ensemble
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
+         
          
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
             double sumSlack = 0;
             
-            
-            
+            double tempBias = 0;
+            //for all data
             //cout << "sumdSlack = " << sumDSlack << endl;
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                double sumDSlack = 0;
@@ -84,10 +81,12 @@ using namespace csvm;
                      weights[svmIdx][clIdx] -= settings.learningRate * ( weights[svmIdx][clIdx] + settings.CSVM_C * yData * out) ;
                      
                   }
+                  tempBias += settings.learningRate *  yData; 
                }
                            
-               biases[svmIdx] -= settings.learningRate *  yData; 
+               
             }
+            biases[svmIdx] = tempBias;
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
@@ -100,16 +99,20 @@ using namespace csvm;
       }
    }
    
+   
+   //classify image, given its activations
    unsigned int ConvSVM::classify(vector< vector<double> >& activations){
       unsigned int maxLabel = 0;
       double maxOut = output(activations, 0);
-      cout << "out 0 = " << maxOut << endl;
+      //cout << "out 0 = " << maxOut << endl;
+      //cout << "settings.nClasses = " << settings.nClasses << endl;
       for(size_t svmIdx = 1; svmIdx < settings.nClasses; ++svmIdx){
          double out = output(activations, svmIdx);
-         cout << "out " << svmIdx << " = " << out << endl;
+         //cout << "out " << svmIdx << " = " << out << endl;
          if(out > maxOut){
             maxOut = out;
             maxLabel = svmIdx;
+            //cout << "Maxlabel = " << maxLabel << endl;
          }
       }
       return maxLabel;

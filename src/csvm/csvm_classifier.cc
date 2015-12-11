@@ -70,10 +70,10 @@ unsigned int CSVMClassifier::classify(Image* im){
          result = classifyClassicSVMs(im, false); //return value should be processed
          break;
       case CL_CSVM:
-         classifyConvSVM(im);
+         result = classifyConvSVM(im);
          break;
       case CL_LINNET:
-         lnClassify(im);
+         result = lnClassify(im);
          break;
    }
    return result;
