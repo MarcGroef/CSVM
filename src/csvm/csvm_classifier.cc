@@ -145,7 +145,7 @@ void CSVMClassifier::constructCodebook(){
 }
 
 void CSVMClassifier::trainConvSVMs(){
-      unsigned int datasetSize = dataset.getSize();
+   unsigned int datasetSize = dataset.getSize();
    vector < vector < vector < double > > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
@@ -244,7 +244,7 @@ void CSVMClassifier::trainClassicSVMs(){
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
       //extract patches
-      if(settings.codebook = CB_CODEBOOK){
+      if(settings.codebook == CB_CODEBOOK){
          patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
          dataActivation.clear();
          dataFeatures.clear();
@@ -274,6 +274,7 @@ void CSVMClassifier::trainClassicSVMs(){
          datasetActivations.push_back(dataActivation);
          dataActivation.clear();
      }else{
+        cout << "Im using the deep codebook\n";
          vector< vector< double > > tmp;
          tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
          datasetActivations.push_back(tmp);

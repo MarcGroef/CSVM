@@ -575,9 +575,11 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream){
    }
    
    stream >> value;
-   if(value == "CODEBOOK")
+   if(value == "CODEBOOK"){
+      cout << "codebook set to CODEBOOK\n";
       codebook = CB_CODEBOOK;
-   else if(value == "DEEPCODEBOOK"){
+   }else if(value == "DEEPCODEBOOK"){
+      cout << "Codebook set to DEEPCODEBOOK\n";
       codebook = CB_DEEPCODEBOOK;
    }else{
       cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
