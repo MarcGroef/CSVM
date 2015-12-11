@@ -341,6 +341,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
   string setting;
   string method;
   string enumeration;
+  string useGray;
   stream >> setting;
   if(setting != "method"){
     cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -392,6 +393,19 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
     }
+
+	stream >> setting;
+	if (setting == "useGreyPixel") {//if we use grey images
+		stream >> useGray;
+		if (useGray == "true")
+			featureSettings.hogSettings.useGreyPixel = true;
+		
+	}
+	else {
+		cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+		exit(-1);
+	}
+
   }else if (method == "CLEAN"){
       featureSettings.featureType = CLEAN;
   }

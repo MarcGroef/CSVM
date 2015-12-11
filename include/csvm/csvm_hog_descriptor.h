@@ -15,10 +15,10 @@ using namespace std;
 
 namespace csvm{
    enum Colour {
-      GRAY = -1,
-      RED = 0,
-      GREEN = 1,
-      BLUE = 2,
+	   GRAY = 0,
+      RED = 1,
+      GREEN = 2,
+      BLUE = 3,
    };
 
    enum Padding {

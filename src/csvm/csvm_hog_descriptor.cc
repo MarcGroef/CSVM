@@ -35,13 +35,13 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //this->settings.padding = NONE;
    settings.nBins = 9;
    this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   this->settings.useGreyPixel = false;
+   this->settings.useGreyPixel = true;
    this->settings.interpol = INTERPOLATE_LINEAR;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
    double result;
-   if (settings.useGreyPixel) {
+   if (settings.useGreyPixel || col == GRAY) {
       double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
       double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
       result = xPlus - xMin;
@@ -58,7 +58,7 @@ double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
 double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
    double result=0;
    //for now, implement zero padding hardcoded
-   if (settings.useGreyPixel) {
+   if (settings.useGreyPixel || col == GRAY) {
       double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
       double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y-1));
       result = yPlus - yMin;
@@ -85,7 +85,7 @@ double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
 }
 
 void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block) {
-	cout << "binPixel called for x:" << X << ", y:" << Y << "\n";
+	//cout << "binPixel called for x:" << X << ", y:" << Y << "\n";
 	double xGradient = computeXGradient(block, X, Y, col);
 	double yGradient = computeYGradient(block, X, Y, col);
 	double gradientMagnitude = computeMagnitude(xGradient, yGradient);
@@ -161,9 +161,9 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel){
    //iterate through block with a cell, with stride cellstride. 
      
    ///////////////////
-   int colours = 3;
+   int colours = 1;
    double**** transposedImage;
-   if (settings.useGreyPixel != true) {
+   //if (settings.useGreyPixel != true) {
 	   //cout << "making transposed image\n";
 	   transposedImage = new double***[patchWidth]; //= total size to store compelte image array-wise
 	   double xGradient = 0;
@@ -172,8 +172,15 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel){
 		   transposedImage[X] = new double**[patchHeight];
 		   for (int Y = 0; Y < patchHeight; ++Y) {
 			   transposedImage[X][Y] = new double*[colours];
-			   
+
+			   //gray
+			   transposedImage[X][Y][GRAY] = new double[2];
+			   xGradient = computeXGradient(block, X, Y, RED);
+			   yGradient = computeYGradient(block, X, Y, RED);
+			   transposedImage[X][Y][GRAY][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
+			   transposedImage[X][Y][GRAY][ORIENTATION] = computeOrientation(xGradient, yGradient);
 			   //Red
+			   /*
 			   transposedImage[X][Y][RED] = new double[2];
 			   xGradient = computeXGradient(block, X, Y, RED);
 			   yGradient = computeYGradient(block, X, Y, RED);
@@ -191,13 +198,16 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel){
 			   yGradient = computeYGradient(block, X, Y, BLUE);
 			   transposedImage[X][Y][BLUE][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
 			   transposedImage[X][Y][BLUE][ORIENTATION] = computeOrientation(xGradient, yGradient);
-
+			   */
 		   }
 	   }
 
 	   //cout << "done making transposed \n";
 
-   }
+  // }
+   //else {
+
+   //}
    ///////////////////////////////
 
    for (int cellX = 0; cellX + settings.cellSize <= patchWidth; cellX += settings.cellStride) {
@@ -206,16 +216,18 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel){
 
          vector <double> cellOrientationHistogram(settings.nBins, 0);
          //cout << "cellOri set\n";
+		 //cout << "now iterating cells" << endl;
          //now for every cell, compute histogram of features. 
          //adjust for padding type. if no padding, then only iterate over an offset of boundary
          for (size_t X = (settings.padding == NONE ? 1 : 0); X < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++X)
          {
             for (size_t Y = (settings.padding == NONE ? 1 : 0); Y < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++Y)
             {  
+				//cout << "are we using grey pixels?" << endl;
                if (settings.useGreyPixel)
                {
+				   //cout << "yes we are using grey pixels" << endl;
 				   binPixel(X + cellX, Y + cellY, GRAY, cellOrientationHistogram , block );
-
 			   }
                else
                {
@@ -333,7 +345,7 @@ Feature HOGDescriptor::getHOG(Patch& block,int channel, bool useGreyPixel){
 
    for (int X = 0; X < patchWidth; ++X) {
 	   for (int Y = 0; Y < patchHeight; ++Y) {
-		   for (int col = 0; col < 3; ++col) {
+		   for (int col = 0; col < colours; ++col) {
 			   delete [] transposedImage[X][Y][col];
 		   }
 		   delete[] transposedImage[X][Y];

@@ -29,6 +29,7 @@ cellSize 6
 cellStride 6
 blockSize 8
 padding None
+useGreyPixel true
 
 ImageScanner
 patchHeight 12
