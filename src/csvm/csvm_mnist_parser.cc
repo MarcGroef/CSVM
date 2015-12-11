@@ -34,6 +34,9 @@ using namespace csvm;
       *val = pre.intVal;
    }
    
+   //************************* MNIST ************************
+   
+   
    MNISTParser::MNISTParser(){
       trainImages = NULL;
       trainLabels = NULL;
@@ -44,6 +47,28 @@ using namespace csvm;
       trainLabelFile = "train-labels.idx1-ubyte";
       testImagesFile = "t10k-images.idx3-ubyte";
       testLabelFile = "t10k-labels.idx1-ubyte";
+   }
+   
+   unsigned int MNISTParser::getSize(){
+      return images.size();
+   }
+   
+   Image* MNISTParser::getImagePtr(unsigned int index){
+      return &images[index];
+   }
+   
+   Image MNISTParser::getImage(unsigned int index){
+      return images[index];
+   }
+   
+   string MNISTParser::getLabel(unsigned int index){
+
+      return labels[index];
+   }
+   
+   unsigned int MNISTParser::getLabelId(unsigned int index){
+      char label = labels[index][0];
+      return (unsigned int)label;
    }
    
    void MNISTParser::readTrainImages(string dir){

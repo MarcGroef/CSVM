@@ -1,11 +1,11 @@
 
 Dataset
 method CIFAR10
-nImages 5000
+nImages 2000
 
-Classifier
-type SVM
-
+General
+Classifier SVM
+Codebook CODEBOOK
 
 ClusterAnalyser
 method RBM

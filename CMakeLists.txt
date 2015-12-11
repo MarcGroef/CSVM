@@ -37,9 +37,7 @@ src/csvm/csvm_centroid.cc
 src/csvm/csvm_deep_codebook.cc
 src/csvm/csvm_annotated_kmeans.cc
 src/csvm/csvm_conv_svm.cc
-src/csvm/deep_codebook/csvm_dcb_featuremap.cc
-src/csvm/deep_codebook/csvm_dcb_conv_layer.cc
-src/csvm/deep_codebook/csvm_dcb_poolmap.cc
+
 
 ##png library
 src/lodepng/lodepng.cc

@@ -27,6 +27,11 @@ namespace csvm{
       CL_CSVM,
       CL_LINNET,
    };
+   
+   enum CODEBOOK{
+      CB_CODEBOOK,
+      CB_DEEPCODEBOOK,
+   };
 
    //this class should be able to read a settingsfile, or write a default settings file.
    //The settingsfile should contain all experiment parameters and relative directories of the datasets.
@@ -34,7 +39,7 @@ namespace csvm{
    class CSVMSettings{
      public:
       CLASSIFIER classifier;
-      
+      CODEBOOK codebook;
       
       
       FEATURE_TYPE feature;

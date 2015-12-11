@@ -27,7 +27,7 @@ namespace csvm{
    class CSVMDataset{
       CSVMDataset_Settings settings;
       CIFAR10 cifar10;
-      MNISTParser mnistParser;
+      MNISTParser mnist;
       vector<Image> images;
       vector<int> testImagesIdx;
       vector< vector<unsigned int> > trainImagesIdx;   //[labelId][image]

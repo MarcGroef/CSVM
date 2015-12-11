@@ -111,6 +111,14 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream){
       }
       stream >> datasetSettings.nImages;
     
+  }else if(method == "MNIST"){
+      datasetSettings.type = DATASET_MNIST;
+      stream >> setting;
+      if(setting != "nImages"){
+         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
+         exit(-1);
+      }
+      stream >> datasetSettings.nImages;
   }
  
 }
@@ -543,7 +551,7 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream){
    string type, value;
    
    stream >> type;
-   if(type != "type"){
+   if(type != "Classifier"){
       cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
       exit(0);
    }
@@ -557,6 +565,22 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream){
       classifier = CL_LINNET;
    else{
       cout << "csvm::parseGeneralSettings: " << value << " is not a recognized classifier method. Exitting..\n";
+      exit(0);
+   }
+   
+   stream >> type;
+   if(type!= "Codebook"){
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);      
+   }
+   
+   stream >> value;
+   if(value == "CODEBOOK")
+      codebook = CB_CODEBOOK;
+   else if(value == "DEEPCODEBOOK"){
+      codebook = CB_DEEPCODEBOOK;
+   }else{
+      cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
       exit(0);
    }
 }
@@ -575,7 +599,7 @@ void CSVMSettings::readSettingsFile(string dir){
    parseDatasetSettings(file);
    /*while(getline(file,line) && line != "ClusterAnalyser");
    parseClusterAnalserData(file);*/
-   while(getline(file,line) && line != "Classifier");
+   while(getline(file,line) && line != "General");
    parseGeneralSettings(file);
    while(getline(file,line) && line != "Codebook");
    parseCodebookSettings(file);

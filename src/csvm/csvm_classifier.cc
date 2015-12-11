@@ -105,7 +105,10 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
-   
+   if(settings.codebook == CB_DEEPCODEBOOK){
+      constructDeepCodebook();
+      return;
+   }
    unsigned int nClasses = dataset.getNumberClasses();
    
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
@@ -241,38 +244,40 @@ cout << "datasetSize = " << datasetSize << endl;
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
       
       //extract patches
-      /*patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
-      dataActivation.clear();
-      dataFeatures.clear();
-      //clear previous features
+      if(settings.codebook = CB_CODEBOOK){
+         patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+         dataActivation.clear();
+         dataFeatures.clear();
+         //clear previous features
+         
+         //allocate for new features
+         dataFeatures.reserve(patches.size());
+         
+         //cout << patches[qIdx].size() << " patches" << endl;
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches.size(); ++patch){
+            dataFeatures.push_back(featExtr.extract(patches[patch]));
+            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
+         }
+         
+         //cout << "Extracted " << patches.size() << "patches from the image\n";
+         patches.clear();
+         
+         //get cluster activations for the features
+         dataActivation = codebook.getActivations(dataFeatures); 
+         dataFeatures.clear();
       
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      
-      //cout << patches[qIdx].size() << " patches" << endl;
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch){
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-         //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
-      }
-      
-      //cout << "Extracted " << patches.size() << "patches from the image\n";
-      patches.clear();
-      
-      //get cluster activations for the features
-      dataActivation = codebook.getActivations(dataFeatures); 
-      dataFeatures.clear();
-   
-      patches.clear();
-      
+         patches.clear();
+         
 
-      //get cluster activations for the features
-     datasetActivations.push_back(dataActivation);
-     dataActivation.clear();
-     */
-     vector< vector< double > > tmp;
-     tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
-     datasetActivations.push_back(tmp);
+         //get cluster activations for the features
+         datasetActivations.push_back(dataActivation);
+         dataActivation.clear();
+     }else{
+         vector< vector< double > > tmp;
+         tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+         datasetActivations.push_back(tmp);
+     }
    }
    nClasses = dataset.getNumberClasses();
    nCentroids = datasetActivations[0][0].size();
@@ -439,27 +444,30 @@ void CSVMClassifier::trainSVMs(){
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = dataset.getNumberClasses();
    //cout << "nClasses = " << nClasses << endl;
-   /*vector<Patch> patches;
-   vector<Feature> dataFeatures;
-   bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
    vector< vector<double> > dataActivation;
-   //extract patches
-   patches = imageScanner.scanImage(image);
+   if(settings.codebook = CB_CODEBOOK){
+      vector<Patch> patches;
+      vector<Feature> dataFeatures;
+      bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
       
-   //clear previous features
-   dataFeatures.clear();
-   //allocate for new features
-   dataFeatures.reserve(patches.size());
-   
-   //extract features from all patches
-   for(size_t patch = 0; patch < patches.size(); ++patch)
-      dataFeatures.push_back(featExtr.extract(patches[patch]));
-   patches.clear();
-   */
-   //get cluster activations for the features
-   //dataActivation = codebook.getActivations(dataFeatures); 
-   vector< vector <double> > tmp;
-   tmp.push_back(deepCodebook->getActivations(image));
+      //extract patches
+      patches = imageScanner.scanImage(image);
+         
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+      patches.clear();
+      dataActivation = codebook.getActivations(dataFeatures); 
+   }else{
+      
+      
+      dataActivation.push_back(deepCodebook->getActivations(image));
+   }
    //append centroid activations to activations from 0th quadrant.
    nClasses = dataset.getNumberClasses();   //normalize
    //cout << "Normalizing data" << endl;
@@ -471,7 +479,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    unsigned int maxLabel=0;
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
-      results[cl] = svms[cl].classifyClassic(/*dataActivation*/tmp, classicTrainActivations, &dataset);
+      results[cl] = svms[cl].classifyClassic(dataActivation, classicTrainActivations, &dataset);
       
       if(printResults)
          cout << "SVM " << cl << " says " << results[cl] << endl;  

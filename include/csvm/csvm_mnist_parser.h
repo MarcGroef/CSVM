@@ -86,6 +86,12 @@ namespace csvm{
       void readTestImages(string filename);
       void readTestLabels(string filename);
       void deleteUnformattedData();
+      
+      Image* getImagePtr(unsigned int index);
+      Image getImage(unsigned int index);
+      string getLabel(unsigned int index);
+      unsigned int getLabelId(unsigned int index);
+      unsigned int getSize();
    };
 }
 

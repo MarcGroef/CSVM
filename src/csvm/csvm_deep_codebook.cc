@@ -123,7 +123,7 @@ vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, u
    
   
    vector<double> sum(nCentroids[depth], 0);
-   for(size_t cvX = x * scanStride; cvX < (x) * scanStride + scanWidth; ++cvX){
+   for(size_t cvX = x * scanStride; cvX < (x + 1) * scanWidth; ++cvX){
       for(size_t cvY = y * scanStride; cvY < (y + 1) * scanWidth; ++cvY){
          
          vector<double> cvVals = calculateConvMapAt(im, depth, cvX, cvY);
@@ -164,7 +164,7 @@ void DeepCodebook::generateCentroids(){
          
       }else{
          unsigned int scanWidth = plSizes[depthIdx - 1];
-         
+         cout << "Collecting next-level patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
             vector<double> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);
@@ -178,8 +178,8 @@ void DeepCodebook::generateCentroids(){
 }
 
 void standardize(vector<double>& vec){
-   double mean;
-   double stddev;
+   double mean = 0;
+   double stddev = 0;
    
    unsigned int size = vec.size();
    for(size_t idx = 0; idx < size; ++idx){
@@ -198,9 +198,9 @@ void standardize(vector<double>& vec){
 
 vector<double> DeepCodebook::getActivations(Image* im){
    vector<double> activations;
-   
-   for(size_t pmX = 0; pmX < 2; ++pmX){
-      for(size_t pmY = 0; pmY < 2; ++pmY){
+   unsigned int plSize = plSizes[nLayers - 1];
+   for(size_t pmX = 0; pmX < plSize; ++pmX){
+      for(size_t pmY = 0; pmY < plSize; ++pmY){
          vector<double> pmAct = calculatePoolMapAt(im, nLayers - 1, pmX, pmY);
          standardize(pmAct);
          activations.insert(activations.begin(), pmAct.begin(), pmAct.end());

@@ -25,10 +25,10 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
 
 void CSVMDataset::loadMNIST(string mnistDir){
    
-   mnistParser.readTrainImages(mnistDir);
-   mnistParser.readTrainLabels(mnistDir);
-   mnistParser.readTestImages(mnistDir);
-   mnistParser.readTestLabels(mnistDir);
+   mnist.readTrainImages(mnistDir);
+   mnist.readTrainLabels(mnistDir);
+   mnist.readTestImages(mnistDir);
+   mnist.readTestLabels(mnistDir);
    /*cifar10.readLabels(labelsDir);
    int imDirs = imageDirs.size();
 
@@ -43,18 +43,40 @@ void CSVMDataset::loadMNIST(string mnistDir){
 }
 
 Image CSVMDataset::getImage(int index){
+   switch(settings.type){
+      case DATASET_CIFAR10:
+         return cifar10.getImage(index);
+      case  DATASET_MNIST:
+         return mnist.getImage(index);
+      
+   }
    return cifar10.getImage(index);
 }
 
 Image* CSVMDataset::getImagePtr(int index){
+   switch(settings.type){
+      case DATASET_CIFAR10:
+         return cifar10.getImagePtr(index);
+      case  DATASET_MNIST:
+         return mnist.getImagePtr(index);
+      
+   }
    return cifar10.getImagePtr(index);
 }
 
 int CSVMDataset::getSize(){
+   
    return settings.nImages;
 }
 
 unsigned int CSVMDataset::getTotalImages(){
+   switch(settings.type){
+      case DATASET_CIFAR10:
+         return cifar10.getSize();
+      case  DATASET_MNIST:
+         return mnist.getSize();
+      
+   }
    return cifar10.getSize();
 }
 
@@ -69,7 +91,7 @@ void CSVMDataset::splitDatasetToClasses(){
    
    for(size_t idx = 0; /*idx < settings.nImages  10000&&*/ idx < datasetSize; ++idx){
       image = rand() % cifar10.getSize();
-      id = (cifar10.getImagePtr(image))->getLabelId();
+      id = (getImagePtr(image))->getLabelId();
       
       //cout << "ID = " << id << endl;
       trainImagesIdx[id].push_back(image);    
@@ -112,6 +134,13 @@ void CSVMDataset::setSettings(CSVMDataset_Settings s){
 }
 
 string CSVMDataset::getLabel(int labelId){
+   switch(settings.type){
+      case DATASET_CIFAR10:
+         return cifar10.getLabel(labelId);
+      case  DATASET_MNIST:
+         return mnist.getLabel(labelId);
+      
+   }
    return cifar10.getLabel(labelId);
 }
 
@@ -120,7 +149,8 @@ int CSVMDataset::getNumberClasses(){
 }
 
 Image* CSVMDataset::getImagePtrFromClass(unsigned int index, unsigned int classId){
-   return cifar10.getImagePtr(trainImagesIdx[classId][index]);
+   
+   return getImagePtr(trainImagesIdx[classId][index]);
 }
 
 int CSVMDataset::getNumberImagesInClass(int labelId){
