@@ -446,7 +446,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    unsigned int nClasses = dataset.getNumberClasses();
    //cout << "nClasses = " << nClasses << endl;
    vector< vector<double> > dataActivation;
-   if(settings.codebook = CB_CODEBOOK){
+   if(settings.codebook == CB_CODEBOOK){
       vector<Patch> patches;
       vector<Feature> dataFeatures;
       bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
