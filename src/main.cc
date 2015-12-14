@@ -68,13 +68,13 @@ int main(int argc,char**argv){
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
 
    
-   c.constructCodebook();
+   //c.constructCodebook();
    //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
    //c.constructDeepCodebook();
    
    //return 0;
-   //c.importCodebook("10classes1000centr.bin");
-   c.exportCodebook("cifar.bin");
+   c.importCodebook("cifar.bin");
+   //c.exportCodebook("cifar.bin");
    //return 0;
 
    c.initSVMs();

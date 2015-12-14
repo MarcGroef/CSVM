@@ -1,7 +1,7 @@
 
 Dataset
-method CIFAR10
-nImages 1000
+method MNIST
+nImages 300
 
 General
 Classifier CSVM
@@ -32,8 +32,8 @@ padding None
 useGreyPixel true
 
 ImageScanner
-patchHeight 8
-patchWidth 8
+patchHeight 12
+patchWidth 12
 scanStride 2
 nRandomPatches 100000
 
@@ -42,7 +42,7 @@ Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
 AlphaCentroidInit 0.001
-nIterations 1000
+nIterations 100
 learningRate 0.0000005
 SVM_C_Data 1000
 SVM_C_Centroid 1000000
@@ -51,15 +51,15 @@ D2 1
 sigmaClassicSimilarity 500
 
 LinNet
-initWeight 0.1
-learningRate 0.002
+initWeight 0.01
+learningRate 0.0000005
 
 ConvSVM
-learningRate 0.000000002
-nIterations 1000
+learningRate 0.000005
+nIterations 2000
 initWeight 0.001
-CSVM_C 1
+CSVM_C 1000
 nClasses 10
-nCentroids 1000
+nCentroids 4000
 
 SOFT_ASSIGNMENT

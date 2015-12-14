@@ -26,7 +26,7 @@ void LinNetwork::setSettings(LinNetSettings s){
    bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    settings.nClasses = 10;
-  
+  settings.nCentroids = 1000;
    biases = vector<double>(settings.nClasses,0);
    
    weights = vector< vector< vector<double> > >(settings.nClasses, vector< vector< double> >(oneCl ? 1 : settings.nClasses, vector<double>(settings.nCentroids * 4,settings.initWeight)));
@@ -58,7 +58,7 @@ double LinNetwork::computeOutput(unsigned int networkClassIdx, vector< vector<do
 }
 
 void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDataset* ds){
-   unsigned int nIter = 400;
+   unsigned int nIter = 5000;
    unsigned int nData = activations.size();
    double output;
    double error;
@@ -78,6 +78,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
       //for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
       for(size_t iterIdx = 0; iterIdx < nIter /*&& 0.5 * sqErrorSum / nData > 0.04*/ /*sumOfChange > 0.0001*/; ++iterIdx){
          errorSum = 0.0;
+         unsigned int nTrained = 0;
          sqErrorSum = 0.0;
          sumOfChange = 0.0;
          for(size_t dataIdx = 0; dataIdx < nData; ++ dataIdx){
@@ -92,6 +93,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
             sqErrorSum += error * error;
             errorSum += error;
             //if(error > 0){ //update weight iff not already correct output
+               ++nTrained;
                for(size_t clIdx = 0; oneCl ? clIdx < 1 : clIdx < settings.nClasses; ++clIdx){
                   for(size_t centrIdx = 0; centrIdx < settings.nCentroids * 4; ++centrIdx){
                      
@@ -108,14 +110,16 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
             //}   
                //sumOfChange += deltaBias < 0 ? -1.0 * deltaBias : deltaBias;
             
-            double deltaBias =  learningRate * -1.0 /*  (output) * (1.0 - output) */*  error;
+            
            // biases[networkClassIdx] -= deltaBias;
          }
          if(iterIdx%100==0)
             cout << "Network " << networkClassIdx << " SOC = " << sumOfChange << "   \terror = " <<  0.5 * sqErrorSum /nData <<endl;
          //else cout << "this data should be classified correctly\n";
+         double deltaBias =  learningRate * -1.0 /*  (output) * (1.0 - output) */*  error;
+         biases[networkClassIdx] -= learningRate*  -1*errorSum / nData;
       }
-      biases[networkClassIdx] -= learningRate*  -1*errorSum / nData;
+      
       
       
    }
@@ -129,7 +133,7 @@ unsigned int LinNetwork::classify(vector< vector< double > > imageActivations){
    //cout << "output 0 = " << maxOutput << endl;
    for(size_t labelIdx = 1; labelIdx < settings.nClasses; ++labelIdx){
       output = computeOutput(labelIdx, imageActivations) ;
-      cout << "output " << labelIdx <<" = " << output << endl;
+      //cout << "output " << labelIdx <<" = " << output << endl;
       if(output > maxOutput){
          maxOutput = output;
          maxLabel = labelIdx;

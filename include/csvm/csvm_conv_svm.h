@@ -24,6 +24,7 @@ namespace csvm{
    class ConvSVM{
       vector< vector<double> > weights;
       vector<double> biases;
+      vector<double> dSlacks;
       ConvSVMSettings settings;
       double output(vector< vector<double> >& activations, unsigned int svmIdx);
    public:

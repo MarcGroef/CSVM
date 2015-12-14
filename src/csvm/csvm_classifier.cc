@@ -155,34 +155,43 @@ void CSVMClassifier::trainConvSVMs(){
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
-      //cout << "scanning image" << dataIdx << endl;
+      
       //extract patches
-      patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
-      //cout << "for each quadrant..\n";
+      if(settings.codebook == CB_CODEBOOK){
+         patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+         dataActivation.clear();
+         dataFeatures.clear();
+         //clear previous features
+         
+         //allocate for new features
+         dataFeatures.reserve(patches.size());
+         
+         //cout << patches[qIdx].size() << " patches" << endl;
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches.size(); ++patch){
+            dataFeatures.push_back(featExtr.extract(patches[patch]));
+            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
+         }
+         
+         //cout << "Extracted " << patches.size() << "patches from the image\n";
+         patches.clear();
+         
+         //get cluster activations for the features
+         dataActivation = codebook.getActivations(dataFeatures); 
+         dataFeatures.clear();
       
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      //cout << "extract features..\n";
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-      patches.clear();
-      //cout << "get activations..\n";
-      //get cluster activations for the features
-      dataActivation = codebook.getActivations(dataFeatures); 
-      //cout << "dataActivation.size() = " << dataActivation.size() << endl;
-      
-      //append centroid activations to activations from 0th quadrant
-      //cout << "appended activations\n";
-      
-      //normalize summed activations of appended pools
-      unsigned int nClasses = dataActivation.size();
-      
- 
-      datasetActivations.push_back(dataActivation);
-      
+         patches.clear();
+         
+
+         //get cluster activations for the features
+         datasetActivations.push_back(dataActivation);
+         dataActivation.clear();
+     }else{
+        cout << "Im using the deep codebook\n";
+         vector< vector< double > > tmp;
+         tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+         datasetActivations.push_back(tmp);
+     }
    }
    //cout << "Done getting activations\n";
    //train the Linear Netwok with the gained activations
@@ -197,22 +206,29 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
    vector<Feature> dataFeatures;
    vector< vector<double> > dataActivation;
    
-   //extract patches
-   patches = imageScanner.scanImage(image);
+   if(settings.codebook == CB_CODEBOOK){
+      vector<Patch> patches;
+      vector<Feature> dataFeatures;
+      bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
       
-   
-   //clear previous features
-   dataFeatures.clear();
-   //allocate for new features
-   dataFeatures.reserve(patches.size());
-   
-   //extract features from all patches
-   for(size_t patch = 0; patch < patches.size(); ++patch)
-      dataFeatures.push_back(featExtr.extract(patches[patch]));
-   patches.clear();
-   
-   //get cluster activations for the features
-   dataActivation = codebook.getActivations(dataFeatures); 
+      //extract patches
+      patches = imageScanner.scanImage(image);
+         
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+      patches.clear();
+      dataActivation = codebook.getActivations(dataFeatures); 
+   }else{
+      
+      
+      dataActivation.push_back(deepCodebook->getActivations(image));
+   }
    
    //append centroid activations to activations from 0th quadrant
    unsigned int nClasses = dataActivation[0].size();
@@ -500,7 +516,7 @@ bool CSVMClassifier::useClassicSVM(){
 void CSVMClassifier::trainLinearNetwork(){
    unsigned int datasetSize = dataset.getSize();
    vector < vector < vector < double > > > datasetActivations;
-   vector < Feature > dataFeatures;
+   
    vector < Patch > patches;
    vector< vector<double> > dataActivation;
    bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
@@ -508,34 +524,43 @@ void CSVMClassifier::trainLinearNetwork(){
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
-      //cout << "scanning image" << dataIdx << endl;
+      vector < Feature > dataFeatures;
       //extract patches
-      patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
-      //cout << "for each quadrant..\n";
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      //cout << "extract features..\n";
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-      patches.clear();
-      //cout << "get activations..\n";
-      //get cluster activations for the features
-      dataActivation = codebook.getActivations(dataFeatures); 
-      //cout << "dataActivation.size() = " << dataActivation.size() << endl;
-   
-      //append centroid activations to activations from 0th quadrant
-      //cout << "appended activations\n";
+      if(settings.codebook == CB_CODEBOOK){
+         patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+         dataActivation.clear();
+         dataFeatures.clear();
+         //clear previous features
+         
+         //allocate for new features
+         dataFeatures.reserve(patches.size());
+         
+         //cout << patches[qIdx].size() << " patches" << endl;
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches.size(); ++patch){
+            dataFeatures.push_back(featExtr.extract(patches[patch]));
+            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
+         }
+         
+         //cout << "Extracted " << patches.size() << "patches from the image\n";
+         patches.clear();
+         
+         //get cluster activations for the features
+         dataActivation = codebook.getActivations(dataFeatures); 
+         dataFeatures.clear();
       
-      //normalize summed activations of appended pools
-      unsigned int nClasses = dataActivation[0].size();
-      
-      //standardize data
+         patches.clear();
+         
 
-      datasetActivations.push_back(dataActivation);
-      
+         //get cluster activations for the features
+         datasetActivations.push_back(dataActivation);
+         dataActivation.clear();
+     }else{
+        cout << "Im using the deep codebook\n";
+         vector< vector< double > > tmp;
+         tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+         datasetActivations.push_back(tmp);
+     }
    }
    //cout << "Done getting activations\n";
    //train the Linear Netwok with the gained activations
@@ -549,20 +574,30 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
    vector<Feature> dataFeatures;
    vector< vector<double> > dataActivation;
    //extract patches
-   patches = imageScanner.scanImage(image);
+  
+   if(settings.codebook == CB_CODEBOOK){
+      vector<Patch> patches;
+      vector<Feature> dataFeatures;
+      bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
       
-   //clear previous features
-   dataFeatures.clear();
-   //allocate for new features
-   dataFeatures.reserve(patches.size());
-   
-   //extract features from all patches
-   for(size_t patch = 0; patch < patches.size(); ++patch)
-      dataFeatures.push_back(featExtr.extract(patches[patch]));
-   patches.clear();
-   
-   //get cluster activations for the features
-   dataActivation = codebook.getActivations(dataFeatures); 
+      //extract patches
+      patches = imageScanner.scanImage(image);
+         
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+      patches.clear();
+      dataActivation = codebook.getActivations(dataFeatures); 
+   }else{
+      
+      
+      dataActivation.push_back(deepCodebook->getActivations(image));
+   }
    
    //append centroid activations to activations from 0th quadrant
    unsigned int nClasses = dataActivation.size();
