@@ -1,7 +1,7 @@
 
 Dataset
 method MNIST
-nImages 300
+nImages 1000
 
 General
 Classifier CSVM
@@ -55,8 +55,8 @@ initWeight 0.01
 learningRate 0.0000005
 
 ConvSVM
-learningRate 0.000005
-nIterations 2000
+learningRate 0.0005
+nIterations 500
 initWeight 0.001
 CSVM_C 1000
 nClasses 10
