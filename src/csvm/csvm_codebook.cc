@@ -74,7 +74,7 @@ vector< vector< double > > Codebook::getActivations(vector<Feature> features){
   return getQActivations(features);
    //if(features.size() % 4 != 0)
    //   cout << "Warning: patches do not perfectly fit into quadrants..\n";
-   unsigned int nImagesPerQuadrant = features.size()/4;
+
    vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords, 0.0));
    unsigned int dataDims = features[0].content.size();
    vector<double> distances(settings.numberVisualWords);
@@ -153,82 +153,79 @@ vector< vector< double > > Codebook::getQActivations(vector<Feature> features){
    
     unsigned int nQuadrants = 4; //must be a square!
     
-   unsigned int nImagesPerQuadrant = features.size()/4;
    vector< vector< double> > activations(nClasses, vector<double>(settings.numberVisualWords * nQuadrants, 0.0));
    unsigned int dataDims = features[0].content.size();
    vector<double> distances(settings.numberVisualWords);
    double dev;
-   unsigned int nFeatures = features.size();
    double mean;
    
    double xx = 0.0;
    double cc;
    double xc;
+   
    bool oneCl = !settings.useDifferentCodebooksPerClass;
-   //cout << "nFeatures = " << nFeatures << endl;
-   //cout << "nQuads = " << nQuadrants << endl;
+   
    unsigned int sqrtQ = sqrt(nQuadrants);
    unsigned int sqrtP = sqrt(features.size());
    unsigned int quadSize = sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
+   
    for(size_t cl = 0; oneCl ? cl < 1 :  cl < nClasses; ++cl){
-    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
-	//cout << "Quadrant " << qIdx << endl;
-	unsigned int qX = qIdx % sqrtQ;
-	unsigned int qY = (qIdx - qX) / sqrtQ;
-	//cout << "qx,qy = " << qX << ", " << qY << endl;
-	double activation = 0;
-	//cout << "quadSize = " << quadSize << endl;
-	for(size_t pX = qX * quadSize; pX < (qX + 1) * quadSize + (overlap ? 1 : 0); ++pX){
-	  for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
+      for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
+
+         unsigned int qX = qIdx % sqrtQ;
+         unsigned int qY = (qIdx - qX) / sqrtQ;
+
+         for(size_t pX = qX * quadSize; pX < (qX + 1) * quadSize + (overlap ? 1 : 0); ++pX){
+         for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
+            
+            unsigned int pIdx = pY * sqrtP + pX;
+            //cout << "pIdx = " << pIdx << endl;
+            
+            //calculate activation;
+            if(settings.simFunction == SOFT_ASSIGNMENT){
+               for(size_t dim = 0; dim < dataDims; ++dim){
+               xx += features[pIdx].content[dim] * features[pIdx].content[dim];
+               }
+               
+               mean = 0.0;
+               for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               cc = 0.0;
+               xc = 0.0;
+
+               for(size_t dim = 0; dim < dataDims; ++dim){
+
+               cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
+               xc += bow[cl][word].content[dim] * features[pIdx].content[dim];
+
+               }
+               //double dist = 0.0;
+               //for(size_t dim = 0; dim < dataDims; ++dim){
+               //   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
+               //}
+
+               distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+               //distances[word] = sqrt(dist);
+
+               mean += distances[word];
+               }
+               mean /= (double)(settings.numberVisualWords);
+               for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               activations[cl][qIdx * settings.numberVisualWords + word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+               }
+               
+            }
+            else if(settings.simFunction == CB_RBF){
+               for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+               
+               distances[word] = bow[cl][word].getDistanceSq(features[pIdx]);
+               dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
+               activations[cl][qIdx * settings.numberVisualWords + word] += dev;
+               
+               }
+            }
 	    
-	    unsigned int pIdx = pY * sqrtP + pX;
-	    //cout << "pIdx = " << pIdx << endl;
-	    
-	    //calculate activation;
-	    if(settings.simFunction == SOFT_ASSIGNMENT){
-	      for(size_t dim = 0; dim < dataDims; ++dim){
-		xx += features[pIdx].content[dim] * features[pIdx].content[dim];
-	      }
-	      
-	      mean = 0.0;
-	      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-		cc = 0.0;
-		xc = 0.0;
-
-		for(size_t dim = 0; dim < dataDims; ++dim){
-
-		  cc += bow[cl][word].content[dim] * bow[cl][word].content[dim];
-		  xc += bow[cl][word].content[dim] * features[pIdx].content[dim];
-
-		}
-		//double dist = 0.0;
-		//for(size_t dim = 0; dim < dataDims; ++dim){
-		//   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
-		//}
-
-		distances[word] = sqrt(cc + (xx - (2 * xc))) ;
-		//distances[word] = sqrt(dist);
-
-		mean += distances[word];
-	      }
-	      mean /= (double)(settings.numberVisualWords);
-	      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-		activations[cl][qIdx * settings.numberVisualWords + word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
-	      }
-	      
-	    }
-	    else if(settings.simFunction == CB_RBF){
-	      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-		
-		distances[word] = bow[cl][word].getDistanceSq(features[pIdx]);
-		dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
-		activations[cl][qIdx * settings.numberVisualWords + word] += dev;
-		
-	      }
-	    }
-	    
-	  }
+         }
 	}
 	//standardize data
 	double mean = 0;

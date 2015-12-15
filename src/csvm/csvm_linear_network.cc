@@ -115,8 +115,7 @@ void LinNetwork::train(vector< vector< vector< double > > >& activations, CSVMDa
          }
          if(iterIdx%100==0)
             cout << "Network " << networkClassIdx << " SOC = " << sumOfChange << "   \terror = " <<  0.5 * sqErrorSum /nData <<endl;
-         //else cout << "this data should be classified correctly\n";
-         double deltaBias =  learningRate * -1.0 /*  (output) * (1.0 - output) */*  error;
+         
          biases[networkClassIdx] -= learningRate*  -1*errorSum / nData;
       }
       

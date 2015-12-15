@@ -22,15 +22,19 @@ namespace csvm{
    
    
    class ConvSVM{
+      
+      ConvSVMSettings settings;
+      
       vector< vector<double> > weights;
       vector<double> biases;
-      vector<double> dSlacks;
-      ConvSVMSettings settings;
+    
       double output(vector< vector<double> >& activations, unsigned int svmIdx);
-   public:
-      void setSettings(ConvSVMSettings s);
-      void train(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
       
+   public:
+      
+      void setSettings(ConvSVMSettings s);
+      
+      void train(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
       unsigned int classify(vector< vector<double> >& activations);
 
    };

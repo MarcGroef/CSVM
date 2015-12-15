@@ -362,15 +362,15 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
 
-   double prevObjective = 0.0;
+
    double objective = 0.0;
    double sum0 = 0.0;
    double sum1 = 0.0;
-   unsigned int kernelSize = simKernel.size();
+   
    unsigned int kernelIdx0, kernelIdx1;
    cout << "nIter = " << settings.nIterations << endl;
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
-      prevObjective = objective;
+
       prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
@@ -424,21 +424,16 @@ void SVM::train(vector< vector< vector< double > > >& activations, CSVMDataset* 
    //read nr of centroids per class
    unsigned int nCentroids = activations[0][0].size();
    //read amount of data
-   unsigned int size = activations.size();
    
    //set sum of change to artificial high values for initialisation
    double sumDeltaAlpha = 1000.0f;
    //double prevSumDeltaAlpha = 10000.0f;
-   double deltaAlphaData, deltaAlphaCentroid;
-   
-   //set a convergenceThreshold
-   double convergenceThreshold = 0.01;
-   double learnInit = settings.learningRate;
-   double prevObj = 0;
+   double deltaAlphaCentroid;
+
    double obj = 0;
    //while the sum of changes in alphas is above threshold:
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001 && round < settings.nIterations*/ round < 10 /*prevObj - obj > 0.0 || round < 9*/; ++round){
-      prevObj = obj;
+      
       //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       

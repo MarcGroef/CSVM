@@ -9,20 +9,23 @@ using namespace csvm;
       cout << "nCentroids = " << settings.nCentroids << endl;
       cout << "nClasses = " << settings.nClasses << endl;
       cout << "initWeight= " << settings.initWeight << endl;
+      
       weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
       biases = vector<double>(settings.nClasses, 0);
-      dSlacks = vector<double>(0);
 
    }
    
    double ConvSVM::output(vector< vector<double> >& activations, unsigned int svmIdx){
+      
       unsigned int nCentroids = activations[0].size();
       double out = 0;
       
-      for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
-         //cout << "weights = " << weights[svmIdx][centrIdx] << endl;
+      for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
+         
          out += weights[svmIdx][centrIdx] * activations[0][centrIdx];
+         
       }
+      
       out += biases[svmIdx];
       return out;
    }
@@ -30,72 +33,37 @@ using namespace csvm;
    void ConvSVM::train(vector< vector< vector<double> > >& activations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
-      if(dSlacks.size() == 0)
-         dSlacks = vector<double>(nData, 0);
+  
       //for all csvms in ensemble
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
-         double tempBias = biases[svmIdx];
          
-         unsigned int nError = 0;
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
-            double sumSlack = 0;
             
-            //double tempBias = biases[svmIdx];//0;
-            nError = 0;
-            tempBias = 0;
-            //for all data
-            //cout << "sumdSlack = " << sumDSlack << endl;
+            double sumSlack = 0;
+
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                
-               double sumDSlack = 0;
                unsigned int label = ds->getImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
-               
                double out = output(activations[dIdx], svmIdx);
                
-               
-               //update dSlack for this data
-               /*dSlacks[dIdx] = 0;
-               if(yData * out < 1){
+               //add max(0, 1 - yData * out)
+               sumSlack += 1 - yData * out < 0 ? 0 : 1 -  yData * out;
+              
+               for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                   
-                  for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
-                     dSlacks[dIdx] += yData * activations[dIdx][0][clIdx];
-                  }
+                  if(yData * out < 1)
+                     weights[svmIdx][clIdx] -= settings.learningRate *( (1.0/settings.CSVM_C )*weights[svmIdx][clIdx] -  yData * activations[dIdx][0][clIdx]) ;
+                  else
+                     weights[svmIdx][clIdx] -= settings.learningRate *( (1.0/settings.CSVM_C )*weights[svmIdx][clIdx]);
+                  
                }
                
-               //calculate new dSlack sum
-               for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
-                  sumDSlack += dSlacks[dIdx1];
-               }*/
-               
-               
-               
-               
-               double weightSum = 0;
-               sumSlack += 1 - yData * out < 0 ? 0 : 1-  yData * out;
-               
-               //determine slack differential
-               
-               //if(yData * out < 1){  //otherwise keep it zero
-                  ++nError;
-                  //update weights
+               if(yData * out < 1)
+                  biases[svmIdx] += settings.learningRate * yData; 
                   
-                  for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
-                     //cout << "weight = " << weights[svmIdx][clIdx]  << "\tsumDSlack = " << sumDSlack << "\tbias = " << biases[svmIdx] << endl;
-                     //weights[svmIdx][clIdx] -= settings.learningRate * ( weights[svmIdx][clIdx] - settings.CSVM_C * yData * out) ;
-                     if(yData * out < 1)
-                        weights[svmIdx][clIdx] -= settings.learningRate *( (1/settings.CSVM_C )*weights[svmIdx][clIdx] -  yData * activations[dIdx][0][clIdx]) ;
-                     else
-                        weights[svmIdx][clIdx] -= settings.learningRate *( (1/settings.CSVM_C )*weights[svmIdx][clIdx]);
-                  }
-                  if(yData * out < 1)
-                     biases[svmIdx] += settings.learningRate * yData; 
-               //}
-                           
-               
             }
             
-            /// nError;
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];

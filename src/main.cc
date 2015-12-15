@@ -73,8 +73,8 @@ int main(int argc,char**argv){
    //c.constructDeepCodebook();
    
    //return 0;
-   c.importCodebook("cifar.bin");
-   //c.exportCodebook("cifar.bin");
+   c.importCodebook("mnist1000.bin");
+   //c.exportCodebook("mnist1000.bin");
    //return 0;
 
    c.initSVMs();
@@ -114,7 +114,7 @@ int main(int argc,char**argv){
 
    vector <vector <int> > classifiedAs      ( nClasses, vector<int> ( nClasses, 0 ) );
 
-   for(size_t im = 0; im < 500; ++im){
+   for(size_t im = 0; im < 1000; ++im){
       image = trainSize + (rand() % (nImages - trainSize));
       
       //cout << "classifying image " << image << endl;
