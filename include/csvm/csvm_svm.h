@@ -67,9 +67,6 @@ namespace csvm{
      
      SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId);
      void setSettings(SVM_Settings s);
-     //functions for the convolutional svm
-     void train(vector< vector<vector<double> > >& activations, CSVMDataset* ds);
-     double classify(vector<vector<double> > f, Codebook* cb);
      
      //functions for the textbook KKT-SVM
      void trainClassic(vector<vector<double> >& simKernel, CSVMDataset* ds);

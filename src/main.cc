@@ -73,7 +73,7 @@ int main(int argc,char**argv){
    //c.constructDeepCodebook();
    
    //return 0;
-   c.importCodebook("mnist1000.bin");
+   c.importCodebook("goodmnist.bin");
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 

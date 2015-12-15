@@ -1,7 +1,7 @@
 
 Dataset
-method CIFAR10
-nImages 30000
+method MNIST
+nImages 3000
 
 General
 Classifier CSVM
