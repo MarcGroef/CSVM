@@ -32,7 +32,7 @@ namespace csvm{
       LinNetwork linNetwork;
       ConvSVM convSVM;
       
-      vector < vector< vector<double> > > classicTrainActivations;
+      vector< vector<double> > classicTrainActivations;
       
             
       void constructDeepCodebook();

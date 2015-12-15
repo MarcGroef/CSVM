@@ -15,14 +15,14 @@ using namespace csvm;
 
    }
    
-   double ConvSVM::output(vector< vector<double> >& activations, unsigned int svmIdx){
+   double ConvSVM::output(vector<double>& activations, unsigned int svmIdx){
       
-      unsigned int nCentroids = activations[0].size();
+      unsigned int nCentroids = activations.size();
       double out = 0;
       
       for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
          
-         out += weights[svmIdx][centrIdx] * activations[0][centrIdx];
+         out += weights[svmIdx][centrIdx] * activations[centrIdx];
          
       }
       
@@ -30,7 +30,7 @@ using namespace csvm;
       return out;
    }
    
-   void ConvSVM::train(vector< vector< vector<double> > >& activations, CSVMDataset* ds){
+   void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
   
@@ -47,23 +47,27 @@ using namespace csvm;
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations[dIdx], svmIdx);
                
-               //add max(0, 1 - yData * out)
-               sumSlack += 1 - yData * out < 0 ? 0 : 1 -  yData * out;
+               
               
-               for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
+               for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                   
                   if(yData * out < 1)
-                     weights[svmIdx][clIdx] -= settings.learningRate *( (1.0/settings.CSVM_C )*weights[svmIdx][clIdx] -  yData * activations[dIdx][0][clIdx]) ;
+                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
                   else
-                     weights[svmIdx][clIdx] -= settings.learningRate *( (1.0/settings.CSVM_C )*weights[svmIdx][clIdx]);
+                     weights[svmIdx][centrIdx] -= settings.learningRate * ( weights[svmIdx][centrIdx] / settings.CSVM_C);
                   
                }
                
                if(yData * out < 1)
                   biases[svmIdx] += settings.learningRate * yData; 
+               
+               
+               //add max(0, 1 - yData * out)
+               sumSlack += 1 - yData * out < 0 ? 0 : 1 -  yData * out;
                   
             }
             
+            //measure objective 
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
@@ -73,13 +77,13 @@ using namespace csvm;
             
             if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
          }
-         //biases[svmIdx] = tempBias ;
+         
       }
    }
    
    
    //classify image, given its activations
-   unsigned int ConvSVM::classify(vector< vector<double> >& activations){
+   unsigned int ConvSVM::classify(vector<double>& activations){
       unsigned int maxLabel = 0;
       double maxOut = output(activations, 0);
       //cout << "out 0 = " << maxOut << endl;

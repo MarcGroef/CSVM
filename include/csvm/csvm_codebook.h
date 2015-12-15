@@ -33,7 +33,6 @@ namespace csvm{
       unsigned int numberVisualWords;
       double similaritySigma;
       SimilarityFunction simFunction;
-      bool useDifferentCodebooksPerClass;
    };
 
    
@@ -44,21 +43,21 @@ namespace csvm{
     KMeans kmeans;
 	 AKMeans akmeans;
 
-    vector< vector<Centroid> > bow;
+    vector<Centroid> bow;
 
     unsigned int nClasses;
   public:
     Codebook();
-    void constructCodebook(vector<Feature> featureset,int labelId);
+    void constructCodebook(vector<Feature> featureset);
     void setSettings(Codebook_settings s);
-    Centroid getCentroid(int cl, int centrIdx);
-    vector<vector < double > > getActivations(vector<Feature> features);
+    Centroid getCentroid(int centrIdx);
+    vector < double > getActivations(vector<Feature> features);
     void exportCodebook(string filename);
     void importCodebook(string filename);
     unsigned int getNClasses();
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
-  vector< vector< double > > getQActivations(vector<Feature> features);
+    vector< double > getQActivations(vector<Feature> features);
     
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);

@@ -116,48 +116,39 @@ void CSVMClassifier::constructCodebook(){
    
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
    
-   bool oneCl = !settings.codebookSettings.useDifferentCodebooksPerClass;
-   vector< vector<Feature> > pretrainDump(nClasses);
+   vector<Feature> pretrainDump;
    cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes, with " << nPatches << " patches\n";
-   
-   
-   for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
-      //cout << "parsing class " << cl << endl;
-      
-      //cout << nImages << " images\n";
-      
-      //cout << "space reserved\n";
-      //cout << "Scanning " << nImages << " images\n";
 
-      for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-         
-         //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-         Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getSize()));
-         Feature newFeat = featExtr.extract(patch);
-         pretrainDump[cl].push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
 
-         
-      }
-
-      cout << "Collected " << pretrainDump[0].size()<< " features\n";
-      codebook.constructCodebook(pretrainDump[cl],cl);
+   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       
-      cout << "done constructing codebook for class " << cl << " using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getSize()));
+      Feature newFeat = featExtr.extract(patch);
+      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+
+      
    }
+
+   cout << "Collected " << pretrainDump.size()<< " features\n";
+   codebook.constructCodebook(pretrainDump);
+   
+   cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+   
    pretrainDump.clear();
 }
 
 void CSVMClassifier::trainConvSVMs(){
    unsigned int datasetSize = dataset.getSize();
-   vector < vector < vector < double > > > datasetActivations;
+   vector < vector < double > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-   vector< vector<double> > dataActivation;
+   
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
-      
+      vector<double> dataActivation;
       //extract patches
       if(settings.codebook == CB_CODEBOOK){
          patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
@@ -190,9 +181,7 @@ void CSVMClassifier::trainConvSVMs(){
          dataActivation.clear();
      }else{
         cout << "Im using the deep codebook\n";
-         vector< vector< double > > tmp;
-         tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
-         datasetActivations.push_back(tmp);
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
      }
    }
    //cout << "Done getting activations\n";
@@ -205,7 +194,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
-   vector< vector<double> > dataActivation;
+   vector<double> dataActivation;
    
    if(settings.codebook == CB_CODEBOOK){
       
@@ -229,7 +218,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       
    }else{      
       
-      dataActivation.push_back(deepCodebook->getActivations(image));
+      dataActivation = deepCodebook->getActivations(image);
       
    }
 
@@ -242,12 +231,12 @@ void CSVMClassifier::trainClassicSVMs(){
    unsigned int nClasses = dataset.getNumberClasses(); 
    unsigned int nCentroids; 
    
-   vector< vector < vector<double> > > datasetActivations;
+   vector < vector<double> > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    cout << "datasetSize = " << datasetSize << endl;
    vector < vector<double> > dataKernel(datasetSize);
-   vector< vector<double> > dataActivation;
+   vector<double> dataActivation;
 
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
@@ -287,13 +276,11 @@ void CSVMClassifier::trainClassicSVMs(){
          dataActivation.clear();
      }else{
         cout << "Im using the deep codebook\n";
-         vector< vector< double > > tmp;
-         tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
-         datasetActivations.push_back(tmp);
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
      }
    }
    nClasses = dataset.getNumberClasses();
-   nCentroids = datasetActivations[0][0].size();
+   nCentroids = datasetActivations[0].size();
    
    cout << "nClasses = " << nClasses << endl;
    cout << "nCentroids = " << nCentroids << endl;
@@ -309,12 +296,11 @@ void CSVMClassifier::trainClassicSVMs(){
          if(settings.svmSettings.kernelType == RBF){
             
 
-            for(size_t cl = 0;   cl < 1 ; ++cl){
 
-               for(size_t centr = 0; centr < nCentroids; ++centr){
-                  sum += (datasetActivations[dIdx0][cl][centr] - datasetActivations[dIdx1][cl][centr])*(datasetActivations[dIdx0][cl][centr] - datasetActivations[dIdx1][cl][centr]);
-               }
+            for(size_t centr = 0; centr < nCentroids; ++centr){
+               sum += (datasetActivations[dIdx0][centr] - datasetActivations[dIdx1][centr])*(datasetActivations[dIdx0][centr] - datasetActivations[dIdx1][centr]);
             }
+            
             dataKernel[dIdx0][dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
             //dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
             
@@ -323,7 +309,7 @@ void CSVMClassifier::trainClassicSVMs(){
             for(size_t cl = 0; cl < 1; ++cl){
 
                for(size_t centr = 0; centr < nCentroids; ++centr){
-                  sum += (datasetActivations[dIdx0][cl][centr] * datasetActivations[dIdx1][cl][centr]);
+                  sum += (datasetActivations[dIdx0][centr] * datasetActivations[dIdx1][centr]);
                }
             }
             //cout << "Writing " << sum << " to " << dIdx0 << ", " << dIdx1 << endl;
@@ -355,7 +341,7 @@ void CSVMClassifier::trainClassicSVMs(){
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = dataset.getNumberClasses();
    //cout << "nClasses = " << nClasses << endl;
-   vector< vector<double> > dataActivation;
+   vector<double> dataActivation;
    if(settings.codebook == CB_CODEBOOK){
       vector<Patch> patches;
       vector<Feature> dataFeatures;
@@ -376,7 +362,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    }else{
       
       
-      dataActivation.push_back(deepCodebook->getActivations(image));
+      dataActivation = deepCodebook->getActivations(image);
    }
    //append centroid activations to activations from 0th quadrant.
    nClasses = dataset.getNumberClasses();   //normalize
@@ -406,10 +392,10 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
 
 void CSVMClassifier::trainLinearNetwork(){
    unsigned int datasetSize = dataset.getSize();
-   vector < vector < vector < double > > > datasetActivations;
+   vector < vector < double > > datasetActivations;
    
    vector < Patch > patches;
-   vector< vector<double> > dataActivation;
+   vector<double> dataActivation;
    //allocate space for more vectors
    datasetActivations.reserve(datasetSize);
    //for all trainings imagages:
@@ -447,9 +433,7 @@ void CSVMClassifier::trainLinearNetwork(){
          dataActivation.clear();
      }else{
         cout << "Im using the deep codebook\n";
-         vector< vector< double > > tmp;
-         tmp.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
-         datasetActivations.push_back(tmp);
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
      }
    }
    //cout << "Done getting activations\n";
@@ -461,7 +445,7 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
    //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
-   vector< vector<double> > dataActivation;
+   vector<double> dataActivation;
    //extract patches
   
    if(settings.codebook == CB_CODEBOOK){
@@ -484,7 +468,7 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
    }else{
       
       
-      dataActivation.push_back(deepCodebook->getActivations(image));
+      dataActivation = deepCodebook->getActivations(image);
    }
    
 

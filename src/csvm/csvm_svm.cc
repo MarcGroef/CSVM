@@ -222,13 +222,13 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
 
 
 //Classify an image, represented by a set of features, using the classic (alpha_i, alpha_j) SVM
-double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector<double> > >& datasetActivations, CSVMDataset* ds){
+double SVM::classifyClassic(vector< double >f, vector< vector<double> >& datasetActivations, CSVMDataset* ds){
    
    double result = 0;
    unsigned int nData = datasetActivations.size();
    double yData;
    double kernel = 0.0;
-   unsigned int nCentroids = datasetActivations[0][0].size();
+   unsigned int nCentroids = datasetActivations[0].size();
    Feature dataKernel(nData,0.0);
    
 
@@ -242,24 +242,24 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       
       //RBF kernel:
       if(settings.kernelType == RBF){
-         for(size_t cl = 0; cl < 1; ++cl){
-            for(size_t centr = 0; centr < nCentroids; ++centr){
-               //sum of distance squared
-               sum += (datasetActivations[dIdx0][cl][centr] - f[cl][centr])*(datasetActivations[dIdx0][cl][centr] - f[cl][centr]);
-            }
+         
+         for(size_t centr = 0; centr < nCentroids; ++centr){
+            //sum of distance squared
+            sum += (datasetActivations[dIdx0][centr] - f[centr])*(datasetActivations[dIdx0][centr] - f[centr]);
          }
+         
          //calculate kernel value:
          kernel = exp((-1.0* sum)/settings.sigmaClassicSimilarity);
          //cout << "Test kernel value : " << kernel << endl;
       }else if (settings.kernelType == LINEAR){
      
          //Linear kernel
-         for(size_t cl = 0; cl < 1 ; ++cl){
-            for(size_t centr = 0; centr < nCentroids; ++centr){
-               sum += (datasetActivations[dIdx0][cl][centr] * f[cl][centr]);
-            }
+         for(size_t centr = 0; centr < nCentroids; ++centr){
+            sum += (datasetActivations[dIdx0][centr] * f[centr]);
          }
+         
          kernel = sum;
+         
       }else{
          cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
       }

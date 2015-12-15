@@ -20,16 +20,16 @@ namespace csvm{
  
    class LinNetwork{
       double initWeights;
-      vector< vector< vector<double> > >weights;
+      vector< vector<double> > weights;
       vector< double > biases;
-      double computeOutput(unsigned int networkClassIdx, vector< vector<double> >& clActivations);
+      double computeOutput(unsigned int networkClassIdx, vector<double>& clActivations);
       
       LinNetSettings settings;
    public:
       LinNetwork();//(unsigned int nClasses,unsigned int nCentroids, double initWeights);
       void setSettings(LinNetSettings s);
-      void train(vector< vector< vector< double > > >& activations, CSVMDataset* ds);
-      unsigned int classify(vector< vector< double > > imageActivations);
+      void train(vector< vector< double > >& activations, CSVMDataset* ds);
+      unsigned int classify(vector< double >imageActivations);
    };
    
 }

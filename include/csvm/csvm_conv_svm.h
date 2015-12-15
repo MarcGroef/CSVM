@@ -28,14 +28,14 @@ namespace csvm{
       vector< vector<double> > weights;
       vector<double> biases;
     
-      double output(vector< vector<double> >& activations, unsigned int svmIdx);
+      double output(vector<double>& activations, unsigned int svmIdx);
       
    public:
       
       void setSettings(ConvSVMSettings s);
       
-      void train(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
-      unsigned int classify(vector< vector<double> >& activations);
+      void train(vector< vector<double> >& activations, CSVMDataset* ds);
+      unsigned int classify(vector<double>& activations);
 
    };
 
