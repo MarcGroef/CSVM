@@ -15,48 +15,32 @@ namespace csvm{
       LINEAR,
   };
   
-  enum SVM_Type{
-      CLASSIC,
-      CONV,
-  };
-  
+
   struct SVM_Settings{
       double SVM_C_Data;
-      double SVM_C_Centroid;
       double learningRate;
       double sigmaClassicSimilarity;
       double cost;
       double D2;
       unsigned int nIterations;
-      double alphaCentroidInit;
       double alphaDataInit;
       SVM_Kernel kernelType;
-      SVM_Type type;
-      bool useDifferentCodebooksPerClass;
+
   };
    
   class SVM{
       
     //State variables
     SVM_Settings settings;
-
-    
     unsigned int classId;  
-    
     unsigned int nCentroids, nClasses, datasetSize;
-    
-    
+
     //internal state
     vector <double> alphaData;
-    vector<vector <double> > alphaCentroids;
     double bias;
       
     
-    //functions Convolutional SVM    
-      double updateAlphaData(vector<vector<double> >& clActivations, unsigned int dataIdx, CSVMDataset* ds);
-      double updateAlphaCentroid(vector< vector< vector<double> > >& clActivations, unsigned int centrClass, int centr, CSVMDataset* ds);
-      void constrainAlphaCentroid(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
-      void contstrainAlphaData(vector< vector< vector<double> > >& activations, CSVMDataset* ds);
+
       
     //functions for KKT-SVM
       double constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);

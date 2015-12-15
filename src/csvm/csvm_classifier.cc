@@ -402,9 +402,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    return maxLabel;
 }
 
-bool CSVMClassifier::useClassicSVM(){
-   return settings.svmSettings.type == CLASSIC;
-}
+
 
 void CSVMClassifier::trainLinearNetwork(){
    unsigned int datasetSize = dataset.getSize();

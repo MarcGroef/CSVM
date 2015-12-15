@@ -1,18 +1,11 @@
 
 Dataset
 method MNIST
-nImages 3000
+nImages 500
 
 General
 Classifier CSVM
 Codebook CODEBOOK
-
-ClusterAnalyser
-method RBM
-nLayers 2
-layerSizes 100
-learningRate 0.1
-nGibbsSteps 2
 
 Codebook
 method KMEANS
@@ -20,7 +13,6 @@ nClusters 1000
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
-useDifferentCodebooksPerClass false
 
 
 FeatureExtractor
@@ -38,14 +30,11 @@ scanStride 2
 nRandomPatches 100000
 
 SVM
-Type CLASSIC
 Kernel LINEAR
 AlphaDataInit 0.001
-AlphaCentroidInit 0.001
 nIterations 500
 learningRate 0.0000005
 SVM_C_Data 1000
-SVM_C_Centroid 1000000
 Cost 1
 D2 1
 sigmaClassicSimilarity 500
@@ -56,7 +45,7 @@ learningRate 0.0000005
 
 ConvSVM
 learningRate 0.00003
-nIterations 4000
+nIterations 500
 initWeight 0.001
 CSVM_C 1000
 nClasses 10

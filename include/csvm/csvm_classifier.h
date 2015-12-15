@@ -59,11 +59,8 @@ namespace csvm{
       void importCodebook(string filename);
       
       void initSVMs();
-      //unsigned int classify(Image* image);
       unsigned int getNoClasses();
-      //CSVMClassifier();
-      
-      bool useClassicSVM();
+
 
       void train();
       unsigned int classify(Image* im);

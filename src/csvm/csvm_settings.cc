@@ -198,21 +198,6 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
       exit(-1);
     }
     
-    stream >> setting;
-    if(setting == "useDifferentCodebooksPerClass"){
-       stream >> setting;
-      codebookSettings.useDifferentCodebooksPerClass = (setting == "true");
-      scannerSettings.useDifferentCodebooksPerClass = (setting == "true");
-      svmSettings.useDifferentCodebooksPerClass = (setting == "true");
-      datasetSettings.useDifferentCodebooksPerClass = (setting == "true");
-      netSettings.useDifferentCodebooksPerClass = (setting == "true");
-    }else{
-      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-      
-    }
-    
-
-    
   }
 
   if (method == "AKMEANS") {
@@ -261,19 +246,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
 		  exit(-1);
 	  }
 
-	  stream >> setting;
-	  if (setting == "useDifferentCodebooksPerClass") {
-		  stream >> setting;
-		  codebookSettings.useDifferentCodebooksPerClass = (setting == "true");
-		  scannerSettings.useDifferentCodebooksPerClass = (setting == "true");
-		  svmSettings.useDifferentCodebooksPerClass = (setting == "true");
-		  datasetSettings.useDifferentCodebooksPerClass = (setting == "true");
-		  netSettings.useDifferentCodebooksPerClass = (setting == "true");
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-
-	  }
+	  
 
 	  
 
@@ -399,21 +372,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
   string setting;
   string method;
   
-  stream >> setting;
-  if(setting == "Type"){
-    stream >> method;
-    if(method == "CLASSIC")
-       svmSettings.type = CLASSIC;
-    else if(method == "CONV")
-       svmSettings.type = CONV;
-    else
-       cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-    
-  }else{
-    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-    exit(-1);
-  }
-  
+
   stream >> setting;
   if(setting == "Kernel"){
     stream >> method;
@@ -438,13 +397,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
     exit(-1);
   }
   
-  stream >> setting;
-  if(setting == "AlphaCentroidInit"){
-    stream >> svmSettings.alphaCentroidInit;   
-  }else{
-    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-    exit(-1);
-  }
+  
   
   stream >> setting;
   if(setting == "nIterations"){
@@ -470,14 +423,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream){
     exit(-1);
   }
   
-  stream >> setting;
-  if(setting == "SVM_C_Centroid"){
-    stream >> svmSettings.SVM_C_Centroid;   
-  }else{
-    cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-    exit(-1);
-  }
-  
+ 
   stream >> setting;
   if(setting == "Cost"){
     stream >> svmSettings.cost;   

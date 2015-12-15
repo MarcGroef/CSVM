@@ -8,14 +8,10 @@ using namespace csvm;
  * SVM Constructor: It initializes the SVM.
  * */
 SVM::SVM(int datasetSize, int nClasses, int nCentroids, unsigned int labelId){
-   //Reserve data for alpha's and set initial values
-   //cout << "Init alpha data " << settings.alphaDataInit << endl;
+
    this->nCentroids = nCentroids;
    this->datasetSize = datasetSize;
    this->nClasses = nClasses;
-   //alphaData = vector<double>(datasetSize,0 /** settings.SVM_C_Data*/);
-   //alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,0));
-   //Set the class ID of the SVM
    this->classId = labelId;
 
    //initialize the bias to zero
@@ -29,7 +25,6 @@ void SVM::setSettings(SVM_Settings s){
    //cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
    alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
-   alphaCentroids = vector < vector<double> >(nClasses, vector<double>(nCentroids,settings.alphaCentroidInit));  //weights to 4 quadrants
 }
 
 
@@ -233,12 +228,10 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
    unsigned int nData = datasetActivations.size();
    double yData;
    double kernel = 0.0;
-   unsigned int nClasses = datasetActivations[0].size();
    unsigned int nCentroids = datasetActivations[0][0].size();
    Feature dataKernel(nData,0.0);
    
 
-   bool oneCl = !settings.useDifferentCodebooksPerClass;
    
    //update sum with similarity between image activations
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
@@ -249,7 +242,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       
       //RBF kernel:
       if(settings.kernelType == RBF){
-         for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
+         for(size_t cl = 0; cl < 1; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                //sum of distance squared
                sum += (datasetActivations[dIdx0][cl][centr] - f[cl][centr])*(datasetActivations[dIdx0][cl][centr] - f[cl][centr]);
@@ -261,7 +254,7 @@ double SVM::classifyClassic(vector< vector< double > > f, vector< vector< vector
       }else if (settings.kernelType == LINEAR){
      
          //Linear kernel
-         for(size_t cl = 0; oneCl ? cl < 1 : cl < nClasses; ++cl){
+         for(size_t cl = 0; cl < 1 ; ++cl){
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][cl][centr] * f[cl][centr]);
             }
