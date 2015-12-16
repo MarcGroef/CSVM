@@ -47,33 +47,20 @@ int main(int argc,char**argv){
    srand(time(NULL));
    
    CSVMClassifier c;
-   ImageScanner scanner;
-   vector<Patch> newPatches;
-   vector<Patch> patches;
-   LBPDescriptor localBinPat;
+
 
    //load settingsFile
    c.setSettings(argv[1]);
-   
-   
-   
-   //setup cifar10 data directories
-   
-   
-   //load cifar10
-   
-   c.dataset.loadDataset();
-   cout << "loaded mnist\n";
+   c.dataset.loadDataset("../datasets/");
+
    
    unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
 
    
-   //c.constructCodebook();
-   //cout << "Constructed codebooks in " << (double)(clock() - time0)/1000  << " ms\n";
-   //c.constructDeepCodebook();
+   c.constructCodebook();
    
    //return 0;
-   c.importCodebook("goodmnist.bin");
+   //c.importCodebook("goodmnist.bin");
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 

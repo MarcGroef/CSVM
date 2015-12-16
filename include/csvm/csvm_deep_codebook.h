@@ -28,6 +28,9 @@ namespace csvm{
    struct DCBSettings{
       ActFunction simFunction;
       double similaritySigma;
+      unsigned int nCentroids;
+      unsigned int nRandomPatches;
+      unsigned int nIter;
    };
   
    
@@ -56,6 +59,7 @@ namespace csvm{
       vector<double> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
    public:
       DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
+      void setSettings(DCBSettings& s);
       void generateCentroids();
       vector<double> getActivations(Image* im);
    };

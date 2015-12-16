@@ -13,6 +13,8 @@
 #include "csvm_conv_svm.h"
 //#include "csvm_cluster_analyser.h"
 #include "csvm_linear_network.h"
+#include "csvm_deep_codebook.h"
+
 using namespace std;
 
 namespace csvm{
@@ -50,6 +52,8 @@ namespace csvm{
       CSVMDataset_Settings datasetSettings;
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
+      DCBSettings dcbSettings; //deep codebook
+      
       //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();

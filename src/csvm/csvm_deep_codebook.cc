@@ -4,25 +4,28 @@ using namespace std;
 using namespace csvm;
 
 DeepCodebook::DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds){
-
-   KMeans_settings mSets;
-   mSets.nClusters = 0;
-   
-   mSets.alpha = 0;
-   mSets.nIter = 40;
-   kmeans.setSettings(mSets);
-   
    
    scanner = imScanner;
    dataset = ds;
    featExtr = fe;
+
+}
+
+void DeepCodebook::setSettings(DCBSettings& s){
+   this->settings = s;
    
-   settings.simFunction = DCB_SOFT_ASSIGNMENT;
-   settings.similaritySigma = 0.05;
+   
+   KMeans_settings mSets;
+   mSets.nClusters = settings.nCentroids;
+   
+   mSets.alpha = 0;
+   mSets.nIter = settings.nIter;
+   
+   kmeans.setSettings(mSets);
+
    
    calculateSizes(dataset->getImagePtr(0)->getWidth(), scanner->settings.patchWidth, scanner->settings.stride);
 }
-
 
 //*********** PRIVATE ********************
 vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
@@ -92,28 +95,28 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    unsigned int plSize = fmSize / 2;
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
-   cout << "fmSize0 = " << fmSize << endl;
-   cout << "plSize0 = " << plSize << endl;
-   unsigned int tmpNCentroids = 1000;
+   //cout << "fmSize0 = " << fmSize << endl;
+   //cout << "plSize0 = " << plSize << endl;
+   unsigned int tmpNCentroids = settings.nCentroids;
    nCentroids.push_back(tmpNCentroids);
-   nRandomPatches.push_back(200000);
+   nRandomPatches.push_back(settings.nRandomPatches);
    
    for(size_t dIdx = 0; plSize > 2; ++dIdx, ++depth ){
-      tmpNCentroids /= 2;
+      //tmpNCentroids /= 2;
       nCentroids.push_back(tmpNCentroids);
       fmSize = plSize;
       plSize = fmSize / 2;
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
-      cout << "fmSize = " << fmSize << endl;
-      cout << "plSize = " << plSize << endl;
-      nRandomPatches.push_back(200000);
+      //cout << "fmSize = " << fmSize << endl;
+      //cout << "plSize = " << plSize << endl;
+      nRandomPatches.push_back(settings.nRandomPatches);
    }
    
    nLayers = depth;
-   nCentroids = vector<unsigned int>(depth, 100);
+   nCentroids = vector<unsigned int>(depth, settings.nCentroids);
    layerStack.resize(nLayers);
-   cout << "calculated settings for dcb\n" << "nLayers = " << nLayers << endl;;
+   //cout << "calculated settings for dcb\n" << "nLayers = " << nLayers << endl;;
 }
 
 vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
@@ -155,16 +158,16 @@ void DeepCodebook::generateCentroids(){
       unsigned int totalImages = dataset->getTotalImages();
       
       if(depthIdx == 0){
-         cout << "Collecting patches..\n";
+         //cout << "Collecting patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages))));
          }
-         cout << "Clustering at 0th layer..\n";
+         //cout << "Clustering at 0th layer..\n";
          layerStack[depthIdx] = kmeans.cluster(randomPatches, nCentroids[depthIdx]);
          
       }else{
          unsigned int scanWidth = plSizes[depthIdx - 1];
-         cout << "Collecting next-level patches..\n";
+         //cout << "Collecting next-level patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
             vector<double> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);

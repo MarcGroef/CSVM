@@ -35,7 +35,7 @@ namespace csvm{
       vector< vector<double> > classicTrainActivations;
       
             
-      void constructDeepCodebook();
+      
       
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);
@@ -55,12 +55,14 @@ namespace csvm{
       ~CSVMClassifier();
       void setSettings(string settingsFile);
       void constructCodebook();
+      void constructDeepCodebook();
+      
       void exportCodebook(string filename);
       void importCodebook(string filename);
       
       void initSVMs();
       unsigned int getNoClasses();
-
+      
 
       void train();
       unsigned int classify(Image* im);

@@ -22,6 +22,7 @@ namespace csvm{
       CSVMDatasetType type;
       unsigned int nImages;
       bool useDifferentCodebooksPerClass;
+      unsigned int nClasses;
    };
    
    class CSVMDataset{
@@ -32,7 +33,7 @@ namespace csvm{
       vector<int> testImagesIdx;
       vector< vector<unsigned int> > trainImagesIdx;   //[labelId][image]
       vector<unsigned int> finalTrainIndices;
-      int nClasses;
+
    public:
       CSVMDataset();
       void loadCifar10(string labelsDir,vector<string> imageDirs);
@@ -48,7 +49,7 @@ namespace csvm{
       void setSettings(CSVMDataset_Settings s);
       string getLabel(int labelId);
       void appendAndShuffleDataIdxArray();
-      void loadDataset();
+      void loadDataset(string dataDir);
    };
 }
 #endif

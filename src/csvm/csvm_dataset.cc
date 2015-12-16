@@ -5,7 +5,7 @@ using namespace csvm;
 
 
 CSVMDataset::CSVMDataset(){
-   nClasses = 10;
+   
 }
 
 void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
@@ -17,24 +17,24 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
       cifar10.loadImages(imageDirs[i]);
       
    }
-   cout << "Loading cifar10 data. Splitting to classes..\n";
+   //cout << "Loading cifar10 data. Splitting to classes..\n";
    splitDatasetToClasses();
    //appendAndShuffleDataIdxArray();
    //cout << "dataset split to classes\n";
 }
 
 void CSVMDataset::loadMNIST(string mnistDir){
-   cout << "loading mnist..\n";
+   //cout << "loading mnist..\n";
    mnist.readTrainImages(mnistDir);
    mnist.readTrainLabels(mnistDir);
    mnist.readTestImages(mnistDir);
    mnist.readTestLabels(mnistDir);
-   cout << "read mnist data. Converting..\n";
+   //cout << "read mnist data. Converting..\n";
 
    
 
    mnist.convertTrainSetToImages();
-   cout << "convert testset\n";
+   //cout << "convert testset\n";
    mnist.convertTestSetToImages();
    
    //splitDatasetToClasses();
@@ -42,10 +42,9 @@ void CSVMDataset::loadMNIST(string mnistDir){
    
 }
 
-void CSVMDataset::loadDataset(){
+void CSVMDataset::loadDataset(string dataDir){
    
    vector<string> imDirs;
-   string dataDir = "../datasets/";//argv[2];
    
    imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_1.bin");
    imDirs.push_back(dataDir + "cifar-10-batches-bin/data_batch_2.bin");
@@ -58,11 +57,11 @@ void CSVMDataset::loadDataset(){
    
    switch(settings.type){
       case DATASET_CIFAR10:
-         cout << "Loading cifar10\n";
+         //cout << "Loading cifar10\n";
          loadCifar10(dataDir + "cifar-10-batches-bin/batches.meta.txt",imDirs);
          break;
       case  DATASET_MNIST:
-         cout << "laoding mnist\n";
+         //cout << "laoding mnist\n";
          loadMNIST(dataDir + "mnist/");
          break;
       
@@ -108,9 +107,9 @@ unsigned int CSVMDataset::getTotalImages(){
 }
 
 void CSVMDataset::splitDatasetToClasses(){
-   nClasses = 10;
+   
    trainImagesIdx.clear();
-   trainImagesIdx.resize(nClasses);
+   trainImagesIdx.resize(settings.nClasses);
    //unsigned int datasetSize = (unsigned int)cifar10.getSize();
    unsigned int datasetSize = 1000;
    int id;
@@ -131,19 +130,19 @@ void CSVMDataset::splitDatasetToClasses(){
 }
 
 void CSVMDataset::appendAndShuffleDataIdxArray(){
-   unsigned int nClasses = 3;
+
    unsigned int nData = 0;
    unsigned int rIdx;
    unsigned int buffer;
    unsigned int nWantedData = 1000;
    
-   for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
+   for(size_t clIdx = 0; clIdx < settings.nClasses; ++clIdx){
       nData += trainImagesIdx[clIdx].size();
    }
    
    vector<unsigned int> trainIndices(nData);
    
-   for(size_t clIdx = 0; clIdx < nClasses; ++clIdx){
+   for(size_t clIdx = 0; clIdx < settings.nClasses; ++clIdx){
       trainIndices.insert(trainIndices.end(), trainImagesIdx[clIdx].begin(), trainImagesIdx[clIdx].end());
    }
    
@@ -176,7 +175,7 @@ string CSVMDataset::getLabel(int labelId){
 }
 
 int CSVMDataset::getNumberClasses(){
-   return nClasses;
+   return settings.nClasses;
 }
 
 Image* CSVMDataset::getImagePtrFromClass(unsigned int index, unsigned int classId){

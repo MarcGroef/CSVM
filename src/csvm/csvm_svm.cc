@@ -163,19 +163,18 @@ void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset
 void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    
    double sumDeltaAlpha = 1000.0;
-   double prevSumDeltaAlpha = 100.0;
+   //double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
 
 
-   double objective = 0.0;
+   //double objective = 0.0;
    double sum0 = 0.0;
    double sum1 = 0.0;
    
    unsigned int kernelIdx0, kernelIdx1;
-   cout << "nIter = " << settings.nIterations << endl;
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
 
-      prevSumDeltaAlpha = sumDeltaAlpha;
+      //prevSumDeltaAlpha = sumDeltaAlpha;
       sumDeltaAlpha = 0.0;
       deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
       deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
@@ -209,9 +208,9 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
             
          }
       }
-      objective = sum0 - 0.5 * sum1;
+      //objective = sum0 - 0.5 * sum1;
          
-     if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
+     //if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
       //compute trainings-score:
       
    }

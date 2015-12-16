@@ -15,6 +15,7 @@ namespace csvm{
       bool useDifferentCodebooksPerClass;
       unsigned int nClasses;
       unsigned int nCentroids;
+      unsigned int nIter;
       
    };
  

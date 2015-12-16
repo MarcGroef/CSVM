@@ -41,7 +41,6 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
 
 
 vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int nClusters){
-   cout << "nIter =" << settings.nIter << endl;
    unsigned int nData = featureSamples.size(); 
    vector<Centroid> centroids0 = initCentroids(featureSamples, nClusters);
    vector<Centroid> centroids1(nClusters);
@@ -67,9 +66,8 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    }
    
    
-   cout << "nIter =" << settings.nIter << endl;
    for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
-      cout << "kmeans iter " << itx << endl;
+      //cout << "kmeans iter " << itx << endl;
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;
       
@@ -112,7 +110,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
-      cout << "deltaDist =  "  << deltaDist << endl;
+      //cout << "deltaDist =  "  << deltaDist << endl;
    }
    
    /*for(size_t centr = 0; centr < nClusters; ++centr){
@@ -122,7 +120,6 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
        }
        cout << endl;
    }*/
-   cout << "yay, kmena sis done\n";
    return (*newCentroids);
 }
 

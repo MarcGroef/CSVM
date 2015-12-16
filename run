@@ -13,15 +13,19 @@ else
 	fi
 
 	for i in $(seq 1 $noIters) ;do
-   		echo ""
-   		echo ""
+   		
    		cd build/
    		logName="LOG"$(date +_%m-%d_%H:%M:%S)
-   		./CSVM settings |& tee ./logs/$logName
-   		echo "" >> ./logs/$logName
-   		echo "" >> ./logs/$logName
+   		echo ""
+         echo ""
    		echo "SETTINGS:" >> ./logs/$logName
+         echo "" >> ./logs/$logName
+         cat settings >> ./logs/$logName
    		echo "" >> ./logs/$logName
-   		cat settings >> ./logs/$logName
+         echo "" >> ./logs/$logName
+   		./CSVM settings |& tee -a ./logs/$logName
+   		echo ""
+         echo ""
+   		
 	done
 fi

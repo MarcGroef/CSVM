@@ -22,17 +22,7 @@ LinNetwork::LinNetwork(){//(unsigned int nClasses, unsigned int nCentroids, doub
 
 void LinNetwork::setSettings(LinNetSettings s){
    settings = s;
-   
-   settings.nClasses = 10;
-  settings.nCentroids = 1000;
-   biases = vector<double>(settings.nClasses,0);
-   
-   weights = vector< vector<double> > (settings.nClasses, vector<double>(settings.nCentroids * 4,settings.initWeight));
-   biases = vector<double>(settings.nClasses,0);
-   
-    //cout << "linnet settins set: nCentroids = " << settings.nCentroids << "learnRate = " << settings.learningRate <<  endl;
-   
-  
+
 }
 
 double sigmoid(double x){
@@ -41,7 +31,7 @@ double sigmoid(double x){
 double LinNetwork::computeOutput(unsigned int networkClassIdx,vector<double>& clActivations){
    double out = 0.0;
 
-   for(size_t centrIdx = 0; centrIdx < settings.nCentroids * 4; ++centrIdx){
+   for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
       //cout << "weights = " <<  weights[networkClassIdx][clIdx][centrIdx] << ", activ = " << clActivations[clIdx][centrIdx] << ", sum = " << out <<endl;
       out += weights[networkClassIdx][centrIdx] * clActivations[centrIdx];
    }
@@ -54,7 +44,7 @@ double LinNetwork::computeOutput(unsigned int networkClassIdx,vector<double>& cl
 }
 
 void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds){
-   unsigned int nIter = 5000;
+
    unsigned int nData = activations.size();
    double output;
    double error;
@@ -65,14 +55,19 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
    double sqErrorSum = 100;
    double sumOfChange;
    
-   cout << "Entering linnet training: LearningRate = " << learningRate << ", nCentroids = " << settings.nCentroids << endl;
+   weights = vector< vector<double> > (settings.nClasses, vector<double>(activations[0].size(),settings.initWeight));
+   biases = vector<double>(settings.nClasses,0);
+   
+   //cout << "nCentroids = " << activations[0].size() << endl;;
+   settings.nCentroids = activations[0].size();
+   //cout << "Entering linnet training: LearningRate = " << learningRate << ", nCentroids = " << settings.nCentroids << endl;
    for(size_t networkClassIdx = 0; networkClassIdx < settings.nClasses; ++networkClassIdx){
       sumOfChange = 1000.0;
       errorSum = 100;
       sqErrorSum = 1000000000000;
       cout << "beginning training round\n";
       
-      for(size_t iterIdx = 0; iterIdx < nIter /*&& 0.5 * sqErrorSum / nData > 0.04*/ /*sumOfChange > 0.0001*/; ++iterIdx){
+      for(size_t iterIdx = 0; iterIdx < settings.nIter /*&& 0.5 * sqErrorSum / nData > 0.04*/ /*sumOfChange > 0.0001*/; ++iterIdx){
          errorSum = 0.0;
          unsigned int nTrained = 0;
          sqErrorSum = 0.0;
@@ -87,7 +82,7 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
             errorSum += error;
             ++nTrained;
             
-            for(size_t centrIdx = 0; centrIdx < settings.nCentroids * 4; ++centrIdx){
+            for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                
                double activ = activations[dataIdx][centrIdx];
                deltaWeight = learningRate * error * -1.0 /* output * (1.00 - output) */* activ;
@@ -101,8 +96,8 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
             
            // biases[networkClassIdx] -= deltaBias;
          }
-         if(iterIdx%100==0)
-            cout << "Network " << networkClassIdx << " SOC = " << sumOfChange << "   \terror = " <<  0.5 * sqErrorSum /nData <<endl;
+         //if(iterIdx%100==0)
+          //  cout << "Network " << networkClassIdx << " SOC = " << sumOfChange << "   \terror = " <<  0.5 * sqErrorSum /nData <<endl;
          
          biases[networkClassIdx] -= learningRate*  -1*errorSum / nData;
       }

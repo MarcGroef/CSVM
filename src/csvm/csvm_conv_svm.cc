@@ -6,12 +6,11 @@ using namespace csvm;
    void ConvSVM::setSettings(ConvSVMSettings s){
       settings = s;
       
-      cout << "nCentroids = " << settings.nCentroids << endl;
-      cout << "nClasses = " << settings.nClasses << endl;
-      cout << "initWeight= " << settings.initWeight << endl;
+      //cout << "nCentroids = " << settings.nCentroids << endl;
+      //cout << "nClasses = " << settings.nClasses << endl;
+      //cout << "initWeight= " << settings.initWeight << endl;
       
-      weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
-      biases = vector<double>(settings.nClasses, 0);
+
 
    }
    
@@ -33,7 +32,11 @@ using namespace csvm;
    void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
-  
+      settings.nCentroids = activations[0].size();
+      
+      weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
+      biases = vector<double>(settings.nClasses, 0);
+      //cout << "nCentroidsActs = " << activations[0].size();
       //for all csvms in ensemble
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          
@@ -70,12 +73,13 @@ using namespace csvm;
             //measure objective 
             double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
+               
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
             }
             objective /= 2.0;
             objective += settings.CSVM_C * sumSlack;
             
-            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
+            //if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
          }
          
       }

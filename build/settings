@@ -1,15 +1,16 @@
 
 Dataset
 method MNIST
-nImages 500
+nImages 3000
 
 General
 Classifier CSVM
 Codebook CODEBOOK
+nClasses 10
 
 Codebook
 method KMEANS
-nClusters 1000
+nClusters 100
 nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -27,7 +28,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 100000
+nRandomPatches 1000
 
 SVM
 Kernel LINEAR
@@ -40,15 +41,14 @@ D2 1
 sigmaClassicSimilarity 500
 
 LinNet
+nIterations 10
 initWeight 0.01
-learningRate 0.0000005
+learningRate 0.000005
 
 ConvSVM
-learningRate 0.00003
-nIterations 500
-initWeight 0.001
+learningRate 0.00002
+nIterations 1000
+initWeight 0.002
 CSVM_C 1000
-nClasses 10
-nCentroids 4000
 
-SOFT_ASSIGNMENT
+

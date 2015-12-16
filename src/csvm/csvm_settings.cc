@@ -45,20 +45,8 @@ void CSVMSettings::parseConvSVMSettings(ifstream& stream){
       stream >> convSVMSettings.CSVM_C;
    }
    
-   stream >> setting;
-   if(setting != "nClasses"){
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }else{
-      stream >> convSVMSettings.nClasses;
-   }
-   stream >> setting;
-   if(setting != "nCentroids"){
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }else{
-      stream >> convSVMSettings.nCentroids;
-   }
+   
+   
    
    
    
@@ -70,6 +58,15 @@ void CSVMSettings::parseLinNetSettings(ifstream& stream){
   
   string setting;
   string method;
+  
+   stream >> setting;
+   if(setting != "nIterations"){
+      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }else{
+      stream >> netSettings.nIter;
+      
+   }
   
    stream >> setting;
    if(setting != "initWeight"){
@@ -163,6 +160,8 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     stream >> setting;
     if(setting == "nClusters"){
       stream >> codebookSettings.numberVisualWords;
+      dcbSettings.nCentroids = codebookSettings.numberVisualWords;
+      
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
@@ -171,6 +170,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     stream >> setting;
     if(setting == "nIterations"){
        stream >> codebookSettings.kmeansSettings.nIter;
+       dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
@@ -179,11 +179,13 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     stream >> setting;
     if(setting == "SimilarityFunction"){
       stream >> method;
-      if(method == "RBF")
+      if(method == "RBF"){
          codebookSettings.simFunction = CB_RBF;
-      else if (method == "SOFT_ASSIGNMENT")
+         dcbSettings.simFunction = DCB_RBF;
+      }else if (method == "SOFT_ASSIGNMENT"){
          codebookSettings.simFunction = SOFT_ASSIGNMENT;
-      else
+         dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
+      }else
          cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -193,6 +195,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
     stream >> setting;
     if(setting == "similaritySigma"){
       stream >> codebookSettings.similaritySigma;
+      dcbSettings.similaritySigma = codebookSettings.similaritySigma;
     }else{
       cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
@@ -360,7 +363,9 @@ void CSVMSettings::parseImageScannerSettings(ifstream& stream){
   
   stream >> setting;
   if(setting == "nRandomPatches"){
-    stream >> scannerSettings.nRandomPatches;   
+    stream >> scannerSettings.nRandomPatches;
+    dcbSettings.nRandomPatches = scannerSettings.nRandomPatches;
+    
   }else{
     cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
     exit(-1);
@@ -480,15 +485,24 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream){
    
    stream >> value;
    if(value == "CODEBOOK"){
-      cout << "codebook set to CODEBOOK\n";
       codebook = CB_CODEBOOK;
    }else if(value == "DEEPCODEBOOK"){
-      cout << "Codebook set to DEEPCODEBOOK\n";
       codebook = CB_DEEPCODEBOOK;
    }else{
       cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
       exit(0);
    }
+   
+   stream >> type;
+   if(type != "nClasses"){
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> netSettings.nClasses;
+   convSVMSettings.nClasses = netSettings.nClasses;
+   datasetSettings.nClasses = netSettings.nClasses;
+   
+   
 }
 
 void CSVMSettings::readSettingsFile(string dir){
