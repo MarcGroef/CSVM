@@ -39,24 +39,21 @@ void printKernel(vector< vector<Feature> > kernels){
 }
 
 int main(int argc,char**argv){
-   //cout << "Starting program..\n";
-  /* if(argc!=2){
+   
+   if(argc!=2){
       showUsage();
       return 0;
-//    }*/
+   }
+   
+   
    srand(time(NULL));
    
    CSVMClassifier c;
 
-
-   //load settingsFile
    c.setSettings(argv[1]);
    c.dataset.loadDataset("../datasets/");
 
-   
-   unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
 
-   
    c.constructCodebook();
    
    //return 0;
@@ -67,10 +64,11 @@ int main(int argc,char**argv){
    c.initSVMs();
    c.train();
 
-   //********************Testing phase*****************************************
+   //********************Testing phase on trainingset *****************************************
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-
+   unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
+   
    cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
      
@@ -87,11 +85,8 @@ int main(int argc,char**argv){
    cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
    
-   //*********************************************************************************************************************
-   
-   
-   //cout << "Testing on Testset:\n";
-   //Testing phase
+   //***********************************Testing phase on test set**********************************************************************************
+
    cout << "\n\nOn test set:\n\n";
    nCorrect = 0;
    nFalse = 0;
@@ -122,7 +117,7 @@ int main(int argc,char**argv){
    }
    
    
-   //*************************************************
+   //****************************** Print ConfusionMatrix *******************
    
    
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
@@ -151,8 +146,6 @@ int main(int argc,char**argv){
          cout << "\t\t" << precision << " %" << "\n\n\n";
       }
    }
- 
-   //cout << "Processed in " << (double)(clock() - time0)/1000  << " ms\n";
 
    return 0;
 }
