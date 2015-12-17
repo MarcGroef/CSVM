@@ -66,6 +66,7 @@ void CSVMDataset::loadDataset(string dataDir){
          break;
       
    }
+   splitDataset();
 }
 
 Image CSVMDataset::getImage(int index){

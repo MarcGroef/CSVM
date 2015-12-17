@@ -140,6 +140,7 @@ void CSVMClassifier::constructCodebook(){
 
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
+   cout << "nTrainImages = " << nTrainImages << endl;
    vector < vector < double > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
