@@ -46,7 +46,7 @@ using namespace csvm;
 
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                
-               unsigned int label = ds->getImagePtr(dIdx)->getLabelId();
+               unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations[dIdx], svmIdx);
                
@@ -79,7 +79,7 @@ using namespace csvm;
             objective /= 2.0;
             objective += settings.CSVM_C * sumSlack;
             
-            //if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
+            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
          }
          
       }

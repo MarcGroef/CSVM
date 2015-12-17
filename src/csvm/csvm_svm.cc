@@ -44,11 +44,11 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
    //for all alpha's:
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
       deltaDiff = 0.0;
-      yData0 = ((ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
+      yData0 = ((ds->getTrainImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
       sum = 0.0;
       //calculate the sum
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
-         yData1 = ((ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
+         yData1 = ((ds->getTrainImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
          if(dIdx1 > dIdx0){
             kernelIdx0 = dIdx1;
             kernelIdx1 = dIdx0;
@@ -97,7 +97,7 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    
    //calculate current sum
    for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
-         yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
+         yData = (classId == (unsigned int)(ds->getTrainImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
          sum += alphaData[dIdx0] * yData;
    }
    
@@ -105,7 +105,7 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    for(size_t constItr = 0; sum > threshold /*|| sum < 0-threshold*/; ++constItr){
       for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
          
-         yData = (classId == (unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
+         yData = (classId == (unsigned int)(ds->getTrainImagePtr(dIdx0)->getLabelId()) ? 1.0 : -1.0);
          oldVal = alphaData[dIdx0];
          deltaAlpha = -2.0 * settings.cost * sum * yData;
          
@@ -145,11 +145,11 @@ void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset
             }
             
             
-            yData = ((unsigned int)(ds->getImagePtr(dIdx1)->getLabelId()) == classId ? 1.00 : -1.00);
+            yData = ((unsigned int)(ds->getTrainImagePtr(dIdx1)->getLabelId()) == classId ? 1.00 : -1.00);
             output += alphaData[dIdx1] * yData * simKernel[kernelIdx0][kernelIdx1];
             
          }
-         yData = ((unsigned int)(ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.00 : -1.00);
+         yData = ((unsigned int)(ds->getTrainImagePtr(dIdx0)->getLabelId()) == classId ? 1.00 : -1.00);
          bias += yData - output;
          ++total;
       }
@@ -189,7 +189,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
       sum0 = 0.0;
       sum1 = 0.0;
       for(size_t dIdx0 = 0; dIdx0 < simKernel.size(); ++dIdx0){
-         yData0 = (ds->getImagePtr(dIdx0)->getLabelId() == classId ? 1.0 : -1.0);
+         yData0 = (ds->getTrainImagePtr(dIdx0)->getLabelId() == classId ? 1.0 : -1.0);
          
          sum0 += alphaData[dIdx0];
          for(size_t dIdx1 = 0; dIdx1 < simKernel.size(); ++dIdx1){
@@ -202,7 +202,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
             }
             
             
-            yData1 = (ds->getImagePtr(dIdx1)->getLabelId() == classId ? 1.0 : -1.0);
+            yData1 = (ds->getTrainImagePtr(dIdx1)->getLabelId() == classId ? 1.0 : -1.0);
             
             sum1 += alphaData[dIdx0] * alphaData[dIdx1] * yData0 *  yData1 * simKernel[kernelIdx0][kernelIdx1];
             
@@ -265,7 +265,7 @@ double SVM::classifyClassic(vector< double >f, vector< vector<double> >& dataset
       
       
       
-     yData = (ds->getImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
+     yData = (ds->getTrainImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0;
      //add the result for this alpha
      //cout << yData << endl;
      result += alphaData[dIdx0] * yData * kernel;

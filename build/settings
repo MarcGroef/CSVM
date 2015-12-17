@@ -1,8 +1,8 @@
 
 Dataset
 method MNIST
-nTrainImages 100
-nTestImages 100
+nTrainImages 50000
+nTestImages 10000
 
 General
 Classifier CSVM
@@ -29,7 +29,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 2000
+nRandomPatches 20000
 
 SVM
 Kernel LINEAR
@@ -47,8 +47,8 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.00002
-nIterations 15000
+learningRate 0.0002
+nIterations 1500
 initWeight 0.002
 CSVM_C 1000
 

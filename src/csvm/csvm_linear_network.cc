@@ -74,7 +74,7 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
          sumOfChange = 0.0;
          for(size_t dataIdx = 0; dataIdx < nData; ++ dataIdx){
             
-            target = networkClassIdx == ds->getImagePtr(dataIdx)->getLabelId() ? 10.0 : -10.0;
+            target = networkClassIdx == ds->getTrainImagePtr(dataIdx)->getLabelId() ? 10.0 : -10.0;
             output = computeOutput(networkClassIdx, activations[dataIdx]);
             
             error = target - (output);
