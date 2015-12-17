@@ -4,6 +4,7 @@
 #include <vector>
 #include <limits>
 #include <iostream>
+#include <sstream>
 
 #include "csvm_codebook.h"
 #include "csvm_dataset.h"

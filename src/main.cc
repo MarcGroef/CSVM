@@ -54,13 +54,13 @@ int main(int argc,char**argv){
    c.dataset.loadDataset("../datasets/");
 
 
-   c.constructCodebook();
+   //c.constructCodebook();
    
-   //return 0;
-   //c.importCodebook("goodmnist.bin");
+   c.importCodebook("LAST_USED.bin");
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 
+   c.exportCodebook("LAST_USED.bin");
    c.initSVMs();
    c.train();
 
@@ -130,12 +130,12 @@ int main(int argc,char**argv){
 
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
-         cout << i /* c.dataset.getLabel(i)*/ << ((i<2) ? "\t" : "\t\t");   
+         cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
          total = 0;
-         cout << " \t" << i/*c.dataset.getLabel(i)*/ << ((i > 1) ? "\t" : "");
+         cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
          for (size_t j=0; j<nClasses; ++j){
             total += classifiedAs[i][j];
             cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;

@@ -1,0 +1,7 @@
+R --no-save --silent < genRplots
+
+convert +append SVM_5.png SVM_6.png SVM_7.png SVM_8.png SVM_9.png tmp_B.png
+convert +append SVM_0.png SVM_1.png SVM_2.png SVM_3.png SVM_4.png tmp_T.png
+convert -append tmp_T.png tmp_B.png overview.png
+rm tmp_T.png
+rm tmp_B.png
