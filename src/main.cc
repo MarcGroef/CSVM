@@ -67,15 +67,15 @@ int main(int argc,char**argv){
    //********************Testing phase on trainingset *****************************************
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-   unsigned int nImages = 50000;//(unsigned int) c.dataset.getSize();
+   unsigned int nImages = c.dataset.getTrainSize();//(unsigned int) c.dataset.getSize();
    
    cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
      
       unsigned int result;
-      result = c.classify(c.dataset.getImagePtr(im));
+      result = c.classify(c.dataset.getTrainImagePtr(im));
       
-      if((unsigned int)c.dataset.getImagePtr(im)->getLabelId() == result)
+      if((unsigned int)c.dataset.getTrainImagePtr(im)->getLabelId() == result)
          ++nCorrect;
       else 
       ++nFalse;
@@ -90,20 +90,18 @@ int main(int argc,char**argv){
    cout << "\n\nOn test set:\n\n";
    nCorrect = 0;
    nFalse = 0;
-   unsigned int image;
-   unsigned int trainSize = (unsigned int)c.dataset.getSize();
+   unsigned int testSize = (unsigned int)c.dataset.getTestSize();
    unsigned int nClasses = c.getNoClasses();
 
    vector <vector <int> > classifiedAs      ( nClasses, vector<int> ( nClasses, 0 ) );
 
-   for(size_t im = 0; im < 1000; ++im){
-      image = trainSize + (rand() % (nImages - trainSize));
+   for(size_t im = 0; im < testSize; ++im){
       
       //cout << "classifying image " << image << endl;
       unsigned int result;
-      unsigned int answer = c.dataset.getImagePtr(image)->getLabelId();
+      unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
       
-      result = c.classify(c.dataset.getImagePtr(image));
+      result = c.classify(c.dataset.getTestImagePtr(im));
       //cout << "result: " << result << endl;
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 

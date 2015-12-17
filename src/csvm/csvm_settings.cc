@@ -102,20 +102,34 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream){
   if(method == "CIFAR10"){
       datasetSettings.type = DATASET_CIFAR10;
       stream >> setting;
-      if(setting != "nImages"){
+      if(setting != "nTrainImages"){
          cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
          exit(-1);
       }
-      stream >> datasetSettings.nImages;
+      stream >> datasetSettings.nTrainImages;
+      
+      stream >> setting;
+      if(setting != "nTestImages"){
+         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
+         exit(-1);
+      }
+      stream >> datasetSettings.nTestImages;
     
   }else if(method == "MNIST"){
       datasetSettings.type = DATASET_MNIST;
       stream >> setting;
-      if(setting != "nImages"){
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
+      if(setting != "nTrainImages"){
+         cout << "csvm::csvm_settings:parseDatasetSettings(): In MNIST parsing: Error! Invalid settingsfile layout. Exitting...\n";
          exit(-1);
       }
-      stream >> datasetSettings.nImages;
+      stream >> datasetSettings.nTrainImages;
+      
+      stream >> setting;
+      if(setting != "nTestImages"){
+         cout << "csvm::csvm_settings:parseDatasetSettings(): In MNIST parsing: Error! Invalid settingsfile layout. Exitting...\n";
+         exit(-1);
+      }
+      stream >> datasetSettings.nTestImages;
   }
  
 }

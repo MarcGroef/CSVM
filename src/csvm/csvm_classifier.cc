@@ -21,7 +21,7 @@ void CSVMClassifier::initSVMs(){
    
    svms.reserve(dataset.getNumberClasses());
    for(size_t svmIdx = 0; svmIdx < ensembleSize; ++svmIdx){
-      svms.push_back(SVM(dataset.getSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
+      svms.push_back(SVM(dataset.getTrainSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);
    }
    
@@ -123,7 +123,7 @@ void CSVMClassifier::constructCodebook(){
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getSize()));
+      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
 
@@ -139,21 +139,21 @@ void CSVMClassifier::constructCodebook(){
 }
 
 void CSVMClassifier::trainConvSVMs(){
-   unsigned int datasetSize = dataset.getSize();
+   unsigned int nTrainImages = dataset.getTrainSize();
    vector < vector < double > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    
    //allocate space for more vectors
-   datasetActivations.reserve(datasetSize);
+   datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
-   for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
+   for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
       vector<double> dataActivation;
       //extract patches
       
       if(settings.codebook == CB_CODEBOOK){
          
-         patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
          dataActivation.clear();
          dataFeatures.clear();
          //clear previous features
@@ -182,7 +182,7 @@ void CSVMClassifier::trainConvSVMs(){
          datasetActivations.push_back(dataActivation);
          dataActivation.clear();
      }else{
-        datasetActivations.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
    
@@ -227,7 +227,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
 //train the KKT-SVM
 void CSVMClassifier::trainClassicSVMs(){
    //cout << "Enteing classic svm training\n";
-   unsigned int datasetSize = dataset.getSize();
+   unsigned int nTrainImages = dataset.getTrainSize();
    unsigned int nClasses = dataset.getNumberClasses(); 
    unsigned int nCentroids; 
    
@@ -235,17 +235,17 @@ void CSVMClassifier::trainClassicSVMs(){
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    //cout << "datasetSize = " << datasetSize << endl;
-   vector < vector<double> > dataKernel(datasetSize);
+   vector < vector<double> > dataKernel(nTrainImages);
    vector<double> dataActivation;
 
    //allocate space for more vectors
-   datasetActivations.reserve(datasetSize);
+   datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
-   for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
+   for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
       
       //extract patches
       if(settings.codebook == CB_CODEBOOK){
-         patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
          dataActivation.clear();
          dataFeatures.clear();
          //clear previous features
@@ -274,7 +274,7 @@ void CSVMClassifier::trainClassicSVMs(){
          datasetActivations.push_back(dataActivation);
          dataActivation.clear();
      }else{
-        datasetActivations.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
    nClasses = dataset.getNumberClasses();
@@ -285,7 +285,7 @@ void CSVMClassifier::trainClassicSVMs(){
    
    //cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
-   for(size_t dIdx0 = 0; dIdx0 < datasetSize; ++dIdx0){
+   for(size_t dIdx0 = 0; dIdx0 < nTrainImages; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
       for(size_t dIdx1 = 0; dIdx1 <= dIdx0; ++dIdx1){
          dataKernel[dIdx0].resize(dIdx0 + 1);
@@ -381,19 +381,19 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
 
 
 void CSVMClassifier::trainLinearNetwork(){
-   unsigned int datasetSize = dataset.getSize();
+   unsigned int nTrainImages = dataset.getTrainSize();
    vector < vector < double > > datasetActivations;
    
    vector < Patch > patches;
    vector<double> dataActivation;
    //allocate space for more vectors
-   datasetActivations.reserve(datasetSize);
+   datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
-   for(size_t dataIdx = 0; dataIdx < datasetSize; ++dataIdx){
+   for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
       vector < Feature > dataFeatures;
       //extract patches
       if(settings.codebook == CB_CODEBOOK){
-         patches = imageScanner.scanImage(dataset.getImagePtr(dataIdx));
+         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
          dataActivation.clear();
          dataFeatures.clear();
          //clear previous features
@@ -422,7 +422,7 @@ void CSVMClassifier::trainLinearNetwork(){
          datasetActivations.push_back(dataActivation);
          dataActivation.clear();
      }else{
-        datasetActivations.push_back(deepCodebook->getActivations(dataset.getImagePtr(dataIdx)));
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
    //cout << "Done getting activations\n";

@@ -1,7 +1,8 @@
 
 Dataset
-method CIFAR10
-nImages 45000
+method MNIST
+nTrainImages 100
+nTestImages 100
 
 General
 Classifier CSVM
@@ -28,7 +29,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 200000
+nRandomPatches 2000
 
 SVM
 Kernel LINEAR

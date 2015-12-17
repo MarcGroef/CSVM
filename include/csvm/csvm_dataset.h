@@ -20,7 +20,8 @@ namespace csvm{
    
    struct CSVMDataset_Settings{
       CSVMDatasetType type;
-      unsigned int nImages;
+      unsigned int nTrainImages;
+      unsigned int nTestImages;
       bool useDifferentCodebooksPerClass;
       unsigned int nClasses;
    };
@@ -29,9 +30,9 @@ namespace csvm{
       CSVMDataset_Settings settings;
       CIFAR10 cifar10;
       MNISTParser mnist;
-      vector<Image> images;
-      vector<int> testImagesIdx;
-      vector< vector<unsigned int> > trainImagesIdx;   //[labelId][image]
+      
+      vector<unsigned int> testImagesIdx;
+      vector<unsigned int> trainImagesIdx;  
       vector<unsigned int> finalTrainIndices;
 
    public:
@@ -40,16 +41,16 @@ namespace csvm{
       void loadMNIST(string mnistDir);
       Image getImage(int index);
       Image* getImagePtr(int index);
-      Image* getImagePtrFromClass(unsigned int index, unsigned int classId);
-      int getSize();
+      Image* getTrainImagePtr(int trainIdx);
+      Image* getTestImagePtr(int testIdx);
+      int getTrainSize();
+      int getTestSize();
       unsigned int getTotalImages();
-      void splitDatasetToClasses();
-      int getNumberImagesInClass(int labelId);
       int getNumberClasses();
       void setSettings(CSVMDataset_Settings s);
       string getLabel(int labelId);
-      void appendAndShuffleDataIdxArray();
       void loadDataset(string dataDir);
+      void splitDataset();
    };
 }
 #endif

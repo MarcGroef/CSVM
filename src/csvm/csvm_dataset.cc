@@ -18,7 +18,7 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
       
    }
    //cout << "Loading cifar10 data. Splitting to classes..\n";
-   splitDatasetToClasses();
+   //splitDatasetToClasses();
    //appendAndShuffleDataIdxArray();
    //cout << "dataset split to classes\n";
 }
@@ -90,9 +90,21 @@ Image* CSVMDataset::getImagePtr(int index){
    return cifar10.getImagePtr(index);
 }
 
-int CSVMDataset::getSize(){
+Image* CSVMDataset::getTrainImagePtr(int trainIdx){
+   return getImagePtr(trainImagesIdx[trainIdx]);
+}
+
+Image* CSVMDataset::getTestImagePtr(int testIdx){
+   return getImagePtr(testImagesIdx[testIdx]);
+}
+
+int CSVMDataset::getTrainSize(){
    
-   return settings.nImages;
+   return settings.nTrainImages;
+}
+
+int CSVMDataset::getTestSize(){
+   return settings.nTestImages;
 }
 
 unsigned int CSVMDataset::getTotalImages(){
@@ -106,58 +118,45 @@ unsigned int CSVMDataset::getTotalImages(){
    return cifar10.getSize();
 }
 
-void CSVMDataset::splitDatasetToClasses(){
+void CSVMDataset::splitDataset(){
+   unsigned int nData = getTotalImages();
+   vector<unsigned int> tempIdces(nData, 0);
    
-   trainImagesIdx.clear();
-   trainImagesIdx.resize(settings.nClasses);
-   //unsigned int datasetSize = (unsigned int)cifar10.getSize();
-   unsigned int datasetSize = 1000;
-   int id;
-   unsigned int image;
-   
-   for(size_t idx = 0; /*idx < settings.nImages  10000&&*/ idx < datasetSize; ++idx){
-      if(settings.type == DATASET_CIFAR10)
-         image = rand() % cifar10.getSize();
-      else if (settings.type == DATASET_MNIST)
-         image = rand() % mnist.getSize();
+   for(size_t imIdx = 0; imIdx < nData; ++imIdx)
+      tempIdces[imIdx] = imIdx;
       
-      id = (getImagePtr(image))->getLabelId();
-      
-      //cout << "ID = " << id << endl;
-      trainImagesIdx[id].push_back(image);    
+   for(size_t shuffleIdx = 0; shuffleIdx < nData; ++shuffleIdx){
+      unsigned int randIdx = rand() % nData;
+      unsigned int temp = tempIdces[shuffleIdx];
+      tempIdces[shuffleIdx] = tempIdces[randIdx];
+      tempIdces[randIdx] = temp;
    }
+   
+   unsigned int nTrainData = settings.nTrainImages;
+   unsigned int nTestData = settings.nTestImages;
+   
+   if(nTrainData + nTestData > nData){
+      cout << "csvm::CSVMDataset::splitDataset() WARNING! amount of testData + amount of trainData > nData in dataset! Exitting..\n";
+      exit(0);
+   }
+   
+   
+   trainImagesIdx.resize(nTrainData);
+   testImagesIdx.resize(nTestData);
+
+   
+   for(size_t trainIdx = 0; trainIdx < nTrainData; ++trainIdx){
+      trainImagesIdx[trainIdx] = tempIdces[trainIdx];
+   }
+   
+   for(size_t testIdx = 0; testIdx < nTestData; ++testIdx){
+      testImagesIdx[testIdx] = tempIdces[nTrainData + testIdx];
+   }
+         
    
 }
 
-void CSVMDataset::appendAndShuffleDataIdxArray(){
 
-   unsigned int nData = 0;
-   unsigned int rIdx;
-   unsigned int buffer;
-   unsigned int nWantedData = 1000;
-   
-   for(size_t clIdx = 0; clIdx < settings.nClasses; ++clIdx){
-      nData += trainImagesIdx[clIdx].size();
-   }
-   
-   vector<unsigned int> trainIndices(nData);
-   
-   for(size_t clIdx = 0; clIdx < settings.nClasses; ++clIdx){
-      trainIndices.insert(trainIndices.end(), trainImagesIdx[clIdx].begin(), trainImagesIdx[clIdx].end());
-   }
-   
-   for(size_t dIdx = 0; dIdx < nData; ++dIdx){
-      rIdx = rand() % nData;
-      buffer = trainIndices[rIdx];
-      trainIndices[rIdx] = trainIndices[dIdx];
-      trainIndices[dIdx] = buffer;
-   }
-   
-   finalTrainIndices.reserve(nWantedData);
-   for(size_t wantedIdx = 0; wantedIdx < nWantedData; ++ wantedIdx)
-      finalTrainIndices.push_back(trainIndices[wantedIdx]);
-   
-}
 
 void CSVMDataset::setSettings(CSVMDataset_Settings s){
    settings = s;
@@ -178,11 +177,6 @@ int CSVMDataset::getNumberClasses(){
    return settings.nClasses;
 }
 
-Image* CSVMDataset::getImagePtrFromClass(unsigned int index, unsigned int classId){
-   
-   return getImagePtr(trainImagesIdx[classId][index]);
-}
 
-int CSVMDataset::getNumberImagesInClass(int labelId){
-   return trainImagesIdx[labelId].size();
-}
+
+
