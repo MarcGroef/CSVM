@@ -31,8 +31,6 @@ void generateCodebook(char* settingsDir, char* codebook,char* dataDir){
    string codebookDir(codebook);
    CSVMClassifier c;
    c.setSettings(settingsDir);
-
-   //load cifar10
    c.dataset.loadDataset(string(dataDir));
    
    c.constructCodebook();
@@ -49,29 +47,25 @@ double run(char* settingsDir, char* codebook, char* dataDir){
    
    c.dataset.loadDataset(string(dataDir));
 
-   c.importCodebook(codebook);
+   //c.importCodebook(codebook);
+   c.constructCodebook();
 
    c.initSVMs();
    
    c.train();
    
-   //cout << "Testing on trainingsset:\n";
    //Testing phase
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
-
-   unsigned int image;
-   unsigned int trainSize = (unsigned int)c.dataset.getSize();
    
-   unsigned int nImages = c.dataset.getTotalImages();
+   unsigned int testSize = c.dataset.getTestSize();
     
-   for(size_t im = 0; im < 1000; ++im){
+   for(size_t im = 0; im < testSize; ++im){
       
-      image = trainSize + (rand() % (nImages-trainSize));
       
-      unsigned int result = c.classify(c.dataset.getImagePtr(image));
+      unsigned int result = c.classify(c.dataset.getTestImagePtr(im));
 
-      if((unsigned int)c.dataset.getImagePtr(image)->getLabelId() == result)
+      if((unsigned int)c.dataset.getTestImagePtr(im)->getLabelId() == result)
          ++nCorrect;
       else 
          ++nFalse;

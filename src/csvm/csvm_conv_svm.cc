@@ -79,7 +79,7 @@ using namespace csvm;
             objective /= 2.0;
             objective += settings.CSVM_C * sumSlack;
             
-            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
+           // if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ": Objective = " << objective << ", sumSlack = " << sumSlack << endl;   
          }
          
       }

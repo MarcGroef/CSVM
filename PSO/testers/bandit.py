@@ -4,6 +4,7 @@ import random
 import os
 
 import csvm
+
 from param_tester import ParameterTester
 from generators.randomparameters import RandomParameters
 from generators.random_bandit import Random_bandit
@@ -22,109 +23,110 @@ class BanditTester(ParameterTester):
     start_command = "."
     param_path = "."
     param_names = [
-       'SVM_C_Data',
-       #'SVM_C_Centroid',
-       #'HOG_cellSize',
-       #'HOG_cellStride',
-       #'PatchSize',
-       #'PatchStride',
-       'sigmaClassicSimilarity',
-       'similaritySigma']
-       #'SVM_Iterations',
-       #'learningRate']
-    parameters = {  #'learningRate':           {"type": "float",
-                    #                    "scaling": "log",
-                    #                    "min": 0.0000001,
-                    #                    "max": 0.01,
-                    #                    "distribution": "uniform",},
-                     
-                    'sigmaClassicSimilarity':           {"type": "float",
-                                         "scaling": "log",
-                                        "min": 0.0001,
-                                        "max": 100.0,
-                                        "distribution": "uniform",},
-                    'similaritySigma': {"type": "float",
+       #'nCentroids',
+       #'patchSize',
+       #'patchStride',
+       'learningRate',
+       #'nTrainingIterations',
+       #'codebookSimilaritySigma',
+       #'SVMSimilaritySigma',
+       'SVM_C']
+    parameters = {  'learningRate':   {"type": "float",
                                         "scaling": "log",
-                                        "min": 0.0001,
-                                        "max": 100.0,
+                                        "min": 0.0000001,
+                                        "max": 0.01,
                                         "distribution": "uniform",},
-                    #'HOG_cellSize': {"type": "int",
+    
+                    #'nCentroids':       {"type": "int",
                     #                    "scaling": "linear",
-                    #                    "min": 2,
-                    #                    "max": 12,
+                    #                    "min": 100,
+                    #                    "max": 1000,
                     #                    "distribution": "uniform",},
-                    #'HOG_cellStride': {"type": "int",
-                    #                    "scaling": "linear",
-                    #                    "min": 2,
-                    #                    "max": 12,
+
+                    #'codebookSimilaritySigma': {"type": "float",
+                    #                    "scaling": "log",
+                    #                    "min": 0.0001,
+                    #                    "max": 100.0,
                     #                    "distribution": "uniform",},
-                    #'PatchSize': {"type": "int",
+                    #'SVMSimilaritySigma': {"type": "float",
+                    #                    "scaling": "log",
+                    #                    "min": 0.0001,
+                    #                    "max": 100.0,
+                    #                    "distribution": "uniform",},
+                    #'patchSize': {"type": "int",
                     #                    "scaling": "linear",
                     #                    "min": 8,
                     #                    "max": 32,
                     #                    "distribution": "uniform",},
-                    #'PatchStride': {"type": "int",
+                    #'patchStride': {"type": "int",
                     #                    "scaling": "linear",
                     #                    "min": 1,
                     #                    "max": 8,
                     #                    "distribution": "uniform",},
-                    #'SVM_Iterations': {"type": "int",
+                    #'nTrainingIterations': {"type": "int",
                     #                    "scaling": "log",
                     #                    "min": 1000,
                     #                    "max": 50000,
                     #                    "distribution": "uniform",},
-                    #'SVM_C_Centroid':  {"type": "int",
-                    #                    "scaling": "log",
-                    #                    "min": 1.0,
-                    #                    "max": 1000000},
-                    'SVM_C_Data':      {"type": "int",
+       
+                    'SVM_C':            {"type": "int",
                                         "scaling": "log",
                                         "min": 1.0,
                                         "max": 1000000}}
     config_file = \
-"""Dataset
-method CIFAR10
-nImages 1000
+"""
+Dataset
+method MNIST
+nTrainImages 60000
+nTestImages 10000
 
-
-ClusterAnalyser
-method RBM
-nLayers 2
-layerSizes 100
-learningRate 0.1
-nGibbsSteps 2
+General
+Classifier CSVM
+Codebook CODEBOOK
+nClasses 10
 
 Codebook
 method KMEANS
-nClusters 200
-SimilarityFunction RBF
-similaritySigma %(similaritySigma).7f
+nClusters 500
+nIterations 20
+SimilarityFunction SOFT_ASSIGNMENT
+similaritySigma 0.2
+
 
 FeatureExtractor
 method HOG
-cellSize 8
-cellStride 8
+cellSize 6
+cellStride 6
 blockSize 8
 padding None
+useGreyPixel true
 
 ImageScanner
-patchHeight 16
-patchWidth 16
-scanStride 8
-nRandomPatches 10
+patchHeight 12
+patchWidth 12
+scanStride 2
+nRandomPatches 20000
 
 SVM
-Type CLASSIC
-Kernel RBF
-AlphaDataInit 0.0001
-AlphaCentroidInit 0.0001
-nIterations 20000
-learningRate 0.1
-SVM_C_Data %(SVM_C_Data)d
-SVM_C_Centroid 1
+Kernel LINEAR
+AlphaDataInit 0.001
+nIterations 1000
+learningRate %(learningRate).7f
+SVM_C_Data %(SVM_C)d
 Cost 1
 D2 1
-sigmaClassicSimilarity %(sigmaClassicSimilarity).7f
+sigmaClassicSimilarity 0.002
+
+LinNet
+nIterations 1000
+initWeight 0.01
+learningRate %(learningRate).7f
+
+ConvSVM
+learningRate %(learningRate).7f
+nIterations 50000
+initWeight 0.002
+CSVM_C %(SVM_C).7f
 """
 
     def run_algorithm(self):
@@ -161,7 +163,7 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
-    result = tst.set_options(gen, BanditTester, 4, 1000, processing_timeout = 66000) # number of threads and single function evaluations
+    result = tst.set_options(gen, BanditTester, 6, 10, processing_timeout = 66000) # number of threads and single function evaluations
 
     if not result is True:
         print result

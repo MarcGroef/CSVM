@@ -78,6 +78,7 @@ namespace csvm{
       
    public:
       MNISTParser();
+      ~MNISTParser();
       
       void convertTrainSetToImages();
       void convertTestSetToImages();

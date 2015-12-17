@@ -49,6 +49,10 @@ using namespace csvm;
       testLabelFile = "t10k-labels.idx1-ubyte";
    }
    
+   MNISTParser::~MNISTParser(){
+   ;
+   }
+   
    unsigned int MNISTParser::getSize(){
       return images.size();
    }
@@ -214,7 +218,8 @@ using namespace csvm;
             images.push_back(im);
             labels.push_back(label);
          }
-         
+         delete testImages;
+         delete testLabels;
       //}
       
    }
