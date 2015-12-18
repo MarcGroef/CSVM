@@ -40,6 +40,8 @@ void printKernel(vector< vector<Feature> > kernels){
 
 int main(int argc,char**argv){
    
+	cout << "started main of CSVM" << endl;
+
    if(argc!=2){
       showUsage();
       return 0;
@@ -53,15 +55,22 @@ int main(int argc,char**argv){
    c.setSettings(argv[1]);
    c.dataset.loadDataset("../datasets/");
 
-
+   cout << "constructing codebook" << endl;
    c.constructCodebook();
    
+   //cout << "importing codebook" << endl;
    //c.importCodebook("LAST_USED.bin");
+   
+   cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 
    c.exportCodebook("LAST_USED.bin");
+
+   cout << "initializing SVMs" << endl;
    c.initSVMs();
+
+   cout << "training classifier" << endl;
    c.train();
 
    //********************Testing phase on trainingset *****************************************
