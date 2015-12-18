@@ -203,5 +203,8 @@
     <ClInclude Include="include\csvm\csvm_mnist_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\csvm\csvm_conv_svm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -119,6 +119,7 @@
     <ClInclude Include="include\csvm\csvm_classifier.h" />
     <ClInclude Include="include\csvm\csvm_clean_descriptor.h" />
     <ClInclude Include="include\csvm\csvm_codebook.h" />
+    <ClInclude Include="include\csvm\csvm_conv_svm.h" />
     <ClInclude Include="include\csvm\csvm_dataset.h" />
     <ClInclude Include="include\csvm\csvm_deep_codebook.h" />
     <ClInclude Include="include\csvm\csvm_feature.h" />
