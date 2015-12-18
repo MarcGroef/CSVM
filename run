@@ -3,7 +3,7 @@
 
 function usage
 {
-	echo -e "\n\tUtility to run experiments. \n\tUsage:\n\n\trun [options]\n\n\t-h\tDisplay usage\n\t-r <X>\tRepeat experiment X times\n\t-f <f>\tUse <f> as settingsfile\n\t-s\tSilent running,exept for the final 'score' output\n\t-l\tSurpress log generation\n\t-g\tSurpress graphic output\n\t-d <f>\tDocument results and logs in the new folder <f>, subdirectory of build/logs\n\t-a\tPlay alert sound when done\n"
+	echo -e "\n\tUtility to run experiments. \n\tUsage:\n\n\trun [options]\n\n\t-h\tDisplay usage\n\t-r <X>\tRepeat experiment X times\n\t-f <f>\tUse <f> as settingsfile\n\t-s\tSilent running,exept for the final 'score' output\n\t-l\tSurpress log generation\n\t-g\tSurpress graphic output\n\t-d <f>\tDocument results and logs in the new folder <f>, subdirectory of build/logs\n\t-a\tPlay alert sound when done\n\t-m\tAdd a memo to logfile\n"
 }
 
 
@@ -26,6 +26,7 @@ document=0
 alert=0
 graph=1
 settings="settings"
+memo=0
 
 while [ "$1" != "" ]; do
 
@@ -33,9 +34,9 @@ while [ "$1" != "" ]; do
         -r | --repeat   )       shift
                                 noIters=$1
                                 ;;
-		-f | --file     )       shift
-								settings=$1
-								;;
+	-f | --file     )       shift
+				settings=$1
+				;;
         -s | --silent   )       silent=1
                                 ;;
         -h | --help     )       usage
@@ -51,19 +52,36 @@ while [ "$1" != "" ]; do
                                 ;;
         -a | --alert    )       alert=1
                                 ;;
+	-m | --memo     )       memo=1
+                                ;;
     esac
     shift
 done
+
+if [ $memo == 1 ] ; then
+	nano ./build/memo
+	wait
+fi
+
+
+
+
 
 	for i in $(seq 1 $noIters) ;do
    		
    		cd build/
    		logName="LOG"$(date +_%m-%d_%H:%M:%S)
+		if [ $memo == 1 ] ; then
+			echo $logName >> ./logs/$logName
+			cat ./memo >> ./logs/$logName
+			echo "" >> ./logs/$logName
+			rm ./memo
+		fi
    		echo "SETTINGS:" >> ./logs/$logName
-        echo "" >> ./logs/$logName
-        cat $settings >> ./logs/$logName
+        	echo "" >> ./logs/$logName
+        	cat $settings >> ./logs/$logName
    		echo "" >> ./logs/$logName
-        echo "" >> ./logs/$logName
+        	echo "" >> ./logs/$logName
 		if [ $silent == 1 ] ; then
 			./CSVM $settings >> ./logs/$logName
 			grep "Score:" build/logs/LOG_12-17_22\:24\:41 | grep -o "[0123456789.]*" | grep "[1234567890]" | tail -n1
@@ -123,7 +141,6 @@ done
 	rm ./SVM_7.png
 	rm ./SVM_8.png
 	rm ./SVM_9.png
-	rm ./overview.png
 	rm ./statData_SVM-0
 	rm ./statData_SVM-1
 	rm ./statData_SVM-2

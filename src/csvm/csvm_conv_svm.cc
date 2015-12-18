@@ -13,7 +13,7 @@ using namespace csvm;
 
 
    }
-   
+
    double ConvSVM::output(vector<double>& activations, unsigned int svmIdx){
       
       unsigned int nCentroids = activations.size();
@@ -29,6 +29,7 @@ using namespace csvm;
       return out;
    }
    
+  
    void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
@@ -47,7 +48,8 @@ using namespace csvm;
          statDatFile.open ( fName.c_str() );
          statDatFile << "itIdx\tObjective\t|HyperPlane|" << endl;
          cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
-
+double prevObjective = 10000000000000000;
+double learningRate = settings.learningRate;
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
             
             double sumSlack = 0;
@@ -77,19 +79,51 @@ using namespace csvm;
 
                   // L2
                   // EFFECT: Not obvious yet...
-                  if(yData * out < 1)
-                     weights[svmIdx][centrIdx] -= settings.learningRate * (weights[svmIdx][centrIdx] +  1 / settings.CSVM_C * (-4 * yData * activations[dIdx][centrIdx]   +   2 * out * activations[dIdx][centrIdx])) ;
-                  else
-                     weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx] ;
+                  //if(yData * out < 1)
+                  //   weights[svmIdx][centrIdx] -= settings.learningRate * (weights[svmIdx][centrIdx] + 1 / settings.CSVM_C * (-4 * yData * activations[dIdx][centrIdx]   +   2 * out * activations[dIdx][centrIdx])) ;
+                  //else
+                  //   weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx] ;
                                    
+                  // L2 V2
+                  // EFFECT: Not obvious yet...
+                  //if(yData * out < 1)
+                  //   weights[svmIdx][centrIdx] -= settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + (-4 * yData * activations[dIdx][centrIdx]   +   2 * out * activations[dIdx][centrIdx])) ;
+                  //else
+                  //   weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx]  * 1 / settings.CSVM_C;
+
+                  // L2 VM1
+                  // EFFECT: Works Nicely.. 45%
+                  //if(yData * out < 1)
+                  //   weights[svmIdx][centrIdx] -= -settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                  //else
+                  //   weights[svmIdx][centrIdx] -= -settings.learningRate * weights[svmIdx][centrIdx]  * 1 / settings.CSVM_C;
+
+                  // L2 VM2
+                  // EFFECT: Works Nicely.. 43%
+                  //if(yData * out < 1)
+                  //   weights[svmIdx][centrIdx] -= -settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                  //else
+                  //   weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx]  * 1 / settings.CSVM_C;
+
+                  // L2 VM3
+                  // EFFECT: Works Nicely.. 43%
+                  if(yData * out < 1)
+                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                  else
+                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx]  ;//* 1 / settings.CSVM_C;
+
+                  // L2 VM4
+                  // EFFECT: Works Nicely.. 43%
+                  //if(yData * out < 1 )// && rand()%10 > 2)
+                  //   weights[svmIdx][centrIdx] += settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
                }
                
                if(yData * out < 1)
-                  biases[svmIdx] += settings.learningRate * yData; 
+                  biases[svmIdx] -= learningRate * (1-yData*out) * (-yData); 
                
                
-               //add max(0, 1 - yData * out)
-               sumSlack += 1 - yData * out < 0 ? 0 : 1 -  yData * out;
+               //add max(0, 1 - yData * out)               FOR L2 To Chi squared
+               sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
                   
             }
             
@@ -101,11 +135,16 @@ using namespace csvm;
             }
             double hypPlane = objective;
             objective /= 2.0;
-            objective += 1 / settings.CSVM_C * sumSlack;
+            objective += settings.CSVM_C * sumSlack ;
             
             if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t |HyperPlane| = " << hypPlane << endl;   
             statDatFile << itIdx << "\t" << objective << "\t" << hypPlane << endl;
+
+if (objective > prevObjective) learningRate /= 2;
+prevObjective = objective;
+
          }
+
          statDatFile.close();
          
       }

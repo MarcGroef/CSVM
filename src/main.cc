@@ -54,9 +54,9 @@ int main(int argc,char**argv){
    c.dataset.loadDataset("../datasets/");
 
 
-   //c.constructCodebook();
+   c.constructCodebook();
    
-   c.importCodebook("LAST_USED.bin");
+   //c.importCodebook("LAST_USED.bin");
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 
