@@ -65,10 +65,10 @@ double learningRate = settings.learningRate;
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
 
                   // original:
-                  //if(yData * out < 1)
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
-                  //else
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
+                  if(yData * out < 1)
+                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
+                  else
+                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
 
                   // my derivative:
                   // EFFECT: lower score on testset, comparable otherwise. Seems to perform better without the else statement.
@@ -107,10 +107,10 @@ double learningRate = settings.learningRate;
 
                   // L2 VM3
                   // EFFECT: Works Nicely.. 43%
-                  if(yData * out < 1)
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-                  else
-                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx]  ;//* 1 / settings.CSVM_C;
+                  //if(yData * out < 1)
+                  //   weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                  //else
+                  //   weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx]  ;//* 1 / settings.CSVM_C;
 
                   // L2 VM4
                   // EFFECT: Works Nicely.. 43%
@@ -118,8 +118,13 @@ double learningRate = settings.learningRate;
                   //   weights[svmIdx][centrIdx] += settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
                }
                
+               //original bias function
                if(yData * out < 1)
-                  biases[svmIdx] -= learningRate * (1-yData*out) * (-yData); 
+                  biases[svmIdx] += settings.learningRate * yData;
+               
+               
+               //if(yData * out < 1)
+               //   biases[svmIdx] -= learningRate * (1-yData*out) * (-yData); 
                
                
                //add max(0, 1 - yData * out)               FOR L2 To Chi squared

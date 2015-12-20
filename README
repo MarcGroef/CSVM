@@ -34,48 +34,44 @@ For editting PSO-settings, the file /PSO/testers/bandit.py must be editted.
 Example:
 
 Dataset
-method CIFAR10   ## The only supported dataset at the moment.
-nImages 500      ## Nr of images used for codebook-generation and SVM training
+method CIFAR10                                        ## MNIST or CIFAR10
+nTrainImages 600                                      ## Nr of images used for training
+nTestImages 100                                       ## Nr of images used for testing
 
-
-ClusterAnalyser  ## This is not used yet, but is for future support of the co-occurence exploit
-method RBM
-nLayers 2
-layerSizes 100
-learningRate 0.1
-nGibbsSteps 2
+General
+Classifier CSVM                                       ## CSVM / LINNET / SVM
+Codebook CODEBOOK                                     ## CODEBOOK / DEEPCODEBOOK
+nClasses 10                                           ## Nr of classes in dataset
 
 Codebook
-method KMEANS   ## The only supported clustering method at the moment
-nClusters 60    ## Nr of centroids per codebook. (One codebook per label)
-SimilarityFunction SOFT_ASSIGNMENT  ## Activation function of a feature and a centroid. Supported options are: SOFT_ASSIGNMENT, RBF
-similaritySigma 0.0001  ## Sigma value for the activation function. There should always be a value here, but it is only used when RBF is used.
+method KMEANS                                         ## The only supported clustering method at the moment
+nClusters 200                                         ## Nr of centroids used in codebook generation
+SimilarityFunction SOFT_ASSIGNMENT                    ## Activation function of a feature and a centroid. Supported options are: SOFT_ASSIGNMENT, RBF
+similaritySigma 0.0001                                ## Sigma value for the activation function. There should always be a value here, but it is only used when RBF is used.
 
 FeatureExtractor
-method HOG     ## Options: HOG, LBP : Histogram of Oriented Gradients and Local Binary Patterns
-cellSize 3     ## HOG cellsize
-cellStride 3   ## HOG cellstride
-blockSize 8    ## Deprecated setting. Is not used. For HOG, the patch itself is considered as a 'block'.
-padding None   ## Padding options. Only No-padding (None) is supported at the moment.
+method HOG                                            ## Options: HOG, LBP, CLEAN: Histogram of Oriented Gradients and Local Binary Patterns. CLEAN uses standardized appended pixels
+cellSize 4                                            ## HOG cellsize
+cellStride 4                                          ## HOG cellstride
+blockSize 8                                           ## Deprecated setting. Is not used. For HOG, the patch itself is considered as a 'block'.
+padding None                                          ## Padding options. Only No-padding (None) is supported at the moment.
+useGreyPixel true                                     ## Toggle whether HOG should append RGBHOGs or just one grey HOG. MNIST Should use 'false', CIFAR could use 'true'
 
-ImageScanner   ## Settings for extracting patches from an image
-patchHeight 16 ## Patch Height 
-patchWidth 16  ## Patch Width
-scanStride 16  ## Patch Stride
-nRandomPatches 50 ## Nr of random patches extracted from each training-image, used for codebook generation.
+ImageScanner                                          ## Settings for extracting patches from an image
+patchHeight 12                                        ## Patch Height 
+patchWidth 12                                         ## Patch Width
+scanStride 2                                          ## Patch Stride
+nRandomPatches 100000                                 ## Nr of random patches used for codebook generation.
 
 SVM
-Type CONV      ## Type of SVM: CLASSIC : The SVM with alpha_i and alpha_j. CONV: The Convolutional SVM, using alpha_i and alpha_patch/alpha_centroid
-Kernel LINEAR  ## Type of SVM Kernel. (Only used for CLASSIC-SVM) Computes similarity between two activation-vectors. Supported options: LINEAR (dot product), RBF
-AlphaDataInit 0.0001  ## Initial value for alpha wrt. the data examples
-AlphaCentroidInit 0.0001  ## Initial value for alpha wrt. the centroid-activation  (Only used by CONV-SVM)
-nIterations 2000          ## Max number of SVM training iterations
-learningRate 0.0001       ## SVM- learningRate
-SVM_C_Data 10000000       ## SVM_C for alpha_data
-SVM_C_Centroid 1          ## SVM_C for alpha_patch/alpha_centroid
-Cost 1                    ## Cost
-D2 1                      ## D2
-sigmaClassicSimilarity 100 ## Sigma value for RBF kernel
+Kernel LINEAR                                         ## Type of SVM Kernel. Supported options: LINEAR, RBF
+AlphaDataInit 0.0001                                  ## Initial value for alpha wrt. the data examples
+nIterations 2000                                      ## Number of SVM training iterations
+learningRate 0.0001                                   ## SVM- learningRate
+SVM_C_Data 10000000                                   ## SVM_C for alpha_data
+Cost 1                                                ## Cost
+D2 1                                                  ## D2
+sigmaClassicSimilarity 100                            ## Sigma value for RBF kernel
 
 
 #### Parameter optimalisation: ####

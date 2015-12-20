@@ -199,6 +199,9 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream){
       }else if (method == "SOFT_ASSIGNMENT"){
          codebookSettings.simFunction = SOFT_ASSIGNMENT;
          dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
+      }else if (method == "SOFT_ASSIGNMENT_CLIPPING"){
+         codebookSettings.simFunction = SOFT_ASSIGNMENT_CLIPPING;
+         dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT_CLIPPING;
       }else
          cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
     }else{

@@ -23,6 +23,7 @@ namespace csvm{
    enum ActFunction{
      DCB_RBF,
      DCB_SOFT_ASSIGNMENT,
+     DCB_SOFT_ASSIGNMENT_CLIPPING,
    };
    
    struct DCBSettings{
