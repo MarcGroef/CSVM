@@ -193,9 +193,9 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
    double xc;
    
    
-   unsigned int sqrtQ = sqrt(nQuadrants);
-   unsigned int sqrtP = sqrt(features.size());
-   unsigned int quadSize = sqrt(features.size() / nQuadrants);
+   unsigned int sqrtQ = (unsigned int)sqrt(nQuadrants);
+   unsigned int sqrtP = (unsigned int)sqrt(features.size());
+   unsigned int quadSize = (unsigned int)sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
    
    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
