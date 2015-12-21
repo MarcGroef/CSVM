@@ -38,7 +38,7 @@ void HOGDescriptor::setSettings(HOGSettings s){
    settings.nBins = 9;
    //this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
    //this->settings.useGreyPixel = true;
-   //this->settings.interpol = INTERPOLATE_LINEAR;
+   this->settings.interpol = INTERPOLATE_LINEAR;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
@@ -87,6 +87,7 @@ double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
 
 void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block) {
 	//cout << "binPixel called for x:" << X << ", y:" << Y << "\n";
+	
 	double xGradient = computeXGradient(block, X, Y, col);
 	double yGradient = computeYGradient(block, X, Y, col);
 	double gradientMagnitude = computeMagnitude(xGradient, yGradient);
@@ -236,8 +237,8 @@ Feature HOGDescriptor::getHOG(Patch& block){
 		   for (int Y = 0; Y < patchHeight; ++Y) {
 			   //gray
 			   transposedImage[0][X][Y] = new double[2];
-			   xGradient = computeXGradient(block, X, Y, RED);
-			   yGradient = computeYGradient(block, X, Y, RED);
+			   xGradient = computeXGradient(block, X, Y, GRAY);
+			   yGradient = computeYGradient(block, X, Y, GRAY);
 			   transposedImage[0][X][Y][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
 			   transposedImage[0][X][Y][ORIENTATION] = computeOrientation(xGradient, yGradient);
 		   }

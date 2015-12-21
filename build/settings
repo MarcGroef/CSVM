@@ -1,21 +1,20 @@
 
 Dataset
 method MNIST
-nTrainImages 6000
-nTestImages 1000
+nTrainImages 1000
+nTestImages 200
 
 General
 Classifier CSVM
-Codebook DEEPCODEBOOK
+Codebook CODEBOOK
 nClasses 10
 
 Codebook
 method KMEANS
-nClusters 30
+nClusters 50
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
-
 
 FeatureExtractor
 method HOG
@@ -28,7 +27,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 200000
+nRandomPatches 2000
 
 SVM
 Kernel LINEAR
