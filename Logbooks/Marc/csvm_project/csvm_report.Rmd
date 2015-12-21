@@ -39,12 +39,12 @@ All values are gained from a 8 fold crossvalidation. The same settings as the ab
 Here HOG uses identity padding
 
 ```{r}
-v10centr <- c(1)
-v30centr <- c(1)
-v50centr <- c(1)
-v70centr <- c(1)
-v90centr <- c(1)
-v110centr <- c(1)
+v10centr <- c(66.4, 75.0, 63.5, 75.5, 75.3, 78.2, 73.2, 72.7)
+v30centr <- c(83.4, 86.0, 85.5, 85.5, 83.7, 83.9, 84.8, 83.4)
+v50centr <- c(87.2, 86.1, 87.8, 88.5, 88.5, 85.5, 88.0, 87.4)
+v70centr <- c(88.2, 89.3, 89.9, 89.9, 88.5, 89.3, 88.1, 88.3)
+v90centr <- c(89.9, 90.0, 89.7, 88.3, 89.5, 91.2, 87.8, 88.7)
+v110centr <- c(90.0, 90.6, 91.5, 91.8)
 v130centr <- c(1)
 ```
 
