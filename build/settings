@@ -11,7 +11,11 @@ nClasses 10
 
 Codebook
 method KMEANS
+<<<<<<< HEAD
 nClusters 50
+=======
+nClusters 70
+>>>>>>> 5d9220a88d094f4e40d5c153f9f862f7da399a51
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -20,8 +24,9 @@ FeatureExtractor
 method HOG
 cellSize 4
 cellStride 4
-padding Identity
+padding None
 useGreyPixel true
+weightRatio 0.5
 
 ImageScanner
 patchHeight 12
