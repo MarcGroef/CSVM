@@ -11,9 +11,9 @@ nClasses 10
 
 Codebook
 method KMEANS
-nClusters 50
+nClusters 30
 nIterations 20
-SimilarityFunction SOFT_ASSIGNMENT_CLIPPING
+SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 
@@ -47,8 +47,8 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000001
-nIterations 10000
+learningRate 0.000002
+nIterations 20000
 initWeight 0.002
 CSVM_C 1000
 
