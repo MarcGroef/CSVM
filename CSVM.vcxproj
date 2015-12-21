@@ -98,6 +98,7 @@
     <ClCompile Include="src\csvm\csvm_lbp_descriptor.cc" />
     <ClCompile Include="src\csvm\csvm_linear_network.cc" />
     <ClCompile Include="src\csvm\csvm_lvq.cc" />
+    <ClCompile Include="src\csvm\csvm_merge_descriptor.cc" />
     <ClCompile Include="src\csvm\csvm_mnist_parser.cc" />
     <ClCompile Include="src\csvm\csvm_patch.cc" />
     <ClCompile Include="src\csvm\csvm_settings.cc" />
@@ -132,6 +133,7 @@
     <ClInclude Include="include\csvm\csvm_lbp_descriptor.h" />
     <ClInclude Include="include\csvm\csvm_linear_network.h" />
     <ClInclude Include="include\csvm\csvm_lvq.h" />
+    <ClInclude Include="include\csvm\csvm_merge_descriptor.h" />
     <ClInclude Include="include\csvm\csvm_mnist_parser.h" />
     <ClInclude Include="include\csvm\csvm_patch.h" />
     <ClInclude Include="include\csvm\csvm_settings.h" />

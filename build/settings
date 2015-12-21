@@ -21,8 +21,7 @@ FeatureExtractor
 method HOG
 cellSize 4
 cellStride 4
-blockSize 8
-padding None
+padding Identity
 useGreyPixel true
 
 ImageScanner
