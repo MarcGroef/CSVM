@@ -9,8 +9,9 @@ Feature CleanDescriptor::describe(Patch p){
    
    unsigned int imHeight = p.getHeight();
    unsigned int imWidth = p.getWidth();
-   unsigned int imSize = (imWidth * imHeight * 3);
- 
+   unsigned int numColours = (p.getSource()->getFormat() == CSVM_IMAGE_UCHAR_GREY ? 1 : 3)  ;
+   unsigned int imSize = (imWidth * imHeight * numColours);//3);
+   
    
    Feature f(imSize,0);
    
@@ -24,7 +25,7 @@ Feature CleanDescriptor::describe(Patch p){
    }*/
    double mean = 0.0;
    double stddev = 0.0;
-   for(size_t chIdx = 0; chIdx < 3; ++chIdx){
+   for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             f.content[idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
@@ -33,8 +34,10 @@ Feature CleanDescriptor::describe(Patch p){
          }
       }
    }
-   mean /= (3 * imWidth * imHeight);
-   for(size_t chIdx = 0; chIdx < 3; ++chIdx){
+   // TO DO: fix magic number 3 only appropriate when using colour, not when grayscaling
+   
+   mean /= (imWidth * imHeight * numColours);//3);
+   for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             
@@ -44,11 +47,11 @@ Feature CleanDescriptor::describe(Patch p){
       }
    }
    //cout << "var = " << stddev << ", nVals = " << (3 * imWidth * imHeight) << endl;
-   stddev /= (3 * imWidth * imHeight);
+   stddev /= (imWidth * imHeight * numColours); //* 3);
    stddev = sqrt(stddev);
    //cout << "stddev = " << stddev << endl;
    if (stddev > 0){
-      for(size_t chIdx = 0; chIdx < 3; ++chIdx){
+      for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
          for(size_t idxX = 0; idxX < imWidth; ++idxX){
             for(size_t idxY = 0; idxY < imHeight; ++idxY){
                f.content[idxY * imWidth + idxX] = (f.content[idxY * imWidth + idxX] - mean)/stddev;
