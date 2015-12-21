@@ -5,6 +5,7 @@
 #include "csvm_lbp_descriptor.h"
 #include "csvm_feature.h"
 #include "csvm_hog_descriptor.h"
+#include "csvm_merge_descriptor.h"
 
 using namespace std;
 namespace csvm{
@@ -13,11 +14,14 @@ namespace csvm{
     LBP,
     CLEAN,
     HOG,
+	MERGE,
   };
   
   struct FeatureExtractorSettings{
     FeatureType featureType;
     HOGSettings hogSettings;
+
+	MERGESettings mergeSettings;	//
   };
   
   class FeatureExtractor{
@@ -25,6 +29,7 @@ namespace csvm{
     LBPDescriptor lbp;
 	 HOGDescriptor hog;
     CleanDescriptor clean;
+	MERGEDescriptor pixhog;
     
   public:
      FeatureExtractor();
