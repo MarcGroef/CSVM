@@ -1,0 +1,52 @@
+---
+title: "CSVM Logbook"
+author: "Marc Groefsema"
+date: \today
+output: pdf_document
+---
+
+\section{Influence of second order Soft Assignment}
+I'd like to know what the influence of 'second order soft assignment' is, compared to regular Soft Assignment
+patchSize = 12, stride = 2.
+As feat. descriptor, HOG is used, with 4x4 cells.
+As codebook, a deep convolutional codebook is used.
+
+The settings will be tested on the MNIST dataset, with 6000 random images to train, and 1000 images to test.
+As a classifier the CSVM will be used, with learningRate = 0.000002, and 20000 iterations, wieghtInit = 0.002, C = 1000
+
+These settings are not proven to be the "best" settings for each, both the provide a common context for this experiment, with only the type of assignment function as controlled variable.
+
+Here hog uses no padding
+
+With both settings, 8 runs are done.
+To compare the two codebook activation function, a two-sides paired t-test is used.
+A P-value threshold of 0.05 will be used.
+
+```{r}
+SoftAssignment <- c(87.2, 86.6, 87.7, 88.2, 85.9, 86.0, 84.2, 86.5)
+SoftAssignmentClipping <- c(87.6, 84.7, 83.6, 84.5, 84.1, 83.0, 85.8, 85.5)
+
+t.test(SoftAssignment, SoftAssignmentClipping, paired = FALSE, alternative = "two.sided")
+
+```
+
+This test shows that in second order soft assignment performs slightly worse than a first order soft assignment.
+
+\section{Influence of the amount of centroids used}
+I'd like to explore the influence of the number of centroids used in MNIST on the classification rate.
+All values are gained from a 8 fold crossvalidation. The same settings as the above experiment are used, with normal Soft Assignment and a Deep Codebook.
+
+Here HOG uses identity padding
+
+```{r}
+v10centr <- c(1)
+v30centr <- c(1)
+v50centr <- c(1)
+v70centr <- c(1)
+v90centr <- c(1)
+v110centr <- c(1)
+v130centr <- c(1)
+```
+
+
+\section{}
