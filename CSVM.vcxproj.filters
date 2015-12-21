@@ -108,6 +108,9 @@
     <ClCompile Include="src\csvm\csvm_conv_svm.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\csvm\csvm_merge_descriptor.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\csvm\csvm.h">
@@ -204,6 +207,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\csvm\csvm_conv_svm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_merge_descriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -21,7 +21,11 @@ FeatureExtractor
 method HOG
 cellSize 4
 cellStride 4
+<<<<<<< HEAD
 padding None
+=======
+padding Identity
+>>>>>>> fc4e0723b525050446c1c092ae7160948fed2e92
 useGreyPixel true
 weightRatio 0.5
 
