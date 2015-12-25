@@ -145,7 +145,7 @@ double learningRate = settings.learningRate;
             if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t |HyperPlane| = " << hypPlane << endl;   
             statDatFile << itIdx << "\t" << objective << "\t" << hypPlane << endl;
 
-if (objective > prevObjective) learningRate /= 2;
+//if (objective > prevObjective) learningRate /= 2;
 prevObjective = objective;
 
          }
