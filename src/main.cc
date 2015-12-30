@@ -65,7 +65,7 @@ int main(int argc,char**argv){
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 
-   c.exportCodebook("LAST_USED.bin");
+   //c.exportCodebook("LAST_USED.bin");
 
    cout << "initializing SVMs" << endl;
    c.initSVMs();

@@ -137,8 +137,40 @@ vector< double > Codebook::getActivations(vector<Feature> features){
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
          }
-
-      
+ 
+      } else if(settings.simFunction == SOFT_ASSIGNMENT_CLIPPING){
+         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            cc = 0.0;
+            xc = 0.0;
+            
+            for(size_t dim = 0; dim < dataDims; ++dim){
+               cc += bow[word].content[dim] * bow[word].content[dim];
+               xc += bow[word].content[dim] * features[feat].content[dim];
+               
+            }
+            
+            
+            distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+            //distances[word] = sqrt(dist);
+            
+            mean += distances[word];
+         }
+         mean /= (double)(settings.numberVisualWords);
+         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+         }
+         
+         //and again!
+         mean = 0;
+         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            mean += activations[word];            
+         }
+         
+         mean /= settings.numberVisualWords;
+         
+         for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+            activations[word] = (activations[word] - mean) > 0.0 ? (activations[word] - mean) : 0.0;
+         }
          
       }
 
@@ -161,9 +193,9 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
    double xc;
    
    
-   unsigned int sqrtQ = sqrt(nQuadrants);
-   unsigned int sqrtP = sqrt(features.size());
-   unsigned int quadSize = sqrt(features.size() / nQuadrants);
+   unsigned int sqrtQ = (unsigned int)sqrt(nQuadrants);
+   unsigned int sqrtP = (unsigned int)sqrt(features.size());
+   unsigned int quadSize = (unsigned int)sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
    
    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){

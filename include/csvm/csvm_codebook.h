@@ -23,6 +23,7 @@ namespace csvm{
    enum SimilarityFunction{
       CB_RBF,
       SOFT_ASSIGNMENT,
+      SOFT_ASSIGNMENT_CLIPPING
    };
 
    struct Codebook_settings{

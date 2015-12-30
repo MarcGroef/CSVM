@@ -85,6 +85,46 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
       }
 
    }
+   else if(settings.simFunction == DCB_SOFT_ASSIGNMENT_CLIPPING){
+      double mean = 0.0;
+      double xx = 0;
+      
+      for(size_t dim = 0; dim < nDims; ++dim){
+         xx += p.content[dim] * p.content[dim];
+      }
+      for(unsigned int word = 0; word < nCentroids; ++word){
+         double cc = 0.0;
+         double xc = 0.0;
+         
+         for(size_t dim = 0; dim < nDims; ++dim){
+            cc += c[word].content[dim] * c[word].content[dim];
+            xc += c[word].content[dim] * p.content[dim];
+            
+         }
+         
+         
+         distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+         //distances[word] = sqrt(dist);
+         
+         mean += distances[word];
+      }
+      mean /= (double)(nCentroids);
+      for(unsigned int word = 0; word < nCentroids; ++word){
+         activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+      }
+      
+      //and again!
+      mean = 0;
+      for(unsigned int word = 0; word < nCentroids; ++word){
+         mean += activations[word];            
+      }
+      
+      mean /= nCentroids;
+      
+      for(unsigned int word = 0; word < nCentroids; ++word){
+         activations[word] = (activations[word] - mean) > 0.0 ? (activations[word] - mean) : 0.0;
+      }
+   }
    return activations;
 }
 

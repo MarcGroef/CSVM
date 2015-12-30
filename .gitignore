@@ -157,3 +157,4 @@ $RECYCLE.BIN/
 *.bin
 datasets/cifar-10-batches-bin/batches.meta.txt
 datasets/cifar-10-batches-bin/readme.html
+.Rproj.user
