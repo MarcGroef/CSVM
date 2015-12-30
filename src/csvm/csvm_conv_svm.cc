@@ -36,7 +36,10 @@ using namespace csvm;
       settings.nCentroids = activations[0].size();
       
       weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
-      biases = vector<double>(settings.nClasses, 0);
+      biases  = vector<double>(settings.nClasses, 0);
+      maxOuts = vector<double>(settings.nClasses, 0);
+      minOuts = vector<double>(settings.nClasses, 0);
+      avOuts  = vector<double>(settings.nClasses, 0);
       //cout << "nCentroidsActs = " << activations[0].size();
       //for all csvms in ensemble
       ofstream statDatFile;
@@ -46,13 +49,21 @@ using namespace csvm;
          ss << "statData_SVM-" << svmIdx;
          string fName = ss.str();
          statDatFile.open ( fName.c_str() );
-         statDatFile << "itIdx\tObjective\t|HyperPlane|" << endl;
+         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut" << endl;
          cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
-double prevObjective = 10000000000000000;
-double learningRate = settings.learningRate;
+         double prevObjective = numeric_limits<double>::max();
+         double learningRate = settings.learningRate;
+
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
             
             double sumSlack = 0;
+            float right = 0;
+            float wrong = 0;
+
+            minOut = 0;
+            maxOut = 0;
+            nMax   = 0;
+            nMin   = 0;
 
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                
@@ -107,16 +118,29 @@ double learningRate = settings.learningRate;
 
                   // L2 VM3
                   // EFFECT: Works Nicely.. 43%
-                  if(yData * out < 1)
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-                  else
-                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx]  ;//* 1 / settings.CSVM_C;
-
+                  //if(yData * out < 1){
+                     //weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                     //++wrong;
+                  //} else {
+                     //weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
+                     //++right;
+                  //}
+ 
+                  // L2 VM3
+                  // EFFECT: Works Nicely.. 43%
+                  if(yData * out < 1){
+                     //weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
+                     ++wrong;
+                  } else {
+                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
+                     ++right;
+                  }
                   // L2 VM4
                   // EFFECT: Works Nicely.. 43%
                   //if(yData * out < 1 )// && rand()%10 > 2)
                   //   weights[svmIdx][centrIdx] += settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-               }
+               }//centrIdx
                
                if(yData * out < 1)
                   biases[svmIdx] -= learningRate * (1-yData*out) * (-yData); 
@@ -125,43 +149,56 @@ double learningRate = settings.learningRate;
                //add max(0, 1 - yData * out)               FOR L2 To Chi squared
                sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
                   
-            }
+               if (out > 0)  { maxOut += out; ++nMax; }
+               if (out < 0)  { minOut += out; ++nMin; }
+
+               //if(out > 0) maxOutSum += (isfinite(out) ? out : 0 );
+               //if(out < 0) minOutSum += (isfinite(out) ? out : 0 );
+
+               //if (!isfinite(maxOut)) maxOut = 0;
+               //if (!isfinite(minOut)) minOut = 0;
+
+            }//dIdx
             
             //measure objective 
             double objective = 0;
+
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
-               
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
             }
+
             double hypPlane = objective;
             objective /= 2.0;
             objective += settings.CSVM_C * sumSlack ;
             
-            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t |HyperPlane| = " << hypPlane << endl;   
-            statDatFile << itIdx << "\t" << objective << "\t" << hypPlane << endl;
+            maxOuts[svmIdx] = (double)  maxOut / nMax;
+            minOuts[svmIdx] = (double)  minOut / nMin;
+            avOuts[svmIdx]  = (double) (maxOut + minOut) / nData;
 
-if (objective > prevObjective) learningRate /= 2;
-prevObjective = objective;
+            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << endl;   
+            statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << endl;
 
-         }
+            if (objective > prevObjective) learningRate *= 0.999;
+            prevObjective = objective;
 
-         statDatFile.close();
+         }//itIdx
          
-      }
+        statDatFile.close();
+         
+      }//svmIdx
    }
    
    
    //classify image, given its activations
    unsigned int ConvSVM::classify(vector<double>& activations){
       unsigned int maxLabel = 0;
-      double maxOut = output(activations, 0);
-      //cout << "out 0 = " << maxOut << endl;
-      //cout << "settings.nClasses = " << settings.nClasses << endl;
-      for(size_t svmIdx = 1; svmIdx < settings.nClasses; ++svmIdx){
+      double maxVal = output(activations, 0);
+      cout << "\n";
+      for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          double out = output(activations, svmIdx);
-         //cout << "out " << svmIdx << " = " << out << " with bias = " << biases[svmIdx] <<endl;
-         if(out > maxOut){
-            maxOut = out;
+         cout << "out " << svmIdx << " = " << out << "  /  " << minOuts[svmIdx] << " - "  << maxOuts[svmIdx] << "    Bias = " << biases[svmIdx] <<endl;
+         if(out > maxVal){
+            maxVal = out;
             maxLabel = svmIdx;
             //cout << "Maxlabel = " << maxLabel << endl;
          }

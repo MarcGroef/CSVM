@@ -5,6 +5,7 @@
 #include <limits>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 #include "csvm_codebook.h"
 #include "csvm_dataset.h"
@@ -31,6 +32,12 @@ namespace csvm{
     
       double output(vector<double>& activations, unsigned int svmIdx);
       
+      int nMax, nMin;
+      double maxOut, minOut;
+      vector<double> maxOuts;
+      vector<double> minOuts;
+      vector<double> avOuts;
+
    public:
       
       void setSettings(ConvSVMSettings s);

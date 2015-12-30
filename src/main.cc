@@ -55,11 +55,11 @@ int main(int argc,char**argv){
    c.setSettings(argv[1]);
    c.dataset.loadDataset("../datasets/");
 
-   cout << "constructing codebook" << endl;
-   c.constructCodebook();
+   //cout << "constructing codebook" << endl;
+   //c.constructCodebook();
    
-   //cout << "importing codebook" << endl;
-   //c.importCodebook("LAST_USED.bin");
+   cout << "importing codebook" << endl;
+   c.importCodebook("LAST_USED.bin");
    
    cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
@@ -109,7 +109,7 @@ int main(int argc,char**argv){
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
-      
+      cout << "\nAnswer: " << answer;
       result = c.classify(c.dataset.getTestImagePtr(im));
       //cout << "result: " << result << endl;
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
@@ -139,15 +139,17 @@ int main(int argc,char**argv){
 
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
-         cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+         if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<2) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
          total = 0;
-         cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         if (c.dataset.getType() == DATASET_CIFAR10) cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         else                                        cout << " \t" << i << ((i > 1) ? "\t" : "\t");
          for (size_t j=0; j<nClasses; ++j){
             total += classifiedAs[i][j];
-            cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];// << "/" << total;
+            cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];
          }
          precision = (double)classifiedAs[i][i] / total * 100;
          cout << "\t\t" << precision << " %" << "\n\n\n";

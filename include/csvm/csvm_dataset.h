@@ -37,6 +37,7 @@ namespace csvm{
 
    public:
       CSVMDataset();
+      CSVMDatasetType getType();
       void loadCifar10(string labelsDir,vector<string> imageDirs);
       void loadMNIST(string mnistDir);
       Image getImage(int index);

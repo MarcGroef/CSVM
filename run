@@ -3,7 +3,7 @@
 
 function usage
 {
-	echo -e "\n\tUtility to run experiments. \n\tUsage:\n\n\trun [options]\n\n\t-h\tDisplay usage\n\t-r <X>\tRepeat experiment X times\n\t-f <f>\tUse <f> as settingsfile\n\t-s\tSilent running,exept for the final 'score' output\n\t-l\tSurpress log generation\n\t-g\tSurpress graphic output\n\t-d <f>\tDocument results and logs in the new folder <f>, subdirectory of build/logs\n\t-a\tPlay alert sound when done\n\t-m\tAdd a memo to logfile\n"
+	echo -e "\n\tUtility to run experiments. \n\tUsage:\n\n\trun [options]\n\n\t-h\tDisplay usage\n\t-r <X>\tRepeat experiment X times\n\t-R <X>\tRepeat experiment X times, using <f>_X as settingsfile\n\t-f <f>\tUse <f> as settingsfile (default: 'settings')\n\t-s\tSilent running,exept for the final 'score' output\n\t-l\tSurpress log generation\n\t-g\tSurpress graphic output\n\t-d <f>\tDocument results and logs in the new folder <f>, subdirectory of build/logs\n\t-a\tPlay alert sound when done\n\t-m\tAdd a memo to logfile\n"
 }
 
 
@@ -19,20 +19,26 @@ else
 
 
 log=1
-noIters=1
+noIters=0
+altSettings=0
 silent=0
 log=1
-document=0
+document=1
 alert=0
 graph=1
 settings="settings"
 memo=0
+folderName="LAST_RUN"
 
 while [ "$1" != "" ]; do
 
     case $1 in
         -r | --repeat   )       shift
                                 noIters=$1
+                                ;;
+        -R | --Repeat   )       shift
+                                noIters=$1
+				altSettings=1
                                 ;;
 	-f | --file     )       shift
 				settings=$1
@@ -59,97 +65,93 @@ while [ "$1" != "" ]; do
 done
 
 if [ $memo == 1 ] ; then
-	nano ./build/memo
+	nano ./build/memo &> .build/logs/errorLOG
 	wait
 fi
 
+	tmpFolderName=$folderName
+	tmpSettings=$settings
 
+   	cd ./build/ &> ./build/logs/errorLOG
 
-
-
-	for i in $(seq 1 $noIters) ;do
+	for i in $(seq 0 $noIters) ;do
    		
-   		cd build/
+		if [ $altSettings == 1 ] ; then
+			tmpSettings=$settings"_"$i
+		fi
+
    		logName="LOG"$(date +_%m-%d_%H:%M:%S)
 		if [ $memo == 1 ] ; then
-			echo $logName >> ./logs/$logName
-			cat ./memo >> ./logs/$logName
-			echo "" >> ./logs/$logName
-			rm ./memo
+			echo $logName >> ./logs/$logName &> ./logs/errorLOG
+			cat ./memo >> ./logs/$logName &> ./logs/errorLOG
+			echo "" >> ./logs/$logName &> ./logs/errorLOG
+			rm ./memo &> ./logs/errorLOG
 		fi
-   		echo "SETTINGS:" >> ./logs/$logName
-        	echo "" >> ./logs/$logName
-        	cat $settings >> ./logs/$logName
-   		echo "" >> ./logs/$logName
-        	echo "" >> ./logs/$logName
+   		echo "SETTINGS:" >> ./logs/$logName &> ./logs/errorLOG
+        	echo "" >> ./logs/$logName &> ./logs/errorLOG
+        	cat $tmpSettings >> ./logs/$logName &> ./logs/errorLOG
+   		echo "" >> ./logs/$logName &> ./logs/errorLOG
+        	echo "" >> ./logs/$logName &> ./logs/errorLOG
 		if [ $silent == 1 ] ; then
-			./CSVM $settings >> ./logs/$logName
-			grep "Score:" build/logs/LOG_12-17_22\:24\:41 | grep -o "[0123456789.]*" | grep "[1234567890]" | tail -n1
+			./CSVM $tmpSettings >> ./logs/$logName &> ./logs/errorLOG
+			grep "Score:" ./logs/$logName | grep -o "[0123456789.]*" | grep "[1234567890]" | tail -1
 		else
-   			./CSVM $settings |& tee -a ./logs/$logName
+   			./CSVM $tmpSettings |& tee -a ./logs/$logName 
    			echo ""
    			echo ""
+		fi
+
+		../genReport &> ./logs/errorLOG
+
+		if [ $graph == 1 ] ; then
+			xdg-open overview.png &> ./logs/errorLOG
+		fi
+		
+		if [ $noIters > 1 ] ; then
+			tmpFolderName=$folderName"_"$i
+		fi
+
+		if [ $document == 1 ] ; then
+			if [ $folderName == "LAST_RUN" ] ; then
+				rm LAST_RUN/* &> ./logs/errorLOG &> ./logs/errorLOG
+			fi
+			mkdir ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./logs/$logName ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_0.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_1.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_2.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_3.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_4.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_5.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_6.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_7.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_8.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./SVM_9.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./overview.png ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./statData_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./settings ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./R_dataDump_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
+			cp ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
+		fi
+		if [ $alert == 1 ] ; then
+			aplay /usr/share/sounds/alsa/Side_Right.wav &> /dev/null &> ./logs/errorLOG
+		fi
+		if [ $log == 0 ] ; then
+			rm ./logs/$logName &> ./logs/errorLOG
 		fi
 	done
-
- 	../genReport &> /dev/null
-
-	if [ $graph == 1 ] ; then
-		xdg-open overview.png
-	fi
-
-	if [ $document == 1 ] ; then
-		mkdir ./logs/$folderName
-		cp ./logs/$logName ./logs/$folderName
-		cp ./SVM_0.png ./logs/$folderName
-		cp ./SVM_1.png ./logs/$folderName
-		cp ./SVM_2.png ./logs/$folderName
-		cp ./SVM_3.png ./logs/$folderName
-		cp ./SVM_4.png ./logs/$folderName
-		cp ./SVM_5.png ./logs/$folderName
-		cp ./SVM_6.png ./logs/$folderName
-		cp ./SVM_7.png ./logs/$folderName
-		cp ./SVM_8.png ./logs/$folderName
-		cp ./SVM_9.png ./logs/$folderName
-		cp ./overview.png ./logs/$folderName
-		cp ./statData_SVM-0 ./logs/$folderName
-		cp ./statData_SVM-1 ./logs/$folderName
-		cp ./statData_SVM-2 ./logs/$folderName
-		cp ./statData_SVM-3 ./logs/$folderName
-		cp ./statData_SVM-4 ./logs/$folderName
-		cp ./statData_SVM-5 ./logs/$folderName
-		cp ./statData_SVM-6 ./logs/$folderName
-		cp ./statData_SVM-7 ./logs/$folderName
-		cp ./statData_SVM-8 ./logs/$folderName
-		cp ./statData_SVM-9 ./logs/$folderName
-		cp ./settings ./logs/$folderName
-		cp ./LAST_USED.bin ./logs/$folderName
-	fi
-	if [ $alert == 1 ] ; then
-		aplay /usr/share/sounds/alsa/Side_Right.wav &> /dev/null
-	fi
-	if [ $log == 0 ] ; then
-		rm ./logs/$logName
-	fi
-	rm ./SVM_0.png
-	rm ./SVM_1.png
-	rm ./SVM_2.png
-	rm ./SVM_3.png
-	rm ./SVM_4.png
-	rm ./SVM_5.png
-	rm ./SVM_6.png
-	rm ./SVM_7.png
-	rm ./SVM_8.png
-	rm ./SVM_9.png
-	rm ./statData_SVM-0
-	rm ./statData_SVM-1
-	rm ./statData_SVM-2
-	rm ./statData_SVM-3
-	rm ./statData_SVM-4
-	rm ./statData_SVM-5
-	rm ./statData_SVM-6
-	rm ./statData_SVM-7
-	rm ./statData_SVM-8
-	rm ./statData_SVM-9
+	rm ./SVM_0.png &> ./logs/errorLOG
+	rm ./SVM_1.png &> ./logs/errorLOG
+	rm ./SVM_2.png &> ./logs/errorLOG
+	rm ./SVM_3.png &> ./logs/errorLOG
+	rm ./SVM_4.png &> ./logs/errorLOG
+	rm ./SVM_5.png &> ./logs/errorLOG
+	rm ./SVM_6.png &> ./logs/errorLOG
+	rm ./SVM_7.png &> ./logs/errorLOG
+	rm ./SVM_8.png &> ./logs/errorLOG
+	rm ./SVM_9.png &> ./logs/errorLOG
+	rm ./statData* &> ./logs/errorLOG
+	rm ./R_dataDump* &> ./logs/errorLOG
 
 fi

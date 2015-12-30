@@ -39,9 +39,8 @@ void CSVMClassifier::setSettings(string settingsFile){
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
    linNetwork.setSettings(settings.netSettings);
    convSVM.setSettings(settings.convSVMSettings);
-   
-   
 }
+
 
 void CSVMClassifier::train(){
    switch(settings.classifier){
@@ -65,6 +64,7 @@ void CSVMClassifier::train(){
    }
 }
 
+
 unsigned int CSVMClassifier::classify(Image* im){
    unsigned int result = 0;
    
@@ -82,10 +82,13 @@ unsigned int CSVMClassifier::classify(Image* im){
    return result;
 }
 
+
 //export the current codebook
 void CSVMClassifier::exportCodebook(string filename){
    codebook.exportCodebook(filename);
 }
+
+
 //import the current codebook
 void CSVMClassifier::importCodebook(string filename){
    codebook.importCodebook(filename);
@@ -99,12 +102,11 @@ void CSVMClassifier::constructDeepCodebook(){
 }
 
 
-
 //return number of classes
 unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
-
 }
+
 
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
@@ -137,6 +139,7 @@ void CSVMClassifier::constructCodebook(){
    
    pretrainDump.clear();
 }
+
 
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
@@ -185,10 +188,9 @@ void CSVMClassifier::trainConvSVMs(){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
-   
    convSVM.train(datasetActivations, &dataset);
-   
 }
+
 
 unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       //cout << "nClasses = " << nClasses << endl;
@@ -215,15 +217,14 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       
       patches.clear();
       dataActivation = codebook.getActivations(dataFeatures); 
-      
    }else{      
-      
       dataActivation = deepCodebook->getActivations(image);
-      
    }
 
    return convSVM.classify(dataActivation);
 }
+
+
 //train the KKT-SVM
 void CSVMClassifier::trainClassicSVMs(){
    //cout << "Enteing classic svm training\n";
@@ -429,6 +430,8 @@ void CSVMClassifier::trainLinearNetwork(){
    //train the Linear Netwok with the gained activations
    linNetwork.train(datasetActivations, &dataset);
 }
+
+
 
 unsigned int CSVMClassifier::lnClassify(Image* image){
    //cout << "nClasses = " << nClasses << endl;

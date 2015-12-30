@@ -8,6 +8,11 @@ CSVMDataset::CSVMDataset(){
    
 }
 
+CSVMDatasetType CSVMDataset::getType(){
+   return settings.type;
+}
+
+
 void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
    cifar10.readLabels(labelsDir);
    int imDirs = imageDirs.size();
