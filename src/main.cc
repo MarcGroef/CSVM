@@ -40,7 +40,7 @@ void printKernel(vector< vector<Feature> > kernels){
 
 int main(int argc,char**argv){
    
-	cout << "started main of CSVM" << endl;
+   cout << "started main of CSVM" << endl;
 
    if(argc!=2){
       showUsage();
@@ -55,17 +55,22 @@ int main(int argc,char**argv){
    c.setSettings(argv[1]);
    c.dataset.loadDataset("../datasets/");
 
-   //cout << "constructing codebook" << endl;
-   //c.constructCodebook();
+   cout << "constructing codebook" << endl;
+   c.constructCodebook();
    
-   cout << "importing codebook" << endl;
-   c.importCodebook("LAST_USED.bin");
+   //cout << "importing codebook" << endl;
+   //c.importCodebook("LAST_USED.bin");
    
    cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 
-   //c.exportCodebook("LAST_USED.bin");
+
+
+////////////////////////////////////////////////////////////////       DO
+   c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
+////////////////////////////////////////////////////////////////       ALTER
+
 
    cout << "initializing SVMs" << endl;
    c.initSVMs();
@@ -102,15 +107,17 @@ int main(int argc,char**argv){
    unsigned int testSize = (unsigned int)c.dataset.getTestSize();
    unsigned int nClasses = c.getNoClasses();
 
-   vector <vector <int> > classifiedAs      ( nClasses, vector<int> ( nClasses, 0 ) );
+   vector <vector <int> > classifiedAs      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
 
    for(size_t im = 0; im < testSize; ++im){
       
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
-      cout << "\nAnswer: " << answer;
+      //cout << "\nAnswer: " << answer;
       result = c.classify(c.dataset.getTestImagePtr(im));
+      //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
+
       //cout << "result: " << result << endl;
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
 
@@ -120,7 +127,11 @@ int main(int argc,char**argv){
       } else {
          ++nFalse;
       }
+
       ++classifiedAs[answer][result];
+      ++classifiedAs[answer][nClasses];
+      ++classifiedAs[nClasses][result];
+      
    }
    
    
@@ -154,6 +165,13 @@ int main(int argc,char**argv){
          precision = (double)classifiedAs[i][i] / total * 100;
          cout << "\t\t" << precision << " %" << "\n\n\n";
       }
+      cout << "\n\tPrecision:\t";
+      for (size_t i=0; i<nClasses; ++i){
+         precision = (double) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
+         cout << "\t" << fixed << precision << "";
+      }
+
+
    }
 
    return 0;

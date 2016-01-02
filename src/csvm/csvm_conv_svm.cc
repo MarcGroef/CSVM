@@ -46,10 +46,10 @@ using namespace csvm;
 
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          stringstream ss;
-         ss << "statData_SVM-" << svmIdx;
+         ss << "statData_SVM-" << svmIdx << ".csv";
          string fName = ss.str();
          statDatFile.open ( fName.c_str() );
-         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut" << endl;
+         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOut,StdDevMaxOut" << endl;
          cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          double prevObjective = numeric_limits<double>::max();
          double learningRate = settings.learningRate;
@@ -65,13 +65,13 @@ using namespace csvm;
             nMax   = 0;
             nMin   = 0;
 
+            allOuts  = vector<double>(nData, 0);
+
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                
                unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations[dIdx], svmIdx);
-               
-               
               
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
 
@@ -157,6 +157,7 @@ using namespace csvm;
                   
                if (out > 0)  { maxOut += out; ++nMax; }
                if (out < 0)  { minOut += out; ++nMin; }
+               allOuts[dIdx] = out;
 
                //if(out > 0) maxOutSum += (isfinite(out) ? out : 0 );
                //if(out < 0) minOutSum += (isfinite(out) ? out : 0 );
@@ -181,8 +182,20 @@ using namespace csvm;
             minOuts[svmIdx] = (double)  minOut / nMin;
             avOuts[svmIdx]  = (double) (maxOut + minOut) / nData;
 
+            double stdDevMaxOut = 0;
+            double stdDevMinOut = 0;
+
+            for (size_t dIdx=0; dIdx < nData; ++dIdx){
+               if (allOuts[dIdx] > 0)   stdDevMaxOut += pow((allOuts[dIdx] - maxOuts[svmIdx]), 2);
+               if (allOuts[dIdx] < 0)   stdDevMinOut += pow((allOuts[dIdx] - minOuts[svmIdx]), 2);
+            }
+            
+            stdDevMaxOut = sqrt(stdDevMaxOut / nMax);
+            stdDevMinOut = sqrt(stdDevMinOut / nMin);
+	
+
             if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << endl;   
-            statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << endl;
+            statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOut << "," << stdDevMaxOut << endl;
 
             if (objective > prevObjective) learningRate *= 0.999;
             prevObjective = objective;
@@ -199,10 +212,10 @@ using namespace csvm;
    unsigned int ConvSVM::classify(vector<double>& activations){
       unsigned int maxLabel = 0;
       double maxVal = output(activations, 0);
-      cout << "\n";
+      //cout << "\n";
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          double out = output(activations, svmIdx);
-         cout << "out " << svmIdx << " = " << out << "  /  " << minOuts[svmIdx] << " - "  << maxOuts[svmIdx] << "    Bias = " << biases[svmIdx] <<endl;
+         //cout << "out " << svmIdx << " = " << out << "  /  " << minOuts[svmIdx] << " - "  << maxOuts[svmIdx] << "    Bias = " << biases[svmIdx] <<endl;
          if(out > maxVal){
             maxVal = out;
             maxLabel = svmIdx;

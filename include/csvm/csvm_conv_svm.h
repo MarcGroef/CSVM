@@ -37,6 +37,7 @@ namespace csvm{
       vector<double> maxOuts;
       vector<double> minOuts;
       vector<double> avOuts;
+      vector<double> allOuts;
 
    public:
       

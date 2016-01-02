@@ -1,17 +1,40 @@
+minRangeObj = 0
+maxRangeObj = 0
+minRangeOut = 0
+maxRangeOut = 0
+minRangeScore = 0
+maxRangeScore = 0
+
+for(i in 0:9)
+
+{
+	d = read.table(paste("statData_SVM-",i,".csv",sep=""), header=TRUE, sep=",")
+	is.na(d) <- sapply(d, is.infinite)
+	minRangeObj = min(c(minRangeObj, d[,2]), na.rm=TRUE)
+	maxRangeObj = max(c(maxRangeObj, d[,2]), na.rm=TRUE)
+	minRangeOut = min(c(minRangeOut, d[,4]-d[,6]), na.rm=TRUE)
+	maxRangeOut = max(c(maxRangeOut, d[,5]+d[,7]), na.rm=TRUE)
+	minRangeScore = min(c(minRangeScore, d[,3]), na.rm=TRUE)
+	maxRangeScore = max(c(maxRangeScore, d[,3]), na.rm=TRUE)
+}
+
+rangeObj = c(0, maxRangeObj)
+rangeOut = c(minRangeOut, maxRangeOut)
+rangeScore = c(0, maxRangeScore)
 
 for(i in 0:9)
 
 {
 	png(filename=paste("SVM_", i, ".png", sep=""))
-	d = read.table(paste("statData_SVM-",i,sep=""), header=TRUE, sep=",")
+	d = read.table(paste("statData_SVM-",i,".csv",sep=""), header=TRUE, sep=",")
 	is.na(d) <- sapply(d, is.infinite)
 	n = c(names(d))
 
 
 	par(mfrow=c(2,1), mar=(c(0,4,2,4)))
-	with(d, plot(data.frame(c(d[1], d[2])), type="l", col="red3", main=paste("SVM", i), xaxt="n", xlab=NA, ylab=n[2]))
+	with(d, plot(data.frame(c(d[1], d[2])), ylim=rangeObj, type="l", col="red3", main=paste("SVM", i), xaxt="n", xlab=NA, ylab=n[2]))
 	par(mfg=c(1,1))
-	with(d, plot(data.frame(c(d[1],d[3])), type="l", col="blue3", axes=F, xlab=NA, ylab=NA, cex=1.2))
+	with(d, plot(data.frame(c(d[1],d[3])), ylim=rangeScore, type="l", col="blue3", axes=F, xlab=NA, ylab=NA, cex=1.2))
 	axis(side=4)
 	mtext(side=4, line=3, n[3])
 	legend("bottomright", legend=c(n[2], n[3]), lty=c(1,1), col=c("red3", "blue3"))
@@ -22,8 +45,11 @@ for(i in 0:9)
 	max = d[5]
 	x = d[1]
 
-	with(d, plot(data.frame(c(d[1], d[4])), type="l", ylim=range(c(min,max,0), na.rm=TRUE), col="red3", xlab=n[1], ylab=n[4]))
+	with(d, plot(data.frame(c(d[1], d[4])), type="l", ylim=rangeOut, col="red3", xlab=n[1], ylab=n[4]))
 	polygon(c(d[,1], rev(d[,1])), c(d[,5], rev(d[,4])), col="lightgrey")
+	polygon(c(d[,1], rev(d[,1])), c(d[,4]-d[,6], rev(d[,4]+d[,6])), border=NA, col=rgb(0, 0, 255, max = 255, alpha = 100, names = "blue50"))
+	polygon(c(d[,1], rev(d[,1])), c(d[,5]-d[,7], rev(d[,5]+d[,7])), border=NA, col=rgb(0, 0, 255, max = 255, alpha = 100, names = "blue50"))
+	abline(a=0, b=0, col="red")
 	
 	text(round(d[length(d[,1]),1]*0.8), d[length(d[,2]),4], paste("min: ", signif((d[length(d[,2]),4]),2), sep=""))
 	text(round(d[length(d[,1]),1]*0.8), d[length(d[,2]),5], paste("max: ", signif((d[length(d[,2]),5]),2), sep=""))
