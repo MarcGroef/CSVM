@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 10000
-nTestImages 2000
+nTrainImages 1000
+nTestImages 200
 
 General
 Classifier CSVM
@@ -17,7 +17,7 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method HOG
+method CLEAN
 cellSize 6
 cellStride 6
 padding Identity
@@ -28,7 +28,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 200000
+nRandomPatches 20000
 
 SVM
 Kernel LINEAR

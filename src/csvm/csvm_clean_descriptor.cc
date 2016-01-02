@@ -11,7 +11,7 @@ Feature CleanDescriptor::describe(Patch p){
    unsigned int imWidth = p.getWidth();
    unsigned int numColours = (p.getSource()->getFormat() == CSVM_IMAGE_UCHAR_GREY ? 1 : 3)  ;
    unsigned int imSize = (imWidth * imHeight * numColours);//3);
-   
+   unsigned int chSize = imWidth * imHeight;
    
    Feature f(imSize,0);
    
@@ -31,7 +31,7 @@ Feature CleanDescriptor::describe(Patch p){
       
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
-            f.content[idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+            f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
             mean += f.content[idxY * imWidth + idxX];
             
          }
@@ -44,7 +44,7 @@ Feature CleanDescriptor::describe(Patch p){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             
-            stddev += (mean - f.content[idxY * imWidth + idxX]) * (mean - f.content[idxY * imWidth + idxX]);
+            stddev += (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]) * (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]);
             
          }
       }
@@ -57,7 +57,7 @@ Feature CleanDescriptor::describe(Patch p){
       //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
          for(size_t idxX = 0; idxX < imWidth; ++idxX){
             for(size_t idxY = 0; idxY < imHeight; ++idxY){
-               f.content[idxY * imWidth + idxX] = (f.content[idxY * imWidth + idxX] - mean)/stddev;
+               f.content[chIdx * chSize + idxY * imWidth + idxX] = (f.content[chIdx * chSize + idxY * imWidth + idxX] - mean)/stddev;
                //cout << "newVal = " << f.content[idxY * imWidth + idxX] << endl;
             }
          }
