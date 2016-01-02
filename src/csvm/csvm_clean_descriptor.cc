@@ -23,9 +23,12 @@ Feature CleanDescriptor::describe(Patch p){
          f.content[idxY * imWidth + idxX] = (double)(p.getGreyPixel(idxX,idxY)) ;
       }
    }*/
-   double mean = 0.0;
-   double stddev = 0.0;
+  
    for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+      
+      double mean = 0.0;
+      double stddev = 0.0;
+      
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             f.content[idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
@@ -33,11 +36,11 @@ Feature CleanDescriptor::describe(Patch p){
             
          }
       }
-   }
+   
    // TO DO: fix magic number 3 only appropriate when using colour, not when grayscaling
    
-   mean /= (imWidth * imHeight * numColours);//3);
-   for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+      mean /= (imWidth * imHeight * numColours);//3);
+   //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             
@@ -45,19 +48,20 @@ Feature CleanDescriptor::describe(Patch p){
             
          }
       }
-   }
-   //cout << "var = " << stddev << ", nVals = " << (3 * imWidth * imHeight) << endl;
-   stddev /= (imWidth * imHeight * numColours); //* 3);
-   stddev = sqrt(stddev);
-   //cout << "stddev = " << stddev << endl;
-   if (stddev > 0){
-      for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+      //}
+      //cout << "var = " << stddev << ", nVals = " << (3 * imWidth * imHeight) << endl;
+      stddev /= (imWidth * imHeight * numColours); //* 3);
+      stddev = sqrt(stddev);
+      //cout << "stddev = " << stddev << endl;
+      if (stddev > 0){
+      //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
          for(size_t idxX = 0; idxX < imWidth; ++idxX){
             for(size_t idxY = 0; idxY < imHeight; ++idxY){
                f.content[idxY * imWidth + idxX] = (f.content[idxY * imWidth + idxX] - mean)/stddev;
                //cout << "newVal = " << f.content[idxY * imWidth + idxX] << endl;
             }
          }
+      //}
       }
    }
    return f;

@@ -11,7 +11,7 @@ nClasses 10
 
 Codebook
 method KMEANS
-nClusters 200
+nClusters 500
 nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
