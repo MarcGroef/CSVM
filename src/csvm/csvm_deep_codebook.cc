@@ -142,7 +142,7 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    nRandomPatches.push_back(settings.nRandomPatches);
    
    for(size_t dIdx = 0; plSize > 2; ++dIdx, ++depth ){
-      //tmpNCentroids /= 2;
+      tmpNCentroids /= 2;
       nCentroids.push_back(tmpNCentroids);
       fmSize = plSize;
       plSize = fmSize / 2;
