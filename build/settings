@@ -1,23 +1,23 @@
 
 Dataset
 method CIFAR10
-nTrainImages 1000
-nTestImages 200
+nTrainImages 10000
+nTestImages 2000
 
 General
 Classifier CSVM
-Codebook CODEBOOK
+Codebook DEEPCODEBOOK
 nClasses 10
 
 Codebook
 method KMEANS
-nClusters 500
+nClusters 400
 nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method CLEAN
+method HOG
 cellSize 6
 cellStride 6
 padding Identity
