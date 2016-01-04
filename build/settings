@@ -6,12 +6,12 @@ nTestImages 2000
 
 General
 Classifier CSVM
-Codebook DEEPCODEBOOK
+Codebook CODEBOOK
 nClasses 10
 
 Codebook
 method KMEANS
-nClusters 400
+nClusters 100
 nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
