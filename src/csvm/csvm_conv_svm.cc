@@ -128,14 +128,14 @@ using namespace csvm;
  
                   // L2 VM3
                   // EFFECT: Works Nicely.. 43%
-                  if(yData * out < 1){
-                     //weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
-                     ++wrong;
-                  } else {
-                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
-                     ++right;
-                  }
+             //     if(yData * out < 1){
+             //        //weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+             //        weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
+             //        ++wrong;
+             //     } else {
+             //        weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
+             //        ++right;
+             //     }
 
                   // L2 VM4
                   // EFFECT: Works Nicely.. 43%
