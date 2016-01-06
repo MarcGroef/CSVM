@@ -6,12 +6,12 @@ nTestImages 2000
 
 General
 Classifier CSVM
-Codebook CODEBOOK
+Codebook DEEPCODEBOOK
 nClasses 10
 
 Codebook
 method KMEANS
-nClusters 100
+nClusters 200
 nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -28,7 +28,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 2
-nRandomPatches 20000
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR
@@ -47,7 +47,7 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.000002
-nIterations 5000
+nIterations 1000
 initWeight 0.000002
 CSVM_C 1000
 

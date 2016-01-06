@@ -256,7 +256,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          }
       }
          
-	
+      /*
       //standardize data
       double mean = 0;
       double stddev = 0;
@@ -277,7 +277,8 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          activations[qIdx * settings.numberVisualWords + word] = (activations[qIdx * settings.numberVisualWords + word] - mean) / stddev;
       }
-	
+      */
+      
 	
       
    }
