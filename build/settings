@@ -1,26 +1,26 @@
 
 Dataset
 method CIFAR10
-nTrainImages 6000
-nTestImages 1000
+nTrainImages 10000
+nTestImages 2000
 
 General
 Classifier CSVM
-Codebook CODEBOOK
+Codebook DEEPCODEBOOK
 nClasses 10
 
 Codebook
 method KMEANS
-nClusters 130
-nIterations 40
+nClusters 200
+nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method HOG
-cellSize 4
-cellStride 4
-padding None
+cellSize 6
+cellStride 6
+padding Identity
 useGreyPixel true
 weightRatio 0.5
 
@@ -34,7 +34,7 @@ SVM
 Kernel LINEAR
 AlphaDataInit 0.001
 nIterations 500
-learningRate 0.0000005
+learningRate 0.000005
 SVM_C_Data 1000
 Cost 1
 D2 1
@@ -46,9 +46,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000004
-nIterations 20000
-initWeight 0.002
+learningRate 0.000002
+nIterations 1000
+initWeight 0.000002
 CSVM_C 1000
 
 
