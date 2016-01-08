@@ -89,7 +89,14 @@ namespace csvm{
       
    }
    
-  
+   unsigned int Image::getNChannels(){
+      switch(format){
+         case CSVM_IMAGE_EMPTY: return 0;
+         case CSVM_IMAGE_UCHAR_RGBA: return 4;
+         case CSVM_IMAGE_UCHAR_RGB: return 3;
+         case CSVM_IMAGE_UCHAR_GREY: return 1;
+      }
+   }
    
    void Image::loadImage(string filename){
       string png = ".png";

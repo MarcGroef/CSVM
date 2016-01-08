@@ -120,7 +120,7 @@ double learningRate = settings.learningRate;
                
                //original bias function
                if(yData * out < 1)
-                  biases[svmIdx] += settings.learningRate * yData;
+                  biases[svmIdx] += settings.learningRate * (yData - out);
                
                
                //if(yData * out < 1)

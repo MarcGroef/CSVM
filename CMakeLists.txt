@@ -38,7 +38,7 @@ src/csvm/csvm_deep_codebook.cc
 src/csvm/csvm_annotated_kmeans.cc
 src/csvm/csvm_conv_svm.cc
 src/csvm/csvm_merge_descriptor.cc
-
+src/csvm/csvm_interpolator.cc
 ##png library
 src/lodepng/lodepng.cc
 

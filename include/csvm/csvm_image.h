@@ -54,7 +54,7 @@ namespace csvm{
       unsigned int getWidth();
       unsigned int getHeight();
       void setImageData(vector<unsigned char> data);
-      
+      unsigned int getNChannels();
       
       ImageFormat getFormat();
       Image clone();

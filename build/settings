@@ -1,6 +1,6 @@
 
 Dataset
-method CIFAR10
+method MNIST
 nTrainImages 10000
 nTestImages 2000
 
