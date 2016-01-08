@@ -131,11 +131,11 @@ using namespace csvm;
                   // L2 VM3
                   // EFFECT: Works Nicely.. 43%
                   if(yData * out < 1){
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx]  + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
                //      weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
                      ++wrong;
                   } else {
-                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
+             //        weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
                      ++right;
                   }
 
@@ -213,7 +213,7 @@ using namespace csvm;
             if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
             statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
 
-            //if (objective > prevObjective) learningRate *= 0.75;
+            if (objective > prevObjective) learningRate *= 0.75;
             prevObjective = objective;
 
          }//itIdx
@@ -227,11 +227,13 @@ using namespace csvm;
    //classify image, given its activations
    unsigned int ConvSVM::classify(vector<double>& activations){
       unsigned int maxLabel = 0;
+      //double maxVal = (output(activations, 0) > 0) ? output(activations, 0) / maxOuts[0] : output(activations, 0) / -minOuts[0];
       double maxVal = output(activations, 0);
       //cout << "\n";
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
+         //double out = (output(activations, svmIdx) > 0) ? output(activations, svmIdx) / maxOuts[svmIdx] : output(activations, svmIdx) / -minOuts[svmIdx];
          double out = output(activations, svmIdx);
-         //cout << "out " << svmIdx << " = " << out << "  /  " << minOuts[svmIdx] << " - "  << maxOuts[svmIdx] << "    Bias = " << biases[svmIdx] <<endl;
+         //cout << "out " << svmIdx << " = " << out << "\t  /  " << minOuts[svmIdx] << " - "  << maxOuts[svmIdx] << "    Bias = " << biases[svmIdx] <<endl;
          if(out > maxVal){
             maxVal = out;
             maxLabel = svmIdx;

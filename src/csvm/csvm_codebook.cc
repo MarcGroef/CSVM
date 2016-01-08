@@ -341,22 +341,17 @@ void Codebook::exportCodebook(string filename){
     *  No seperator characters are used
    */
    
-cout << "\tCodebook:\t" << "Mark 1" << endl;
    charInt fancyInt;
    charDouble fancyDouble;
    
-cout << "\tCodebook:\t" << "Mark 2" << endl;
-cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
+   //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
    unsigned int wordSize = bow[0].content.size();
-cout << "\twordSize:\t" << wordSize << "\n\tfilename:\t" << filename.c_str() << endl;
    ofstream file(filename.c_str(),  ios::binary);
    
-cout << "\tCodebook:\t" << "Mark 3" << endl;
    //write nr of classes
    fancyInt.intVal = 1;
    file.write(fancyInt.chars, 4);
    
-cout << "\tCodebook:\t" << "Mark 4" << endl;
    //write nr visual words per class
    fancyInt.intVal = settings.numberVisualWords;
    file.write(fancyInt.chars, 4);
@@ -364,9 +359,6 @@ cout << "\tCodebook:\t" << "Mark 4" << endl;
    //type size
    char c = 8;
    file.write(&c, 1);
-   
-   
-cout << "\tCodebook:\t" << "Mark 5" << endl;
   
    //write dimensionality of words
    fancyInt.intVal = wordSize;
@@ -379,6 +371,5 @@ cout << "\tCodebook:\t" << "Mark 5" << endl;
       }
    } 
    
-cout << "\tCodebook:\t" << "Construction complete" << endl;
    file.close();
 }

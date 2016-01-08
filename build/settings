@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nTrainImages 1500
+nTrainImages 5000
 nTestImages 1000
 
 General
@@ -46,9 +46,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.0000002
+learningRate 0.000001
 nIterations 1000
-initWeight 0.000000000002
+initWeight 0.0000002
 CSVM_C 1000
 
 
