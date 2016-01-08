@@ -69,7 +69,7 @@ int main(int argc,char**argv){
 
 ////////////////////////////////////////////////////////////////       DO
    c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
-////////////////////////////////////////////////////////////////       ALTER
+////////////////////////////////////////////////////////////////       ALTER (script dependency)
 
 
    cout << "initializing SVMs" << endl;
@@ -103,7 +103,7 @@ int main(int argc,char**argv){
  
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
    //****************************** Print ConfusionMatrix for TRAINSET *******************
 
@@ -178,8 +178,8 @@ int main(int argc,char**argv){
    //****************************** Print ConfusionMatrix for TESTSET *******************
    
    
-   cout << nCorrect << "\n\n\n correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+   cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
 

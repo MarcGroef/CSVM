@@ -67,7 +67,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    
    
    for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
-      //cout << "kmeans iter " << itx << endl;
+//   cout << "\n\n\nkmeans iter " << itx << endl;
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;
       
@@ -93,7 +93,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
                
             }
          }
-         //cout << "closestDist = " << closestDist << endl;
+//    cout << "closestDist = " << closestDist << endl;
          //cout << "closestCentr =" << closestCentr << " at dist: " << closestDist << endl;
          totalDistance += closestDist;
          
@@ -110,7 +110,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
-      //cout << "deltaDist =  "  << deltaDist << endl;
+//   cout << "deltaDist =  "  << deltaDist << endl;
    }
    
    /*for(size_t centr = 0; centr < nClusters; ++centr){

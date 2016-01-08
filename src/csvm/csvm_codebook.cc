@@ -36,9 +36,9 @@ void Codebook::constructCodebook(vector<Feature> featureset){
       case KMeans_Clustering:
          bow = kmeans.cluster(featureset, settings.numberVisualWords);
          break;
-	  case AKMeans_Clustering:
-		  bow = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
-		  break;
+      case AKMeans_Clustering:
+         bow = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
+         break;
    }
    
 }
@@ -47,9 +47,7 @@ void Codebook::constructCodebook(vector<Feature> featureset){
 
 
 unsigned int Codebook::getNClasses(){
-   
-   
-   return nClasses;
+      return nClasses;
 }
 
 
@@ -94,11 +92,8 @@ vector< double > Codebook::getActivations(vector<Feature> features){
          }
       }
       
-
-
       mean = 0.0;
       //cout << "cl" << cl << ": ";
-
       
       if(settings.simFunction == CB_RBF){
          
@@ -346,16 +341,22 @@ void Codebook::exportCodebook(string filename){
     *  No seperator characters are used
    */
    
+cout << "\tCodebook:\t" << "Mark 1" << endl;
    charInt fancyInt;
    charDouble fancyDouble;
    
+cout << "\tCodebook:\t" << "Mark 2" << endl;
+cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
    unsigned int wordSize = bow[0].content.size();
+cout << "\twordSize:\t" << wordSize << "\n\tfilename:\t" << filename.c_str() << endl;
    ofstream file(filename.c_str(),  ios::binary);
    
+cout << "\tCodebook:\t" << "Mark 3" << endl;
    //write nr of classes
    fancyInt.intVal = 1;
    file.write(fancyInt.chars, 4);
    
+cout << "\tCodebook:\t" << "Mark 4" << endl;
    //write nr visual words per class
    fancyInt.intVal = settings.numberVisualWords;
    file.write(fancyInt.chars, 4);
@@ -365,6 +366,7 @@ void Codebook::exportCodebook(string filename){
    file.write(&c, 1);
    
    
+cout << "\tCodebook:\t" << "Mark 5" << endl;
   
    //write dimensionality of words
    fancyInt.intVal = wordSize;
@@ -377,6 +379,6 @@ void Codebook::exportCodebook(string filename){
       }
    } 
    
-   
+cout << "\tCodebook:\t" << "Construction complete" << endl;
    file.close();
 }
