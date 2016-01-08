@@ -4,6 +4,8 @@
 #include <time.h>
 #include <cstdlib>
 
+
+#include <csvm/csvm_interpolator.h>
 /*Optimze technique
  * use -pg compile flag
  * run as :
@@ -46,7 +48,7 @@ int main(int argc,char**argv){
       showUsage();
       return 0;
    }
-   
+   Interpolator scaler;
    
    srand(time(NULL));
    
@@ -55,11 +57,20 @@ int main(int argc,char**argv){
    c.setSettings(argv[1]);
    c.dataset.loadDataset("../datasets/");
 
-   //cout << "constructing codebook" << endl;
-   //c.constructCodebook();
    
-   cout << "importing codebook" << endl;
-   c.importCodebook("LAST_USED.bin");
+   //*****************************test the interpolator
+   /*Image* im = c.dataset.getImagePtr(52);
+   Image large = scaler.interpolate_bicubic(*im, 640, 640);
+   im->exportImage("small.png");
+   large.exportImage("large.png");
+   return 0;*/
+   
+   
+   cout << "constructing codebook" << endl;
+   c.constructCodebook();
+   
+   //cout << "importing codebook" << endl;
+   //c.importCodebook("LAST_USED.bin");
    
    cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");

@@ -44,7 +44,9 @@ void CSVMDataset::loadMNIST(string mnistDir){
    
    //splitDatasetToClasses();
    //cout << "dataset split to classes\n";
-   
+   mnist.scaleData(32);
+   cout << "Rescaled!\n";
+
 }
 
 void CSVMDataset::loadDataset(string dataDir){
@@ -142,7 +144,7 @@ void CSVMDataset::splitDataset(){
    unsigned int nTestData = settings.nTestImages;
    
    if(nTrainData + nTestData > nData){
-      cout << "csvm::CSVMDataset::splitDataset() WARNING! amount of testData + amount of trainData > nData in dataset! Exitting..\n";
+      cout << "csvm::CSVMDataset::splitDataset() WARNING! amount of testData + amount of trainData > nData (" << nTrainData << " + " << nTestData << " > " << nData << ")in dataset! Exitting..\n";
       exit(0);
    }
    

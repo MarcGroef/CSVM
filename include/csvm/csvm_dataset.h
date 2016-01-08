@@ -8,7 +8,7 @@
 #include "csvm_cifar10_parser.h"
 #include "csvm_image.h"
 #include "csvm_mnist_parser.h"
-
+#include "csvm_interpolator.h"
 
 using namespace std;
 namespace csvm{
