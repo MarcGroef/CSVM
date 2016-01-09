@@ -36,9 +36,9 @@ void Codebook::constructCodebook(vector<Feature> featureset){
       case KMeans_Clustering:
          bow = kmeans.cluster(featureset, settings.numberVisualWords);
          break;
-	  case AKMeans_Clustering:
-		  bow = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
-		  break;
+      case AKMeans_Clustering:
+         bow = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
+         break;
    }
    
 }
@@ -47,9 +47,7 @@ void Codebook::constructCodebook(vector<Feature> featureset){
 
 
 unsigned int Codebook::getNClasses(){
-   
-   
-   return nClasses;
+      return nClasses;
 }
 
 
@@ -94,11 +92,8 @@ vector< double > Codebook::getActivations(vector<Feature> features){
          }
       }
       
-
-
       mean = 0.0;
       //cout << "cl" << cl << ": ";
-
       
       if(settings.simFunction == CB_RBF){
          
@@ -349,6 +344,7 @@ void Codebook::exportCodebook(string filename){
    charInt fancyInt;
    charDouble fancyDouble;
    
+   //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
    unsigned int wordSize = bow[0].content.size();
    ofstream file(filename.c_str(),  ios::binary);
    
@@ -363,8 +359,6 @@ void Codebook::exportCodebook(string filename){
    //type size
    char c = 8;
    file.write(&c, 1);
-   
-   
   
    //write dimensionality of words
    fancyInt.intVal = wordSize;
@@ -376,7 +370,6 @@ void Codebook::exportCodebook(string filename){
          file.write(fancyDouble.chars, 8);
       }
    } 
-   
    
    file.close();
 }

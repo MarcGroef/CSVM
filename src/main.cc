@@ -56,7 +56,7 @@ int main(int argc,char**argv){
 
    c.setSettings(argv[1]);
    c.dataset.loadDataset("../datasets/");
-   
+
    
    //*****************************test the interpolator
    /*Image* im = c.dataset.getImagePtr(2);
@@ -80,7 +80,7 @@ int main(int argc,char**argv){
 
 ////////////////////////////////////////////////////////////////       DO
    c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
-////////////////////////////////////////////////////////////////       ALTER
+////////////////////////////////////////////////////////////////       ALTER (script dependency)
 
 
    cout << "initializing SVMs" << endl;
@@ -93,30 +93,69 @@ int main(int argc,char**argv){
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;
    unsigned int nImages = c.dataset.getTrainSize();//(unsigned int) c.dataset.getSize();
+   unsigned int nClasses = c.getNoClasses();
    
+   vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
      
-      unsigned int result;
-      result = c.classify(c.dataset.getTrainImagePtr(im));
-      
-      if((unsigned int)c.dataset.getTrainImagePtr(im)->getLabelId() == result)
+      unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
+      unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
+
+      if (result == answer){
          ++nCorrect;
-      else 
-      ++nFalse;
-          
+      } else {
+         ++nFalse;
+      }
+
+      ++classifiedAsTrain[answer][result];
+      ++classifiedAsTrain[answer][nClasses];
+      ++classifiedAsTrain[nClasses][result];
+ 
    }
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "Score: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
-   
+   //****************************** Print ConfusionMatrix for TRAINSET *******************
+
+   bool printConfusionMatrix = true;
+
+   if (printConfusionMatrix) {
+      int   total;
+      double precision;
+
+      cout << "\n\n\t       Predicted:\t";
+      for (size_t i=0; i<nClasses; i++){
+         if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<2) ? "\t" : "\t\t");   
+      }
+      cout << "Average:" << "\n\n    \tActual:\n";
+      for (size_t i=0; i<nClasses; ++i){
+         total = 0;
+         if (c.dataset.getType() == DATASET_CIFAR10) cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         else                                        cout << " \t" << i << ((i > 1) ? "\t" : "\t");
+         for (size_t j=0; j<nClasses; ++j){
+            total += classifiedAsTrain[i][j];
+            cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAsTrain[i][j];
+         }
+         precision = (double)classifiedAsTrain[i][i] / total * 100;
+         cout << "\t\t" << precision << " %" << "\n\n\n";
+      }
+      cout << "\n\tPrecision:\t";
+      for (size_t i=0; i<nClasses; ++i){
+         precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
+         cout << "\t" << fixed << precision << "";
+      }
+   }
+
+
+  
    //***********************************Testing phase on test set**********************************************************************************
 
-   cout << "\n\nOn test set:\n\n";
+   cout << "\n\n\nOn test set:\n\n";
    nCorrect = 0;
    nFalse = 0;
    unsigned int testSize = (unsigned int)c.dataset.getTestSize();
-   unsigned int nClasses = c.getNoClasses();
 
    vector <vector <int> > classifiedAs      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
 
@@ -144,16 +183,16 @@ int main(int argc,char**argv){
       ++classifiedAs[nClasses][result];
       
    }
+
+  
    
-   
-   //****************************** Print ConfusionMatrix *******************
+   //****************************** Print ConfusionMatrix for TESTSET *******************
    
    
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "Score: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
-   bool printConfusionMatrix = true;
 
    if (printConfusionMatrix) {
       int   total;
@@ -181,10 +220,7 @@ int main(int argc,char**argv){
          precision = (double) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
-
-
    }
-
    return 0;
 }
 
