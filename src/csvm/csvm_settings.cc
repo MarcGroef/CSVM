@@ -139,7 +139,19 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream) {
 		}
 		stream >> datasetSettings.nTestImages;
 	}
-
+   stream >> setting;
+   if (setting != "imageWidth") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   stream >> datasetSettings.imWidth;
+   
+   stream >> setting;
+   if (setting != "imageHeight") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   stream >> datasetSettings.imHeight;
 }
 
 

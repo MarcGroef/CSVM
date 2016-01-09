@@ -4,6 +4,18 @@
 using namespace std;
 using namespace csvm;
 
+   void CIFAR10::scaleData(unsigned int width, unsigned int height){
+      vector<Image> newImages;
+      unsigned int nImages = images.size();
+      
+      for(size_t imIdx = 0; imIdx != nImages; ++imIdx){
+         newImages.push_back(interpolator.interpolate_bicubic(images[imIdx], width, height));
+         newImages[imIdx].setLabelId(images[imIdx].getLabelId());
+         newImages[imIdx].setLabel(images[imIdx].getLabel());
+      }
+      images = newImages;
+   }
+
    Image CIFAR10::bytesToImage(unsigned char* c){
       //cout << "byteToIm\n";
       

@@ -26,6 +26,8 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
    //splitDatasetToClasses();
    //appendAndShuffleDataIdxArray();
    //cout << "dataset split to classes\n";
+   if(settings.imWidth > 0 || settings.imHeight > 0)
+      cifar10.scaleData(settings.imWidth, settings.imHeight);
 }
 
 void CSVMDataset::loadMNIST(string mnistDir){
@@ -44,7 +46,8 @@ void CSVMDataset::loadMNIST(string mnistDir){
    
    //splitDatasetToClasses();
    //cout << "dataset split to classes\n";
-   mnist.scaleData(32);
+   if(settings.imWidth > 0 || settings.imHeight > 0)
+      mnist.scaleData(settings.imWidth,settings.imHeight);
    cout << "Rescaled!\n";
 
 }

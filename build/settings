@@ -1,8 +1,10 @@
 
 Dataset
 method CIFAR10
-nTrainImages 10000
-nTestImages 1000
+nTrainImages 50000
+nTestImages 10000
+imageWidth 64
+imageHeight 64
 
 General
 Classifier CSVM
