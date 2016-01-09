@@ -83,76 +83,23 @@ using namespace csvm;
              //        ++right;
              //     }
 
-                  // my derivative:
-                  // EFFECT: lower score on testset, comparable otherwise. Seems to perform better without the else statement.
-                  //if(yData * out < 1)
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] -  yData / settings.CSVM_C * activations[dIdx][centrIdx])) ;
-                  //else
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * ( weights[svmIdx][centrIdx] );
-
-                  // L2
-                  // EFFECT: Not obvious yet...
-                  //if(yData * out < 1)
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * (weights[svmIdx][centrIdx] + 1 / settings.CSVM_C * (-4 * yData * activations[dIdx][centrIdx]   +   2 * out * activations[dIdx][centrIdx])) ;
-                  //else
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx] ;
-                                   
-                  // L2 V2
-                  // EFFECT: Not obvious yet...
-                  //if(yData * out < 1)
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + (-4 * yData * activations[dIdx][centrIdx]   +   2 * out * activations[dIdx][centrIdx])) ;
-                  //else
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx]  * 1 / settings.CSVM_C;
-
-                  // L2 VM1
-                  // EFFECT: Works Nicely.. 45%
-                  //if(yData * out < 1)
-                  //   weights[svmIdx][centrIdx] -= -settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-                  //else
-                  //   weights[svmIdx][centrIdx] -= -settings.learningRate * weights[svmIdx][centrIdx]  * 1 / settings.CSVM_C;
-
-                  // L2 VM2
-                  // EFFECT: Works Nicely.. 43%
-                  //if(yData * out < 1)
-                  //   weights[svmIdx][centrIdx] -= -settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-                  //else
-                  //   weights[svmIdx][centrIdx] -= settings.learningRate * weights[svmIdx][centrIdx]  * 1 / settings.CSVM_C;
 
                   // L2 VM3
-                  // EFFECT: Works Nicely.. 43%
-     //             //if(yData * out < 1){
-                  //   weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-                  //   ++wrong;
-                  //} else {
-                  //   weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
-                  //   ++right;
-                  //}
- 
-                  // L2 VM3
-                  // EFFECT: Works Nicely.. 43%
+                  // EFFECT: Graphs seem better... Accuracy does not increase enormously
                   if(yData * out < 1){
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx]  + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
+                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
                //      weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
                      ++wrong;
                   } else {
-             //        weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
+                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
                      ++right;
                   }
 
-                  // L2 VM4
-                  // EFFECT: Works Nicely.. 43%
-                  //if(yData * out < 1 )// && rand()%10 > 2)
-                  //   weights[svmIdx][centrIdx] += settings.learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
                }//centrIdx
                
-               //original bias function
+               //bias function
                if(yData * out < 1)
                   biases[svmIdx] += settings.learningRate * (yData - out);
-               
-               
-               //if(yData * out < 1)
-               //   biases[svmIdx] -= learningRate * (1-yData*out) * (-yData); 
-               
                
                //add max(0, 1 - yData * out)               FOR L2 To Chi squared
                sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
@@ -160,12 +107,6 @@ using namespace csvm;
                if (out > 0)  { maxOut += out; ++nMax; }
                if (out < 0)  { minOut += out; ++nMin; }
                allOuts[dIdx] = out;
-
-               //if(out > 0) maxOutSum += (isfinite(out) ? out : 0 );
-               //if(out < 0) minOutSum += (isfinite(out) ? out : 0 );
-
-               //if (!isfinite(maxOut)) maxOut = 0;
-               //if (!isfinite(minOut)) minOut = 0;
 
             }//dIdx
             
