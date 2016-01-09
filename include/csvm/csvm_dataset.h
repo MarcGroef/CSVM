@@ -24,6 +24,8 @@ namespace csvm{
       unsigned int nTestImages;
       bool useDifferentCodebooksPerClass;
       unsigned int nClasses;
+      unsigned int imWidth;
+      unsigned int imHeight;
    };
    
    class CSVMDataset{

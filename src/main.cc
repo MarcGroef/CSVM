@@ -59,12 +59,12 @@ int main(int argc,char**argv){
    
    
    //*****************************test the interpolator
-   /*Image* im = c.dataset.getImagePtr(2);
+   /*Image* im = c.dataset.getImagePtr(872);
    Image large = scaler.interpolate_bicubic(*im, 640, 640);
    im->exportImage("small.png");
    large.exportImage("large.png");
-   return 0;
-   */
+   return 0;*/
+   
    
    cout << "constructing codebook" << endl;
    c.constructCodebook();

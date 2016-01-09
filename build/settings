@@ -1,8 +1,10 @@
 
 Dataset
-method MNIST
-nTrainImages 60000
+method CIFAR10
+nTrainImages 50000
 nTestImages 10000
+imageWidth 64
+imageHeight 64
 
 General
 Classifier CSVM

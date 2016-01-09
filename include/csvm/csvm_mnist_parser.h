@@ -95,7 +95,7 @@ namespace csvm{
       unsigned int getLabelId(unsigned int index);
       unsigned int getSize();
       vector<Image>& getImages();
-      void scaleData(unsigned int size);
+      void scaleData(unsigned int width, unsigned int height);
    };
 }
 

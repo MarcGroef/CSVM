@@ -206,13 +206,13 @@ using namespace csvm;
       
    }
    
-   void MNISTParser::scaleData(unsigned int dims){
+   void MNISTParser::scaleData(unsigned int widthDims, unsigned int heightDims){
       unsigned int nImages = images.size();
       vector<Image> newImages;
       newImages.reserve(nImages);
       
       for(size_t imIdx = 0; imIdx != nImages; ++imIdx){
-         newImages.push_back(interpolator.interpolate_bicubic(images[imIdx], dims, dims));
+         newImages.push_back(interpolator.interpolate_bicubic(images[imIdx], widthDims, heightDims));
          newImages[imIdx].setLabelId(images[imIdx].getLabelId());
          newImages[imIdx].setLabel(images[imIdx].getLabel());
       }
