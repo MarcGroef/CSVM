@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nTrainImages 5000
+nTrainImages 10000
 nTestImages 1000
 
 General
@@ -25,8 +25,8 @@ useGreyPixel false
 weightRatio 0.5
 
 ImageScanner
-patchHeight 12
-patchWidth 12
+patchHeight 6
+patchWidth 6
 scanStride 1
 nRandomPatches 200000
 
@@ -46,8 +46,8 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000001
-nIterations 1000
+learningRate 0.000000001
+nIterations 200
 initWeight 0.0000002
 CSVM_C 1000
 
