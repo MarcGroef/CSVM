@@ -20,7 +20,7 @@ Usage: (linux using g++, CMake, Make, SWIG, python)
       make                          (builds the project)
       cd build/                     (change directory to the build folder)
       ./CSVM [settingsfile]         (Execute the program)
-      or ./run.sh
+      or use run                    (bash script in the root directory, see below for usage or use run -h)
 
 PSO (Quick Guide)
 1. Go to /swig/ and execute ./swig.sh for python wrapper generation. This automatically puts the required wrapper in the /PSO/testers/ directory. 
@@ -114,7 +114,43 @@ This script automatically copies the produced python library to the "./PSO/teste
 where the library is needed for parameter optimalisation.
 
 
-########################## -Windows Usage- ############################
+
+########################## -run script Usage- ############################
+
+	Utility to run experiments. 
+	Usage:
+
+	run [options]
+
+	-h	Display usage
+	-r <X>	Repeat experiment X times
+	-R <X>	Repeat experiment X times, using <f>_X as settingsfile
+	-f <f>	Use <f> as settingsfile (default: 'settings')
+	-s	Silent running,exept for the final 'score' output
+	-l	Surpress log generation
+	-g	Surpress graphic output
+	-d <f>	Document results and logs in the new folder <f>, subdirectory of build/logs
+	-a	Play alert sound when done
+	-m	Add a memo to logfile
+
+The output above is the result of using run -h or run --help. This will be a more in-depth description.
+
+To use run in the most straightforward manner one could simply use the command without any flags. The system will then run using the settingsfile in the build directory. A detailed logfile including settings and output will be stored in build/logs. The file will be titled LOG_[date]_[time]. Logfile generation can be omitted using -l, but this is not recommended. A more detailed log will exist in build/logs/LAST_RUN. In this map all temporary files asociated with this last run will be stored. These files include all generated graphs, logfiles and errorlogs as well as a copy of the used codebook. All these files will be overwritten during the next run. If a detailed logging of the experiment is desired one can use the -d <file> flag, in which <file> represents the name of the new map to be created in build/logs to which all items in build/logs/LAST_RUN will be copied, essentially documenting the entire run.
+
+Using the -r <x> flag the experiment will be repeated <x> times. If the document (-d) option is active, several maps will be generated, each having a numbered suffix added to the directoryname. This numbering can also be aplied to several settingfiles to ensure, using the option -R, that each of those runs uses a different settingsfile. This is also compatible with the -f <filename> flag, which alters the name of the settingsfile to <filename>.
+
+To add further precision to the logging process, a memo may be added tot the logfile, using the -m flag. This will open a terminal text editor prior to initialization, enabling the user to add a few lines of comment to the logfile before the program executes.
+
+The graphic output (which can be surpressed with the -g flag) renders an image (png) of nine graphs, each of which is also stored seperately in build/logs/LAST_RUN or in the optional document folder. each grpah consists of an upper and a lower graph, alligned to the same x-axis, which depicts the individual training rounds. Each training round represents the classifier going through all the trainingsdata (nTrainImages) once. The axis therefore goes from zero to [nIterations].
+The upper part of the graph shows the values for the Primary Objective Function as well as the performance (in percentage) over time. Note that there are two different y-axes: the left depicts the value for the Objective Function, the right for the classification Performance, for this one classifier.
+The lower part of the graph shows the mean output values for this classifier, one line for positive values, one for negative. The coloured range around those lines depict the standard deviation of those values, positive deviation calculated seperately from negative deviation, per line.
+The scale of each graph is matched to all others, so direct comparisons can be made.
+All of the data used for generating these graphs (which is done in R[1]) can be found in the csv files stored in build/logs/LAST_RUN. 
+
+
+
+
+############################## -Windows Usage- ############################
 
 Usage: (Windows using Microsoft Visual Studio)
 
@@ -128,3 +164,13 @@ the main (CSVM) folder. This causes to program to crash in a controlled way, sin
 or in terminal. Using the terminal is adviced, since the program will disappear directly when finished otherwise.)
 
 Further usage regarding SWIG and Parameter-Optimalisation on Windows systems have not yet been tried out.
+
+
+
+
+
+
+
+
+
+[1] R Development Core Team (2008). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0, URL http://www.R-project.org.
