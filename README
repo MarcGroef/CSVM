@@ -34,9 +34,11 @@ For editting PSO-settings, the file /PSO/testers/bandit.py must be editted.
 Example:
 
 Dataset
-method CIFAR10                                        ## MNIST or CIFAR10
+method MNIST                                          ## MNIST or CIFAR10
 nTrainImages 600                                      ## Nr of images used for training
 nTestImages 100                                       ## Nr of images used for testing
+imageWidth 32                                         ## Integer width used for rescaling the data. If imageWidth <= 0, data will keep the original dimensions
+imageHeight 32                                        ## Integer height used for rescaling the data. If imageHeight <= 0, data will keep the original dimensions
 
 General
 Classifier CSVM                                       ## CSVM / LINNET / SVM
@@ -51,12 +53,11 @@ similaritySigma 0.0001                                ## Sigma value for the act
 
 FeatureExtractor
 method HOG                                            ## Options: HOG (histogram of oriented gradients), LBP (local binary patterns) (deprecated), CLEAN (raw pixels, with standardisation over colour channels). PIXHOG (combination of CLEAN and HOG, adjusting for vector length, and additional ratio parameter for weighting importance of either)
-cellSize4                                            ## HOG cellsize
+cellSize4                                             ## HOG cellsize
 cellStride 4                                          ## HOG cellstride
-blockSize 8                                           ## Deprecated setting. Is not used. For HOG, the patch itself is considered as a 'block'.
 padding Identity                                      ## Padding options. Currently, Identity should be used.
 useGreyPixel true                                     ## Toggle whether HOG should append RGBHOGs or just one grey HOG. MNIST Should use 'false', CIFAR could use 'true'
-weightRatio 0.5                                          ## Only relevant for PIXHOG, to weight either CLEAN or HOG more.
+weightRatio 0.5                                       ## Only relevant for PIXHOG, to weight either CLEAN or HOG more.
 
 ImageScanner                                          ## Settings for extracting patches from an image
 patchHeight 12                                        ## Patch Height 
