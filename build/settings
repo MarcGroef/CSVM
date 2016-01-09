@@ -1,8 +1,8 @@
 
 Dataset
 method MNIST
-nTrainImages 10000
-nTestImages 2000
+nTrainImages 60000
+nTestImages 10000
 
 General
 Classifier CSVM
@@ -11,24 +11,24 @@ nClasses 10
 
 Codebook
 method KMEANS
-nClusters 500
-nIterations 20
+nClusters 1000
+nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method HOG
-cellSize 6
-cellStride 6
+cellSize 8
+cellStride 8
 padding Identity
 useGreyPixel true
 weightRatio 0.5
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 2
-nRandomPatches 20000
+patchHeight 16
+patchWidth 16
+scanStride 1
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR
@@ -47,7 +47,7 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.000002
-nIterations 1000
+nIterations 2000
 initWeight 0.000002
 CSVM_C 1000
 
