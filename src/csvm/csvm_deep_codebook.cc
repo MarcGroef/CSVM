@@ -81,7 +81,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
       }
       mean /= (double)(nCentroids);
       for(unsigned int word = 0; word < nCentroids; ++word){
-         activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+         activations[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
       }
 
    }
@@ -245,7 +245,7 @@ vector<double> DeepCodebook::getActivations(Image* im){
    for(size_t pmX = 0; pmX < plSize; ++pmX){
       for(size_t pmY = 0; pmY < plSize; ++pmY){
          vector<double> pmAct = calculatePoolMapAt(im, nLayers - 1, pmX, pmY);
-         standardize(pmAct);
+         //standardize(pmAct);
          activations.insert(activations.begin(), pmAct.begin(), pmAct.end());
       }
    }

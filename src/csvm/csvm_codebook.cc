@@ -88,7 +88,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
    for(size_t feat = 0; feat < nFeatures; ++feat){
       
       if (settings.simFunction == SOFT_ASSIGNMENT){
-         
+         xx = 0;
          for(size_t dim = 0; dim < dataDims; ++dim){
             xx += features[feat].content[dim] * features[feat].content[dim];
          }
@@ -211,6 +211,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
             
             //calculate activation;
             if(settings.simFunction == SOFT_ASSIGNMENT){
+               xx = 0;
                for(size_t dim = 0; dim < dataDims; ++dim){
                   xx += features[pIdx].content[dim] * features[pIdx].content[dim];
                }
@@ -255,7 +256,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          }
       }
          
-	
+      /*
       //standardize data
       double mean = 0;
       double stddev = 0;
@@ -276,7 +277,8 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          activations[qIdx * settings.numberVisualWords + word] = (activations[qIdx * settings.numberVisualWords + word] - mean) / stddev;
       }
-	
+      */
+      
 	
       
    }

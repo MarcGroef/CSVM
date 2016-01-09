@@ -50,12 +50,13 @@ SimilarityFunction SOFT_ASSIGNMENT                    ## Activation function of 
 similaritySigma 0.0001                                ## Sigma value for the activation function. There should always be a value here, but it is only used when RBF is used.
 
 FeatureExtractor
-method HOG                                            ## Options: HOG, LBP, CLEAN: Histogram of Oriented Gradients and Local Binary Patterns. CLEAN uses standardized appended pixels
-cellSize 4                                            ## HOG cellsize
+method HOG                                            ## Options: HOG (histogram of oriented gradients), LBP (local binary patterns) (deprecated), CLEAN (raw pixels, with standardisation over colour channels). PIXHOG (combination of CLEAN and HOG, adjusting for vector length, and additional ratio parameter for weighting importance of either)
+cellSize4                                            ## HOG cellsize
 cellStride 4                                          ## HOG cellstride
 blockSize 8                                           ## Deprecated setting. Is not used. For HOG, the patch itself is considered as a 'block'.
-padding None                                          ## Padding options. Only No-padding (None) is supported at the moment.
+padding Identity                                      ## Padding options. Currently, Identity should be used.
 useGreyPixel true                                     ## Toggle whether HOG should append RGBHOGs or just one grey HOG. MNIST Should use 'false', CIFAR could use 'true'
+weightRatio 0.5                                          ## Only relevant for PIXHOG, to weight either CLEAN or HOG more.
 
 ImageScanner                                          ## Settings for extracting patches from an image
 patchHeight 12                                        ## Patch Height 

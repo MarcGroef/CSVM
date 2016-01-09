@@ -47,14 +47,16 @@ namespace csvm{
       Image(Image* ROI_source,unsigned int ROI_x,unsigned int ROI_y,unsigned int ROI_width,unsigned int ROI_height);
       void loadImage(string filename);
       vector<unsigned char> getImage();
+      vector<unsigned char>& getData();
       void exportImage(string filename);
       unsigned char getPixel(unsigned int x,unsigned int y,unsigned int channel);
       unsigned char getGreyPixel(unsigned int x,unsigned int y);
+      unsigned char getPixelAtIdx(unsigned int idx);
       void setPixel(unsigned int x,unsigned int y,unsigned int channel,unsigned char value);
       unsigned int getWidth();
       unsigned int getHeight();
       void setImageData(vector<unsigned char> data);
-      
+      unsigned int getNChannels();
       
       ImageFormat getFormat();
       Image clone();
