@@ -65,7 +65,7 @@ while [ "$1" != "" ]; do
 done
 
 if [ $memo == 1 ] ; then
-	nano ./build/memo &> .build/logs/errorLOG
+	nano ./build/memo &> ./build/logs/errorLOG
 	wait
 fi
 

@@ -143,52 +143,34 @@ void CSVMClassifier::constructCodebook(){
 
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
-   vector < vector < double > > datasetActivations;
+   vector < vector < Feature > > dataFeaturesVec;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    
-   //allocate space for more vectors
-   datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
-      vector<double> dataActivation;
-      //extract patches
       
       if(settings.codebook == CB_CODEBOOK){
          
-         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
-         dataActivation.clear();
-         dataFeatures.clear();
          //clear previous features
+         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
+         dataFeatures.clear();
          
          //allocate for new features
          dataFeatures.reserve(patches.size());
          
-         //cout << patches[qIdx].size() << " patches" << endl;
          //extract features from all patches
-         for(size_t patch = 0; patch < patches.size(); ++patch){
+         for(size_t patch = 0; patch < patches.size(); ++patch)
             dataFeatures.push_back(featExtr.extract(patches[patch]));
-            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
-         }
          
-         //cout << "Extracted " << patches.size() << "patches from the image\n";
          patches.clear();
          
          //get cluster activations for the features
-         dataActivation = codebook.getActivations(dataFeatures); 
-         dataFeatures.clear();
-      
-         patches.clear();
-         
-
-         //get cluster activations for the features
-         datasetActivations.push_back(dataActivation);
-         dataActivation.clear();
-     }else{
-        datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
+     //    dataActivation = codebook.getActivations(dataFeatures); 
      }
+     dataFeaturesVec.push_back(dataFeatures);
    }
-   convSVM.train(datasetActivations, &dataset);
+   convSVM.train(dataFeaturesVec, &dataset, codebook);
 }
 
 

@@ -173,7 +173,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
    return activations;
 }
 
-vector< double > Codebook::getQActivations(vector<Feature> features){
+vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, vector<double> weights, double yData, double learningRate){
    
     unsigned int nQuadrants = 4; //must be a square!
     
@@ -192,8 +192,13 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
    unsigned int sqrtP = (unsigned int)sqrt(features.size());
    unsigned int quadSize = (unsigned int)sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
+
+   vector < vector <double> > deltasPerW_PerD (settings.numberVisualWords, vector <double>(dataDims, 0.0));
    
    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
+
+      vector < vector <double> > distancesPerP_PerW;
+      vector <double> meansPerP;
 
       unsigned int qX = qIdx % sqrtQ;
       unsigned int qY = (qIdx - qX) / sqrtQ;
@@ -221,10 +226,6 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                      xc += bow[word].content[dim] * features[pIdx].content[dim];
 
                   }
-                  //double dist = 0.0;
-                  //for(size_t dim = 0; dim < dataDims; ++dim){
-                  //   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
-                  //}
 
                   distances[word] = sqrt(cc + (xx - (2 * xc))) ;
                   //distances[word] = sqrt(dist);
@@ -237,48 +238,45 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                   activations[qIdx * settings.numberVisualWords + word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
                }
-               
+
+               // gather all data for delta calc
+               distancesPerP_PerW.push_back(distances);
+               meansPerP.push_back(mean);
+
+
+            } // IF SOFT_ASSIGNMENT
+         }
+      } // FOR    pIdx
+
+
+      // then here calculate and add all deltas and store them
+      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+         for(size_t dim = 0; dim < dataDims; ++dim){
+            double delta = 0;
+            for(size_t pIdx = 0; pIdx < meansPerP.size(); ++pIdx){
+               double tmp = meansPerP[pIdx] - distancesPerP_PerW[pIdx][word];
+               delta += tmp/abs(tmp) * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word];
             }
-            else if(settings.simFunction == CB_RBF){
-               for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-               
-                  distances[word] = bow[word].getDistanceSq(features[pIdx]);
-                  dev = exp(-1.0 * distances[word] / (settings.similaritySigma));
-                  activations[qIdx * settings.numberVisualWords + word] += dev;
-               
-               }
-            }
+            delta *= yData * weights[word] * learningRate;
+            deltasPerW_PerD[word][dim] += delta/nQuadrants;
          }
       }
-         
-      /*
-      //standardize data
-      double mean = 0;
-      double stddev = 0;
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         mean += activations[qIdx * settings.numberVisualWords + word];
+
+   } // FOR       qIdx
+
+
+   // and only now apply them
+   for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+      for(size_t dim = 0; dim < dataDims; ++dim){
+         bow[word].content[dim] += deltasPerW_PerD[word][dim];
       }
-      
-      mean /= settings.numberVisualWords;
-      
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         stddev += (activations[qIdx * settings.numberVisualWords + word] - mean) * (activations[qIdx * settings.numberVisualWords + word] - mean);
-      }
-      
-      stddev /= settings.numberVisualWords;
-      stddev += 0.01; //no devision by zero
-      stddev = sqrt(stddev);
-      
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         activations[qIdx * settings.numberVisualWords + word] = (activations[qIdx * settings.numberVisualWords + word] - mean) / stddev;
-      }
-      */
-      
-	
-      
    }
+
    return activations;
 }
+
+
+
 
 void Codebook::importCodebook(string filename){
    charInt fancyInt;

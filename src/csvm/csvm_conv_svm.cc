@@ -28,18 +28,18 @@ using namespace csvm;
    }
    
   
-   void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
+   void ConvSVM::train(vector< vector< Feature > > dataFeaturesVec, CSVMDataset* ds, Codebook cb){
       
-      unsigned int nData = activations.size();
-      settings.nCentroids = activations[0].size();
+      unsigned int nData = dataFeaturesVec.size();
+      settings.nCentroids = settings.nCentroids;
       cout << fixed << setprecision(5);
       
+      vector < double > activations;
       weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
       biases  = vector<double>(settings.nClasses, 0);
       maxOuts = vector<double>(settings.nClasses, 0);
       minOuts = vector<double>(settings.nClasses, 0);
       avOuts  = vector<double>(settings.nClasses, 0);
-      //cout << "nCentroidsActs = " << activations[0].size();
       //for all csvms in ensemble
       ofstream statDatFile;
 
@@ -70,8 +70,10 @@ using namespace csvm;
                
                unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
-               double out = output(activations[dIdx], svmIdx);
+               double out = output(activations, svmIdx);
               
+               activations = cb.getQActivationsBackProp(dataFeaturesVec[dIdx], weights[svmIdx], yData, learningRate);
+
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
 
                   // original:
@@ -87,11 +89,11 @@ using namespace csvm;
                   // L2 VM3
                   // EFFECT: Graphs seem better... Accuracy does not increase enormously
                   if(yData * out < 1){
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[dIdx][centrIdx])) ;
-               //      weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
+                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[centrIdx])) ;
+              //       weights[svmIdx][centrIdx] += learningRate * activations[dIdx][centrIdx] * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
                      ++wrong;
                   } else {
-                     weights[svmIdx][centrIdx] -= learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C;
+                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
                      ++right;
                   }
 
@@ -159,8 +161,17 @@ using namespace csvm;
 
          }//itIdx
          
-        statDatFile.close();
-         
+         statDatFile.close();
+
+         ss << "W-Data_SVM-" << svmIdx << ".csv";
+         fName = ss.str();
+         statDatFile.open ( fName.c_str() );
+         statDatFile << "Dimension,Value" << endl;
+
+         for (size_t cIdx=0; cIdx < settings.nCentroids; ++cIdx)
+            statDatFile << cIdx << "," << weights[svmIdx][cIdx] << endl;
+
+         statDatFile.close();
       }//svmIdx
    }
    

@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 50000
-nTestImages 10000
+nTrainImages 1000
+nTestImages 1000
 imageWidth 64
 imageHeight 64
 
@@ -49,7 +49,7 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.000000001
-nIterations 200
+nIterations 800
 initWeight 0.0000002
 CSVM_C 1000
 
