@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nTrainImages 1000
+nTrainImages 100
 nTestImages 1000
 imageWidth 64
 imageHeight 64

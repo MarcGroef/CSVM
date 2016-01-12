@@ -285,9 +285,9 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
 
 
 
-vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, vector<double> weights, double yData, double learningRate){
+vector< double > Codebook::getQActivationsBackProp(vector<Feature> features){
    
-    unsigned int nQuadrants = 4; //must be a square!
+   unsigned int nQuadrants = 4; //must be a square!
     
    vector< double> activations(settings.numberVisualWords * nQuadrants, 0.0);
    unsigned int dataDims = features[0].content.size();
@@ -305,7 +305,7 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, vec
    unsigned int quadSize = (unsigned int)sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
 
-   vector < vector <double> > deltasPerW_PerD (settings.numberVisualWords, vector <double>(dataDims, 0.0));
+   deltasPerW_PerD = vector < vector <double> >(settings.numberVisualWords, vector <double>(dataDims, 0.0));
    
    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
 
@@ -367,9 +367,8 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, vec
             double delta = 0;
             for(size_t pIdx = 0; pIdx < meansPerP.size(); ++pIdx){
                double tmp = meansPerP[pIdx] - distancesPerP_PerW[pIdx][word];
-               delta += 0.5 * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word] + 0.5 * (tmp/abs(tmp) * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word]);
+               delta += -0.5 * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word] + 0.5 * (tmp/abs(tmp) * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word]);
             }
-            delta *= yData * weights[word] * learningRate;
             deltasPerW_PerD[word][dim] += delta/nQuadrants;
          }
       }
@@ -377,17 +376,25 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, vec
    } // FOR       qIdx
 
 
-   // and only now apply them
-   for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-      for(size_t dim = 0; dim < dataDims; ++dim){
-         bow[word].content[dim] += deltasPerW_PerD[word][dim];
-      }
-   }
-
    return activations;
 }
 
 
+void Codebook::applyBackProp(vector<double> weights, double yData, double learningRate, double c){
+cout << "\n\n\\tnWords:\t" << settings.numberVisualWords << "\n\tdimWeights:\t" << weights.size() << endl;
+int count = 5;
+
+   // and only now apply them
+   for(unsigned int word = 0; word < settings.numberVisualWords; ++word)
+      for(size_t dim = 0; dim < bow[0].content.size(); ++dim){
+         double tmp = learningRate * (bow[word].content[dim] / c + deltasPerW_PerD[word][dim] * yData * weights[word]);
+if (count > 0){
+         cout << "Delta Visual Word = " << tmp/bow[word].content[dim]*100 << "%" << endl;
+         --count;
+}
+         bow[word].content[dim] += tmp;
+      }
+}
 
 
 void Codebook::importCodebook(string filename){

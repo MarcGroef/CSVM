@@ -45,6 +45,7 @@ namespace csvm{
 	 AKMeans akmeans;
 
     vector<Centroid> bow;
+    vector < vector <double> > deltasPerW_PerD;
 
     unsigned int nClasses;
   public:
@@ -59,8 +60,8 @@ namespace csvm{
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
-    vector< double > getQActivationsBackProp(vector<Feature> features, vector<double> weights, double yData, double learningRate);
-    
+    vector< double > getQActivationsBackProp(vector<Feature> features);
+    void applyBackProp(vector<double> weights, double yData, double learningRate, double c);
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);
 	vector<vector <double> > getCentroidByClassContributions();

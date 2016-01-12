@@ -31,7 +31,7 @@ using namespace csvm;
    void ConvSVM::train(vector< vector< Feature > > dataFeaturesVec, CSVMDataset* ds, Codebook cb){
       
       unsigned int nData = dataFeaturesVec.size();
-      settings.nCentroids = settings.nCentroids;
+//      settings.nCentroids = settings.nCentroids;
       cout << fixed << setprecision(5);
       
       vector < double > activations;
@@ -40,6 +40,8 @@ using namespace csvm;
       maxOuts = vector<double>(settings.nClasses, 0);
       minOuts = vector<double>(settings.nClasses, 0);
       avOuts  = vector<double>(settings.nClasses, 0);
+      double decay = 2;
+
       //for all csvms in ensemble
       ofstream statDatFile;
 
@@ -72,7 +74,8 @@ using namespace csvm;
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations, svmIdx);
               
-               activations = cb.getQActivationsBackProp(dataFeaturesVec[dIdx], weights[svmIdx], yData, learningRate);
+               activations = cb.getQActivationsBackProp(dataFeaturesVec[dIdx]);
+
 
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
 
@@ -98,6 +101,8 @@ using namespace csvm;
                   }
 
                }//centrIdx
+cout << "firste look: " << weights[svmIdx].size() << endl;
+               cb.applyBackProp(weights[svmIdx], yData, learningRate / itIdx, settings.CSVM_C);
                
                //bias function
                if(yData * out < 1)
