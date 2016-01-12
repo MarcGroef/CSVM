@@ -153,7 +153,7 @@ using namespace csvm;
             stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
 	
 
-            if(itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
+            if(itIdx % 1 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
             statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
 
             if (objective > prevObjective) learningRate *= 0.75;
