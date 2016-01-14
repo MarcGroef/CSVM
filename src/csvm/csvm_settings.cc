@@ -623,7 +623,7 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 	stream >> netSettings.nClasses;
 	convSVMSettings.nClasses = netSettings.nClasses;
 	datasetSettings.nClasses = netSettings.nClasses;
-
+        codebookSettings.nClasses = netSettings.nClasses;
 
 }
 

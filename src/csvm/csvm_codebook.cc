@@ -3,6 +3,9 @@
 using namespace std;
 using namespace csvm;
 
+int nQuadrants = 4;
+
+
 union charInt{
    char chars[4];
    unsigned int intVal;
@@ -35,9 +38,13 @@ void Codebook::constructCodebook(vector<Feature> featureset){
          break;
       case KMeans_Clustering:
          bow = kmeans.cluster(featureset, settings.numberVisualWords);
+         for (size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx)
+            bowPerSVM.push_back(bow);
          break;
       case AKMeans_Clustering:
          bow = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
+         for (size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx)
+            bowPerSVM.push_back(bow);
          break;
    }
    
@@ -50,9 +57,8 @@ unsigned int Codebook::getNClasses(){
       return nClasses;
 }
 
-
 unsigned int Codebook::getNCentroids(){
-   return settings.numberVisualWords;
+   return settings.numberVisualWords * nQuadrants;
 }
 
 vector<vector <double> > Codebook::getCentroidByClassContributions() {
@@ -177,7 +183,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
 
 vector< double > Codebook::getQActivations(vector<Feature> features){
 
-    unsigned int nQuadrants = 4; //must be a square!
+   //nQuadrants is now global. must be a square!
 
    vector< double> activations(settings.numberVisualWords * nQuadrants, 0.0);
    unsigned int dataDims = features[0].content.size();
@@ -185,27 +191,31 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
    double dev;
    double mean;
 
+//cout << "0" << endl;
    double xx = 0.0;
    double cc;
    double xc;
 
+//cout << "1" << endl;
 
    unsigned int sqrtQ = (unsigned int)sqrt(nQuadrants);
    unsigned int sqrtP = (unsigned int)sqrt(features.size());
    unsigned int quadSize = (unsigned int)sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
-
+//cout << "2" << endl;
    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
 
       unsigned int qX = qIdx % sqrtQ;
       unsigned int qY = (qIdx - qX) / sqrtQ;
 
+//cout << "3" << endl;
       for(size_t pX = qX * quadSize; pX < (qX + 1) * quadSize + (overlap ? 1 : 0); ++pX){
          for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
 
             unsigned int pIdx = pY * sqrtP + pX;
             //cout << "pIdx = " << pIdx << endl;
 
+//cout << "4" << endl;
             //calculate activation;
             if(settings.simFunction == SOFT_ASSIGNMENT){
                xx = 0;
@@ -213,6 +223,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                   xx += features[pIdx].content[dim] * features[pIdx].content[dim];
                }
 
+//cout << "5" << endl;
                mean = 0.0;
                for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                   cc = 0.0;
@@ -277,18 +288,19 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
       */
 
 
+//cout << "6" << endl;
 
    }
+//cout << "7" << endl;
    return activations;
 }
 
 
 
 
-vector< double > Codebook::getQActivationsBackProp(vector<Feature> features){
-   
-   unsigned int nQuadrants = 4; //must be a square!
+vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, int svmIdx){
     
+   bow = bowPerSVM[svmIdx];
    vector< double> activations(settings.numberVisualWords * nQuadrants, 0.0);
    unsigned int dataDims = features[0].content.size();
    vector<double> distances(settings.numberVisualWords);
@@ -305,7 +317,7 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features){
    unsigned int quadSize = (unsigned int)sqrt(features.size() / nQuadrants);
    bool overlap = features.size() % nQuadrants != 0;
 
-   deltasPerW_PerD = vector < vector <double> >(settings.numberVisualWords, vector <double>(dataDims, 0.0));
+   deltasPerW_PerD = vector < vector <double> >(settings.numberVisualWords * nQuadrants, vector <double>(dataDims, 0.0));
    
    for(size_t qIdx = 0; qIdx < nQuadrants; ++qIdx){
 
@@ -355,7 +367,6 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features){
                distancesPerP_PerW.push_back(distances);
                meansPerP.push_back(mean);
 
-
             } // IF SOFT_ASSIGNMENT
          }
       } // FOR    pIdx
@@ -369,7 +380,7 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features){
                double tmp = meansPerP[pIdx] - distancesPerP_PerW[pIdx][word];
                delta += -0.5 * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word] + 0.5 * (tmp/abs(tmp) * (2*bow[word].content[dim] - 2*features[pIdx].content[dim]) / distancesPerP_PerW[pIdx][word]);
             }
-            deltasPerW_PerD[word][dim] += delta/nQuadrants;
+            deltasPerW_PerD[qIdx * settings.numberVisualWords + word][dim] += delta;
          }
       }
 
@@ -380,20 +391,25 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features){
 }
 
 
-void Codebook::applyBackProp(vector<double> weights, double yData, double learningRate, double c){
-cout << "\n\n\\tnWords:\t" << settings.numberVisualWords << "\n\tdimWeights:\t" << weights.size() << endl;
-int count = 5;
+void Codebook::applyBackProp(vector<double> weights, double yData, double learningRate, double c, int svmIdx){
+//   cout << "\n\n\\tnWords:\t" << settings.numberVisualWords << "\n\tdimWeights:\t" << weights.size() << "\n\tLearningRate: " << learningRate << endl;
+//   int count = 5;
 
    // and only now apply them
-   for(unsigned int word = 0; word < settings.numberVisualWords; ++word)
-      for(size_t dim = 0; dim < bow[0].content.size(); ++dim){
-         double tmp = learningRate * (bow[word].content[dim] / c + deltasPerW_PerD[word][dim] * yData * weights[word]);
-if (count > 0){
-         cout << "Delta Visual Word = " << tmp/bow[word].content[dim]*100 << "%" << endl;
-         --count;
-}
-         bow[word].content[dim] += tmp;
+   bow = bowPerSVM[svmIdx];
+   for (unsigned int qIdx = 0; qIdx < nQuadrants; ++qIdx){
+      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
+         for(size_t dim = 0; dim < bow[0].content.size(); ++dim){
+            double tmp = learningRate * deltasPerW_PerD[qIdx * settings.numberVisualWords + word][dim] * yData * weights[qIdx * settings.numberVisualWords + word];
+//            if (count > 0){
+//               cout << "Dim " << dim << "\tOLD: " << bow[word].content[dim] << "\tDelta: " << deltasPerW_PerD[qIdx * settings.numberVisualWords + word][dim] << "\tWeight: " << weights[qIdx * settings.numberVisualWords + word] << "\tTotal: " << tmp << endl;
+//               --count;
+//            }
+            bow[word].content[dim] += tmp;
+         }
       }
+   }
+   bowPerSVM[svmIdx] = bow;
 }
 
 
@@ -440,7 +456,8 @@ void Codebook::importCodebook(string filename){
       }
       bow.push_back(c);
    }
-   
+   for (size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx)
+      bowPerSVM.push_back(bow);
    
    file.close();
 }

@@ -66,11 +66,11 @@ int main(int argc,char**argv){
    return 0;*/
    
    
-   //cout << "constructing codebook" << endl;
-   //c.constructCodebook();
+   cout << "constructing codebook" << endl;
+   c.constructCodebook();
    
-   cout << "importing codebook" << endl;
-   c.importCodebook("LAST_USED.bin");
+   //cout << "importing codebook" << endl;
+   //c.importCodebook("LAST_USED.bin");
    
    cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
@@ -96,7 +96,7 @@ int main(int argc,char**argv){
    unsigned int nClasses = c.getNoClasses();
    
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
-   cout << "Testing on trainingsset:\n";
+   cout << "\n\nTesting on trainingsset:" << fixed << endl;
    for(size_t im = 0; im < 200 && im < nImages; ++im){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));

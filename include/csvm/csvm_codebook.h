@@ -17,7 +17,7 @@ namespace csvm{
    enum CodebookClusterMethod{
       LVQ_Clustering = 0,
       KMeans_Clustering = 1,
-	   AKMeans_Clustering = 2,
+      AKMeans_Clustering = 2,
    };
    
    enum SimilarityFunction{
@@ -29,9 +29,10 @@ namespace csvm{
    struct Codebook_settings{
       LVQ_Settings lvqSettings;
       KMeans_settings kmeansSettings;
-	   AKMeans_settings akmeansSettings;
+      AKMeans_settings akmeansSettings;
       CodebookClusterMethod method;
       unsigned int numberVisualWords;
+      unsigned int nClasses;
       double similaritySigma;
       SimilarityFunction simFunction;
    };
@@ -42,8 +43,9 @@ namespace csvm{
     Codebook_settings settings;
     LVQ lvq;
     KMeans kmeans;
-	 AKMeans akmeans;
+    AKMeans akmeans;
 
+    vector < vector <Centroid> > bowPerSVM;
     vector<Centroid> bow;
     vector < vector <double> > deltasPerW_PerD;
 
@@ -60,8 +62,8 @@ namespace csvm{
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
-    vector< double > getQActivationsBackProp(vector<Feature> features);
-    void applyBackProp(vector<double> weights, double yData, double learningRate, double c);
+    vector< double > getQActivationsBackProp(vector<Feature> features, int svmIdx);
+    void applyBackProp(vector<double> weights, double yData, double learningRate, double c, int svmIdx);
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);
 	vector<vector <double> > getCentroidByClassContributions();

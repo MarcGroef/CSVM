@@ -178,7 +178,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
-   vector<double> dataActivation;
+   vector < vector<double> > dataActivation;
    
    if(settings.codebook == CB_CODEBOOK){
       
@@ -198,9 +198,11 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
       
       patches.clear();
-      dataActivation = codebook.getActivations(dataFeatures); 
+
+      for(size_t svmIdx = 0; svmIdx < dataset.getNumberClasses(); ++svmIdx)
+         dataActivation.push_back(codebook.getQActivationsBackProp(dataFeatures, svmIdx)); 
    }else{      
-      dataActivation = deepCodebook->getActivations(image);
+//      dataActivation = deepCodebook->getActivations(image);
    }
 
    return convSVM.classify(dataActivation);

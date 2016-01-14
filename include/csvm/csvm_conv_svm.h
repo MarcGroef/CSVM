@@ -44,7 +44,7 @@ namespace csvm{
       void setSettings(ConvSVMSettings s);
       
       void train(vector< vector< Feature > > dataFeaturesVec, CSVMDataset* ds, Codebook cb);
-      unsigned int classify(vector<double>& activations);
+      unsigned int classify(vector < vector<double> >& activations);
 
    };
 
