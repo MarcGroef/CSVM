@@ -14,8 +14,8 @@ useRBM TRUE
 
 RBM
 learningRate 0.0000002
-nIterations 100
-nGibbsSteps 10
+nIterations 500
+nGibbsSteps 1
 nOutputNodes 100
 
 Codebook
@@ -55,9 +55,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000002
+learningRate 0.00000002
 nIterations 1000
-initWeight 0.000002
+initWeight 0.0000002
 CSVM_C 1000
 
 
