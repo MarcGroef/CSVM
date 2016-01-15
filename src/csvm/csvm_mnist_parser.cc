@@ -53,8 +53,16 @@ using namespace csvm;
    ;
    }
    
+   void scaleData(unsigned int size){
+      
+   }
+   
    unsigned int MNISTParser::getSize(){
       return images.size();
+   }
+   
+   vector<Image>& MNISTParser::getImages(){
+      return images;
    }
    
    Image* MNISTParser::getImagePtr(unsigned int index){
@@ -198,6 +206,18 @@ using namespace csvm;
       
    }
    
+   void MNISTParser::scaleData(unsigned int widthDims, unsigned int heightDims){
+      unsigned int nImages = images.size();
+      vector<Image> newImages;
+      newImages.reserve(nImages);
+      
+      for(size_t imIdx = 0; imIdx != nImages; ++imIdx){
+         newImages.push_back(interpolator.interpolate_bicubic(images[imIdx], widthDims, heightDims));
+         newImages[imIdx].setLabelId(images[imIdx].getLabelId());
+         newImages[imIdx].setLabel(images[imIdx].getLabel());
+      }
+      images = newImages;
+   }   
    
    void MNISTParser::convertTestSetToImages(){
       //cout << "converting test images\n";

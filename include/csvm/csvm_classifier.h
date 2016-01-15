@@ -16,7 +16,7 @@
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
 #include "csvm_conv_svm.h"
-
+#include "csvm_rbm.h"
 
 using namespace std;
 namespace csvm{
@@ -31,6 +31,7 @@ namespace csvm{
       vector< SVM > svms;
       LinNetwork linNetwork;
       ConvSVM convSVM;
+      NRBM rbm;
       
       vector< vector<double> > classicTrainActivations;
       

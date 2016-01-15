@@ -1,8 +1,80 @@
 #include <csvm/csvm_cifar10_parser.h>
-
+#include <cmath>
 
 using namespace std;
 using namespace csvm;
+   
+   void standardize(vector<unsigned char>& data){
+      double mean, stddev;
+      unsigned int dataSize = data.size();
+      
+      mean = 0;
+      for(size_t idx = 0; idx != dataSize; ++idx){
+         mean += data[idx];
+      }
+      mean /= dataSize;
+      stddev = 0;
+      for(size_t idx = 0; idx != dataSize; ++idx){
+         stddev += (data[idx] - mean) * (data[idx] - mean);
+      }
+      stddev = sqrt(stddev + 0.001);
+      stddev /= (dataSize);
+      for(size_t idx = 0; idx != dataSize; ++idx){
+         data[idx] = data[idx] - (unsigned char) stddev;
+      }
+   }
+
+   void CIFAR10::standardizeImages(){
+      unsigned int nImages = images.size();
+      double mean, stddev;
+      
+      
+      for(size_t imIdx = 0; imIdx != nImages; ++imIdx){
+         unsigned int imWidth = images[imIdx].getWidth();
+         unsigned int imHeight = images[imIdx].getHeight();
+         unsigned int nChannels = images[imIdx].getNChannels();
+         
+         for(size_t chIdx = 0; chIdx != nChannels; ++chIdx){
+            mean = 0;
+            for(size_t xIdx = 0; xIdx != imWidth; ++xIdx){
+               for(size_t yIdx = 0; yIdx != imHeight; ++yIdx){
+                  mean += images[imIdx].getPixel(xIdx,yIdx,chIdx);
+               }
+            }
+            
+            mean /= (imWidth * imHeight);
+            stddev = 0;
+            for(size_t xIdx = 0; xIdx != imWidth; ++xIdx){
+               for(size_t yIdx = 0; yIdx != imHeight; ++yIdx){
+                  stddev += (images[imIdx].getPixel(xIdx,yIdx,chIdx) - mean) * (images[imIdx].getPixel(xIdx,yIdx,chIdx) - mean);
+               }
+            }
+            stddev /= (imWidth * imHeight);
+            
+            for(size_t xIdx = 0; xIdx != imWidth; ++xIdx){
+               for(size_t yIdx = 0; yIdx != imHeight; ++yIdx){
+                  images[imIdx].setPixel(xIdx,yIdx,(images[imIdx].getPixel(xIdx,yIdx,chIdx) - mean)/stddev, chIdx);
+               }
+            }
+            
+         }
+         
+         
+      }
+      
+   }
+
+   void CIFAR10::scaleData(unsigned int width, unsigned int height){
+      vector<Image> newImages;
+      unsigned int nImages = images.size();
+      
+      for(size_t imIdx = 0; imIdx != nImages; ++imIdx){
+         newImages.push_back(interpolator.interpolate_bicubic(images[imIdx], width, height));
+         newImages[imIdx].setLabelId(images[imIdx].getLabelId());
+         newImages[imIdx].setLabel(images[imIdx].getLabel());
+      }
+      images = newImages;
+   }
 
    Image CIFAR10::bytesToImage(unsigned char* c){
       //cout << "byteToIm\n";
@@ -19,7 +91,6 @@ using namespace csvm;
             }
          }
       }
-      
       im.setLabel(labels[label]);
       im.setLabelId(label);
       return im;

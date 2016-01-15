@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "csvm_image.h"
+#include "csvm_interpolator.h"
 
 using namespace std;
 
@@ -21,15 +22,17 @@ namespace csvm{
    class CIFAR10{
       vector<Image> images;
       vector<string> labels;
-      
+      Interpolator interpolator;
       Image bytesToImage(unsigned char* c);
    public:
+      void standardizeImages();
       void readLabels(string dir);
       void loadImages(string dir);
       Image getImage(int index);
       Image* getImagePtr(int index);
       int getSize();
       string getLabel(int labelId);
+      void scaleData(unsigned int width, unsigned int height);
    };
    
    

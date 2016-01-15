@@ -174,9 +174,7 @@ Feature HOGDescriptor::getHOG(Patch& block){
    unsigned int patchHeight = block.getHeight();
    settings.patchSize = block.getHeight();
 
-   if (patchWidth % 2 == 1 || patchHeight % 2 == 1 || patchHeight != patchWidth) {
-      cout << "patch size is wrong! It is " << patchWidth << " x " << patchHeight << '\n';
-   }
+   
   
    vector <double> blockHistogram(0, 0); 
    //iterate through block with a cell, with stride cellstride. 

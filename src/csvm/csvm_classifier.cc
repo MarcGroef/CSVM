@@ -38,8 +38,13 @@ void CSVMClassifier::setSettings(string settingsFile){
    
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
    linNetwork.setSettings(settings.netSettings);
-   convSVM.setSettings(settings.convSVMSettings);
    
+   //hacky way to ensure the csvm expects the correct nr of input dimensions
+   if(settings.useRBM){
+      settings.convSVMSettings.nCentroids = settings.rbmSettings.outputSize;
+   }
+   convSVM.setSettings(settings.convSVMSettings);
+   rbm.setSettings(settings.rbmSettings);
    
 }
 
@@ -185,9 +190,22 @@ void CSVMClassifier::trainConvSVMs(){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
+   //train rbm
+   if(settings.useRBM){   
+      rbm.learn(datasetActivations);
    
-   convSVM.train(datasetActivations, &dataset);
+      vector < vector < double > > rbmDescriptions;
+      rbmDescriptions.reserve(nTrainImages);
    
+      for(size_t imIdx = 0; imIdx != nTrainImages; ++imIdx){
+         rbmDescriptions.push_back(rbm.describe(datasetActivations[imIdx]));
+      }
+      //train csvm
+      //convSVM.train(datasetActivations, &dataset);
+      convSVM.train(rbmDescriptions, &dataset);
+   }else{
+      convSVM.train(datasetActivations, &dataset);
+   }
 }
 
 unsigned int CSVMClassifier::classifyConvSVM(Image* image){
@@ -221,7 +239,11 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       dataActivation = deepCodebook->getActivations(image);
       
    }
-
+   vector<double> rbmDescr;
+   if(settings.useRBM){
+      rbmDescr = rbm.describe(dataActivation);
+      return convSVM.classify(rbmDescr);
+   }
    return convSVM.classify(dataActivation);
 }
 //train the KKT-SVM

@@ -89,6 +89,14 @@ namespace csvm{
       
    }
    
+   unsigned char Image::getPixelAtIdx(unsigned int idx){
+      return image[idx];
+   }
+   
+   vector<unsigned char>& Image::getData(){
+      return image;
+   }
+   
    unsigned int Image::getNChannels(){
       switch(format){
          case CSVM_IMAGE_EMPTY: return 0;
@@ -96,6 +104,7 @@ namespace csvm{
          case CSVM_IMAGE_UCHAR_RGB: return 3;
          case CSVM_IMAGE_UCHAR_GREY: return 1;
       }
+      return -1;
    }
    
    void Image::loadImage(string filename){
@@ -167,10 +176,12 @@ namespace csvm{
                cout << "csvm::Image::exportImage(std::string) Error: " << lodepng_error_text(error) << "\n";
             break;
             case CSVM_IMAGE_UCHAR_RGB:
+               error = encode(filename,image,width,height,LCT_RGB, 8);
                cout << "warning! not yet impl. (export im)\n";
                break;
             case CSVM_IMAGE_UCHAR_GREY:
-               cout << "Export grey image. warning! not yet implementer!\n";
+               //cout << "Export grey image. warning! not yet implementer!\n";
+               error = encode(filename,image,width,height,LCT_GREY, 8);
                break;
             case CSVM_IMAGE_EMPTY:
                break;

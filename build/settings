@@ -1,34 +1,43 @@
 
 Dataset
 method MNIST
-nTrainImages 10000
-nTestImages 2000
+nTrainImages 1000
+nTestImages 200
+imageWidth 0
+imageHeight 0
 
 General
 Classifier CSVM
-Codebook DEEPCODEBOOK
+Codebook CODEBOOK
 nClasses 10
+useRBM TRUE
+
+RBM
+learningRate 0.0000002
+nIterations 100
+nGibbsSteps 10
+nOutputNodes 100
 
 Codebook
 method KMEANS
-nClusters 200
-nIterations 50
+nClusters 600
+nIterations 10
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method HOG
-cellSize 6
-cellStride 6
+cellSize 4
+cellStride 4
 padding Identity
 useGreyPixel true
 weightRatio 0.5
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 2
-nRandomPatches 200000
+patchHeight 8
+patchWidth 8
+scanStride 1
+nRandomPatches 50000
 
 SVM
 Kernel LINEAR

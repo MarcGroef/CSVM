@@ -32,11 +32,11 @@ Feature CleanDescriptor::describe(Patch p){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
-            mean += f.content[idxY * imWidth + idxX];
+            //mean += f.content[idxY * imWidth + idxX];
             
          }
       }
-   
+      /*
    // TO DO: fix magic number 3 only appropriate when using colour, not when grayscaling
    
       mean /= (imWidth * imHeight);//3);
@@ -62,7 +62,7 @@ Feature CleanDescriptor::describe(Patch p){
             }
          }
       //}
-      }
+      }*/
    }
    return f;
    

@@ -8,7 +8,7 @@
 #include "csvm_cifar10_parser.h"
 #include "csvm_image.h"
 #include "csvm_mnist_parser.h"
-
+#include "csvm_interpolator.h"
 
 using namespace std;
 namespace csvm{
@@ -24,6 +24,8 @@ namespace csvm{
       unsigned int nTestImages;
       bool useDifferentCodebooksPerClass;
       unsigned int nClasses;
+      unsigned int imWidth;
+      unsigned int imHeight;
    };
    
    class CSVMDataset{

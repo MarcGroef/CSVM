@@ -14,6 +14,7 @@
 //#include "csvm_cluster_analyser.h"
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
+#include "csvm_new_rbm.h"
 
 using namespace std;
 
@@ -43,7 +44,7 @@ namespace csvm{
       CLASSIFIER classifier;
       CODEBOOK codebook;
       
-      
+      bool useRBM;      
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
       FeatureExtractorSettings featureSettings;
@@ -53,10 +54,12 @@ namespace csvm{
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
-      
+      NRBMSettings rbmSettings;
       //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();
+      
+      void parseRBMSettings(ifstream& stream);
       void parseDatasetSettings(ifstream& stream);
       void readSettingsFile(string dir);
       //void parseClusterAnalserData(ifstream& stream);

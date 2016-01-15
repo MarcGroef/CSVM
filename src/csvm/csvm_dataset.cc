@@ -21,6 +21,10 @@ void CSVMDataset::loadCifar10(string labelsDir,vector<string> imageDirs){
    //splitDatasetToClasses();
    //appendAndShuffleDataIdxArray();
    //cout << "dataset split to classes\n";
+   if(settings.imWidth > 0 || settings.imHeight > 0)
+      cifar10.scaleData(settings.imWidth, settings.imHeight);
+   
+   //cifar10.standardizeImages();
 }
 
 void CSVMDataset::loadMNIST(string mnistDir){
@@ -39,7 +43,10 @@ void CSVMDataset::loadMNIST(string mnistDir){
    
    //splitDatasetToClasses();
    //cout << "dataset split to classes\n";
-   
+   if(settings.imWidth > 0 || settings.imHeight > 0)
+      mnist.scaleData(settings.imWidth,settings.imHeight);
+   cout << "Rescaled!\n";
+
 }
 
 void CSVMDataset::loadDataset(string dataDir){
@@ -137,7 +144,7 @@ void CSVMDataset::splitDataset(){
    unsigned int nTestData = settings.nTestImages;
    
    if(nTrainData + nTestData > nData){
-      cout << "csvm::CSVMDataset::splitDataset() WARNING! amount of testData + amount of trainData > nData in dataset! Exitting..\n";
+      cout << "csvm::CSVMDataset::splitDataset() WARNING! amount of testData + amount of trainData > nData (" << nTrainData << " + " << nTestData << " > " << nData << ")in dataset! Exitting..\n";
       exit(0);
    }
    
@@ -161,6 +168,7 @@ void CSVMDataset::splitDataset(){
 
 void CSVMDataset::setSettings(CSVMDataset_Settings s){
    settings = s;
+   cout << "nImages = " << settings.nTrainImages << endl;
 }
 
 string CSVMDataset::getLabel(int labelId){

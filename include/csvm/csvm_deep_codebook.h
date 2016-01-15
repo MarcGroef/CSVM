@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <cstdlib>
 
 #include "csvm_feature.h"
 #include "csvm_patch.h"
@@ -37,7 +38,7 @@ namespace csvm{
    
    class DeepCodebook{
       DCBSettings settings;
-      
+      bool debug;
       unsigned int nTotalImages;
       unsigned int nTrainImages;
       

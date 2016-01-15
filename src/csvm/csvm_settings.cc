@@ -57,6 +57,49 @@ void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
 
 }
 
+void CSVMSettings::parseRBMSettings(ifstream& stream) {
+
+
+   string setting;
+   string method;
+   
+   stream >> setting;
+   if (setting != "learningRate") {
+      cout << "csvm::csvm_settings:parseRBMSettings(): Error! Invalid settingsfile layout @ learningRate. Exitting...\n";
+      exit(-1);
+   }
+   else {
+      stream >> rbmSettings.learningRate;
+   }
+   
+   stream >> setting;
+   if (setting != "nIterations") {
+      cout << "csvm::csvm_settings:parseRBMSettings(): Error! Invalid settingsfile layout @ nIterations. Exitting...\n";
+      exit(-1);
+   }
+   else {
+      stream >> rbmSettings.nIterations;
+   }
+   
+   stream >> setting;
+   if (setting != "nGibbsSteps") {
+      cout << "csvm::csvm_settings:parseRBMSettings(): Error! Invalid settingsfile layout @ nGibbsSteps. Exitting...\n";
+      exit(-1);
+   }
+   else {
+      stream >> rbmSettings.nGibbsSteps;
+   }
+   
+   stream >> setting;
+   if (setting != "nOutputNodes") {
+      cout << "csvm::csvm_settings:parseRBMSettings(): Error! Invalid settingsfile layout @ nOutputNodes. Exitting...\n";
+      exit(-1);
+   }
+   else {
+      stream >> rbmSettings.outputSize;
+   }
+}
+
 void CSVMSettings::parseLinNetSettings(ifstream& stream) {
 
 
@@ -139,7 +182,19 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream) {
 		}
 		stream >> datasetSettings.nTestImages;
 	}
-
+   stream >> setting;
+   if (setting != "imageWidth") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   stream >> datasetSettings.imWidth;
+   
+   stream >> setting;
+   if (setting != "imageHeight") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   stream >> datasetSettings.imHeight;
 }
 
 
@@ -284,7 +339,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
 
 
 	}
-
+   rbmSettings.inputSize = codebookSettings.numberVisualWords;
 }
 
 void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
@@ -613,6 +668,20 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 	datasetSettings.nClasses = netSettings.nClasses;
 
 
+	stream >> type;
+	if(type != "useRBM"){
+		cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+		exit(0);
+	}
+	stream >> value;
+	if(value == "TRUE"){
+		useRBM = true;
+	}else if(value == "FALSE"){
+		useRBM = false;
+	}else{
+		cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid value given for \'useRBM\'! Please use either TRUE of FALSE\n";
+	}
+
 }
 
 void CSVMSettings::readSettingsFile(string dir) {
@@ -631,6 +700,8 @@ void CSVMSettings::readSettingsFile(string dir) {
 	parseClusterAnalserData(file);*/
 	while (getline(file, line) && line != "General");
 	parseGeneralSettings(file);
+   while (getline(file, line) && line != "RBM");
+   parseRBMSettings(file);
 	while (getline(file, line) && line != "Codebook");
 	parseCodebookSettings(file);
 	while (getline(file, line) && line != "FeatureExtractor");

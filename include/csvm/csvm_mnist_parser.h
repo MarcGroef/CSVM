@@ -8,6 +8,7 @@
 #include <cstdlib>
 
 #include <csvm/csvm_image.h>
+#include "csvm_interpolator.h"
 
 using namespace std;
 
@@ -75,7 +76,7 @@ namespace csvm{
       
       vector<Image> images;
       vector<string> labels;
-      
+      Interpolator interpolator;
    public:
       MNISTParser();
       ~MNISTParser();
@@ -93,6 +94,8 @@ namespace csvm{
       string getLabel(unsigned int index);
       unsigned int getLabelId(unsigned int index);
       unsigned int getSize();
+      vector<Image>& getImages();
+      void scaleData(unsigned int width, unsigned int height);
    };
 }
 
