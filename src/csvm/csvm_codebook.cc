@@ -405,7 +405,7 @@ void Codebook::applyBackProp(vector<double> weights, double yData, double learni
 //               cout << "Dim " << dim << "\tOLD: " << bow[word].content[dim] << "\tDelta: " << deltasPerW_PerD[qIdx * settings.numberVisualWords + word][dim] << "\tWeight: " << weights[qIdx * settings.numberVisualWords + word] << "\tTotal: " << tmp << endl;
 //               --count;
 //            }
-            bow[word].content[dim] += tmp;
+            bow[word].content[dim] -= tmp;
          }
       }
    }

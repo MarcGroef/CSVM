@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nTrainImages 1000
+nTrainImages 5000
 nTestImages 1000
 imageWidth 64
 imageHeight 64
@@ -13,7 +13,7 @@ nClasses 10
 
 Codebook
 method KMEANS
-nClusters 50
+nClusters 100
 nIterations 100
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -49,7 +49,7 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.000000001
-nIterations 30
+nIterations 7
 initWeight 0.0000002
 CSVM_C 1000
 
