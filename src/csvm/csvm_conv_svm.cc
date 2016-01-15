@@ -105,7 +105,8 @@ using namespace csvm;
                }//centrIdx
 
 //if (itIdx > 10)
-               cb.applyBackProp(weights[svmIdx], yData, learningRate, settings.CSVM_C, svmIdx);
+               if (yData * out < 1)
+                  cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
                
 //cout << "4" << endl;
                //bias function

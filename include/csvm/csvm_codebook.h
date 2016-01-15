@@ -47,7 +47,7 @@ namespace csvm{
 
     vector < vector <Centroid> > bowPerSVM;
     vector<Centroid> bow;
-    vector < vector <double> > deltasPerW_PerD;
+    vector < vector <double> > dK;
 
     unsigned int nClasses;
   public:
@@ -63,7 +63,7 @@ namespace csvm{
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
     vector< double > getQActivationsBackProp(vector<Feature> features, int svmIdx);
-    void applyBackProp(vector<double> weights, double yData, double learningRate, double c, int svmIdx);
+    void applyBackProp(vector<double> weights, double yData, double learningRate, double yOut, int svmIdx);
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);
 	vector<vector <double> > getCentroidByClassContributions();
