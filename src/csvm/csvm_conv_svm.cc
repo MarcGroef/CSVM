@@ -54,9 +54,9 @@ using namespace csvm;
          cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          double prevObjective = numeric_limits<double>::max();
          double learningRate = settings.learningRate;
-
+int switchVar = 3;
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
-            
+            --switchVar;
             double sumSlack = 0;
             float right = 0;
             float wrong = 0;
@@ -92,12 +92,12 @@ using namespace csvm;
                   // L2 VM3
                   // EFFECT: Graphs seem better... Accuracy does not increase enormously
                   if(yData * out < 1){
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[centrIdx])) ;
+                     if (switchVar > 0) weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[centrIdx])) ;
               //       weights[svmIdx][centrIdx] += learningRate * activations[dIdx][centrIdx] * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
                      ++wrong;
 //cout << "2" << endl;
                   } else {
-                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
+                     if (switchVar > 0) weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
                      ++right;
 //cout << "3" << endl;
                   }
@@ -105,9 +105,10 @@ using namespace csvm;
                }//centrIdx
 
 //if (itIdx > 10)
-               if (yData * out < 1)
+               if (yData * out < 1 && switchVar == 0){
                   cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
-               
+                  switchVar = 3;
+               }
 //cout << "4" << endl;
                //bias function
                if(yData * out < 1)

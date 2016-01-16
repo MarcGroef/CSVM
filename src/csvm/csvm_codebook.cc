@@ -385,15 +385,17 @@ vector< double > Codebook::getQActivationsBackProp(vector<Feature> features, int
 
 
 void Codebook::applyBackProp(vector<double> weights, double yData, double learningRate, double yOut, int svmIdx){
-
+//cout << "\n\n\n";
    // and only now apply them
    bow = bowPerSVM[svmIdx];
    for (unsigned int qIdx = 0; qIdx < nQuadrants; ++qIdx){
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          for(size_t dim = 0; dim < bow[0].content.size(); ++dim){
+           
            double tmp = dK[qIdx * settings.numberVisualWords + word][dim];
-           tmp *= 2 * (1-yData*yOut) * -yData * weights[qIdx * settings.numberVisualWords + word];
-           bow[word].content[dim] += learningRate * tmp;
+           tmp *=  (1-yData*yOut) * -yData * weights[qIdx * settings.numberVisualWords + word];
+//cout << "\tOLD: " << bow[word].content[dim] << "\tdKernel: " << tmp << "\tTotal delta: " << tmp << "\tNEW: " << bow[word].content[dim] - (learningRate * tmp) << endl;
+           bow[word].content[dim] += learningRate * 1000 * tmp;
          }
       }
    }
