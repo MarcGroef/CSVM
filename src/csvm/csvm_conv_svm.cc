@@ -106,7 +106,7 @@ int switchVar = 3;
 
 //if (itIdx > 10)
                if (yData * out < 1 && switchVar == 0){
-                  cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
+     //             cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
                   switchVar = 3;
                }
 //cout << "4" << endl;
@@ -176,8 +176,8 @@ int switchVar = 3;
             if(itIdx % 1 == 0)cout << "CSVM " << svmIdx << " (" << itIdx << ")" << ":\tObjective = " << objective << "\t Score = " << fixed << (right / (right+wrong) * 100.0) << scientific << "\tBias: " << biases[svmIdx] << endl;   
             statDatFile << itIdx << "," << objective << "," << fixed << float (right / (right+wrong) * 100) << "," << scientific << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
 
-//            if (objective > prevObjective) learningRate *= 0.75;
-//            prevObjective = objective;
+            if (objective > prevObjective) learningRate *= 0.75;
+            prevObjective = objective;
 
 //cout << "6a" << endl;
          }//itIdx

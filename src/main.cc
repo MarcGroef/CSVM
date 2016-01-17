@@ -66,11 +66,11 @@ int main(int argc,char**argv){
    return 0;*/
    
    
-   //cout << "constructing codebook" << endl;
-   //c.constructCodebook();
+   cout << "constructing codebook" << endl;
+   c.constructCodebook();
    
-   cout << "importing codebook" << endl;
-   c.importCodebook("LAST_USED.bin");
+   //cout << "importing codebook" << endl;
+   //c.importCodebook("LAST_USED.bin");
    
    cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
