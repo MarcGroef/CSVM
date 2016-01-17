@@ -81,7 +81,7 @@ void NRBM::flowDown(){
 }
 
 double NRBM::sigmoid(double x){
-  
+   return x < 0 ? 0 : x;
    return 1.0/ (1.0 + exp(-1.0 * x));
 }
 
@@ -104,7 +104,7 @@ double NRBM::studyFeature(vector<double>& f){
    
    //set data to input layer
    inputLayer = f;
-   maxDivision(inputLayer);
+   //maxDivision(inputLayer);
    //normalize(inputLayer);
    //nrbm_standardize(inputLayer);
    
@@ -141,10 +141,10 @@ double NRBM::studyFeature(vector<double>& f){
          
          //update biases
          update = settings.learningRate * (outData[outIdx] - outputLayer[outIdx]);
-         biasUp[outIdx] += update;
+         //biasUp[outIdx] += update;
          
          update = settings.learningRate * (inData[inIdx] - inputLayer[inIdx]) ;
-         biasDown[inIdx] += update;
+         //biasDown[inIdx] += update;
          
       }
    }
@@ -173,20 +173,20 @@ vector<double> NRBM::describe(vector<double>& f){
    
    //nrbm_standardize(inputLayer);
    //normalize(inputLayer);
-   maxDivision(inputLayer);
+   //maxDivision(inputLayer);
    flowUp();
-   size_t nDims = settings.inputSize;
-   /*cout << "in:\n";   
+   //size_t nDims = settings.inputSize;
+  /* cout << "in:\n";   
    for(size_t dIdx = 0; dIdx != nDims; ++dIdx){
       cout << inputLayer[dIdx] << ", ";
    }*/
-   nDims = settings.outputSize;
+   //nDims = settings.outputSize;
    
-   cout << "\nout:\n";
+  /* cout << "\nout:\n";
    for(size_t dIdx = 0; dIdx != nDims; ++dIdx){
       cout << outputLayer[dIdx] << ", ";
    }
-   cout << endl;
+   cout << endl;*/
    return outputLayer;
 }
 
@@ -197,7 +197,7 @@ void NRBM::setSettings(NRBMSettings& s){
    random_device rd;
    mt19937 gen(rd());
    //get a nice normal distribution
-   normal_distribution<double> d(0.0002,0.01);
+   normal_distribution<double> d(0.0000002,0.01);
    
    
    //alloc I/O layers

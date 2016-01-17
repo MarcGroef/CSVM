@@ -240,7 +240,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                mean /= (double)(settings.numberVisualWords);
                
                for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-                  activations[qIdx * settings.numberVisualWords + word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+                  activations[qIdx * settings.numberVisualWords + word] += (( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0) /*/ mean*/);
                }
                
             }

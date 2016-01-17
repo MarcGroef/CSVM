@@ -1,8 +1,8 @@
 
 Dataset
 method MNIST
-nTrainImages 1000
-nTestImages 200
+nTrainImages 60000
+nTestImages 10000
 imageWidth 0
 imageHeight 0
 
@@ -13,14 +13,14 @@ nClasses 10
 useRBM TRUE
 
 RBM
-learningRate 0.0000002
-nIterations 500
-nGibbsSteps 1
-nOutputNodes 100
+learningRate 0.00000001
+nIterations 10000
+nGibbsSteps 3
+nOutputNodes 500
 
 Codebook
 method KMEANS
-nClusters 600
+nClusters 1000
 nIterations 10
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -34,15 +34,15 @@ useGreyPixel true
 weightRatio 0.5
 
 ImageScanner
-patchHeight 8
-patchWidth 8
+patchHeight 12
+patchWidth 12
 scanStride 1
-nRandomPatches 50000
+nRandomPatches 100000
 
 SVM
 Kernel LINEAR
 AlphaDataInit 0.001
-nIterations 500
+nIterations 1000
 learningRate 0.000005
 SVM_C_Data 1000
 Cost 1
@@ -56,8 +56,6 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.00000002
-nIterations 1000
+nIterations 50000
 initWeight 0.0000002
 CSVM_C 1000
-
-
