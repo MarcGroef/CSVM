@@ -70,11 +70,11 @@ int switchVar = 3;
 
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                
+               activations = cb.getQActivationsBackProp(dataFeaturesVec[dIdx], svmIdx);
                unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations, svmIdx);
               
-               activations = cb.getQActivationsBackProp(dataFeaturesVec[dIdx], svmIdx);
 //cout << "0" << endl;
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
 //cout << "\n\n\n" << centrIdx << endl;
@@ -106,7 +106,7 @@ int switchVar = 3;
 
 //if (itIdx > 10)
                if (yData * out < 1 && switchVar == 0){
-     //             cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
+                  cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
                   switchVar = 3;
                }
 //cout << "4" << endl;
