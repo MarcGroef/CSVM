@@ -92,12 +92,12 @@ int switchVar = 3;
                   // L2 VM3
                   // EFFECT: Graphs seem better... Accuracy does not increase enormously
                   if(yData * out < 1){
-                     if (switchVar > 0) weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[centrIdx])) ;
+                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[centrIdx])) ;
               //       weights[svmIdx][centrIdx] += learningRate * activations[dIdx][centrIdx] * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( 3*pow(1-out*yData, 2) * yData * activations[dIdx][centrIdx])) ;
                      ++wrong;
 //cout << "2" << endl;
                   } else {
-                     if (switchVar > 0) weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
+                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
                      ++right;
 //cout << "3" << endl;
                   }
@@ -105,7 +105,7 @@ int switchVar = 3;
                }//centrIdx
 
 //if (itIdx > 10)
-               if (yData * out < 1 && switchVar == 0){
+               if (yData * out < 1){
                   cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
                   switchVar = 3;
                }
