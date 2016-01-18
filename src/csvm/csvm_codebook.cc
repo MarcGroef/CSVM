@@ -395,11 +395,10 @@ void Codebook::applyBackProp(vector<double> weights, double yData, double learni
            double tmp = dK[qIdx * settings.numberVisualWords + word][dim];
            tmp *=  (1-yData*yOut) * -yData * weights[qIdx * settings.numberVisualWords + word];
 //cout << "\tOLD: " << bow[word].content[dim] << "\tdKernel: " << tmp << "\tTotal delta: " << tmp << "\tNEW: " << bow[word].content[dim] - (learningRate * tmp) << endl;
-           bow[word].content[dim] += learningRate * 100 * tmp;
+           bowPerSVM[svmIdx][word].content[dim] += learningRate * 1000 * tmp;
          }
       }
    }
-   bowPerSVM[svmIdx] = bow;
 }
 
 
