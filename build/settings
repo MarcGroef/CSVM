@@ -1,7 +1,7 @@
 
 Dataset
 method CIFAR10
-nTrainImages 500
+nTrainImages 2000
 nTestImages 1000
 imageWidth 64
 imageHeight 64
@@ -13,22 +13,22 @@ nClasses 10
 
 Codebook
 method KMEANS
-nClusters 10
+nClusters 50
 nIterations 100
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method HOG
-cellSize 6
-cellStride 6
+cellSize 12
+cellStride 12
 padding Identity
 useGreyPixel false
 weightRatio 0.5
 
 ImageScanner
-patchHeight 6
-patchWidth 6
+patchHeight 12
+patchWidth 12
 scanStride 1
 nRandomPatches 200000
 
@@ -48,8 +48,8 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.00000001
-nIterations 50
+learningRate 0.0000001
+nIterations 20
 initWeight 0.00000000002
 CSVM_C 1000
 
