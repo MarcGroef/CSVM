@@ -24,6 +24,7 @@ using namespace csvm;
   
    void ConvSVM::train(vector< vector< Feature > > dataFeaturesVec, CSVMDataset* ds, Codebook cb){
       bool newCentroids = false;
+      bool doBackProp = false;
       
       settings.nCentroids = cb.getNCentroids();
 
@@ -113,9 +114,10 @@ using namespace csvm;
                   }
                }//centrIdx
 
-               if (yData * out < 1){
+               if (doBackprop && yData * out < 1){
                   cb.applyBackProp(weights[svmIdx], yData, learningRate, out, svmIdx);
-                  switchVar = 3;
+                  switchVar = switchVal;
+                  newCentroids = true;
                }
                //bias function
                if(yData * out < 1)
