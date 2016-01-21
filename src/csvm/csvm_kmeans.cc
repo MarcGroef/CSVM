@@ -65,9 +65,11 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       centroids1[clIdx].content.resize(dataDims);
    }
    
-   
-   for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
-//   cout << "\n\n\nkmeans iter " << itx << endl;
+   double percentage;
+   for(int itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
+      percentage = (double) itx / settings.nIter * 100;
+      cout << "\rClustering: " << percentage << " %         " << flush;
+
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;
       
@@ -112,7 +114,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
 //   cout << "deltaDist =  "  << deltaDist << endl;
    }
-   
+   cout << endl;
    /*for(size_t centr = 0; centr < nClusters; ++centr){
        cout << "centroid " << centr << " :\n";
        for(size_t idx = 0; idx < dataDims; ++idx){

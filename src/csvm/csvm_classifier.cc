@@ -142,16 +142,18 @@ void CSVMClassifier::constructCodebook(){
 
 
 void CSVMClassifier::trainConvSVMs(){
-   unsigned int nTrainImages = dataset.getTrainSize();
+   int nTrainImages = dataset.getTrainSize();
    vector < vector < Feature > > dataFeaturesVec;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-   
+   cout << "Extracting Features from trainingdata... " << fixed << setprecision(0) << endl;
+   double percentage;
    //for all trainings imagages:
-   for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
+   for(int dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
       
+      percentage = (double) dataIdx / nTrainImages * 100;
+      cout << "\r " << percentage << " %          " << flush;
       if(settings.codebook == CB_CODEBOOK){
-         
          //clear previous features
          patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
          dataFeatures.clear();
@@ -170,6 +172,7 @@ void CSVMClassifier::trainConvSVMs(){
      }
      dataFeaturesVec.push_back(dataFeatures);
    }
+   cout << endl;
    convSVM.train(dataFeaturesVec, &dataset, codebook);
 }
 

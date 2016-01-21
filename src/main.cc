@@ -90,15 +90,18 @@ int main(int argc,char**argv){
    c.train();
 
    //********************Testing phase on trainingset *****************************************
-   unsigned int nCorrect = 0;
-   unsigned int nFalse = 0;
-   unsigned int nImages = c.dataset.getTrainSize();//(unsigned int) c.dataset.getSize();
-   unsigned int nClasses = c.getNoClasses();
+   int nCorrect = 0;
+   int nFalse = 0;
+   int nImages = c.dataset.getTrainSize();//(unsigned int) c.dataset.getSize();
+   int nClasses = c.getNoClasses();
    
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
-   cout << "\n\nTesting on trainingsset:" << fixed << endl;
-   for(size_t im = 0; im < 200 && im < nImages; ++im){
-     
+   cout << "\n\nTesting on trainingsset:" << fixed << setprecision(0) << endl;
+   double percentage;
+   for(int im = 0; im < 200 && im < nImages; ++im){
+      percentage = (double) im / nImages * 100;
+      cout << "\r " << percentage << " %       " << flush;
+
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
 
@@ -113,8 +116,8 @@ int main(int argc,char**argv){
       ++classifiedAsTrain[nClasses][result];
  
    }
-   cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << endl << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+   cout << "TrainSetScore: " << setprecision(2) << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
    //****************************** Print ConfusionMatrix for TRAINSET *******************
 
@@ -144,7 +147,7 @@ int main(int argc,char**argv){
       cout << "\n\tPrecision:\t";
       for (size_t i=0; i<nClasses; ++i){
          precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
-         cout << "\t" << fixed << precision << "";
+         cout << "\t" << precision << "";
       }
    }
 
@@ -152,15 +155,17 @@ int main(int argc,char**argv){
   
    //***********************************Testing phase on test set**********************************************************************************
 
-   cout << "\n\n\nOn test set:\n\n";
+   cout << "\n\n\nTesting on test set:" << setprecision(0) << endl;
    nCorrect = 0;
    nFalse = 0;
-   unsigned int testSize = (unsigned int)c.dataset.getTestSize();
+   int testSize = (int)c.dataset.getTestSize();
 
    vector <vector <int> > classifiedAs      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
 
-   for(size_t im = 0; im < testSize; ++im){
-      
+   for(int im = 0; im < testSize; ++im){
+      percentage = (double) im / testSize * 100;
+      cout << "\r " << percentage << " %    " << flush;
+
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
@@ -183,14 +188,14 @@ int main(int argc,char**argv){
       ++classifiedAs[nClasses][result];
       
    }
-
+   cout << endl << endl;
   
    
    //****************************** Print ConfusionMatrix for TESTSET *******************
    
    
    cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   cout << "TestSetScore: " << setprecision(2) << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
 
