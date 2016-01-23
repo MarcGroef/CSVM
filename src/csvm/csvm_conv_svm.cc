@@ -62,6 +62,9 @@ using namespace csvm;
          cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")" << endl;
 
          activationsVec = activationsVecCP;
+         double score = 0;
+         double prevScore = 0;
+         double prevBias = 0;
          double prevObjective = numeric_limits<double>::max();
          double learningRate = settings.learningRate;
          int switchVar = switchVal;    // Counter for calculating dCentroids
@@ -77,6 +80,9 @@ using namespace csvm;
             maxOut = 0;
             nMax   = 0;
             nMin   = 0;
+
+            prevScore = score;
+            prevBias = biases[svmIdx];
 
             allOuts  = vector<double>(nData, 0);
 
@@ -106,24 +112,24 @@ using namespace csvm;
               
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                   // original:
-             //     if(yData * out < 1){
-             //        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
-             //        ++wrong;
-             //     }else{
-             //        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
-             //        ++right;
-             //     }
+                  if(yData * out < 1){
+                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[centrIdx]) ;
+                     ++wrong;
+                  }else{
+                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
+                     ++right;
+                  }
 
 
                   // L2 VM3
                   // EFFECT: Graphs seem better... Accuracy does not increase enormously
-                  if(yData * out < 1){
-                     weights[svmIdx][centrIdx] += learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C + ( (1-out*yData) * yData * activations[centrIdx])) ;
-                     ++wrong;
-                  } else {
-                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
-                     ++right;
-                  }
+//                  if(yData * out < 1){
+//                     weights[svmIdx][centrIdx] -= learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C - ( (1-out*yData) * yData * activations[centrIdx])) ;
+//                     ++wrong;
+//                  } else {
+//                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
+//                     ++right;
+//                  }
                }//centrIdx
 
                if (doBackprop && switchVar == 0 && yData * out < 1){
@@ -181,9 +187,11 @@ using namespace csvm;
             stdDevMaxOutNeg = sqrt(stdDevMaxOutNeg / nMaxNeg);
             stdDevMinOutPos = sqrt(stdDevMinOutPos / nMinPos);
             stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
+
+            score = (double) (right / (right+wrong) * 100.0);
 	
-            cout << "\r" << fixed << setprecision(0) << " " << (double)itIdx/settings.nIter*100 << " %\t" << scientific << setprecision(5) << ":\tObjective = " << objective << "\t Score = " << fixed << (right / (right+wrong) * 100.0) << scientific << "\tBias: " << biases[svmIdx] << flush;   
-            statDatFile << itIdx << "," << objective << "," << fixed << float (right / (right+wrong) * 100) << "," << scientific << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
+            cout << "\r" << fixed << setprecision(0) << " " << (double)itIdx/settings.nIter*100 << " %\t" << scientific << setprecision(5) << ":\tObjective = " << objective << ((objective < prevObjective) ? " - \t Score = " : " + \t Score = ") << fixed << score  << ((score < prevScore) ? " -" : " +") << scientific << "\tBias: " << biases[svmIdx] << ((biases[svmIdx] < prevBias) ? " -" : " +") << flush;   
+            statDatFile << itIdx << "," << objective << "," << fixed << score << "," << scientific << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
 
             if (objective > prevObjective) learningRate *= 0.75;
             prevObjective = objective;

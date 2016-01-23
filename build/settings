@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 20000
-nTestImages 2000
+nTrainImages 2000
+nTestImages 1000
 imageWidth 64
 imageHeight 64
 
@@ -13,7 +13,7 @@ nClasses 10
 
 Codebook
 method KMEANS
-nClusters 300
+nClusters 30
 nIterations 100
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
