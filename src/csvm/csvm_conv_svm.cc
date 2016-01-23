@@ -95,7 +95,7 @@ using namespace csvm;
 
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
 
-               if (switchVar == 0)
+               if (doBackprop == true && switchVar == 0)
                   activations = cb.getQActivationsBackProp(dataFeaturesVec[dIdx], svmIdx);
                else
                   activations = activationsVec[dIdx];

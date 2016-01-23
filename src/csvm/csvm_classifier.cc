@@ -146,6 +146,7 @@ void CSVMClassifier::trainConvSVMs(){
    vector < vector < Feature > > dataFeaturesVec;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
+   dataFeaturesVec.reserve(nTrainImages);
    cout << "Extracting Features from trainingdata... " << fixed << setprecision(0) << endl;
    double percentage;
    //for all trainings imagages:
