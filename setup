@@ -1,0 +1,5 @@
+cmake ./
+mkdir ./build/logs
+mkdir ./build/logs/LAST_RUN
+cp -v ../BatProj_TMP_d_P/build/LAST_USED.bin ./build/
+cp -rv ../BatProj_TMP_d_P/datasets/* ./datasets/

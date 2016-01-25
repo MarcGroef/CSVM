@@ -212,7 +212,7 @@ using namespace csvm;
             cout << "\r" << fixed << setprecision(0) << " " << (double)itIdx/settings.nIter*100 << " %\t" << scientific << setprecision(5) << ":\tObjective = " << objective << ((objective < prevObjective) ? " - \t Score = " : (objective ==prevObjective ? " \t Score = " : " + \t Score = ")) << fixed << score  << ((score < prevScore) ? " -" : (score==prevScore ? "  " : " +")) << scientific << "\tBias: " << biases[svmIdx] << ((biases[svmIdx] < prevBias) ? " -" : (biases[svmIdx]==prevBias ? "  " : " +")) << flush;   
             statDatFile << itIdx << "," << objective << "," << fixed << score << "," << scientific << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
 
-            if (objective > prevObjective) learningRate *= 0.75;
+//            if (objective > prevObjective) learningRate *= 0.75;
             prevObjective = objective;
          }//itIdx
          cout << endl;
