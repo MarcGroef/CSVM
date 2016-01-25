@@ -14,6 +14,22 @@ CSVMClassifier::~CSVMClassifier(){
    delete deepCodebook;
 }
 
+
+void CSVMClassifier::setTestOutputFile(string fileName){
+   convSVM.setTestOutputFile(fileName);
+}
+
+
+void CSVMClassifier::setTestAnswer(int answer){
+   convSVM.setTestAnswer(answer);
+}
+
+
+void CSVMClassifier::closeTestOutputFile(){
+   convSVM.closeTestOutputFile();
+}
+
+
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
    

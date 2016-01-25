@@ -66,11 +66,11 @@ int main(int argc,char**argv){
    return 0;*/
    
    
-   cout << "constructing codebook" << endl;
-   c.constructCodebook();
+   //cout << "constructing codebook" << endl;
+   //c.constructCodebook();
    
-   //cout << "importing codebook" << endl;
-   //c.importCodebook("LAST_USED.bin");
+   cout << "importing codebook" << endl;
+   c.importCodebook("LAST_USED.bin");
    
    cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
@@ -162,13 +162,16 @@ int main(int argc,char**argv){
 
    vector <vector <int> > classifiedAs      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
 
+   c.setTestOutputFile("TEST_OUTPUTVALUES.csv");
+
    for(int im = 0; im < testSize; ++im){
       percentage = (double) im / testSize * 100;
       cout << "\r " << percentage << " %    " << flush;
 
       //cout << "classifying image " << image << endl;
       unsigned int result;
-      unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
+      int answer = c.dataset.getTestImagePtr(im)->getLabelId();
+      c.setTestAnswer(answer);
       //cout << "\nAnswer: " << answer;
       result = c.classify(c.dataset.getTestImagePtr(im));
       //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
@@ -189,7 +192,7 @@ int main(int argc,char**argv){
       
    }
    cout << endl << endl;
-  
+   c.closeTestOutputFile();
    
    //****************************** Print ConfusionMatrix for TESTSET *******************
    

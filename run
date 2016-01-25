@@ -87,7 +87,7 @@ fi
 			rm ./memo 2> ./logs/errorLOG
 		fi
 
-   		echo "SETTINGS: Score: 333" >> ./logs/$logName 2> ./logs/errorLOG
+   		echo "SETTINGS: " >> ./logs/$logName 2> ./logs/errorLOG
         	echo "" >> ./logs/$logName 2> ./logs/errorLOG
         	cat $tmpSettings >> ./logs/$logName 2> ./logs/errorLOG
    		echo "" >> ./logs/$logName 2> ./logs/errorLOG
@@ -117,7 +117,7 @@ fi
 		
 		if (( $noIters > 1 )) ; then tmpFolderName=$folderName"_"$i ; echo $noIters ; fi
 
-		if [ $folderName == "LAST_RUN" ] ; then rm logs/LAST_RUN/* 2> ./logs/errorLOG ; fi
+		rm logs/LAST_RUN/* 2> ./logs/errorLOG 
 
 		if [ $tmpFolderName != "LAST_RUN" ] ; then mkdir ./logs/$tmpFolderName &> ./logs/errorLOG ; fi
 
@@ -129,6 +129,9 @@ fi
 		cp ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./R_dataDump_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp ./TEST_OUTPUTVALUES.csv ./logs/$tmpFolderName &> ./logs/errorLOG
+
+		if [ $tmpFolderName != "LAST_RUN" ] ; then cp -r ./logs/$tmpFolderName/* ./logs/LAST_RUN/ &> ./logs/errorLOG ; fi
 
 		if [ $alert == 1 ] ; then aplay /usr/share/sounds/alsa/Side_Right.wav &> /dev/null &> ./logs/errorLOG ; fi
 
@@ -139,5 +142,6 @@ fi
 	rm ./SVM_* &> ./logs/errorLOG
 	rm ./statData* &> ./logs/errorLOG
 	rm ./R_dataDump* &> ./logs/errorLOG
+        rm ./TEST_OUTPUTVALUES.csv &> ./logs/errorLOG
 
 fi

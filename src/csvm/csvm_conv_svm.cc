@@ -20,7 +20,26 @@ using namespace csvm;
       out += biases[svmIdx];
       return out;
    }
+
+
+   void ConvSVM::setTestOutputFile(string fileName){
+      testOutputFile.open(fileName.c_str());
+      writeTestOutput = true;
+      answer = 0;
+      testOutputFile << "SVM_0,SVM_1,SVM_2,SVM_3,SVM_4,SVM_5,SVM_6,SVM_7,SVM_8,SVM_9,Answer,RightOutput,RightResult,NumberOfReactions" << endl;
+   }
    
+
+   void ConvSVM::closeTestOutputFile(){
+      testOutputFile.close();
+      writeTestOutput = false;
+   }
+
+
+   void ConvSVM::setTestAnswer(int a){
+      answer = a;
+   }
+
   
    void ConvSVM::train(vector< vector< Feature > > dataFeaturesVec, CSVMDataset* ds, Codebook cb){
       bool newCentroids = false;
@@ -112,24 +131,24 @@ using namespace csvm;
               
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                   // original:
-                  if(yData * out < 1){
-                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[centrIdx]) ;
-                     ++wrong;
-                  }else{
-                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
-                     ++right;
-                  }
+          //        if(yData * out < 1){
+          //           weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[centrIdx]) ;
+          //           ++wrong;
+          //        }else{
+          //           weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
+          //           ++right;
+          //        }
 
 
                   // L2 VM3
                   // EFFECT: Graphs seem better... Accuracy does not increase enormously
-//                  if(yData * out < 1){
-//                     weights[svmIdx][centrIdx] -= learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C - ( (1-out*yData) * yData * activations[centrIdx])) ;
-//                     ++wrong;
-//                  } else {
-//                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
-//                     ++right;
-//                  }
+                  if(yData * out < 1){
+                     weights[svmIdx][centrIdx] -= learningRate * (weights[svmIdx][centrIdx] * 1 / settings.CSVM_C - ( (1-out*yData) * yData * activations[centrIdx])) ;
+                     ++wrong;
+                  } else {
+                     weights[svmIdx][centrIdx] += learningRate * weights[svmIdx][centrIdx] * 1 / settings.CSVM_C ;
+                     ++right;
+                  }
                }//centrIdx
 
                if (doBackprop && switchVar == 0 && yData * out < 1){
@@ -190,7 +209,7 @@ using namespace csvm;
 
             score = (double) (right / (right+wrong) * 100.0);
 	
-            cout << "\r" << fixed << setprecision(0) << " " << (double)itIdx/settings.nIter*100 << " %\t" << scientific << setprecision(5) << ":\tObjective = " << objective << ((objective < prevObjective) ? " - \t Score = " : " + \t Score = ") << fixed << score  << ((score < prevScore) ? " -" : " +") << scientific << "\tBias: " << biases[svmIdx] << ((biases[svmIdx] < prevBias) ? " -" : " +") << flush;   
+            cout << "\r" << fixed << setprecision(0) << " " << (double)itIdx/settings.nIter*100 << " %\t" << scientific << setprecision(5) << ":\tObjective = " << objective << ((objective < prevObjective) ? " - \t Score = " : (objective ==prevObjective ? " \t Score = " : " + \t Score = ")) << fixed << score  << ((score < prevScore) ? " -" : (score==prevScore ? "  " : " +")) << scientific << "\tBias: " << biases[svmIdx] << ((biases[svmIdx] < prevBias) ? " -" : (biases[svmIdx]==prevBias ? "  " : " +")) << flush;   
             statDatFile << itIdx << "," << objective << "," << fixed << score << "," << scientific << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
 
             if (objective > prevObjective) learningRate *= 0.75;
@@ -215,9 +234,15 @@ using namespace csvm;
    //classify image, given its activations
    unsigned int ConvSVM::classify(vector < vector<double> >& activations){
       unsigned int maxLabel = 0;
+      int correctReaction = 0;
+      int nReactions = 0;
       double maxVal = output(activations[0], 0);
-      for(size_t svmIdx = 1; svmIdx < settings.nClasses; ++svmIdx){
+      for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          double out = output(activations[svmIdx], svmIdx);
+         if (writeTestOutput){
+            testOutputFile << (svmIdx==0 ? "" : ",") << out;
+            if (out > 0){ ++nReactions; if (svmIdx == answer) correctReaction = 1;}
+         }
          //cout << "out " << svmIdx << " = " << out << "\t  /  " << minOuts[svmIdx] << " - "  << maxOuts[svmIdx] << "    Bias = " << biases[svmIdx] <<endl;
          if(out > maxVal){
             maxVal = out;
@@ -225,6 +250,6 @@ using namespace csvm;
             //cout << "Maxlabel = " << maxLabel << endl;
          }
       }
+      if (writeTestOutput) testOutputFile << "," << answer << "," << correctReaction << "," << (maxLabel==answer ? "1," : "0,") << nReactions << endl;
       return maxLabel;
-      
    }

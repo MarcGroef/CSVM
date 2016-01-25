@@ -32,12 +32,14 @@ namespace csvm{
     
       double output(vector<double>& activations, unsigned int svmIdx);
       
-      int nMax, nMin;
+      int nMax, nMin, answer;
       double maxOut, minOut;
       vector<double> maxOuts;
       vector<double> minOuts;
       vector<double> avOuts;
       vector<double> allOuts;
+      ofstream testOutputFile;
+      bool writeTestOutput;
 
    public:
       
@@ -45,7 +47,9 @@ namespace csvm{
       
       void train(vector< vector< Feature > > dataFeaturesVec, CSVMDataset* ds, Codebook cb);
       unsigned int classify(vector < vector<double> >& activations);
-
+      void setTestOutputFile(string fileName);
+      void closeTestOutputFile();
+      void setTestAnswer(int a);
    };
 
 

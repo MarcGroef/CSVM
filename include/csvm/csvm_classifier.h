@@ -62,7 +62,9 @@ namespace csvm{
       
       void initSVMs();
       unsigned int getNoClasses();
-      
+      void setTestOutputFile(string fileName);
+      void setTestAnswer(int answer);
+      void closeTestOutputFile();
 
       void train();
       unsigned int classify(Image* im);
