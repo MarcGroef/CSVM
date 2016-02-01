@@ -84,7 +84,38 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          activations[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
       }
 
-   }
+   }else if(settings.simFunction == DCB_COSINE_SOFT_ASSIGNMENT){
+		//With cosine distances
+      
+		
+      double mean = 0.0;
+      double xx = 0;
+      for(size_t dim = 0; dim < nDims; ++dim){
+         xx += p.content[dim] * p.content[dim];
+      }
+      
+      for(unsigned int word = 0; word < nCentroids; ++word){
+         double cc = 0.0;
+         double xc = 0.0;
+         
+         for(size_t dim = 0; dim < nDims; ++dim){
+            
+            cc += c[word].content[dim] * c[word].content[dim];
+            xc += c[word].content[dim] * p.content[dim];
+            
+         }
+         
+         //distances[word] = sqrt(cc + (xx - (2 * xc))) ;
+         distances[word] = xc / (sqrt(xx*cc));
+         //distances[word] = sqrt(dist);
+         
+         mean += distances[word];
+      }
+      mean /= (double)(nCentroids);
+      for(unsigned int word = 0; word < nCentroids; ++word){
+         activations[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
+      }
+	}
    else if(settings.simFunction == DCB_SOFT_ASSIGNMENT_CLIPPING){
       double mean = 0.0;
       double xx = 0;
@@ -133,10 +164,11 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    unsigned int depth = 1;
    unsigned int fmSize = 1 + ((imSize - patchSize) / 2 );
    unsigned int plSize = fmSize / 2;
+	plSize = 2;
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
-   //cout << "fmSize0 = " << fmSize << endl;
-   //cout << "plSize0 = " << plSize << endl;
+   cout << "fmSize0 = " << fmSize << endl;
+   cout << "plSize0 = " << plSize << endl;
    unsigned int tmpNCentroids = settings.nCentroids;
    nCentroids.push_back(tmpNCentroids);
    nRandomPatches.push_back(settings.nRandomPatches);
@@ -148,8 +180,8 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
       plSize = fmSize / 2;
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
-      //cout << "fmSize = " << fmSize << endl;
-      //cout << "plSize = " << plSize << endl;
+      cout << "fmSize = " << fmSize << endl;
+      cout << "plSize = " << plSize << endl;
       nRandomPatches.push_back(settings.nRandomPatches);
    }
    

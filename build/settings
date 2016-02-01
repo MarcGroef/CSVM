@@ -8,7 +8,7 @@ imageHeight 0
 
 General
 Classifier CSVM
-Codebook CODEBOOK
+Codebook DEEPCODEBOOK
 nClasses 10
 
 Codebook

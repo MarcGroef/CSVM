@@ -68,7 +68,8 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
       //keep it in boundaries
       
       target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
-      /*if(settings.kernelType != LINEAR)*/ target = target < 0.0 ? 0.0 : target;
+      target = target < 0.0 ? 0.0 : target;
+      /*if(settings.kernelType != LINEAR)*/ 
       //else target = target < settings.SVM_C_Data ? settings.SVM_C_Data : target;
       deltaDiff = alphaData[dIdx0] - target;
       diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
@@ -132,7 +133,7 @@ void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset
    unsigned int kernelIdx0, kernelIdx1;
    
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
-      //if((alpha_coeff[C][i] > 0.0) && ((alpha_coeff[C][i]) < (SVM_C - 0.000001)  Marco 
+     
       if((alphaData[dIdx0] > 0) && (alphaData[dIdx0] < settings.SVM_C_Data - 0.000001)){
          output = 0;
          for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){

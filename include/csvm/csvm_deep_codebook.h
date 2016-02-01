@@ -24,6 +24,7 @@ namespace csvm{
      DCB_RBF,
      DCB_SOFT_ASSIGNMENT,
      DCB_SOFT_ASSIGNMENT_CLIPPING,
+	  DCB_COSINE_SOFT_ASSIGNMENT,
    };
    
    struct DCBSettings{
