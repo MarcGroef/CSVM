@@ -48,7 +48,6 @@ int main(int argc,char**argv){
       showUsage();
       return 0;
    }
-   Interpolator scaler;
    
    srand(time(NULL));
    
@@ -58,13 +57,7 @@ int main(int argc,char**argv){
    c.dataset.loadDataset("../datasets/");
 
    
-   //*****************************test the interpolator
-   /*Image* im = c.dataset.getImagePtr(872);
-   Image large = scaler.interpolate_bicubic(*im, 640, 640);
-   im->exportImage("small.png");
-   large.exportImage("large.png");
-   return 0;*/
-   
+  
    
    cout << "constructing codebook" << endl;
    c.constructCodebook();

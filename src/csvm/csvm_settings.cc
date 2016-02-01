@@ -226,7 +226,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
 				dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
 			}
 			else if(method == "COSINE_SOFT_ASSIGNMENT"){
-				codebookSettings.simFunction = SOFT_ASSIGNMENT;
+				codebookSettings.simFunction = COSINE_SOFT_ASSIGNMENT;
 				dcbSettings.simFunction = DCB_COSINE_SOFT_ASSIGNMENT;
 			}
 			else
