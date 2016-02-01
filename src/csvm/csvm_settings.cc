@@ -225,6 +225,10 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
 				codebookSettings.simFunction = SOFT_ASSIGNMENT;
 				dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
 			}
+			else if(method == "COSINE_SOFT_ASSIGNMENT"){
+				codebookSettings.simFunction = SOFT_ASSIGNMENT;
+				dcbSettings.simFunction = DCB_COSINE_SOFT_ASSIGNMENT;
+			}
 			else
 				cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
 		}

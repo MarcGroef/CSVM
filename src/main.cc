@@ -72,14 +72,14 @@ int main(int argc,char**argv){
    //cout << "importing codebook" << endl;
    //c.importCodebook("LAST_USED.bin");
    
-   cout << "exporting codebook" << endl;
+   //cout << "exporting codebook" << endl;
    //c.exportCodebook("mnist1000.bin");
    //return 0;
 
 
 
 ////////////////////////////////////////////////////////////////       DO
-   c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
+   //c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
 ////////////////////////////////////////////////////////////////       ALTER (script dependency)
 
 
