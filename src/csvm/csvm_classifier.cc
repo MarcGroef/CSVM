@@ -1,6 +1,14 @@
 #include <csvm/csvm_classifier.h>
 #include <iomanip>
-//
+
+/* This class implements the general pipeline of the system.
+ * Based on the settingsfile, it will construct codebooks, describe images and train/test the system.
+ * 
+ * 
+ * 
+ * 
+ */
+
 using namespace std;
 using namespace csvm;
 
@@ -41,7 +49,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.setSettings(settings.convSVMSettings);
 }
 
-
+//Train the system
 void CSVMClassifier::train(){
    switch(settings.classifier){
       case CL_SVM:
@@ -64,7 +72,7 @@ void CSVMClassifier::train(){
    }
 }
 
-
+//Classify an image, given its pointer
 unsigned int CSVMClassifier::classify(Image* im){
    unsigned int result = 0;
    
@@ -83,7 +91,7 @@ unsigned int CSVMClassifier::classify(Image* im){
 }
 
 
-//export the current codebook
+//export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
 void CSVMClassifier::exportCodebook(string filename){
    codebook.exportCodebook(filename);
 }
@@ -164,14 +172,11 @@ void CSVMClassifier::trainConvSVMs(){
          //allocate for new features
          dataFeatures.reserve(patches.size());
          
-         //cout << patches[qIdx].size() << " patches" << endl;
          //extract features from all patches
          for(size_t patch = 0; patch < patches.size(); ++patch){
             dataFeatures.push_back(featExtr.extract(patches[patch]));
-            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
          }
          
-         //cout << "Extracted " << patches.size() << "patches from the image\n";
          patches.clear();
          
          //get cluster activations for the features
@@ -193,7 +198,6 @@ void CSVMClassifier::trainConvSVMs(){
 
 
 unsigned int CSVMClassifier::classifyConvSVM(Image* image){
-      //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
    vector<double> dataActivation;
@@ -225,7 +229,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
 }
 
 
-//train the KKT-SVM
+//train the regular-SVM
 void CSVMClassifier::trainClassicSVMs(){
    //cout << "Enteing classic svm training\n";
    unsigned int nTrainImages = dataset.getTrainSize();
@@ -328,7 +332,7 @@ void CSVMClassifier::trainClassicSVMs(){
 }
 
 
-//classify an image using the KKT-SVM
+//classify an image using the regular-SVM
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = dataset.getNumberClasses();
    //cout << "nClasses = " << nClasses << endl;

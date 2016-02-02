@@ -1,4 +1,6 @@
 #include <csvm/csvm_annotated_kmeans.h>
+
+//DEPRECATED
 //#include <stdlib.h>
 
 

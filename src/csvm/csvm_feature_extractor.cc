@@ -3,6 +3,8 @@
 using namespace std;
 using namespace csvm;
 
+//General feature extractor class, with delegates the feature extraction to the correct feature extractor (e.g. HoG)
+
 FeatureExtractor::FeatureExtractor(){
 
     //settings.featureType = HOG;

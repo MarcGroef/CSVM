@@ -1,5 +1,10 @@
  #include <csvm/csvm_feature.h>
-
+ 
+/* This Feature class is a bit like a vector, except that it also contains a label.
+ * Also, it has some often used distance functions with it 
+ * 
+ * 
+ */
 
 
 using namespace std;
@@ -30,6 +35,9 @@ void Feature::setLabelId(int id){
 unsigned int Feature::getLabelId(){
    return labelId;
 }
+
+//get squared distance
+
 double Feature::getDistanceSq(Feature& f){
    //cout << "My size = " << size << ", the other one's = " << f->size << endl;
    if(f.size != size){

@@ -1,5 +1,5 @@
 #include <csvm/csvm_frequency_matrix.h>
-
+//DEPRECATED
 using namespace std;
 using namespace csvm;
 

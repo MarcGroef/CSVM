@@ -1,6 +1,11 @@
 #include <csvm/csvm_kmeans.h>
 //#include <stdlib.h>
 
+/*  A class implementing KMeans.
+ * 
+ * 
+ * 
+ * */
 
 using namespace std;
 using namespace csvm;
@@ -8,6 +13,9 @@ using namespace csvm;
 void KMeans::setSettings(KMeans_settings s){
    settings = s;
 }
+
+
+//Initialize centroids by giving them the location of K-different datapoints in the collection
 
 vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int nClusters){
    int collectionSize = collection.size();
@@ -18,10 +26,8 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
       dictionary[clIdx].content.resize(featureSize);
    }
    
-   //getchar();
       
    unsigned int randomInt;
-   //cout <<"initProto's\n";
    
    for(size_t idx = 0; idx < nClusters; ++idx){
       randomInt = rand() % collectionSize;
@@ -39,15 +45,21 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
 }
 
 
-
+//The actual KMeans clusterings
 vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int nClusters){
    unsigned int nData = featureSamples.size(); 
+	
+	//location of 2-times the centroids. One for currect centroid location, and one for the next iteration.
+	//pointers 'centroids' and 'newCentroids' denote them, and are updated at the end of each iteration to point to the correct one.
+	//This minimalizes memory hassle.
+	
    vector<Centroid> centroids0 = initCentroids(featureSamples, nClusters);
    vector<Centroid> centroids1(nClusters);
    
    
    vector<Centroid>* centroids = &centroids0;
    vector<Centroid>* newCentroids = &centroids1;
+	
    int curCentroids = 1;
    unsigned int dataDims = centroids0[0].content.size();
    
@@ -67,19 +79,21 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    
    
    for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
-//   cout << "\n\n\nkmeans iter " << itx << endl;
+
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;
       
       centroids = (curCentroids == 1 ? &centroids0: &centroids1);
       newCentroids = (curCentroids == 1 ? &centroids1 : &centroids0);
       
+		//reset the centroids: set content to zero, and reset memberships
       for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
          for(size_t dim = 0; dim < dataDims; ++dim)
             (*newCentroids)[cIdx].content[dim] = 0.0;
          nMembers[cIdx] = 0;
       }
          
+      //for all data, determine the nearest centroid
       for(size_t dIdx = 0; dIdx < nData; ++dIdx){
          closestDist = numeric_limits<double>::max();
          unsigned int closestCentr = -1;
@@ -93,8 +107,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
                
             }
          }
-//    cout << "closestDist = " << closestDist << endl;
-         //cout << "closestCentr =" << closestCentr << " at dist: " << closestDist << endl;
+         //notate total Dist, as a nice statistic, that doesnt really say anything, but you can see convergence from it.
          totalDistance += closestDist;
          
          for(size_t dim = 0; dim < dataDims; ++dim)
@@ -102,6 +115,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
          ++nMembers[closestCentr];
       }
       
+      //move to mean position of members
       for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
          if(nMembers[cIdx] > 0)
             for(size_t dim = 0; dim < dataDims; ++dim)
@@ -110,16 +124,8 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
-//   cout << "deltaDist =  "  << deltaDist << endl;
    }
-   
-   /*for(size_t centr = 0; centr < nClusters; ++centr){
-       cout << "centroid " << centr << " :\n";
-       for(size_t idx = 0; idx < dataDims; ++idx){
-          cout << (*newCentroids)[centr].content[idx] << ", " << endl;
-       }
-       cout << endl;
-   }*/
+	//tadaa, fresh made centroids
    return (*newCentroids);
 }
 

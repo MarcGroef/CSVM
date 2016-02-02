@@ -3,6 +3,15 @@
 using namespace std;
 using namespace csvm;
 
+/* This class implements the Bag-of-Visual-Words model (a.k.a codebook)
+ * It contains the centroids and can map a feature to an activation vector, given the centroids
+ * 
+ * 
+ * 
+ */
+
+//unions to make life easier while reading/writing binary files
+
 union charInt{
    char chars[4];
    unsigned int intVal;

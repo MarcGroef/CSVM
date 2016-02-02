@@ -3,6 +3,14 @@
 using namespace std;
 using namespace csvm;
 
+/* A linear network - classifier class. Easilly converted to a one-layer neural net by using sigmoids
+ * 
+ * 
+ * 
+ * 
+ */
+
+
 LinNetwork::LinNetwork(){//(unsigned int nClasses, unsigned int nCentroids, double initWeights){
    //nClasses = 10;
    //nCentroids = 200 * 4;

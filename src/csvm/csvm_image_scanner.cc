@@ -3,14 +3,28 @@
 using namespace csvm;
 using namespace std;
 
+/* The image-scanner is responsible for extracting patches from images.
+ * It can extract patches in a convolutional manner, using the patch-specifications in the settings-file.
+ * 
+ * It is also able to extract one patch from a given image, at a particular location.
+ * 
+ * An last, but not least, extract a patch at a random location of an image.
+ * 
+ * 
+ * 
+ */
+
 ImageScanner::ImageScanner(){
    srand(time(NULL));
 }
 
+
+//set settings (done by classifier)
 void ImageScanner::setSettings(ImageScannerSettings set){
   settings = set;
 }
 
+//get all patches from image.
 vector<Patch> ImageScanner::scanImage(Image* image){
    vector<Patch> patches;
    
@@ -34,6 +48,7 @@ vector<Patch> ImageScanner::scanImage(Image* image){
    return patches;
 }
 
+//get patch at particular location.
 Patch ImageScanner::getPatchAt(Image* image, unsigned int x, unsigned int y){
    if(x + settings.patchWidth > image->getWidth() || y + settings.patchHeight > image->getHeight()){
       cout << "Image scanner WARNING!! Requested patch at " << x << ", " << y << " is out of bounds!\n";
@@ -43,7 +58,7 @@ Patch ImageScanner::getPatchAt(Image* image, unsigned int x, unsigned int y){
    return Patch(image, x, y, settings.patchWidth, settings.patchHeight);
 }
 
-
+//get random patch from image
 Patch ImageScanner::getRandomPatch(Image* image){
    
    //cout << "imscan\n";

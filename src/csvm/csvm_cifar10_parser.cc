@@ -1,9 +1,17 @@
 #include <csvm/csvm_cifar10_parser.h>
 
+/* This class contains functionality to read the CIFAr-10 binary files, parse them to the image class, scale images,
+ * and make them available through the Dataset class.
+ * 
+ * 
+ * 
+ * 
+ */
 
 using namespace std;
 using namespace csvm;
 
+	//scale images using bicubic interpolation.
    void CIFAR10::scaleData(unsigned int width, unsigned int height){
       vector<Image> newImages;
       unsigned int nImages = images.size();

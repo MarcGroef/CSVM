@@ -1,5 +1,7 @@
 #include <csvm/csvm_centroid.h>
 
+
+//DEPRECATED
 using namespace std;
 using namespace csvm;
 

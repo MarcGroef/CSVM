@@ -1,7 +1,17 @@
 #include <csvm/csvm_clean_descriptor.h>
 #include <cmath>
+
+/* Put pixel intensity values in a Feature
+ * 
+ * Needs TODO fixes
+ * 
+ * 
+ */
+
+
 using namespace std;
 using namespace csvm;
+
 
 
 //simply copy all pixels in grey-value towards a feature vector
@@ -37,7 +47,7 @@ Feature CleanDescriptor::describe(Patch p){
          }
       }
    
-   // TO DO: fix magic number 3 only appropriate when using colour, not when grayscaling
+   // TODO: fix magic number 3 only appropriate when using colour, not when grayscaling
    
       mean /= (imWidth * imHeight);//3);
    //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){

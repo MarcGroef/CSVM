@@ -3,6 +3,13 @@
 using namespace std;
 using namespace csvm;
 
+// This class contains the deep codebook.
+// calcSimilarity calculates activations from a feature to a centroid
+
+//calculateSizes sets the layer sizes and the amount of layers. (The general architecture info)
+
+
+//constructor
 DeepCodebook::DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds){
    
    scanner = imScanner;
@@ -27,7 +34,10 @@ void DeepCodebook::setSettings(DCBSettings& s){
    calculateSizes(dataset->getImagePtr(0)->getWidth(), scanner->settings.patchWidth, scanner->settings.stride);
 }
 
+
 //*********** PRIVATE ********************
+
+//Calculate activations of centroids given a feature
 vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    
    unsigned int nCentroids = c.size();
@@ -38,7 +48,8 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    
    
    
-   
+   //Radial base function (Gaussian sheep)
+	
    if(settings.simFunction == DCB_RBF){
       double dev;
       
@@ -50,6 +61,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          
       }
       
+      //soft_assignment
    } else if (settings.simFunction == DCB_SOFT_ASSIGNMENT){
       //As done by Ng,Coates:
       
@@ -116,6 +128,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          activations[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
       }
 	}
+	//more iterations of max-clipping
    else if(settings.simFunction == DCB_SOFT_ASSIGNMENT_CLIPPING){
       double mean = 0.0;
       double xx = 0;
@@ -159,12 +172,14 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    return activations;
 }
 
+
+//calculate the architecture sizes and number of layers
 void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, unsigned int stride){
    
    unsigned int depth = 1;
    unsigned int fmSize = 1 + ((imSize - patchSize) / 2 );
    unsigned int plSize = fmSize / 2;
-	plSize = 2;
+	//plSize = 2;    <-- if uncommented, it results in a regular BoW
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
    cout << "fmSize0 = " << fmSize << endl;
@@ -191,6 +206,9 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    //cout << "calculated settings for dcb\n" << "nLayers = " << nLayers << endl;;
 }
 
+
+//Next two function recursivly call each other throughout the layers. Maintaining a relative low memory consumption, while calculating all the maps
+
 vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
    //cout << "calc poolmap(" << depth << ") at " << x << ", " << y << endl; 
    unsigned int scanStride = fmSizes[depth] / plSizes[depth];
@@ -209,7 +227,7 @@ vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, u
    }
    return sum;
 }
-
+//calc value at location of feature maps
 vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
    //cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
    if(depth == 0){//first layer, thus use image-patch extraction
@@ -222,6 +240,8 @@ vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, u
    }
 }
 
+
+//generate centroids for next layer. Collect features from random location at respective depth, and apply kmeans
 void DeepCodebook::generateCentroids(){
    for(size_t depthIdx = 0; depthIdx < nLayers; ++depthIdx){
       vector<Feature> randomPatches;
@@ -252,6 +272,8 @@ void DeepCodebook::generateCentroids(){
    }
 }
 
+
+//normalize, be centering and stddev units
 void standardize(vector<double>& vec){
    double mean = 0;
    double stddev = 0;

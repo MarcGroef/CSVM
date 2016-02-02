@@ -3,6 +3,13 @@
 using namespace std;
 using namespace csvm;
 
+/* This class handles general dataset functionality. 
+ * Given a image-index, this class is able to resolve the image and its label.
+ * 
+ * 
+ * 
+ * 
+ */
 
 CSVMDataset::CSVMDataset(){
    
@@ -52,6 +59,8 @@ void CSVMDataset::loadMNIST(string mnistDir){
 
 }
 
+
+//general call to load the dataset. Given the settings, it will load the correct one.
 void CSVMDataset::loadDataset(string dataDir){
    
    vector<string> imDirs;
@@ -79,6 +88,7 @@ void CSVMDataset::loadDataset(string dataDir){
    splitDataset();
 }
 
+
 Image CSVMDataset::getImage(int index){
    switch(settings.type){
       case DATASET_CIFAR10:
@@ -90,6 +100,7 @@ Image CSVMDataset::getImage(int index){
    return cifar10.getImage(index);
 }
 
+//get image based its real index
 Image* CSVMDataset::getImagePtr(int index){
    switch(settings.type){
       case DATASET_CIFAR10:
@@ -101,13 +112,16 @@ Image* CSVMDataset::getImagePtr(int index){
    return cifar10.getImagePtr(index);
 }
 
+//get image based on the shuffled train-indices
 Image* CSVMDataset::getTrainImagePtr(int trainIdx){
    return getImagePtr(trainImagesIdx[trainIdx]);
 }
 
+//get image based on the shuffled test-indices
 Image* CSVMDataset::getTestImagePtr(int testIdx){
    return getImagePtr(testImagesIdx[testIdx]);
 }
+
 
 int CSVMDataset::getTrainSize(){
    
@@ -129,6 +143,7 @@ unsigned int CSVMDataset::getTotalImages(){
    return cifar10.getSize();
 }
 
+//shuffle image indices and slit for train/test
 void CSVMDataset::splitDataset(){
    unsigned int nData = getTotalImages();
    vector<unsigned int> tempIdces(nData, 0);

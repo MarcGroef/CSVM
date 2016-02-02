@@ -1,5 +1,9 @@
 #include <csvm/csvm_svm.h>
 #include <algorithm>
+/*This class is a class initially built to have a basic working pipeline.
+ * The SVM class contains a L2-SVM. Sometimes things are called 'classic', since we 'experimented' a bit with the objective function ed.
+ * 
+ */
 
 using namespace std;
 using namespace csvm;
@@ -8,11 +12,11 @@ using namespace csvm;
  * SVM Constructor: It initializes the SVM.
  * */
 SVM::SVM(int datasetSize, int nClasses, int nCentroids, unsigned int labelId){
-
+	
    this->nCentroids = nCentroids;
    this->datasetSize = datasetSize;
    this->nClasses = nClasses;
-   this->classId = labelId;
+   this->classId = labelId;  //target label
 
    //initialize the bias to zero
    bias = 0;
@@ -41,12 +45,18 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
    unsigned int nData = simKernel.size();
    double deltaAlpha;
    unsigned int kernelIdx0,kernelIdx1;
+	
+	//alpha_i is called alphaData[dIdx0] here, where alpha_j is called alphaData[dIdx1];
+	
    //for all alpha's:
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
+		
       deltaDiff = 0.0;
       yData0 = ((ds->getTrainImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
-      sum = 0.0;
+      
+		
       //calculate the sum
+		sum = 0.0;
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
          yData1 = ((ds->getTrainImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
          if(dIdx1 > dIdx0){

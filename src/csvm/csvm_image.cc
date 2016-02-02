@@ -3,17 +3,29 @@
 using namespace std;
 using namespace lodepng;
 
-
+/* The image class, contains all general functionality to do things with an image.
+ * One can read and write them to/from PNG (thanks to LodePNG),
+ * convert them to different memory layouts(Grey/RGB, etc), 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 namespace csvm{
    
+	
+	//empty constructor
    Image::Image(){
       format = CSVM_IMAGE_EMPTY;  
    }
    
+   //Make an image by loading it from a file. (PNG atm)
    Image::Image(string filename){
       loadImage(filename);
    }
    
+   //copy constructor
    Image::Image(Image* im){
       image = im->getImage();
       width = im->getWidth();
@@ -21,6 +33,7 @@ namespace csvm{
       format = im->getFormat();
    }
    
+   //empty constructor with future specifications for image
    Image::Image(int width,int height,ImageFormat f){
       this->width = width;
       this->height = height;
@@ -42,6 +55,7 @@ namespace csvm{
       }
    }
    
+   //ROI constructor
    Image::Image(Image* ROI_source,unsigned int ROI_x,unsigned int ROI_y,unsigned int ROI_width,unsigned int ROI_height){
       width = ROI_width;
       height = ROI_height;
@@ -89,14 +103,17 @@ namespace csvm{
       
    }
    
+   //get value directly from byte-array 
    unsigned char Image::getPixelAtIdx(unsigned int idx){
       return image[idx];
    }
    
+   //get the byte-array itself
    vector<unsigned char>& Image::getData(){
       return image;
    }
    
+   //get number of channels of the image
    unsigned int Image::getNChannels(){
       switch(format){
          case CSVM_IMAGE_EMPTY: return 0;
@@ -107,6 +124,7 @@ namespace csvm{
       return -1;
    }
    
+   //load image (currently from PNG)
    void Image::loadImage(string filename){
       string png = ".png";
       
@@ -124,6 +142,7 @@ namespace csvm{
       
    }
    
+   //get pixel value at <x,y,channel>
    unsigned char Image::getPixel(unsigned int x,unsigned int y,unsigned int channel){
       if( x < 0 || x >= width || y < 0 || y >= width){
          cout << "csvm::Image::getPixel() Warning! coordinate out of bounds! : " << x << ", " << y <<" returning 0\n";
@@ -143,6 +162,7 @@ namespace csvm{
       return 0;
    }
    
+   //set pixel at <x,y,channel>
    void Image::setPixel(unsigned int x,unsigned int y,unsigned int channel,unsigned char value){
       switch(format){
          case CSVM_IMAGE_EMPTY:
@@ -160,10 +180,12 @@ namespace csvm{
       }      
    }
    
+   //get byte array
    vector<unsigned char> Image::getImage(){
       return image;
    }
    
+   //export image (currently to PNG, but you should have the ".png" extension in 'filename', so it knows you want png) 
    void Image::exportImage(string filename){
       string png = ".png";
       unsigned int error;
@@ -191,40 +213,50 @@ namespace csvm{
         
    }
    
+   //get width of image
    unsigned int Image::getWidth(){
       return width;
    }
-      
+   
+   //get height of image
    unsigned int Image::getHeight(){
       return height;
    }
    
+   
+   //get format of image, (grey, rgb, etc)
    ImageFormat Image::getFormat(){
       return format;
    }
    
+   //clone the image
    Image Image::clone(){
       Image clone(this);
       return clone;
    }
    
+   //get Region of interest from the image
    Image Image::getROI(unsigned int x,unsigned int y,unsigned int regionWidth,unsigned int regionHeight){
       Image roi(this,x,y,regionWidth,regionHeight);
       return roi;
    }
    
+   //check whether image has a label
    bool Image::isLabeled(){
       return hasLabel;
    }
       
+   //get image label
    string Image::getLabel(){
       return label;
    }
    
+   //set image label
    void Image::setLabel(string label){
       this->label = label;
    }
    
+   //convert to particular channel format
    Image Image::convertTo(ImageFormat f){
       Image im;
       
@@ -291,6 +323,7 @@ namespace csvm{
    }
    
    //------------------------------- private methods ------------------------------------//
+   //Conversion between memory layouts and stuff
    
    Image Image::UCHAR_RGB2UCHAR_RGBA(){
       Image newImage(width,height,CSVM_IMAGE_UCHAR_RGBA);

@@ -1,5 +1,11 @@
 #include<csvm/csvm_conv_svm.h>
-
+/* Patch-based SVM interpretation. 
+ * Concept from M.A. Wiering (2015/2016)
+ * 
+ * NEEDS CLEANUP FOR RELEASE
+ * 
+ * 
+ */
 using namespace std;
 using namespace csvm;
 
@@ -11,7 +17,8 @@ using namespace csvm;
       //cout << "initWeight= " << settings.initWeight << endl;
 
    }
-
+	
+	
    double ConvSVM::output(vector<double>& activations, unsigned int svmIdx){
       
       unsigned int nCentroids = activations.size();

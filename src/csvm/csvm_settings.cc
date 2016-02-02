@@ -3,6 +3,20 @@
 using namespace std;
 using namespace csvm;
 
+/* This settingsfile class parsed the settingsfile, and wraps the info up to pass them 
+ * to the other classes in the program that require them.
+ * 
+ * The methods of this class will be called by "CSVMClassifier in csvm_classifier.cc"
+ * This is where the actual settings will be passed to the other classes.
+ * 
+ * The settings are put in a 'struct', so there each time one block of memory passed.
+ * These structs are defined in the header files of the class where the're needed.
+ * 
+ * e.g. csvm_conv_svm.h contains the struct for convSVMSettings;
+ * 
+ * 
+ */
+
 CSVMSettings::~CSVMSettings() {
 	//free(analyserSettings.rbmSettings.layerSizes);
 

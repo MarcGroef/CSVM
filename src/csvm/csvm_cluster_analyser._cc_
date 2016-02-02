@@ -1,5 +1,5 @@
 #include <csvm/csvm_cluster_analyser.h>
-
+//DEPRECATED
 using namespace std;
 using namespace csvm;
 

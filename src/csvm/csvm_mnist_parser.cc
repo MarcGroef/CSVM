@@ -1,24 +1,23 @@
 #include <csvm/csvm_mnist_parser.h>
 #include <stdint.h>
 
+/*This class parses the image from the MNIST-dataset .bin file.
+ * 
+ * 
+ * 
+ * 
+ */
+
 using namespace std;
 using namespace csvm;
 
+	//allows conversion from a 4 bytes to an int
    union MagicInt{
       uint32_t intVal;
       char bytes[4];      
    };
    
-   void swapByte(char* byte){
-      char newByte = 0;
-      char bit;
-      for(size_t bIdx = 0; bIdx < 8; ++ bIdx){
-         bit = ((1 << bIdx) & *byte);
-         newByte |= bit << (7 - bIdx);
-      }
-      *byte = newByte;
-   }
-   
+	//swap bytes of the int. (MNIST wasn't designed for intel-architectures)
    void swapInt(uint32_t* val){
       MagicInt pre;
       pre.intVal = *val;
@@ -52,15 +51,12 @@ using namespace csvm;
    MNISTParser::~MNISTParser(){
    ;
    }
-   
-   void scaleData(unsigned int size){
-      
-   }
-   
+
+   //get number of images present in MNIST
    unsigned int MNISTParser::getSize(){
       return images.size();
    }
-   
+   //get the actual image of the dataset.
    vector<Image>& MNISTParser::getImages(){
       return images;
    }
