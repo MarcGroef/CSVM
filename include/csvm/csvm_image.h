@@ -7,6 +7,12 @@
 
 #include <lodepng/lodepng.h>
 
+/* The image class, contains all general functionality to do things with an image.
+ * One can read and write them to/from PNG (thanks to LodePNG),
+ * convert them to different memory layouts(Grey/RGB, etc), 
+ * 
+ */
+
 using namespace std;
 using namespace lodepng;
 

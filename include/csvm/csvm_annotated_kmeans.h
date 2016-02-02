@@ -8,6 +8,8 @@
 #include "csvm_feature.h"
 #include "csvm_centroid.h"
 
+//DEPRECATED
+
 using namespace std;
 
 /* Algorithm devised by Jonathan Laurens Maas, @RUG groningen, 25-11-2015

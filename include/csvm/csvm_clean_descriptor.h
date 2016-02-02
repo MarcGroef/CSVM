@@ -1,6 +1,13 @@
 #ifndef CSVM_CLEAN_DESCRIPTOR_H
 #define CSVM_CLEAN_DESCRIPTOR_H
 
+/* Put pixel intensity values in a Feature
+ * 
+ * Needs TODO fixes
+ * 
+ * 
+ */
+
 #include <vector>
 #include <cstdlib>
 

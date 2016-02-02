@@ -10,6 +10,18 @@
 #include "csvm_image.h"
 #include "csvm_patch.h"
 
+
+/* The image-scanner is responsible for extracting patches from images.
+ * It can extract patches in a convolutional manner, using the patch-specifications in the settings-file.
+ * 
+ * It is also able to extract one patch from a given image, at a particular location.
+ * 
+ * An last, but not least, extract a patch at a random location of an image.
+ * 
+ * 
+ * 
+ */
+
 //TODO: Add zero padding while scanning.
 
 using namespace std;

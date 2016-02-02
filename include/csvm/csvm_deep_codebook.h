@@ -1,6 +1,11 @@
 #ifndef CSVM_DEEP_CODEBOOK_H
 #define CSVM_DEEP_CODEBOOK_H
 
+
+// This class contains the deep codebook.
+// calcSimilarity calculates activations from a feature to a centroid
+// calculateSizes sets the layer sizes and the amount of layers. (The general architecture info)
+
 #include <vector>
 #include <cmath>
 #include <iostream>

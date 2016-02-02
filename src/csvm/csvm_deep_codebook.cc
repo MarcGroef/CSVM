@@ -5,8 +5,7 @@ using namespace csvm;
 
 // This class contains the deep codebook.
 // calcSimilarity calculates activations from a feature to a centroid
-
-//calculateSizes sets the layer sizes and the amount of layers. (The general architecture info)
+// calculateSizes sets the layer sizes and the amount of layers. (The general architecture info)
 
 
 //constructor

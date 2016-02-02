@@ -1,6 +1,12 @@
 #ifndef CSVM_KMEANS_H
 #define CSVM_KMEANS_H
 
+/*  A class implementing KMeans.
+ * 
+ * 
+ * 
+ * */
+
 #include <limits>
 #include <vector>
 #include <iostream>

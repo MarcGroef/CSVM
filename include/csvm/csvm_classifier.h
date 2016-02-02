@@ -1,6 +1,14 @@
 #ifndef CSVM_CLASSIFIER_H
 #define CSVM_CLASSIFIER_H
 
+/* This class implements the general pipeline of the system.
+ * Based on the settingsfile, it will construct codebooks, describe images and train/test the system.
+ * 
+ * 
+ * 
+ * 
+ */
+
 #include <vector>
 #include <cstdlib>
 #include <ctime>

@@ -1,6 +1,6 @@
 
 #include <csvm/csvm_lbp_descriptor.h>
-
+//DEPRECATED
 
 using namespace std;
 using namespace csvm;

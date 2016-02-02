@@ -7,11 +7,8 @@ using namespace lodepng;
  * One can read and write them to/from PNG (thanks to LodePNG),
  * convert them to different memory layouts(Grey/RGB, etc), 
  * 
- * 
- * 
- * 
- * 
  */
+
 namespace csvm{
    
 	

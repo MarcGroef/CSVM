@@ -1,6 +1,14 @@
 #ifndef CSVM_DATASET_H
 #define CSVM_DATASET_H
 
+/* This class handles general dataset functionality. 
+ * Given a image-index, this class is able to resolve the image and its label.
+ * 
+ * 
+ * 
+ * 
+ */
+
 #include <vector>
 #include <cstdlib>
 #include <ctime>

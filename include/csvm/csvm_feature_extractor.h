@@ -1,6 +1,8 @@
 #ifndef CSVM_FEATURE_EXTRACTOR_H
 #define CSVM_FEATURE_EXTRACTOR_H
 
+//General feature extractor class, with delegates the feature extraction to the correct feature extractor (e.g. HoG)
+
 #include "csvm_clean_descriptor.h"
 #include "csvm_lbp_descriptor.h"
 #include "csvm_feature.h"

@@ -1,6 +1,15 @@
 #ifndef CSVM_CODEBOOK_H
 #define CSVM_CODEBOOK_H
 
+/* This class implements the Bag-of-Visual-Words model (a.k.a codebook)
+ * It contains the centroids and can map a feature to an activation vector, given the centroids
+ * 
+ * 
+ * 
+ */
+
+
+
 #include <cmath>
 #include <iostream>
 #include <fstream>

@@ -3,6 +3,8 @@
 
 #include "csvm_feature.h"
 
+//DEPRECATED
+
 using namespace std;
 
 namespace csvm{

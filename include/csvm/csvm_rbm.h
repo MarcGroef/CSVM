@@ -1,6 +1,8 @@
 #ifndef CSVM_RBM_H
 #define CSVM_RBM_H
 
+//DEPRECATED
+
 #include <cstdlib>
 #include <assert.h>
 #include <iostream>

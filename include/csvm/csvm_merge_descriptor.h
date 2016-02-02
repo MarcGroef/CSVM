@@ -2,6 +2,7 @@
 #ifndef CSVM_MERGE_DESCRIPTOR_H
 #define CSVM_MERGE_DESCRIPTOR_H
 
+/*Requires more eleborate comments from Jonathan */
 
 #include <vector>
 #include <iostream>

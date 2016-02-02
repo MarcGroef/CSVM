@@ -1,12 +1,22 @@
 #ifndef CSVM_CIFAR10_PARSER_H
 #define CSVM_CIFAR10_PARSER_H
 
+/* This class contains functionality to read the CIFAr-10 binary files, parse them to the image class, scale images,
+ * and make them available through the Dataset class.
+ * 
+ * 
+ * 
+ * 
+ */
+
 #include <vector>
 #include <iostream>
 #include <fstream>
 
 #include "csvm_image.h"
 #include "csvm_interpolator.h"
+
+
 
 using namespace std;
 

@@ -1,5 +1,8 @@
 #include <csvm/csvm_lvq.h>
 #include <cstdio>
+
+//DEPRECATED
+
 using namespace std;
 using namespace csvm;
 

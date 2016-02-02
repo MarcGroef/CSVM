@@ -1,6 +1,13 @@
 #ifndef CSVM_LINEAR_NETWORK
 #define CSVM_LINEAR_NETWORK
 
+/* A linear network - classifier class. Easilly converted to a one-layer neural net by using sigmoids
+ * 
+ * 
+ * 
+ * 
+ */
+
 #include <csvm/csvm_dataset.h>
 #include <vector>
 #include <cmath>

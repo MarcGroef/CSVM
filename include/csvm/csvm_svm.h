@@ -1,6 +1,11 @@
 #ifndef CSVM_SVM_H
 #define CSVM_SVM_H
 
+/*This class is a class initially built to have a basic working pipeline.
+ * The SVM class contains a L2-SVM. Sometimes things are called 'classic', since we 'experimented' a bit with the objective function ed.
+ * 
+ */
+
 #include <vector>
 #include <iostream>
 #include "csvm_feature.h"

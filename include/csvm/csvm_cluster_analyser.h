@@ -1,6 +1,6 @@
 #ifndef CSVM_CLUSTER_ANALYSER_H
 #define CSVM_CLUSTER_ANALYSER_H
-
+//DEPRECATED
 #include <vector>
 
 #include "csvm_feature.h"

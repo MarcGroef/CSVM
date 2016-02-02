@@ -1,6 +1,14 @@
 #ifndef CSVM_INTERPOLATOR_H
 #define CSVM_INTERPOLATOR_H
 
+/* BiCubic interpolation.
+ * 
+ * 
+ * 
+ * */
+
+
+
 #include "csvm_image.h"
 #include <vector>
 

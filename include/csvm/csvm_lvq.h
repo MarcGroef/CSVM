@@ -1,6 +1,8 @@
 #ifndef CSVM_LVQ_H
 #define CSVM_LVQ_H
 
+//DEPRECATED
+
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -8,7 +10,6 @@
 #include "csvm_feature.h"
 #include <cmath>
 #include <limits>
-
 
 using namespace std;
 

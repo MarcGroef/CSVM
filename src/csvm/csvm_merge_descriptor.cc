@@ -1,6 +1,9 @@
 #include <csvm/csvm_merge_descriptor.h>
 #include <iomanip> //for setprecision couting
 #include <limits>
+
+/*Requires more eleborate comments from Jonathan */
+
 using namespace std;
 using namespace csvm;
 

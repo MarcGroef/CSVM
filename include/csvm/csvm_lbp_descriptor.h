@@ -2,6 +2,8 @@
 #ifndef CSVM_LBP_DESCRIPTOR_H
 #define CSVM_LBP_DESCRIPTOR_H
 
+//DEPRECATED
+
 #include <vector>
 #include <iostream>
 #include <cmath>

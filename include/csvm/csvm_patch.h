@@ -1,6 +1,11 @@
 #ifndef CSVM_PATCH_H
 #define CSVM_PATCH_H
 
+/* This class contains functionality for the "Patch". A patch is basically a pointer to an Image with coordinates and a patch-size.
+ * This allows quick passings of a Patch.
+ * 
+ */
+
 #include "csvm_image.h"
 #include <cstdlib>
 

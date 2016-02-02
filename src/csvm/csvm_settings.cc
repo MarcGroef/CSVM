@@ -3,7 +3,7 @@
 using namespace std;
 using namespace csvm;
 
-/* This settingsfile class parsed the settingsfile, and wraps the info up to pass them 
+/* This settingsfile class parses the settingsfile, and wraps the info up to pass them 
  * to the other classes in the program that require them.
  * 
  * The methods of this class will be called by "CSVMClassifier in csvm_classifier.cc"

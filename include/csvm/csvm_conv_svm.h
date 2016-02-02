@@ -1,6 +1,14 @@
 #ifndef CSVM_CONV_SVM_H
 #define CSVM_CONV_SVM_H
 
+/* Patch-based SVM interpretation. 
+ * Concept from M.A. Wiering (2015/2016)
+ * 
+ * NEEDS CLEANUP FOR RELEASE
+ * 
+ * 
+ */
+
 #include <vector>
 #include <limits>
 #include <iostream>

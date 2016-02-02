@@ -1,6 +1,12 @@
 #ifndef CSVM_FEATURE_H
 #define CSVM_FEATURE_H
 
+/* This Feature class is a bit like a vector, except that it also contains a label.
+ * Also, it has some often used distance functions with it 
+ * 
+ * 
+ */
+
 #include <vector>
 #include <string>
 #include <iostream>

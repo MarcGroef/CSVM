@@ -1,7 +1,7 @@
 #include <csvm/csvm_mnist_parser.h>
 #include <stdint.h>
 
-/*This class parses the image from the MNIST-dataset .bin file.
+/*This class parses the image from the MNIST-dataset .bin file and is able to scale the data
  * 
  * 
  * 

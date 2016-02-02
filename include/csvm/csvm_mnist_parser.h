@@ -1,6 +1,13 @@
 #ifndef CSVM_MNIST_PARSER_H
 #define CSVM_MNIST_PARSER_H
 
+/*This class parses the image from the MNIST-dataset .bin file and is able to scale the data
+ * 
+ * 
+ * 
+ * 
+ */
+
 #include <stdint.h>
 #include <string>
 #include <fstream>
