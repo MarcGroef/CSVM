@@ -170,7 +170,7 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    
    size_t itx = 0;
    size_t maxIterations = settings.nIter;
-   bool lastIteration = 0;
+   //bool lastIteration = 0;
 
 
 
@@ -179,7 +179,7 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    for(; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
 	   cout << "iteration: " << itx << endl;
 	   if (itx >= (maxIterations - 1)) {
-		   lastIteration = 1;
+		   //lastIteration = 1;
 		   cout << "got into last iteration" << endl;
 	   }
 
@@ -390,11 +390,12 @@ vector<double>  AKMeans::getClusterClassContributions(int clust) {
 vector<double>  AKMeans::getClusterClassContributions(Feature feat) {
 
 	double curDist;
-	double prevTotalDistance = 2;
+	/* double prevTotalDistance = 2;
 	double totalDistance = 1;	//used to track cluster changes in mean
 	double deltaDist = 1;
+	*/
 	double closestDist;
-	unsigned int dataDims = feat.content.size();	//feature dimensionality
+	//unsigned int dataDims = feat.content.size();	//feature dimensionality
 	unsigned int nClusters = clusters.size();
 	closestDist = numeric_limits<double>::max();
 	unsigned int closestCentr = -1;

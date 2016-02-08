@@ -103,12 +103,12 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
 		
 
 		int lowerBinIndex = ((orientationBin - base + 180) % 180) / 20;
-		int upperBinIndex = lowerBinIndex == (settings.nBins - 1) ? 0 : (lowerBinIndex + 1);
+		int upperBinIndex = lowerBinIndex == (int)(settings.nBins - 1) ? 0 : (lowerBinIndex + 1);
 
 		//cout << "lwrbID " << lowerBinIndex << " | " << upperBinIndex << " hgherbID" << endl;
 
 		int lowerBinValue = lowerBinIndex*bandWidth + base; // = 58 - 18 + 10 = 40 + 10 = bin 50 (aka: 40-60)
-		int upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
+		//int upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
 															//cout << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
 		double lowerBinAddedValue = gradientMagnitude*(1.0 - (((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth));
 
@@ -148,12 +148,12 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
 		
 
 		int lowerBinIndex = ((orientationBin - base + 180) % 180) / 20;
-		int upperBinIndex = lowerBinIndex == (settings.nBins - 1) ? 0 : (lowerBinIndex + 1);
+		int upperBinIndex = lowerBinIndex == (int)(settings.nBins - 1) ? 0 : (lowerBinIndex + 1);
 
 		//cout << "lwrbID " << lowerBinIndex << " | " << upperBinIndex << " hgherbID" << endl;
 
 		int lowerBinValue = lowerBinIndex*bandWidth + base; // = 58 - 18 + 10 = 40 + 10 = bin 50 (aka: 40-60)
-		int upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
+		//int upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
 															//cout << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
 		double lowerBinAddedValue = gradientMagnitude*(1.0 - (((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth));
 
