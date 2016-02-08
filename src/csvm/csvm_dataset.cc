@@ -55,7 +55,8 @@ void CSVMDataset::loadMNIST(string mnistDir){
    //cout << "dataset split to classes\n";
    if(settings.imWidth > 0 || settings.imHeight > 0)
       mnist.scaleData(settings.imWidth,settings.imHeight);
-   cout << "Rescaled!\n";
+   if(normalOut)
+      cout << "Rescaled!\n";
 
 }
 

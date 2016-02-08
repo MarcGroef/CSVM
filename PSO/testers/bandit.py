@@ -79,11 +79,15 @@ Dataset
 method MNIST
 nTrainImages 60000
 nTestImages 10000
+imageWidth 0
+imageHeight 0
 
 General
 Classifier CSVM
 Codebook CODEBOOK
 nClasses 10
+debugOut FALSE
+normalOut FALSE
 
 Codebook
 method KMEANS
@@ -97,9 +101,9 @@ FeatureExtractor
 method HOG
 cellSize 6
 cellStride 6
-blockSize 8
-padding None
-useGreyPixel true
+padding Identity
+useColourPixel true
+weightRatio 0.5
 
 ImageScanner
 patchHeight 12

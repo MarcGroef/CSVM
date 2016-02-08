@@ -77,16 +77,16 @@ Cost 1                                                ## Cost
 D2 1                                                  ## D2
 sigmaClassicSimilarity 100                            ## Sigma value for RBF kernel
 
-LinNet
-nIterations 10
-initWeight 0.01
-learningRate 0.000005
+LinNet                                                ## Linear Network settings
+nIterations 10                                        ## N trainings iterations
+initWeight 0.01                                       ## Initial Weight
+learningRate 0.000005                                 ## Lsearning Rate
 
-ConvSVM
-learningRate 0.000001
-nIterations 200
-initWeight 0.0000002
-CSVM_C 1000
+ConvSVM                                               ## Marco's CSVM
+learningRate 0.000001                                 ## LearningRate
+nIterations 200                                       ## N trainings iterations
+initWeight 0.0000002                                  ## Initial Weight value
+CSVM_C 1000                                           ## C
 
 #### Parameter optimalisation: ####
 

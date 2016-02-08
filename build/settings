@@ -54,5 +54,5 @@ learningRate 0.000001
 nIterations 200
 initWeight 0.0000002
 CSVM_C 1000
-
+L2 TRUE
 

@@ -666,7 +666,7 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       exit(0);
    }
    stream >> value;
-   debugOut = (value == "TRUE");
+   normalOut = (value == "TRUE");
 
 }
 
