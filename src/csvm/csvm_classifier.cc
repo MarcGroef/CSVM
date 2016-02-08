@@ -72,17 +72,17 @@ void CSVMClassifier::setSettings(string settingsFile){
 void CSVMClassifier::train(){
    switch(settings.classifier){
       case CL_SVM:
-         //cout << "Training SVM..\n";
+         if(normalOutput) cout << "Training SVM..\n";
          trainClassicSVMs();
          
          break;
       case CL_CSVM:
-         //cout << "Training Conv SVM..\n";
+         if(normalOutput) cout << "Training Conv SVM..\n";
          trainConvSVMs();
          
          break;
       case CL_LINNET:
-         cout << "Training LinNet..\n";
+         if(normalOutput) cout << "Training LinNet..\n";
          trainLinearNetwork();
          
          break;
@@ -127,7 +127,7 @@ void CSVMClassifier::constructDeepCodebook(){
    deepCodebook->debugOut = settings.debugOut;
    deepCodebook->normalOut = settings.normalOut;
    deepCodebook->generateCentroids();
-   //cout << "Done constructing deep codebook\n";
+   if(normalOutput) cout << "Done constructing deep codebook\n";
 }
 
 
@@ -148,7 +148,7 @@ void CSVMClassifier::constructCodebook(){
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
    
    vector<Feature> pretrainDump;
-   //cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes, with " << nPatches << " patches\n";
+   if(debugOutput) cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes, with " << nPatches << " patches\n";
 
 
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
@@ -161,10 +161,10 @@ void CSVMClassifier::constructCodebook(){
       
    }
 
-   //cout << "Collected " << pretrainDump.size()<< " features\n";
+   if(debugOutput) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
    
-   //cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+   if(debugOutput) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();
 }
@@ -252,7 +252,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
 
 //train the regular-SVM
 void CSVMClassifier::trainClassicSVMs(){
-   //cout << "Enteing classic svm training\n";
+   if(debugOutput) cout << "Enteing classic svm training\n";
    unsigned int nTrainImages = dataset.getTrainSize();
    unsigned int nClasses = dataset.getNumberClasses(); 
    unsigned int nCentroids; 
@@ -260,7 +260,7 @@ void CSVMClassifier::trainClassicSVMs(){
    vector < vector<double> > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-   //cout << "datasetSize = " << datasetSize << endl;
+   if(debugOutput) cout << "datasetSize = " << datasetSize << endl;
    vector < vector<double> > dataKernel(nTrainImages);
    vector<double> dataActivation;
 
@@ -279,14 +279,14 @@ void CSVMClassifier::trainClassicSVMs(){
          //allocate for new features
          dataFeatures.reserve(patches.size());
          
-         //cout << patches[qIdx].size() << " patches" << endl;
+         if(debugOutput) cout << patches[qIdx].size() << " patches" << endl;
          //extract features from all patches
          for(size_t patch = 0; patch < patches.size(); ++patch){
             dataFeatures.push_back(featExtr.extract(patches[patch]));
             //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
          }
          
-         //cout << "Extracted " << patches.size() << "patches from the image\n";
+         
          patches.clear();
          
          //get cluster activations for the features
@@ -306,10 +306,10 @@ void CSVMClassifier::trainClassicSVMs(){
    nClasses = dataset.getNumberClasses();
    nCentroids = datasetActivations[0].size();
    
-   //cout << "nClasses = " << nClasses << endl;
-   //cout << "nCentroids = " << nCentroids << endl;
+   if(debugOutput) cout << "nClasses = " << nClasses << endl;
+   if(debugOutput) cout << "nCentroids = " << nCentroids << endl;
    
-   //cout << "Calculating similarities\n";
+   if(debugOutput) cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < nTrainImages; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
@@ -356,7 +356,7 @@ void CSVMClassifier::trainClassicSVMs(){
 //classify an image using the regular-SVM
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = dataset.getNumberClasses();
-   //cout << "nClasses = " << nClasses << endl;
+   
    vector<double> dataActivation;
    if(settings.codebook == CB_CODEBOOK){
       vector<Patch> patches;
@@ -382,7 +382,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    }
    //append centroid activations to activations from 0th quadrant.
    nClasses = dataset.getNumberClasses();   //normalize
-   //cout << "Normalizing data" << endl;
+   
 
    //reserve space for results
    vector<double> results(nClasses, 0);
@@ -431,10 +431,8 @@ void CSVMClassifier::trainLinearNetwork(){
          //extract features from all patches
          for(size_t patch = 0; patch < patches.size(); ++patch){
             dataFeatures.push_back(featExtr.extract(patches[patch]));
-            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
          }
          
-         //cout << "Extracted " << patches.size() << "patches from the image\n";
          patches.clear();
          
          //get cluster activations for the features
@@ -451,7 +449,6 @@ void CSVMClassifier::trainLinearNetwork(){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
-   //cout << "Done getting activations\n";
    //train the Linear Netwok with the gained activations
    linNetwork.train(datasetActivations, &dataset);
 }
@@ -459,7 +456,6 @@ void CSVMClassifier::trainLinearNetwork(){
 
 
 unsigned int CSVMClassifier::lnClassify(Image* image){
-   //cout << "nClasses = " << nClasses << endl;
    vector<Patch> patches;
    vector<Feature> dataFeatures;
    vector<double> dataActivation;
