@@ -20,6 +20,7 @@ namespace csvm{
 
    class CleanDescriptor{
    public:
+      bool debugOut, normalOut;
       Feature describe(Patch p);
       
    };

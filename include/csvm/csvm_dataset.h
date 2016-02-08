@@ -46,6 +46,7 @@ namespace csvm{
       vector<unsigned int> finalTrainIndices;
 
    public:
+      bool debugOut, normalOut;
       CSVMDataset();
       CSVMDatasetType getType();
       void loadCifar10(string labelsDir,vector<string> imageDirs);

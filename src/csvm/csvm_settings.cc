@@ -321,7 +321,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 	string setting;
 	string method;
 	string enumeration;
-	string useGray;
+	string useColour;
 	stream >> setting;
 	if (setting != "method") {
 		cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -372,13 +372,13 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 		}
 
 		stream >> setting;
-		if (setting == "useGreyPixel") {//if we use grey images
-			stream >> useGray;
-			if (useGray == "true")
-				featureSettings.hogSettings.useGreyPixel = true;
+		if (setting == "useColourPixel") {//if we use grey images
+			stream >> useColour;
+			if (useColour == "true")
+				featureSettings.hogSettings.useColourPixel = true;
 			else {
-				if (useGray == "false")
-					featureSettings.hogSettings.useGreyPixel = false;
+				if (useColour == "false")
+					featureSettings.hogSettings.useColourPixel = false;
 			}
 		}
 		else {
@@ -429,16 +429,16 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 		}
 
 		stream >> setting;
-		if (setting == "useGreyPixel") {//if we use grey images
-			stream >> useGray;
-			if (useGray == "true") {
-				featureSettings.hogSettings.useGreyPixel = true;
-				featureSettings.mergeSettings.useGreyPixel = true;
+		if (setting == "useColourPixel") {//if we use grey images
+			stream >> useColour;
+			if (useColour == "true") {
+				featureSettings.hogSettings.useColourPixel = true;
+				featureSettings.mergeSettings.useColourPixel = true;
 			}
 			else {
-				if (useGray == "false") {
-					featureSettings.hogSettings.useGreyPixel = false;
-					featureSettings.mergeSettings.useGreyPixel = false;
+				if (useColour == "false") {
+					featureSettings.hogSettings.useColourPixel = false;
+					featureSettings.mergeSettings.useColourPixel = false;
 				}
 			}
 		}
@@ -641,7 +641,22 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 	stream >> netSettings.nClasses;
 	convSVMSettings.nClasses = netSettings.nClasses;
 	datasetSettings.nClasses = netSettings.nClasses;
-
+   
+   stream >> type;
+   if (type != "debugOut") {
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> value;
+   debugOut = (value == "TRUE");
+   
+   stream >> type;
+   if (type != "normalOut") {
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> value;
+   debugOut = (value == "TRUE");
 
 }
 

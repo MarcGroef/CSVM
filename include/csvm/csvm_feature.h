@@ -19,6 +19,7 @@ namespace csvm{
     
     
   public:
+     bool debugOut, normalOut;
       vector< double> content;
       string label;
       int labelId;

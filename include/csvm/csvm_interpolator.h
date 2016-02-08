@@ -19,6 +19,7 @@ namespace csvm{
    class Interpolator{
       
    public:
+      bool debugOut, normalOut;
       Image interpolate_bicubic(Image& im, unsigned int newWidth, unsigned int newHeight);
       
    };

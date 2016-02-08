@@ -25,6 +25,7 @@ namespace csvm {
 		LBPDescriptor();
 		Feature getLBP(Patch patch, int channel);
 	private:
+      bool debugOut, normalOut;
 		bool isUniform(int lbp);
 		int uniformValue(int lbp);
 	};

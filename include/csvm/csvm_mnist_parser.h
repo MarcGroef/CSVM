@@ -85,6 +85,7 @@ namespace csvm{
       vector<string> labels;
       Interpolator interpolator;
    public:
+      bool debugOut, normalOut;
       MNISTParser();
       ~MNISTParser();
       

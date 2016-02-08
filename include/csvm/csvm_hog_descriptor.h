@@ -44,7 +44,7 @@ namespace csvm{
       unsigned int cellStride;           // the stride the cell window makes when iterating over the patch. (This may also be the cell size itself for a seperation into quadrants)
       int patchSize;          //the size of the patch       
       //unsigned int numberOfCells;         //is internally computed by virtue of cell size, stride, and blocksize.
-      bool useGreyPixel;               //use the gray pixels? or all color channels. If all channels, then feature is 3 times as large. Default is true
+      bool useColourPixel;               //use the gray pixels? or all color channels. If all channels, then feature is 3 times as large. Default is true
       //bool interpolation;               //whether binning is proportionate (true) or direct (false). Default is false
       Padding padding;                 // what type of padding should be used to deal with 
 	  INTERPOLATION interpol;
@@ -53,6 +53,7 @@ namespace csvm{
       HOGSettings settings;
 
    public:
+      bool debugOut, normalOut;
       HOGDescriptor();
       //HOGDescriptor(int cellSize, int cellStride, int blockSize);
       void setSettings(HOGSettings s);

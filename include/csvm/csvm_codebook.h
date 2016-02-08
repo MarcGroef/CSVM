@@ -58,6 +58,7 @@ namespace csvm{
 
     unsigned int nClasses;
   public:
+     bool debugOut, normalOut;
     Codebook();
     void constructCodebook(vector<Feature> featureset);
     void setSettings(Codebook_settings s);
