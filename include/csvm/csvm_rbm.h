@@ -34,7 +34,7 @@ namespace csvm{
      
    public:
       
-      
+      bool debugOut, normalOut;
       
       RBM();
       RBM(int nLayers,int* layerSizes,float learningRate);

@@ -53,6 +53,7 @@ namespace csvm{
       HOGSettings settings;
 
    public:
+      bool debugOut, normalOut;
       HOGDescriptor();
       //HOGDescriptor(int cellSize, int cellStride, int blockSize);
       void setSettings(HOGSettings s);

@@ -20,6 +20,7 @@ namespace csvm {
 	class LBPDescriptor {
 		vector<int> featureIndex;
 	public:
+      bool debugOut, normalOut;
 		LBPDescriptor();
 		Feature getLBP(Patch patch, int channel);
 	private:

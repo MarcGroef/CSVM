@@ -25,6 +25,7 @@ namespace csvm{
       Interpolator interpolator;
       Image bytesToImage(unsigned char* c);
    public:
+      bool debugOut, normalOut;
       void standardizeImages();
       void readLabels(string dir);
       void loadImages(string dir);

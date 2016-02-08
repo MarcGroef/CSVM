@@ -50,6 +50,7 @@ namespace csvm{
       
    public:
       //public vars
+      bool debugOut, normalOut;
       CSVMDataset dataset;
       
       CSVMClassifier();

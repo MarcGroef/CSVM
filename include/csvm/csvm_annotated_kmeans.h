@@ -34,6 +34,7 @@ namespace csvm{
    vector<Centroid> initCentroids(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
    
   public:
+     bool debugOut, normalOut;
 	  unsigned int nClusters;
 	  unsigned int nClasses;
 	  void setSettings(AKMeans_settings s);

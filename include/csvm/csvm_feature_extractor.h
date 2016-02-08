@@ -32,6 +32,7 @@ namespace csvm{
 	MERGEDescriptor pixhog;
     
   public:
+     bool debugOut, normalOut;
      FeatureExtractor();
      Feature extract(Patch p);
      void setSettings(FeatureExtractorSettings s);

@@ -40,6 +40,7 @@ namespace csvm{
       double sigmoid(double x);
       void calculateEnergy(vector< vector<double> >& e);
    public:
+      bool debugOut, normalOut;
       double studyFeature(vector<double>& f);
       void setSettings(NRBMSettings& s);
       void learn(vector< vector<double> >& data);

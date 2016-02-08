@@ -25,7 +25,7 @@ namespace csvm{
    class ConvSVM{
       
       ConvSVMSettings settings;
-      
+      bool debugOut, normalOut;
       vector< vector<double> > weights;
       vector<double> biases;
     

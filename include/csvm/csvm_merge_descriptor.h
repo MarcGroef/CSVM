@@ -56,6 +56,7 @@ namespace csvm {
 		//CleanDescriptor clean;
 	public:
 		MERGEDescriptor();
+      bool debugOut, normalOut;
 		//MERGEDescriptor(int cellSize, int cellStride, int blockSize);
 		void setSettings(MERGESettings s);
 		void setHOGSettings(HOGSettings hs);

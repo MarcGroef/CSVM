@@ -30,7 +30,6 @@ void CSVMClassifier::initSVMs(){
 //read settings file, and pass the settings to respective modules
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
-   //analyser.setSettings(settings.analyserSettings);
    imageScanner.setSettings(settings.scannerSettings);
    dataset.setSettings(settings.datasetSettings);
    codebook.setSettings(settings.codebookSettings);
@@ -48,6 +47,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    
 }
 
+//Train function that calls the correct training modules
 void CSVMClassifier::train(){
    switch(settings.classifier){
       case CL_SVM:
@@ -70,6 +70,7 @@ void CSVMClassifier::train(){
    }
 }
 
+//Classify function that calls the correct classification module.
 unsigned int CSVMClassifier::classify(Image* im){
    unsigned int result = 0;
    

@@ -43,7 +43,7 @@ namespace csvm{
      public:
       CLASSIFIER classifier;
       CODEBOOK codebook;
-      
+      bool debugOut, normalOut;
       bool useRBM;      
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;

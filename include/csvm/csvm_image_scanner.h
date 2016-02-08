@@ -30,7 +30,7 @@ namespace csvm{
       
    public:
       ImageScannerSettings settings;
-
+      bool debugOut, normalOut;
       ImageScanner();
       void setSettings(ImageScannerSettings set);
       vector<Patch> scanImage(Image* image);

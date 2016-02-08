@@ -14,6 +14,7 @@ namespace csvm{
       int width,height;
       bool isSet;
    public:
+      bool debugOut, normalOut;
       Patch(Image* source, int x, int y, int width,int height);
       Patch();
       Patch(Image* source);
