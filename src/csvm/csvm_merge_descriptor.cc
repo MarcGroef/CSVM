@@ -27,7 +27,7 @@ void MERGEDescriptor::setHOGSettings(HOGSettings hs) {
 }
 
 Feature MERGEDescriptor::normalizeFeature(Feature feat) {
-	int featureLen = feat.size;
+    size_t featureLen = feat.size;
 	double vTwoSquared = 0.0;
 
 	// */
@@ -70,7 +70,7 @@ Feature MERGEDescriptor::normalizeFeature(Feature feat) {
 Feature MERGEDescriptor::standardizeFeature(Feature feat) {
 	double mean = 0.0;
 	double standardDeviation = 0.0;
-	int featureLen = feat.size;
+	size_t featureLen = feat.size;
 
 	for (size_t idx = 0; idx < featureLen; ++idx) {
 		mean += feat.content[idx];
