@@ -136,7 +136,7 @@ using namespace csvm;
             minOuts[svmIdx] = (double)  minOut / nMin;
             avOuts[svmIdx]  = (double) (maxOut + minOut) / nData;
             double stdDevMaxOutPos = 0;
-            ouble stdDevMaxOutNeg = 0;
+            double stdDevMaxOutNeg = 0;
             double stdDevMinOutPos = 0;
             double stdDevMinOutNeg = 0;
             int nMaxPos = 0;

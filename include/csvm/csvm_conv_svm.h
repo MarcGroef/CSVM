@@ -28,6 +28,7 @@ namespace csvm{
      double CSVM_C;
      unsigned int nClasses;
      unsigned int nCentroids;
+     bool L2;
    };
    
    
