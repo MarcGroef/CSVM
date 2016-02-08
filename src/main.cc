@@ -42,7 +42,7 @@ void printKernel(vector< vector<Feature> > kernels){
 
 int main(int argc,char**argv){
    
-   cout << "started main of CSVM" << endl;
+   if (settings.normalOut) cout << "started main of CSVM" << endl;
 
    if(argc!=2){
       showUsage();
@@ -59,7 +59,7 @@ int main(int argc,char**argv){
    
   
    
-   cout << "constructing codebook" << endl;
+   if (settings.normalOut) cout << "constructing codebook" << endl;
    c.constructCodebook();
    
    //cout << "importing codebook" << endl;

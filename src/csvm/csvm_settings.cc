@@ -26,6 +26,7 @@ CSVMSettings::~CSVMSettings() {
 void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
 	string setting;
 	string method;
+	string value;
 	stream >> setting;
 	if (setting != "learningRate") {
 		cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -63,6 +64,15 @@ void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
 		stream >> convSVMSettings.CSVM_C;
 	}
 
+	stream >> setting;
+	if (setting != "L2") {
+		cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+		exit(-1);
+	}
+	else {
+		stream >> value;
+		convSVMSettings.L2 = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
+	}
 
 
 
