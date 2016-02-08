@@ -248,10 +248,13 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
    return convSVM.classify(dataActivation);
 }
 
+bool CSVMClassifier::useOutput(){
+   return settings.normalOut;
+
+}
 
 //train the regular-SVM
 void CSVMClassifier::trainClassicSVMs(){
-   if(debugOut) cout << "Enteing classic svm training\n";
    unsigned int nTrainImages = dataset.getTrainSize();
    unsigned int nClasses = dataset.getNumberClasses(); 
    unsigned int nCentroids; 

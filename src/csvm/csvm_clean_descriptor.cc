@@ -47,9 +47,8 @@ Feature CleanDescriptor::describe(Patch p){
          }
       }
    
-   // TODO: fix magic number 3 only appropriate when using colour, not when grayscaling
-   
-      mean /= (imWidth * imHeight);//3);
+  
+      mean /= (imWidth * imHeight * numColours);//3);
    //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
@@ -59,7 +58,7 @@ Feature CleanDescriptor::describe(Patch p){
          }
       }
       //}
-      stddev /= (imWidth * imHeight * numColours); //* 3);
+      stddev /= (imWidth * imHeight * numColours);
       stddev = sqrt(stddev);
       if (stddev > 0){
       //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){

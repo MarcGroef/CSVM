@@ -73,7 +73,7 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
       sumOfChange = 1000.0;
       errorSum = 100;
       sqErrorSum = 1000000000000;
-      cout << "beginning training round\n";
+      
       
       for(size_t iterIdx = 0; iterIdx < settings.nIter /*&& 0.5 * sqErrorSum / nData > 0.04*/ /*sumOfChange > 0.0001*/; ++iterIdx){
          errorSum = 0.0;

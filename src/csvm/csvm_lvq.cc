@@ -11,35 +11,7 @@ LVQ::LVQ(){
    srand(time(NULL));
 }
 
-//DEBUG
-void checkEquals(vector< Feature>& dictionary){
-   unsigned int dictSize = dictionary.size();
-   int nEquals = 0;
-   
-   unsigned int wordSize = dictionary[0].content.size();;
-   double distance = 0.0;
-   for(size_t word = 0; word < dictSize; ++word){
-      
-      for(size_t word1 = word; word1 < dictSize; ++word1){
-         distance = 0.0;
-         if(word1==word) continue;
-         
-         for(size_t d = 0; d < wordSize; ++d){
-            //cout << "absdist between " << dictionary[word].content[d] << " and " << dictionary[word1].content[d] << "= " << abs(dictionary[word].content[d] - dictionary[word1].content[d]) << endl;
-            distance += abs(dictionary[word].content[d] - dictionary[word1].content[d]) ; //hard way for double comparrison    
-         }
-         cout << distance << endl;
-         if(distance < 0.1){
-            cout << "cluster " << word << " and " << word1 << " are equal\n";
-            ++nEquals;
-         }
-      }
-      
-   }
-   cout << "I found " << nEquals << " equal words, out of " << dictSize << " words\n";
-   
-}
-//this goes horribly wrong! 
+
 vector<Feature> LVQ::initPrototypes(vector<Feature> collection, unsigned int labelId, unsigned int nProtos){
    //cout << "Initializing centroids..\n";
    //dictionary.reserve(nProtos);
