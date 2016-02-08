@@ -87,6 +87,7 @@ learningRate 0.000001                                 ## LearningRate
 nIterations 200                                       ## N trainings iterations
 initWeight 0.0000002                                  ## Initial Weight value
 CSVM_C 1000                                           ## C
+L2 TRUE                                               ## Use L2 version instead of L1
 
 #### Parameter optimalisation: ####
 

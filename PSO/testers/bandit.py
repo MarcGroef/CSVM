@@ -131,6 +131,7 @@ learningRate %(learningRate).7f
 nIterations 50000
 initWeight 0.002
 CSVM_C %(SVM_C).7f
+L2 TRUE
 """
 
     def run_algorithm(self):
