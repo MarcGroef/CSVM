@@ -44,6 +44,8 @@ General
 Classifier CSVM                                       ## CSVM / LINNET / SVM
 Codebook CODEBOOK                                     ## CODEBOOK / DEEPCODEBOOK
 nClasses 10                                           ## Nr of classes in dataset
+debugOut FALSE                                        ## use debug output (TRUE/FALSE)
+normalOut TRUE                                        ## use normal output (TRUE/FALSE)
 
 Codebook
 method KMEANS                                         ## The only supported clustering method at the moment
@@ -53,8 +55,8 @@ similaritySigma 0.0001                                ## Sigma value for the act
 
 FeatureExtractor
 method HOG                                            ## Options: HOG (histogram of oriented gradients), LBP (local binary patterns) (deprecated), CLEAN (raw pixels, with standardisation over colour channels). PIXHOG (combination of CLEAN and HOG, adjusting for vector length, and additional ratio parameter for weighting importance of either)
-cellSize4                                             ## HOG cellsize
-cellStride 4                                          ## HOG cellstride
+cellSize 6                                            ## HOG cellsize
+cellStride 6                                          ## HOG cellstride
 padding Identity                                      ## Padding options. Currently, Identity should be used.
 useGreyPixel true                                     ## Toggle whether HOG should append RGBHOGs or just one grey HOG. MNIST Should use 'false', CIFAR could use 'true'
 weightRatio 0.5                                       ## Only relevant for PIXHOG, to weight either CLEAN or HOG more.
@@ -75,6 +77,16 @@ Cost 1                                                ## Cost
 D2 1                                                  ## D2
 sigmaClassicSimilarity 100                            ## Sigma value for RBF kernel
 
+LinNet
+nIterations 10
+initWeight 0.01
+learningRate 0.000005
+
+ConvSVM
+learningRate 0.000001
+nIterations 200
+initWeight 0.0000002
+CSVM_C 1000
 
 #### Parameter optimalisation: ####
 
