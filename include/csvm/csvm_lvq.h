@@ -25,7 +25,7 @@ namespace csvm{
       vector<Feature> initPrototypes(vector<Feature> collection, unsigned int labelId, unsigned int nProtos);
       
     public:
-       bool debugOut, normalOut;
+      bool debugOut, normalOut;
       LVQ();
       vector<Feature> cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, double learningRate, int epochs);
     };

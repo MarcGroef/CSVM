@@ -15,13 +15,13 @@ MERGEDescriptor::MERGEDescriptor() {
 
 
 void MERGEDescriptor::setSettings(MERGESettings s){
-	cout << "mergesettings set" << endl;
+	if(debugOut)cout << "mergesettings set" << endl;
    settings = s;
 }
 
 
 void MERGEDescriptor::setHOGSettings(HOGSettings hs) {
-	cout << "hog stuff set" << endl;
+	if(debugOut)cout << "hog stuff set" << endl;
 	settings.hogSettings = hs;
 	//hog.setSettings(settings.hogSettings);
 }

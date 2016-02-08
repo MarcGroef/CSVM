@@ -234,7 +234,6 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
          
             unsigned int pIdx = pY * sqrtP + pX;
-            //cout << "pIdx = " << pIdx << endl;
             
             //calculate activation;
             if(settings.simFunction == SOFT_ASSIGNMENT){
@@ -323,12 +322,14 @@ void Codebook::importCodebook(string filename){
    //read number of classes
    file.read(fancyInt.chars,4);
    nClasses = fancyInt.intVal;
-   cout << "Codebook import: " << nClasses << " classes\n";
+   if(normalOut)
+      cout << "Codebook import: " << nClasses << " classes\n";
    
    //read nr of visual words
    file.read(fancyInt.chars, 4);
    settings.numberVisualWords = fancyInt.intVal;
-   cout << "Codebook import: " << settings.numberVisualWords << " words per class\n";
+   if(normalOut)
+      cout << "Codebook import: " << settings.numberVisualWords << " words per class\n";
    //read typesize
    char c;
    file.read(&c,1);
