@@ -92,7 +92,7 @@ using namespace csvm;
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
                         ++wrong;
                      } else {
-                        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) + ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
+                        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) - ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
                         ++wrong;
                      }
                   } else {

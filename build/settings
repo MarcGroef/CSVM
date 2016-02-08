@@ -8,14 +8,14 @@ imageHeight 0
 
 General
 Classifier CSVM
-Codebook DEEPCODEBOOK
+Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
-normalOut FALSE
+normalOut TRUE
 
 Codebook
 method KMEANS
-nClusters 20
+nClusters 100
 nIterations 10
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -54,5 +54,5 @@ learningRate 0.000001
 nIterations 200
 initWeight 0.0000002
 CSVM_C 1000
-L2 TRUE
+L2 FALSE
 
