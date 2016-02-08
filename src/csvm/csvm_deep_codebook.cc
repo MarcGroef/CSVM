@@ -181,8 +181,10 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
 	//plSize = 2;    <-- if uncommented, it results in a regular BoW
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
-   cout << "fmSize0 = " << fmSize << endl;
-   cout << "plSize0 = " << plSize << endl;
+   if(debugOut)
+      cout << "fmSize0 = " << fmSize << endl;
+   if(debugOut)
+      cout << "plSize0 = " << plSize << endl;
    unsigned int tmpNCentroids = settings.nCentroids;
    nCentroids.push_back(tmpNCentroids);
    nRandomPatches.push_back(settings.nRandomPatches);
@@ -194,8 +196,10 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
       plSize = fmSize / 2;
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
-      cout << "fmSize = " << fmSize << endl;
-      cout << "plSize = " << plSize << endl;
+      if(debugOut)
+         cout << "fmSize = " << fmSize << endl;
+      if(debugOut)
+         cout << "plSize = " << plSize << endl;
       nRandomPatches.push_back(settings.nRandomPatches);
    }
    
@@ -249,16 +253,19 @@ void DeepCodebook::generateCentroids(){
       unsigned int totalImages = dataset->getTotalImages();
       
       if(depthIdx == 0){
-         //cout << "Collecting patches..\n";
+         if(debugOut)
+            cout << "Collecting patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages))));
          }
-         //cout << "Clustering at 0th layer..\n";
+         if(debugOut)
+            cout << "Clustering at 0th layer..\n";
          layerStack[depthIdx] = kmeans.cluster(randomPatches, nCentroids[depthIdx]);
          
       }else{
          unsigned int scanWidth = plSizes[depthIdx - 1];
-         //cout << "Collecting next-level patches..\n";
+         if(debugOut)
+            cout << "Collecting next-level patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
             vector<double> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);

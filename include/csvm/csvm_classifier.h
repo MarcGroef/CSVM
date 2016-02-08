@@ -70,7 +70,7 @@ namespace csvm{
       
       void initSVMs();
       unsigned int getNoClasses();
-      
+      bool useOutput();
 
       void train();
       unsigned int classify(Image* im);

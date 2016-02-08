@@ -42,8 +42,8 @@ void printKernel(vector< vector<Feature> > kernels){
 
 int main(int argc,char**argv){
    
-   if (settings.normalOut) cout << "started main of CSVM" << endl;
-
+   //cout << "started main of CSVM" << endl;
+   bool normalOut;
    if(argc!=2){
       showUsage();
       return 0;
@@ -54,12 +54,15 @@ int main(int argc,char**argv){
    CSVMClassifier c;
 
    c.setSettings(argv[1]);
+   normalOut = c.useOutput();
+   
    c.dataset.loadDataset("../datasets/");
 
    
   
    
-   if (settings.normalOut) cout << "constructing codebook" << endl;
+   if(normalOut)
+      cout << "constructing codebook" << endl;
    c.constructCodebook();
    
    //cout << "importing codebook" << endl;
@@ -76,10 +79,12 @@ int main(int argc,char**argv){
 ////////////////////////////////////////////////////////////////       ALTER (script dependency)
 
 
-   cout << "initializing SVMs" << endl;
+   if(normalOut)
+      cout << "initializing SVMs" << endl;
    c.initSVMs();
 
-   cout << "training classifier" << endl;
+   if(normalOut)
+      cout << "training classifier" << endl;
    c.train();
 
    //********************Testing phase on trainingset *****************************************
@@ -89,7 +94,8 @@ int main(int argc,char**argv){
    unsigned int nClasses = c.getNoClasses();
    
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
-   cout << "Testing on trainingsset:\n";
+   if(normalOut)
+      cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
@@ -106,14 +112,16 @@ int main(int argc,char**argv){
       ++classifiedAsTrain[nClasses][result];
  
    }
-   cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
+   if(normalOut)
+      cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+   if(normalOut)
+      cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
    //****************************** Print ConfusionMatrix for TRAINSET *******************
 
    bool printConfusionMatrix = true;
 
-   if (printConfusionMatrix) {
+   if (normalOut && printConfusionMatrix) {
       int   total;
       double precision;
 
@@ -145,7 +153,8 @@ int main(int argc,char**argv){
   
    //***********************************Testing phase on test set**********************************************************************************
 
-   cout << "\n\n\nOn test set:\n\n";
+   if(normalOut)
+      cout << "\n\n\nOn test set:\n\n";
    nCorrect = 0;
    nFalse = 0;
    unsigned int testSize = (unsigned int)c.dataset.getTestSize();
@@ -182,12 +191,12 @@ int main(int argc,char**argv){
    //****************************** Print ConfusionMatrix for TESTSET *******************
    
    
-   cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
-   cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
+   if(normalOut)cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+   if(normalOut)cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   if(normalOut)cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
 
-   if (printConfusionMatrix) {
+   if (normalOut && printConfusionMatrix) {
       int   total;
       double precision;
 
