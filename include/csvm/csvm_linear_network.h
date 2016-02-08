@@ -34,6 +34,7 @@ namespace csvm{
       
       LinNetSettings settings;
    public:
+      bool debugOut, normalOut;
       LinNetwork();//(unsigned int nClasses,unsigned int nCentroids, double initWeights);
       void setSettings(LinNetSettings s);
       void train(vector< vector< double > >& activations, CSVMDataset* ds);

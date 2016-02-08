@@ -46,6 +46,7 @@ namespace csvm{
       
       
    public:
+      bool debugOut, normalOut;
       Image();
       Image(int width,int height,ImageFormat f);
       Image(string filename);

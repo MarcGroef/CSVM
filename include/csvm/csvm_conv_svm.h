@@ -48,7 +48,7 @@ namespace csvm{
       vector<double> allOuts;
 
    public:
-      
+      bool debugOut, normalOut;
       void setSettings(ConvSVMSettings s);
       
       void train(vector< vector<double> >& activations, CSVMDataset* ds);

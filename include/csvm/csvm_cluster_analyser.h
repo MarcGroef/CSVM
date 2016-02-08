@@ -30,7 +30,7 @@ namespace csvm{
       ClusterAnalyserSettings settings;
    public:
       ClusterAnalyser();
-      
+      bool debugOut, normalOut;
       ~ClusterAnalyser();
       
       void setSettings(ClusterAnalyserSettings sets);

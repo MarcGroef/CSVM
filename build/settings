@@ -10,6 +10,8 @@ General
 Classifier CSVM
 Codebook DEEPCODEBOOK
 nClasses 10
+debugOut FALSE
+normalOut FALSE
 
 Codebook
 method KMEANS
@@ -23,7 +25,7 @@ method HOG
 cellSize 6
 cellStride 6
 padding Identity
-useGreyPixel false
+useColourPixel false
 weightRatio 0.5
 
 ImageScanner

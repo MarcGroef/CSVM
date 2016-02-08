@@ -12,6 +12,7 @@ namespace csvm{
    class Centroid{
       
    public:
+      bool debugOut, normalOut;
      vector<double> content;
      double getDistanceSq(Feature f);
 	 double getDistanceSq(Centroid c);

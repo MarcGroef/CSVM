@@ -35,7 +35,7 @@ namespace csvm{
       RBMSettings settings;
      
    public:
-      
+      bool debugOut, normalOut;
       
       
       RBM();

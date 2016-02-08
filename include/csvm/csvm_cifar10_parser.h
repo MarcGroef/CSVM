@@ -35,6 +35,7 @@ namespace csvm{
       Interpolator interpolator;
       Image bytesToImage(unsigned char* c);
    public:
+      bool debugOut, normalOut;
       void readLabels(string dir);
       void loadImages(string dir);
       Image getImage(int index);

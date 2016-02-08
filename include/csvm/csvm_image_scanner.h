@@ -41,6 +41,7 @@ namespace csvm{
       
       
    public:
+      bool debugOut, normalOut;
       ImageScannerSettings settings;
 
       ImageScanner();

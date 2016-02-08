@@ -54,6 +54,7 @@ namespace csvm{
 
    class CSVMSettings{
      public:
+      bool debugOut, normalOut;
       CLASSIFIER classifier;
       CODEBOOK codebook;
       

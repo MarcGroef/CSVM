@@ -53,7 +53,7 @@ namespace csvm{
       void calculateBiasClassic(vector<vector<double> >& simKernel, CSVMDataset* ds);
       
   public:
-     
+     bool debugOut, normalOut;
      SVM(int datasetSize, int nClusters, int nCentroids, unsigned int labelId);
      void setSettings(SVM_Settings s);
      

@@ -48,7 +48,7 @@ namespace csvm {
 	struct MERGESettings {
 		HOGSettings hogSettings;
 		int patchSize;
-		bool useGreyPixel;
+		bool useColourPixel;
 		double weightRatio;
 	};
 	class MERGEDescriptor {
@@ -56,6 +56,7 @@ namespace csvm {
 		//HOGDescriptor hog;
 		//CleanDescriptor clean;
 	public:
+      bool debugOut, normalOut;
 		MERGEDescriptor();
 		//MERGEDescriptor(int cellSize, int cellStride, int blockSize);
 		void setSettings(MERGESettings s);

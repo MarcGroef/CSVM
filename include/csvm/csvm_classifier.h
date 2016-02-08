@@ -58,7 +58,7 @@ namespace csvm{
    public:
       //public vars
       CSVMDataset dataset;
-      
+      bool debugOut, normalOut;
       CSVMClassifier();
       ~CSVMClassifier();
       void setSettings(string settingsFile);

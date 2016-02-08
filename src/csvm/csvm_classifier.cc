@@ -31,6 +31,8 @@ void CSVMClassifier::initSVMs(){
    for(size_t svmIdx = 0; svmIdx < ensembleSize; ++svmIdx){
       svms.push_back(SVM(dataset.getTrainSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);
+      svms[svmIdx].debugOut = settings.debugOut;
+      svms[svmIdx].normalOut = settings.normalOut;
    }
    
 }
@@ -40,13 +42,30 @@ void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
    //analyser.setSettings(settings.analyserSettings);
    imageScanner.setSettings(settings.scannerSettings);
+   imageScanner.debugOut = settings.debugOut;
+   imageScanner.normalOut = settings.normalOut;
+   
    dataset.setSettings(settings.datasetSettings);
+   dataset.debugOut = settings.debugOut;
+   dataset.normalOut = settings.normalOut;
+   
    codebook.setSettings(settings.codebookSettings);
+   codebook.debugOut = settings.debugOut;
+   codebook.normalOut = settings.normalOut;
+   
    featExtr.setSettings(settings.featureSettings);
+   featExtr.debugOut = settings.debugOut;
+   featExtr.normalOut = settings.normalOut;
    
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
+   
    linNetwork.setSettings(settings.netSettings);
+   linNetwork.debugOut = settings.debugOut;
+   linNetwork.normalOut = settings.normalOut;
+   
    convSVM.setSettings(settings.convSVMSettings);
+   convSVM.debugOut = settings.debugOut;
+   convSVM.normalOut = settings.normalOut;
 }
 
 //Train the system
@@ -105,6 +124,8 @@ void CSVMClassifier::importCodebook(string filename){
 
 void CSVMClassifier::constructDeepCodebook(){
    deepCodebook->setSettings(settings.dcbSettings);
+   deepCodebook->debugOut = settings.debugOut;
+   deepCodebook->normalOut = settings.normalOut;
    deepCodebook->generateCentroids();
    //cout << "Done constructing deep codebook\n";
 }

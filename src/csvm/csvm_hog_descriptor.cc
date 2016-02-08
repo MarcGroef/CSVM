@@ -5,7 +5,7 @@ using namespace std;
 using namespace csvm;
 
 
-//HOGDescriptor::HOGDescriptor(int nBins = 9, int cellSize = 3, int blockSize = 9, bool useGreyPixel = 1) {
+//HOGDescriptor::HOGDescriptor(int nBins = 9, int cellSize = 3, int blockSize = 9, bool useColourPixel = 1) {
 HOGDescriptor::HOGDescriptor() {
    /*this->settings.nBins=9;
    this->settings.cellSize = -1;
@@ -13,7 +13,7 @@ HOGDescriptor::HOGDescriptor() {
    this->settings.blockSize = -1;
    //this->blockStride = -1;
    this->settings.numberOfCells = -1;
-   this->settings.useGreyPixel = true;*/
+   this->settings.useColourPixel = true;*/
    
 }
 
@@ -26,7 +26,7 @@ HOGDescriptor::HOGDescriptor(int cellSize, int cellStride, int blockSize) {
    //this->settings.padding = ZERO;
    //this->blockStride = blockStride;
    //this->settings.numberOfCells = pow( ((settings.patchSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   //this->settings.useGreyPixel = true;
+   //this->settings.useColourPixel = true;
 }
 */
 
@@ -37,13 +37,13 @@ void HOGDescriptor::setSettings(HOGSettings s){
    //this->settings.padding = NONE;
    settings.nBins = 9;
    //this->settings.numberOfCells = pow( ((settings.blockSize - settings.cellSize) / settings.cellSize) + 1, 2);
-   //this->settings.useGreyPixel = true;
+   //this->settings.useColourPixel = true;
    this->settings.interpol = INTERPOLATE_LINEAR;
 }
 
 double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
    double result;
-   if (settings.useGreyPixel || col == GRAY) {
+   if (!settings.useColourPixel || col == GRAY) {
       double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
       double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
       result = xPlus - xMin;
@@ -59,7 +59,7 @@ double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
 
 double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
    double result;
-   if (settings.useGreyPixel || col == GRAY) {
+   if (!settings.useColourPixel || col == GRAY) {
       double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y+1));
       double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y-1));
       result = yPlus - yMin;
@@ -127,7 +127,7 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
 
 
 	//cout << "fancy binPixel called for x:" << X << ", y:" << Y << "\n";
-	if (col == GRAY || settings.useGreyPixel) {
+	if (col == GRAY || !settings.useColourPixel) {
 		gradientOrientation = imageTranspose[0][X][Y][ORIENTATION];
 		//cout << "gradient looked up was" << gradientOrientation << '\n';
 		gradientMagnitude = imageTranspose[0][X][Y][MAGNITUDE];
@@ -182,9 +182,9 @@ Feature HOGDescriptor::getHOG(Patch& block){
    //iterate through block with a cell, with stride cellstride. 
      
    ///////////////////
-   int colours = ((!settings.useGreyPixel) * 2) + 1;
+   int colours = ((settings.useColourPixel) * 2) + 1;
    double**** transposedImage;
-   if (settings.useGreyPixel != true) {
+   if (settings.useColourPixel == true) {
 	   //cout << "making transposed image\n";
 	   transposedImage = new double***[colours]; //= total size to store compelte image array-wise
 	   double xGradient = 0.0;
@@ -264,7 +264,7 @@ Feature HOGDescriptor::getHOG(Patch& block){
             for (size_t Y = (settings.padding == NONE ? 1 : 0); Y < (settings.padding == NONE ? settings.cellSize - 1 : settings.cellSize); ++Y)
             {  
 				//cout << "are we using grey pixels?" << endl;
-               if (settings.useGreyPixel)
+               if (!settings.useColourPixel)
                {
 				   //cout << "yes we are using grey pixels" << endl;
 				   binPixel(X + cellX, Y + cellY, GRAY, cellOrientationHistogram , transposedImage );
