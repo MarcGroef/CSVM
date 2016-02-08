@@ -1,6 +1,6 @@
 
 Dataset
-method MNIST
+method CIFAR10
 nTrainImages 5000
 nTestImages 1000
 imageWidth 0
@@ -15,8 +15,8 @@ normalOut TRUE
 
 Codebook
 method KMEANS
-nClusters 100
-nIterations 10
+nClusters 200
+nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 

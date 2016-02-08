@@ -120,9 +120,11 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
          if(nMembers[cIdx] > 0)
             for(size_t dim = 0; dim < dataDims; ++dim)
                (*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
-         else //keep it at current position, if no new members
+         else{ //keep it at current position, if no new members
             for(size_t dim = 0; dim < dataDims; ++dim)
                (*newCentroids)[cIdx].content[dim] = (*centroids)[cIdx].content[dim];
+            cout << cIdx << " has no members!! @ iter "<< itx <<" \n";
+         }
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
