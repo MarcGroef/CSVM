@@ -72,17 +72,17 @@ void CSVMClassifier::setSettings(string settingsFile){
 void CSVMClassifier::train(){
    switch(settings.classifier){
       case CL_SVM:
-         if(normalOutput) cout << "Training SVM..\n";
+         if(normalOut) cout << "Training SVM..\n";
          trainClassicSVMs();
          
          break;
       case CL_CSVM:
-         if(normalOutput) cout << "Training Conv SVM..\n";
+         if(normalOut) cout << "Training Conv SVM..\n";
          trainConvSVMs();
          
          break;
       case CL_LINNET:
-         if(normalOutput) cout << "Training LinNet..\n";
+         if(normalOut) cout << "Training LinNet..\n";
          trainLinearNetwork();
          
          break;
@@ -127,7 +127,7 @@ void CSVMClassifier::constructDeepCodebook(){
    deepCodebook->debugOut = settings.debugOut;
    deepCodebook->normalOut = settings.normalOut;
    deepCodebook->generateCentroids();
-   if(normalOutput) cout << "Done constructing deep codebook\n";
+   if(normalOut) cout << "Done constructing deep codebook\n";
 }
 
 
@@ -148,7 +148,6 @@ void CSVMClassifier::constructCodebook(){
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
    
    vector<Feature> pretrainDump;
-   if(debugOutput) cout << "constructing codebooks with " << settings.codebookSettings.numberVisualWords << " centroids for " << nClasses << " classes, with " << nPatches << " patches\n";
 
 
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
@@ -161,10 +160,10 @@ void CSVMClassifier::constructCodebook(){
       
    }
 
-   if(debugOutput) cout << "Collected " << pretrainDump.size()<< " features\n";
+   if(debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
    
-   if(debugOutput) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+   if(debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();
 }
@@ -252,7 +251,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
 
 //train the regular-SVM
 void CSVMClassifier::trainClassicSVMs(){
-   if(debugOutput) cout << "Enteing classic svm training\n";
+   if(debugOut) cout << "Enteing classic svm training\n";
    unsigned int nTrainImages = dataset.getTrainSize();
    unsigned int nClasses = dataset.getNumberClasses(); 
    unsigned int nCentroids; 
@@ -260,7 +259,6 @@ void CSVMClassifier::trainClassicSVMs(){
    vector < vector<double> > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-   if(debugOutput) cout << "datasetSize = " << datasetSize << endl;
    vector < vector<double> > dataKernel(nTrainImages);
    vector<double> dataActivation;
 
@@ -279,7 +277,6 @@ void CSVMClassifier::trainClassicSVMs(){
          //allocate for new features
          dataFeatures.reserve(patches.size());
          
-         if(debugOutput) cout << patches[qIdx].size() << " patches" << endl;
          //extract features from all patches
          for(size_t patch = 0; patch < patches.size(); ++patch){
             dataFeatures.push_back(featExtr.extract(patches[patch]));
@@ -306,10 +303,10 @@ void CSVMClassifier::trainClassicSVMs(){
    nClasses = dataset.getNumberClasses();
    nCentroids = datasetActivations[0].size();
    
-   if(debugOutput) cout << "nClasses = " << nClasses << endl;
-   if(debugOutput) cout << "nCentroids = " << nCentroids << endl;
+   if(debugOut) cout << "nClasses = " << nClasses << endl;
+   if(debugOut) cout << "nCentroids = " << nCentroids << endl;
    
-   if(debugOutput) cout << "Calculating similarities\n";
+   if(debugOut) cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < nTrainImages; ++dIdx0){
       //cout << "done with similarity of " << dIdx0 << endl;
