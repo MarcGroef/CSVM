@@ -97,7 +97,7 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
 		cellOrientationHistogram[bin == settings.nBins ? 0 : bin] += gradientMagnitude;
 	}
 	else if (settings.interpol == INTERPOLATE_LINEAR) {
-		int bandWidth = (180.0 / settings.nBins); // = 20
+		int bandWidth = (int)(180.0 / settings.nBins); // = 20
 		int orientationBin = (int)gradientOrientation; // = 58
 		int base = bandWidth / 2; // = 10 , first bin value, also added mid values of bins
 		
@@ -142,7 +142,7 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
 		cellOrientationHistogram[bin == settings.nBins ? 0 : bin] += gradientMagnitude;
 	}
 	else if (settings.interpol == INTERPOLATE_LINEAR) {
-		int bandWidth = (180.0 / settings.nBins); // = 20
+		int bandWidth = (int)(180.0 / settings.nBins); // = 20
 		int orientationBin = (int)gradientOrientation; // = 58
 		int base = bandWidth / 2; // = 10 , first bin value, also added mid values of bins
 		
@@ -194,13 +194,13 @@ Feature HOGDescriptor::getHOG(Patch& block){
 	   transposedImage[GREEN] = new double**[patchWidth];
 	   transposedImage[BLUE] = new double**[patchWidth];
 
-	   for (int X = 0; X < patchWidth; ++X) {
+	   for (unsigned int X = 0; X < patchWidth; ++X) {
 		   transposedImage[RED][X] = new double*[patchHeight];
 		   transposedImage[GREEN][X] = new double*[patchHeight];
 		   transposedImage[BLUE][X] = new double*[patchHeight];
 
 
-		   for (int Y = 0; Y < patchHeight; ++Y) {
+		   for (unsigned int Y = 0; Y < patchHeight; ++Y) {
 			   //Red			   
 			   transposedImage[RED][X][Y] = new double[2];
 			   xGradient = computeXGradient(block, X, Y, RED);
@@ -231,10 +231,10 @@ Feature HOGDescriptor::getHOG(Patch& block){
 	   double xGradient = 0.0;
 	   double yGradient = 0.0;
 	   transposedImage[0] = new double**[patchWidth];
-	   for (int X = 0; X < patchWidth; ++X) {
+	   for (unsigned int X = 0; X < patchWidth; ++X) {
 		   transposedImage[0][X] = new double*[patchHeight];
 
-		   for (int Y = 0; Y < patchHeight; ++Y) {
+		   for (unsigned int Y = 0; Y < patchHeight; ++Y) {
 			   //gray
 			   transposedImage[0][X][Y] = new double[2];
 			   xGradient = computeXGradient(block, X, Y, GRAY);
@@ -382,8 +382,8 @@ Feature HOGDescriptor::getHOG(Patch& block){
 
    ///cleanup transposed image
    for (int co = 0; co < colours; ++co) {
-	   for (int X = 0; X < patchWidth; ++X) {
-		   for (int Y = 0; Y < patchHeight; ++Y) {
+	   for (unsigned int X = 0; X < patchWidth; ++X) {
+		   for (unsigned int Y = 0; Y < patchHeight; ++Y) {
 			   delete[] transposedImage[co][X][Y];		//delete magnitude and orientation
 		   }
 		   delete[] transposedImage[co][X];				//delete full y array
