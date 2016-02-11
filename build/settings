@@ -32,13 +32,13 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR
-AlphaDataInit 0.001
+AlphaDataInit 0.0000002
 nIterations 500
-learningRate 0.000005
+learningRate 0.000001
 SVM_C_Data 1000
 Cost 1
 D2 1
@@ -50,8 +50,8 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000001
-nIterations 200
+learningRate 0.00001
+nIterations 2000
 initWeight 0.0000002
 CSVM_C 1000
 L2 FALSE

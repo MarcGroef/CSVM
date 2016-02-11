@@ -34,8 +34,9 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
       randomInt = rand() % collectionSize;
       
       for(size_t d = 0; d < collection[0].content.size(); ++d){
+         
 			double randDouble = (((double)rand() / 1000000) / RAND_MAX );
-			randDouble -= randDouble / 2;
+			//randDouble -= randDouble / 2;
 			
          dictionary[idx].content[d] = collection[randomInt].content[d] + randDouble;
       }
@@ -124,7 +125,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
          else{ //keep it at current position, if no new members
             for(size_t dim = 0; dim < dataDims; ++dim)
                (*newCentroids)[cIdx].content[dim] = (*centroids)[cIdx].content[dim];
-            //cout << cIdx << " has no members!! @ iter "<< itx <<" \n";
+            cout << cIdx << " has no members!! @ iter "<< itx <<" \n";
          }
       }
       deltaDist = (prevTotalDistance - totalDistance);

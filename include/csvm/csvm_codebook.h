@@ -57,6 +57,7 @@ namespace csvm{
     vector<Centroid> bow;
 
     unsigned int nClasses;
+    void standardize(vector<double>& x);
   public:
      bool debugOut, normalOut;
     Codebook();
