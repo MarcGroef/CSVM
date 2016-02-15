@@ -41,7 +41,7 @@ imageWidth 32                                         ## Integer width used for 
 imageHeight 32                                        ## Integer height used for rescaling the data. If imageHeight <= 0, data will keep the original dimensions
 
 General
-Classifier CSVM                                       ## CSVM / LINNET / SVM
+Classifier CSVM                                       ## CSVM / LINNET / SVM  (csvm, linear network, svm respectively)
 Codebook CODEBOOK                                     ## CODEBOOK / DEEPCODEBOOK
 nClasses 10                                           ## Nr of classes in dataset
 debugOut FALSE                                        ## use debug output (TRUE/FALSE)
@@ -58,7 +58,7 @@ method HOG                                            ## Options: HOG (histogram
 cellSize 6                                            ## HOG cellsize
 cellStride 6                                          ## HOG cellstride
 padding Identity                                      ## Padding options. Currently, Identity should be used.
-useGreyPixel true                                     ## Toggle whether HOG should append RGBHOGs or just one grey HOG. MNIST Should use 'false', CIFAR could use 'true'
+useColourPixel true                                   ## Toggle whether HOG should append RGBHOGs or just one grey HOG. MNIST Should use 'false', CIFAR could use 'true'
 weightRatio 0.5                                       ## Only relevant for PIXHOG, to weight either CLEAN or HOG more.
 
 ImageScanner                                          ## Settings for extracting patches from an image

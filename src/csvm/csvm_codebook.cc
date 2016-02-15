@@ -12,6 +12,30 @@ using namespace csvm;
 
 //unions to make life easier while reading/writing binary files
 
+void Codebook::standardize(vector<double>& x){
+   unsigned int size = x.size();
+   double mean = 0;
+   
+   for(size_t idx = 0; idx != size; ++idx){
+      mean += x[idx];
+   }
+   mean /= size;
+   
+   double sigma = 0;
+   
+   for(size_t idx = 0; idx != size; ++idx)
+      sigma += (mean - x[idx]) * (mean - x[idx]);
+   
+   sigma /= size;
+   sigma = sqrt(sigma + 0.001);
+   
+   for(size_t idx = 0; idx != size; ++idx){
+      x[idx] = (x[idx] - mean) / sigma;
+   }
+   
+}
+
+
 union charInt{
    char chars[4];
    unsigned int intVal;
@@ -38,6 +62,11 @@ Centroid Codebook::getCentroid(int centrIdx){
 
 void Codebook::constructCodebook(vector<Feature> featureset){
    //cout << "constructing codebook for label " << labelId << " in ";
+   unsigned int nFeatures = featureset.size();
+   
+   for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx)
+      standardize(featureset[fIdx].content);
+   
    switch(settings.method){
       case LVQ_Clustering:
          //bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);
@@ -93,6 +122,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
    double xc;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
+      
       
       if (settings.simFunction == SOFT_ASSIGNMENT){
          xx = 0;
@@ -234,7 +264,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
          
             unsigned int pIdx = pY * sqrtP + pX;
-            
+            standardize(features[pIdx].content);
             //calculate activation;
             if(settings.simFunction == SOFT_ASSIGNMENT){
                xx = 0;
@@ -266,7 +296,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                mean /= (double)(settings.numberVisualWords);
                
                for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-                  activations[qIdx * settings.numberVisualWords + word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
+                  activations[qIdx * settings.numberVisualWords + word] += ( mean - distances[word] > 0.0 ? (mean - distances[word]) : 0.0);
                }
                
             }
@@ -308,6 +338,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
 	
       
    }
+   standardize(activations);
    return activations;
 }
 
