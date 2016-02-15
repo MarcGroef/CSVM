@@ -90,6 +90,7 @@ debugOut FALSE
 normalOut FALSE
 
 Codebook
+generate TRUE
 method KMEANS
 nClusters 500
 nIterations 20
