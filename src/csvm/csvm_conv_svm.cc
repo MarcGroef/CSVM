@@ -60,9 +60,30 @@ using namespace csvm;
          if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
          
+// For Experiment
+// Calculating sum of errors before training
+         vector <double> sumSlacks(nData, 0.0);
+         vector <double> dSlacks(nData, 0.0);
+         if (settings.Exp)
+         for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+            dSlacks[dIdx] = 0;
+            unsigned int label = ds->getImagePtr(dIdx)->getLabelId();
+            double yData = (label == svmIdx ? 1.0 : -1.0);
+            double out = output(activations[dIdx], svmIdx);
+            if(yData * out < 1){
+
+               for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
+                  dSlacks[dIdx] += yData * activations[dIdx][clIdx];
+               }
+            }
+         }
+
          //for all training iterations
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
-            
+           
+// For Experiment:
+            double tmpBias = 0.0;
+ 
             double sumSlack = 0;
             float right = 0;
             float wrong = 0;
@@ -82,34 +103,74 @@ using namespace csvm;
                unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations[dIdx], svmIdx);
+
+// For Experiment:
+               //update dSlack for this data
+               double sumDSlack = 0.0;
+               if (settings.Exp){
+                  dSlacks[dIdx] = 0;
+                  if(yData * out < 1){
+                  
+                     for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
+                        dSlacks[dIdx] += yData * activations[dIdx][clIdx];
+                     }
+                  }
+                  //calculate new dSlack sum
+                  for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
+                     sumDSlack += dSlacks[dIdx1];
+                  }
+                  sumSlack += yData * out < 0 ? yData * out * -1 : yData * out;
+               }
+
+
              
                // for all centers 
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
 
-                  // partial derivatives to the weights
-                  if(yData * out < 1){
-                     if (not settings.L2){
-                        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
-                        ++wrong;
-                     } else {
-                        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) - ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
-                        ++wrong;
-                     }
+// For Experiment:
+                  if (settings.Exp){
+                     if (yData * out < 1){
+                        weights[svmIdx][centrIdx] -= settings.learningRate * ( weights[svmIdx][centrIdx] - settings.CSVM_C * sumDSlack);
+                     } else ++right;
                   } else {
-                     weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
-                     ++right;
+
+                     // partial derivatives to the weights
+                     if(yData * out < 1){
+                        if (not settings.L2){
+                           weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
+                        } else {
+                           weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) - ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
+                        }
+                     } else {
+                        weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
+                     }
+
+
                   }
 
-               }//centrIdx
-               
-               //bias function
-               if(yData * out < 1)
-                  biases[svmIdx] += settings.learningRate * (yData - out);
 
-               // calculating second term of objective function               
-               if (not settings.L2) 	sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out);
-               else 			sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
-                  
+               }//centrIdx
+
+
+               (yData * out < 1) ? ++wrong :  ++right;
+               
+// For Experiment:
+               if (settings.Exp){
+                  if (yData * out < 1) tmpBias += out * yData;
+               } else {
+                  //bias function
+                  if(yData * out < 1)
+                     biases[svmIdx] += settings.learningRate * (yData - out);
+               
+
+
+                  // calculating second term of objective function               
+                  if (not settings.L2) 	sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out);
+                  else 			sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
+
+               }
+
+   
                //############ Logging functions ################
                if (out > 0)  { maxOut += out; ++nMax; }
                if (out < 0)  { minOut += out; ++nMin; }
@@ -119,6 +180,12 @@ using namespace csvm;
 
             }//dIdx
             
+
+// For Experiment:
+            if (settings.Exp)
+               biases[svmIdx] = tmpBias / wrong;
+
+
             //calculate objective function
 
             // calculating first term of objective function

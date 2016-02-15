@@ -74,6 +74,17 @@ void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
 		convSVMSettings.L2 = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
 	}
 
+	stream >> setting;
+	if (setting != "EXP") {
+		cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+		exit(-1);
+	}
+	else {
+		stream >> value;
+		convSVMSettings.Exp = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
+	}
+
+
 
 
 

@@ -177,10 +177,23 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    //double prevSumDeltaAlpha = 100.0;
    double deltaAlphaData;
 
-
-   //double objective = 0.0;
+   double objective = 0.0;
    double sum0 = 0.0;
    double sum1 = 0.0;
+
+   //############ Logging functions ################
+   unsigned int nData = simKernel.size();
+   maxOut = 0.0;
+   minOut = 0.0;
+   avOut  = 0.0;
+   ofstream statDatFile;
+   stringstream ss;
+   ss << "statData_SVM-" << classId << ".csv";
+   string fName = ss.str();
+   statDatFile.open ( fName.c_str() );
+   statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
+   if (debugOut) cout << "\n\nSVM " << classId << ":\t\t\t(data written to " << fName << ")\n" << endl;
+   //###############################################
    
    unsigned int kernelIdx0, kernelIdx1;
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
@@ -193,15 +206,27 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
       
       constrainAlphaDataClassic(simKernel, ds);
       
-      
       double yData0, yData1;
-      
+
+      //############ Logging functions ################
+      float right = 0;
+      float wrong = 0;
+      allOuts  = vector<double>(nData, 0);
+      double hypPlane = 0;
+      minOut = 0;
+      maxOut = 0;
+      nMax   = 0;
+      nMin   = 0;
+      //###############################################
+
       //calculate objective
       sum0 = 0.0;
       sum1 = 0.0;
       for(size_t dIdx0 = 0; dIdx0 < simKernel.size(); ++dIdx0){
          yData0 = (ds->getTrainImagePtr(dIdx0)->getLabelId() == classId ? 1.0 : -1.0);
          
+         double out = 0;
+
          sum0 += alphaData[dIdx0];
          for(size_t dIdx1 = 0; dIdx1 < simKernel.size(); ++dIdx1){
             if(dIdx1 > dIdx0){
@@ -211,20 +236,60 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
                kernelIdx0 = dIdx0;
                kernelIdx1 = dIdx1;
             }
-            
-            
+      
             yData1 = (ds->getTrainImagePtr(dIdx1)->getLabelId() == classId ? 1.0 : -1.0);
             
+            out += alphaData[dIdx1] * yData1 * simKernel[kernelIdx0][kernelIdx1];
+
             sum1 += alphaData[dIdx0] * alphaData[dIdx1] * yData0 *  yData1 * simKernel[kernelIdx0][kernelIdx1];
-            
          }
+
+         //############ Logging functions ################
+         if (out > 0)  { maxOut += out; ++nMax; }
+         if (out < 0)  { minOut += out; ++nMin; }
+         allOuts[dIdx0] = out;
+         right += (out * yData0 > 0);
+         wrong += (out * yData0 <= 0);
+         //###############################################
+            
       }
-      //objective = sum0 - 0.5 * sum1;
+      objective = sum0 - 0.5 * sum1;
          
      //if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
       //compute trainings-score:
-      
+
+
+      //############ Logging functions ################ 
+      avOut = (double) (maxOut + minOut) / nData;
+      maxOut /= (double) nMax;
+      minOut /= (double) nMin;
+      double stdDevMaxOutPos = 0;
+      double stdDevMaxOutNeg = 0;
+      double stdDevMinOutPos = 0;
+      double stdDevMinOutNeg = 0;
+      int nMaxPos = 0;
+      int nMaxNeg = 0;
+      int nMinPos = 0;
+      int nMinNeg = 0;
+      for (size_t dIdx=0; dIdx < nData; ++dIdx){
+         if (allOuts[dIdx] >  0)   {
+            if (allOuts[dIdx] >  maxOut) {stdDevMaxOutPos += pow((allOuts[dIdx] - maxOut), 2); ++nMaxPos;}
+            if (allOuts[dIdx] <= maxOut) {stdDevMaxOutNeg += pow((allOuts[dIdx] - maxOut), 2); ++nMaxNeg;}
+         }
+         if (allOuts[dIdx] <= 0)   {
+            if (allOuts[dIdx] >  minOut) {stdDevMinOutPos += pow((allOuts[dIdx] - minOut), 2); ++nMinPos;}
+            if (allOuts[dIdx] <= minOut) {stdDevMinOutNeg += pow((allOuts[dIdx] - minOut), 2); ++nMinNeg;}
+         }
+      }
+      stdDevMaxOutPos = sqrt(stdDevMaxOutPos / nMaxPos);
+      stdDevMaxOutNeg = sqrt(stdDevMaxOutNeg / nMaxNeg);
+      stdDevMinOutPos = sqrt(stdDevMinOutPos / nMinPos);
+      stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
+      statDatFile << round << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOut << "," << maxOut << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
+      //###############################################
+    
    }
+
    calculateBiasClassic(simKernel, ds);
    //for(size_t aIdx = 0; aIdx < alphaData.size(); ++aIdx)
      //    cout << "Alpha " << aIdx << " = " << alphaData[aIdx] << endl;

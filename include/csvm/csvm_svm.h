@@ -7,7 +7,9 @@
  */
 
 #include <vector>
+#include <sstream>
 #include <iostream>
+
 #include "csvm_feature.h"
 #include "csvm_codebook.h"
 #include "csvm_dataset.h"
@@ -44,8 +46,11 @@ namespace csvm{
     vector <double> alphaData;
     double bias;
       
-    
-
+    //logging
+    int nMax, nMin;
+    double maxOut, minOut;
+    double avOut;
+    vector<double> allOuts;
       
     //functions for KKT-SVM
       double constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
