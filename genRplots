@@ -54,7 +54,6 @@ for(i in 0:9)
 	text(round(d[length(d[,1]),1]*0.8), d[length(d[,2]),4], paste("min: ", signif((d[length(d[,2]),4]),2), sep=""))
 	text(round(d[length(d[,1]),1]*0.8), d[length(d[,2]),5], paste("max: ", signif((d[length(d[,2]),5]),2), sep=""))
 
-	dump("d", file = paste("R_dataDump_SVM-", i, sep=""))
 	dev.off()
 }
 

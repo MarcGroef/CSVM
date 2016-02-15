@@ -15,13 +15,18 @@ using namespace std;
  */
 
 ImageScanner::ImageScanner(){
-   srand(time(NULL));
+;
 }
 
 
 //set settings (done by classifier)
 void ImageScanner::setSettings(ImageScannerSettings set){
   settings = set;
+}
+
+void ImageScanner::setRandom(bool fr){
+   fixed_random = fr;
+   srand(fixed_random * time(NULL));
 }
 
 //get all patches from image.

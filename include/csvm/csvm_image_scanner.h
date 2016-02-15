@@ -41,10 +41,11 @@ namespace csvm{
       
       
    public:
-      bool debugOut, normalOut;
+      bool debugOut, normalOut, fixed_random;
       ImageScannerSettings settings;
 
       ImageScanner();
+      void setRandom(bool fr);
       void setSettings(ImageScannerSettings set);
       vector<Patch> scanImage(Image* image);
       Patch getRandomPatch(Image* image);

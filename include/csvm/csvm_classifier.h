@@ -58,12 +58,13 @@ namespace csvm{
    public:
       //public vars
       CSVMDataset dataset;
-      bool debugOut, normalOut;
+      bool debugOut, normalOut, fixed_random;
       CSVMClassifier();
       ~CSVMClassifier();
       void setSettings(string settingsFile);
       void constructCodebook();
       void constructDeepCodebook();
+      bool getGenerateCB();
       
       void exportCodebook(string filename);
       void importCodebook(string filename);

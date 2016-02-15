@@ -65,7 +65,7 @@ namespace csvm{
       vector<double> calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
       vector<double> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
    public:
-      bool debugOut, normalOut;
+      bool debugOut, normalOut, fixed_random;
       DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
       void setSettings(DCBSettings& s);
       void generateCentroids();

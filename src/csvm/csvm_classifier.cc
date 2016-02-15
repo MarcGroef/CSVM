@@ -14,12 +14,15 @@ using namespace csvm;
 
 //initialize random
 CSVMClassifier::CSVMClassifier(){
-   srand(time(NULL)); 
    deepCodebook = new DeepCodebook(&featExtr, &imageScanner, &dataset);
 }
 
 CSVMClassifier::~CSVMClassifier(){
    delete deepCodebook;
+}
+
+bool CSVMClassifier::getGenerateCB(){
+   return codebook.getGenerate();
 }
 
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
@@ -40,8 +43,13 @@ void CSVMClassifier::initSVMs(){
 //read settings file, and pass the settings to respective modules
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
+   fixed_random = settings.fixed_random;
+
+   srand(fixed_random * time(NULL)); 
+
    //analyser.setSettings(settings.analyserSettings);
    imageScanner.setSettings(settings.scannerSettings);
+   imageScanner.setRandom(fixed_random);
    imageScanner.debugOut = settings.debugOut;
    imageScanner.normalOut = settings.normalOut;
    

@@ -44,39 +44,33 @@ int main(int argc,char**argv){
    
    //cout << "started main of CSVM" << endl;
    bool normalOut;
+   bool fixed_random = true;
    if(argc!=2){
       showUsage();
       return 0;
    }
    
-   srand(time(NULL));
    
    CSVMClassifier c;
 
    c.setSettings(argv[1]);
-   normalOut = true ;//c.useOutput();
+   normalOut = c.normalOut;
+   srand(c.fixed_random * time(NULL));
    
    c.dataset.loadDataset("../datasets/");
 
    
   
-   
-   if(normalOut)
-      cout << "constructing codebook" << endl;
-   c.constructCodebook();
-   
-   //cout << "importing codebook" << endl;
-   //c.importCodebook("LAST_USED.bin");
-   
-   //cout << "exporting codebook" << endl;
-   //c.exportCodebook("mnist1000.bin");
-   //return 0;
-
-
-
-////////////////////////////////////////////////////////////////       DO
-   //c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
-////////////////////////////////////////////////////////////////       ALTER (script dependency)
+   if (c.getGenerateCB()){
+      if (normalOut)
+         cout << "constructing codebook" << endl;
+      c.constructCodebook();
+   } else {
+      if (normalOut)
+         cout << "importing codebook" << endl;
+      c.importCodebook("LAST_USED.bin");
+   }
+   c.exportCodebook("LAST_USED.bin");
 
 
    if(normalOut)

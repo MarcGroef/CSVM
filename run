@@ -127,7 +127,6 @@ fi
 		cp ./statData_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./settings ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./R_dataDump_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
 
 		if [ $alert == 1 ] ; then aplay /usr/share/sounds/alsa/Side_Right.wav &> /dev/null &> ./logs/errorLOG ; fi

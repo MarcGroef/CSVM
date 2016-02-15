@@ -194,6 +194,15 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
 	string setting;
 	string method;
 	stream >> setting;
+	if (setting != "generate") {
+		cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+		exit(-1);
+	} else {
+		stream >>setting ;
+		codebookSettings.generate = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
+	}
+
+	stream >> setting;
 	if (setting != "method") {
 		cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
 		exit(-1);
@@ -669,7 +678,7 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       exit(0);
    }
    stream >> value;
-   debugOut = (value == "TRUE");
+   debugOut = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
    
    stream >> type;
    if (type != "normalOut") {
@@ -677,7 +686,15 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       exit(0);
    }
    stream >> value;
-   normalOut = (value == "TRUE");
+   normalOut = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
+
+   stream >> type;
+   if (type != "fixed_random") {
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> value;
+   fixed_random = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
 
 }
 
