@@ -12,7 +12,7 @@ using namespace csvm;
 
 //unions to make life easier while reading/writing binary files
 
-void Codebook::standardize(vector<double>& x){
+void Codebook::standardize(vector<double>& x, double sigmaFix){
    unsigned int size = x.size();
    double mean = 0;
    
@@ -27,7 +27,7 @@ void Codebook::standardize(vector<double>& x){
       sigma += (mean - x[idx]) * (mean - x[idx]);
    
    sigma /= size;
-   sigma = sqrt(sigma + 0.001);
+   sigma = sqrt(sigma + sigmaFix);
    
    for(size_t idx = 0; idx != size; ++idx){
       x[idx] = (x[idx] - mean) / sigma;
@@ -68,8 +68,8 @@ void Codebook::constructCodebook(vector<Feature> featureset){
    //cout << "constructing codebook for label " << labelId << " in ";
    unsigned int nFeatures = featureset.size();
    
-   //for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx)
-     // standardize(featureset[fIdx].content);
+   for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx)
+      standardize(featureset[fIdx].content, 10);
    
    switch(settings.method){
       case LVQ_Clustering:
@@ -236,6 +236,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
       }
 
    }
+   //standardize(activations);
    return activations;
 }
 
@@ -268,7 +269,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
          
             unsigned int pIdx = pY * sqrtP + pX;
-            //standardize(features[pIdx].content);
+            standardize(features[pIdx].content, 10);
             //calculate activation;
             if(settings.simFunction == SOFT_ASSIGNMENT){
                xx = 0;
@@ -342,7 +343,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
 	
       
    }
-   //standardize(activations);
+   standardize(activations, 0.01);
    return activations;
 }
 

@@ -16,7 +16,7 @@ namespace csvm{
    class Patch{
       Image* source;
       int offsetX,offsetY;
-      int width,height;
+      unsigned int width,height;
       bool isSet;
       
       double mean;
@@ -30,7 +30,7 @@ namespace csvm{
       int getX();
       int getY();
       void setArea(int x,int y,int width,int height);
-      unsigned char getPixel(int x,int y,int channel);
+      unsigned char getPixel(unsigned int x, unsigned int y,int channel);
       void setPixel(int x,int y,int channel,unsigned char value);
       int getWidth();
       int getHeight();

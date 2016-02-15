@@ -63,7 +63,7 @@ void Patch::setArea(int x,int y,int width,int height){
 
 //get pixel from image at location in patch
 
-unsigned char Patch::getPixel(int x,int y,int channel){
+unsigned char Patch::getPixel(unsigned int x, unsigned int y,int channel){
    if(x > width || y > height)
       cout << "Patch get picel out of bounds!\n";
    return source->getPixel(offsetX+x,offsetY+y,channel);
@@ -108,6 +108,7 @@ int Patch::getHeight(){
 double Patch::getGreyPixel(int x, int y){
    unsigned char val = source->getGreyPixel(offsetX+x,offsetY+y);
    val = val > 255 ? 255 : val;
+   return (double)val;
    return (double)(val - mean)/ stddev;
 }
 
