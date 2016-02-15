@@ -22,6 +22,10 @@ CSVMClassifier::~CSVMClassifier(){
    delete deepCodebook;
 }
 
+bool CSVMClassifier::getGenerateCB(){
+   return codebook.getGenerate();
+}
+
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
    

@@ -64,6 +64,7 @@ namespace csvm{
       void setSettings(string settingsFile);
       void constructCodebook();
       void constructDeepCodebook();
+      bool getGenerateCB();
       
       void exportCodebook(string filename);
       void importCodebook(string filename);

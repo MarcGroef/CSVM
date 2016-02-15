@@ -183,6 +183,15 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
 	string setting;
 	string method;
 	stream >> setting;
+	if (setting != "generate") {
+		cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+		exit(-1);
+	} else {
+		stream >>setting ;
+		codebookSettings.generate = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
+	}
+
+	stream >> setting;
 	if (setting != "method") {
 		cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
 		exit(-1);

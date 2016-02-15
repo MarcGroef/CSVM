@@ -44,6 +44,7 @@ namespace csvm{
       unsigned int numberVisualWords;
       double similaritySigma;
       SimilarityFunction simFunction;
+      bool generate;
    };
 
    
@@ -59,7 +60,7 @@ namespace csvm{
     unsigned int nClasses;
     void standardize(vector<double>& x);
   public:
-     bool debugOut, normalOut;
+    bool debugOut, normalOut;
     Codebook();
     void constructCodebook(vector<Feature> featureset);
     void setSettings(Codebook_settings s);
@@ -71,6 +72,7 @@ namespace csvm{
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
+    bool getGenerate();
     
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);

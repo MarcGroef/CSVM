@@ -56,6 +56,10 @@ void Codebook::setSettings(Codebook_settings s){
    akmeans.setSettings(s.akmeansSettings);
 }
 
+bool Codebook::getGenerate(){
+   return settings.generate;
+}
+
 Centroid Codebook::getCentroid(int centrIdx){
    return bow[centrIdx];
 }

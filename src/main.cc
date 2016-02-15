@@ -60,23 +60,16 @@ int main(int argc,char**argv){
 
    
   
-   
-   if(normalOut)
-      cout << "constructing codebook" << endl;
-   c.constructCodebook();
-   
-   //cout << "importing codebook" << endl;
-   //c.importCodebook("LAST_USED.bin");
-   
-   //cout << "exporting codebook" << endl;
-   //c.exportCodebook("mnist1000.bin");
-   //return 0;
-
-
-
-////////////////////////////////////////////////////////////////       DO
-   //c.exportCodebook("LAST_USED.bin");///////////////////////////       NOT
-////////////////////////////////////////////////////////////////       ALTER (script dependency)
+   if (c.getGenerateCB()){
+      if (normalOut)
+         cout << "constructing codebook" << endl;
+      c.constructCodebook();
+   } else {
+      if (normalOut)
+         cout << "importing codebook" << endl;
+      c.importCodebook("LAST_USED.bin");
+   }
+   c.exportCodebook("LAST_USED.bin");
 
 
    if(normalOut)
@@ -128,7 +121,7 @@ int main(int argc,char**argv){
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
          if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
@@ -203,7 +196,7 @@ int main(int argc,char**argv){
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
          if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
