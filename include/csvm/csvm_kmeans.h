@@ -14,6 +14,7 @@
 #include "csvm_feature.h"
 #include "csvm_centroid.h"
 
+#include <cstdlib>
 using namespace std;
 
 namespace csvm{

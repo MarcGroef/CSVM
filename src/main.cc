@@ -54,7 +54,7 @@ int main(int argc,char**argv){
    CSVMClassifier c;
 
    c.setSettings(argv[1]);
-   normalOut = c.useOutput();
+   normalOut = true ;//c.useOutput();
    
    c.dataset.loadDataset("../datasets/");
 
@@ -96,7 +96,7 @@ int main(int argc,char**argv){
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-   for(size_t im = 0; im < 200 && im < nImages; ++im){
+   for(size_t im = 0; im < nImages; ++im){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
@@ -128,7 +128,7 @@ int main(int argc,char**argv){
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
          if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
@@ -203,7 +203,7 @@ int main(int argc,char**argv){
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
          if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){

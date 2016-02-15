@@ -29,6 +29,7 @@ namespace csvm{
      unsigned int nClasses;
      unsigned int nCentroids;
      bool L2;
+     bool Exp;
    };
    
    
