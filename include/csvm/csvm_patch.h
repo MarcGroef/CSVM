@@ -8,7 +8,7 @@
 
 #include "csvm_image.h"
 #include <cstdlib>
-
+#include <cmath>
 using namespace std;
 
 namespace csvm{
@@ -18,6 +18,10 @@ namespace csvm{
       int offsetX,offsetY;
       int width,height;
       bool isSet;
+      
+      double mean;
+      double stddev;
+      void analyze();
    public:
       bool debugOut, normalOut;
       Patch(Image* source, int x, int y, int width,int height);
@@ -30,7 +34,7 @@ namespace csvm{
       void setPixel(int x,int y,int channel,unsigned char value);
       int getWidth();
       int getHeight();
-      unsigned char getGreyPixel(int x,int y);
+      double getGreyPixel(int x,int y);
       string getLabel();
       unsigned int getLabelId();
       bool equals(Patch p);

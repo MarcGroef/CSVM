@@ -64,8 +64,8 @@ void Codebook::constructCodebook(vector<Feature> featureset){
    //cout << "constructing codebook for label " << labelId << " in ";
    unsigned int nFeatures = featureset.size();
    
-   for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx)
-      standardize(featureset[fIdx].content);
+   //for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx)
+     // standardize(featureset[fIdx].content);
    
    switch(settings.method){
       case LVQ_Clustering:
@@ -264,7 +264,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          for(size_t pY = qY * quadSize; pY < (qY + 1) * quadSize + (overlap ? 1 : 0); ++pY){
          
             unsigned int pIdx = pY * sqrtP + pX;
-            standardize(features[pIdx].content);
+            //standardize(features[pIdx].content);
             //calculate activation;
             if(settings.simFunction == SOFT_ASSIGNMENT){
                xx = 0;
@@ -338,7 +338,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
 	
       
    }
-   standardize(activations);
+   //standardize(activations);
    return activations;
 }
 

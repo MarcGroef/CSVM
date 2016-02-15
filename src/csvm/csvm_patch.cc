@@ -8,6 +8,8 @@
 using namespace std;
 using namespace csvm;
 
+
+
 //constructor
 Patch::Patch(Image* source, int x, int y, int width, int height){
    this->isSet = true;
@@ -17,6 +19,7 @@ Patch::Patch(Image* source, int x, int y, int width, int height){
    this->height = height;
    this->source = source;
    //cout << "Patch from " << x << ", " << y << ", with = " << width << ", height = " << height << endl;
+   analyze();
 }
 
 //empty constructor
@@ -28,6 +31,27 @@ Patch::Patch(){
 Patch::Patch(Image* source){
    isSet = false;
    this->source = source;
+   analyze();
+}
+
+void Patch::analyze(){
+   mean = 0;
+   
+   for(size_t xIdx = 0; xIdx != width; ++xIdx){
+      for(size_t yIdx = 0; yIdx != height; ++yIdx){
+         mean += getPixel(xIdx, yIdx, 0);
+      }
+   }
+   mean /= (height * width);
+   stddev = 0;
+   
+   for(size_t xIdx = 0; xIdx != width; ++xIdx){
+      for(size_t yIdx = 0; yIdx != height; ++yIdx){
+         stddev += (mean - getPixel(xIdx, yIdx, 0)) * (mean - getPixel(xIdx, yIdx, 0));
+      }
+   }
+   stddev /= (height * width);
+   stddev = sqrt(stddev + 0.001);
 }
 
 void Patch::setArea(int x,int y,int width,int height){
@@ -81,10 +105,10 @@ int Patch::getHeight(){
 }
 
 //get pixel from patch, but converted to grey pixels
-unsigned char Patch::getGreyPixel(int x, int y){
+double Patch::getGreyPixel(int x, int y){
    unsigned char val = source->getGreyPixel(offsetX+x,offsetY+y);
-   
-    return val > 255 ? 255 : val;
+   val = val > 255 ? 255 : val;
+   return (double)(val - mean)/ stddev;
 }
 
 //get label from source-image
