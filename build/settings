@@ -1,23 +1,23 @@
 
 Dataset
 method MNIST
-nTrainImages 5000
-nTestImages 1000
+nTrainImages 500
+nTestImages 100
 imageWidth 36
 imageHeight 36
 
 General
-Classifier SVM
+Classifier CSVM
 Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
 normalOut TRUE
-fixed_random = TRUE
+fixed_random = FALSE
 
 Codebook
-generate FALSE 
+generate FALSE
 method KMEANS
-nClusters 100
+nClusters 50
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -53,7 +53,7 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.000001
-nIterations 5000
+nIterations 1000
 initWeight 0.0000002
 CSVM_C 1000
 L2 FALSE

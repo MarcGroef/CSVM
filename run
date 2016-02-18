@@ -112,8 +112,6 @@ fi
 
 		rm tmp_T.png &> ./logs/errorLOG
 		rm tmp_B.png &> ./logs/errorLOG
-
-		if [ $graph == 1 ] ; then xdg-open overview.png 2> ./logs/errorLOG ; fi
 		
 		if (( $noIters > 1 )) ; then tmpFolderName=$folderName"_"$i ; echo $noIters ; fi
 
@@ -121,13 +119,16 @@ fi
 
 		if [ $tmpFolderName != "LAST_RUN" ] ; then mkdir ./logs/$tmpFolderName &> ./logs/errorLOG ; fi
 
-		cp ./logs/$logName ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./SVM_* ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./overview.png ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./statData_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./settings ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./logs/$logName ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./SVM_* ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./overview.png ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./statData_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -vr ./Weights*/ ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./settings ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
+
+		if [ $graph == 1 ] ; then xdg-open ./logs/$tmpFolderName/overview.png 2> ./logs/errorLOG ; fi
 
 		if [ $alert == 1 ] ; then aplay /usr/share/sounds/alsa/Side_Right.wav &> /dev/null &> ./logs/errorLOG ; fi
 
@@ -135,8 +136,10 @@ fi
 
 	done
 
-	rm ./SVM_* &> ./logs/errorLOG
-	rm ./statData* &> ./logs/errorLOG
-	rm ./R_dataDump* &> ./logs/errorLOG
+	rm -v ./SVM_* &> ./logs/errorLOG
+	rm -v ./overview.png &> ./logs/errorLOG
+	rm -v ./statData* &> ./logs/errorLOG
+	rm -v ./R_dataDump* &> ./logs/errorLOG
+	rm -rv ./Weights* &> ./logs/errorLOG
 
 fi

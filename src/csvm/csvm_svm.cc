@@ -191,7 +191,9 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    ss << "statData_SVM-" << classId << ".csv";
    string fName = ss.str();
    statDatFile.open ( fName.c_str() );
-   statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
+   statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage";
+   for (int i=0; i<simKernel.size(); ++i) statDatFile << ",W" << i;
+   statDatFile << endl ;
    if (debugOut) cout << "\n\nSVM " << classId << ":\t\t\t(data written to " << fName << ")\n" << endl;
    //###############################################
    
@@ -285,7 +287,10 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
       stdDevMaxOutNeg = sqrt(stdDevMaxOutNeg / nMaxNeg);
       stdDevMinOutPos = sqrt(stdDevMinOutPos / nMinPos);
       stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
-      statDatFile << round << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOut << "," << maxOut << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
+      statDatFile << round << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOut << "," << maxOut << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100;
+      for (int i=0; i<simKernel.size(); ++i) statDatFile << "," << alphaData[i];
+      statDatFile << endl ;
+
       //###############################################
     
    }

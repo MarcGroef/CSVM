@@ -56,7 +56,9 @@ using namespace csvm;
          ss << "statData_SVM-" << svmIdx << ".csv";
          string fName = ss.str();
          statDatFile.open ( fName.c_str() );
-         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
+         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage";
+         for (int i=0; i<settings.nCentroids; ++i) statDatFile << ",W" << i;
+         statDatFile << endl ;
          if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
          
@@ -224,7 +226,9 @@ using namespace csvm;
             stdDevMaxOutNeg = sqrt(stdDevMaxOutNeg / nMaxNeg);
             stdDevMinOutPos = sqrt(stdDevMinOutPos / nMinPos);
             stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
-            statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
+            statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100;
+            for (int i=0; i<settings.nCentroids; ++i) statDatFile << "," << weights[svmIdx][i];
+            statDatFile << endl ;
             //###############################################
 
             // online trainings output

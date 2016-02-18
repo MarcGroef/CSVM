@@ -122,7 +122,7 @@ int main(int argc,char**argv){
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
          if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
+         else                                        cout << i << "\t\t";   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
@@ -197,7 +197,7 @@ int main(int argc,char**argv){
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
          if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
+         else                                        cout << i << "\t\t";   
       }
       cout << "Average:" << "\n\n    \tActual:\n";
       for (size_t i=0; i<nClasses; ++i){
