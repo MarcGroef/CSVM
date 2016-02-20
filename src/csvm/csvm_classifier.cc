@@ -221,7 +221,7 @@ void CSVMClassifier::trainConvSVMs(){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
-   convSVM.train(datasetActivations, &dataset);
+   convSVM.train(datasetActivations, &dataset, codebook);
 }
 
 
@@ -355,7 +355,7 @@ void CSVMClassifier::trainClassicSVMs(){
 
    
    for(size_t cl = 0; cl < nClasses; ++cl){
-      svms[cl].trainClassic(dataKernel, &dataset);  
+      svms[cl].trainClassic(dataKernel, &dataset, datasetActivations);  
    }
    classicTrainActivations = datasetActivations;
 }

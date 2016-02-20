@@ -29,6 +29,7 @@ graph=1
 settings="settings"
 memo=0
 folderName="LAST_RUN"
+calcStat=0
 
 while [ "$1" != "" ]; do
 
@@ -51,6 +52,8 @@ while [ "$1" != "" ]; do
         -l | --log      )       log=0
                                 ;;
         -g | --graph    )       graph=0
+                                ;;
+        -c | --calcStat )       calcStat=1
                                 ;;
         -d | --document )       document=1
                                 shift
@@ -104,7 +107,11 @@ fi
    			echo ""
 		fi
 
-		R --no-save < ../genRplots &> ./logs/errorLOG
+		if [ $calcStat == 1 ] ; then
+			R --no-save < ../genAllRplots &> ./logs/errorLOG
+		else
+			R --no-save < ../genRplots &> ./logs/errorLOG
+		fi
 
 		convert +append SVM_5.png SVM_6.png SVM_7.png SVM_8.png SVM_9.png tmp_B.png &> ./logs/errorLOG
 		convert +append SVM_0.png SVM_1.png SVM_2.png SVM_3.png SVM_4.png tmp_T.png &> ./logs/errorLOG
@@ -115,7 +122,7 @@ fi
 		
 		if (( $noIters > 1 )) ; then tmpFolderName=$folderName"_"$i ; echo $noIters ; fi
 
-		if [ $folderName == "LAST_RUN" ] ; then rm logs/LAST_RUN/* 2> ./logs/errorLOG ; fi
+		if [ $folderName == "LAST_RUN" ] ; then rm -rv logs/LAST_RUN/* &> ./logs/errorLOG ; fi
 
 		if [ $tmpFolderName != "LAST_RUN" ] ; then mkdir ./logs/$tmpFolderName &> ./logs/errorLOG ; fi
 
@@ -126,6 +133,7 @@ fi
 		cp -vr ./Weights*/ ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp -v ./settings ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp -v ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp -v ./ntroids.csv ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp -v ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
 
 		if [ $graph == 1 ] ; then xdg-open ./logs/$tmpFolderName/overview.png 2> ./logs/errorLOG ; fi
@@ -139,7 +147,7 @@ fi
 	rm -v ./SVM_* &> ./logs/errorLOG
 	rm -v ./overview.png &> ./logs/errorLOG
 	rm -v ./statData* &> ./logs/errorLOG
-	rm -v ./R_dataDump* &> ./logs/errorLOG
+	rm -v ./centroids.csv &> ./logs/errorLOG
 	rm -rv ./Weights* &> ./logs/errorLOG
 
 fi

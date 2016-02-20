@@ -171,7 +171,7 @@ void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset
    else 
       bias /= total;
 }
-void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
+void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds, vector < vector <double> > datasetActivations){
    
    double sumDeltaAlpha = 1000.0;
    double prevSumDeltaAlpha = 100.0;
@@ -187,13 +187,18 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    minOut = 0.0;
    avOut  = 0.0;
    ofstream statDatFile;
+   ofstream statDatFile2;
    stringstream ss;
    ss << "statData_SVM-" << classId << ".csv";
    string fName = ss.str();
    statDatFile.open ( fName.c_str() );
+   fName = "centroids.csv";
+   statDatFile2.open ( fName.c_str() );
    statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage";
    for (int i=0; i<simKernel.size(); ++i) statDatFile << ",W" << i;
    statDatFile << endl ;
+   for (int i=0; i<datasetActivations[0].size(); ++i) statDatFile2 << (i==0 ? "" : ",") << "C" << i;
+   statDatFile2 << endl ;
    if (debugOut) cout << "\n\nSVM " << classId << ":\t\t\t(data written to " << fName << ")\n" << endl;
    //###############################################
    
@@ -244,7 +249,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
             out += alphaData[dIdx1] * yData1 * simKernel[kernelIdx0][kernelIdx1];
 
             sum1 += alphaData[dIdx0] * alphaData[dIdx1] * yData0 *  yData1 * simKernel[kernelIdx0][kernelIdx1];
-         }
+         } //dIdx1
 
          //############ Logging functions ################
          if (out > 0)  { maxOut += out; ++nMax; }
@@ -254,7 +259,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
          wrong += (out * yData0 <= 0);
          //###############################################
             
-      }
+      } //dIdx0
       objective = sum0 - 0.5 * sum1;
          
       if(normalOut && round % 100 == 0 )cout << "SVM " << classId << " training round " << round << "\tScore: " << float (right / (right+wrong) * 100) << "\t  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
@@ -293,11 +298,19 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
 
       //###############################################
     
-   }
+   } //round
 
    calculateBiasClassic(simKernel, ds);
-   //for(size_t aIdx = 0; aIdx < alphaData.size(); ++aIdx)
-     //    cout << "Alpha " << aIdx << " = " << alphaData[aIdx] << endl;
+
+   //############ Logging functions ################ 
+   for (size_t i = 0; i < datasetActivations.size(); ++i){
+      for (size_t j = 0; j < datasetActivations[i].size(); ++j)
+         statDatFile2 << (j==0 ? "" : ",") << datasetActivations[i][j];
+      statDatFile2 << endl;
+   }
+   statDatFile2.close();
+   //###############################################
+
 }
 
 

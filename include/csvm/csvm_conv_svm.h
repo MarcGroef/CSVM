@@ -53,7 +53,7 @@ namespace csvm{
       bool debugOut, normalOut;
       void setSettings(ConvSVMSettings s);
       
-      void train(vector< vector<double> >& activations, CSVMDataset* ds);
+      void train(vector< vector<double> >& activations, CSVMDataset* ds, Codebook cb);
       unsigned int classify(vector<double>& activations);
 
    };

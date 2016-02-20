@@ -33,7 +33,7 @@ using namespace csvm;
 
 
    // training
-   void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
+   void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds, Codebook cb){
       
       unsigned int nData = activations.size();
       settings.nCentroids = activations[0].size();
@@ -237,9 +237,25 @@ using namespace csvm;
 
          }//itIdx
          
-        statDatFile.close();  // logfile
+         statDatFile.close();  // logfile
          
+
       }//svmIdx
+
+      //############ Logging functions ################
+      stringstream ss;
+      ss << "centroids" << ".csv";
+      string fName = ss.str();
+      statDatFile.open ( fName.c_str() );
+      for (int i=0; i<cb.getCentroid(0).content.size(); ++i) statDatFile << (i==0 ? "" : ",") << "Dim_" << i;
+      statDatFile << endl ;
+      for (int i=0; i<settings.nCentroids; ++i){
+         for (int j=0; j<cb.getCentroid(i%cb.getNUniqueCentroids()).content.size(); ++j){
+            statDatFile << (j==0 ? "":",") << cb.getCentroid(i%cb.getNUniqueCentroids()).content[j];
+}         statDatFile << endl;
+      }
+      statDatFile.close();  // logfile
+      //###############################################
    }
    
 

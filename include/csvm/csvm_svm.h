@@ -63,7 +63,7 @@ namespace csvm{
      void setSettings(SVM_Settings s);
      
      //functions for the textbook KKT-SVM
-     void trainClassic(vector<vector<double> >& simKernel, CSVMDataset* ds);
+     void trainClassic(vector<vector<double> >& simKernel, CSVMDataset* ds, vector < vector <double> > datasetActivations);
      double classifyClassic(vector<double> f, vector< vector<double > >& datasetActivations, CSVMDataset* cb);
      
      

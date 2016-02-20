@@ -92,6 +92,9 @@ unsigned int Codebook::getNClasses(){
       return nClasses;
 }
 
+unsigned int Codebook::getNUniqueCentroids() {
+   return bow.size();
+}
 
 unsigned int Codebook::getNCentroids(){
    return settings.numberVisualWords;

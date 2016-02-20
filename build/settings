@@ -1,13 +1,13 @@
 
 Dataset
 method MNIST
-nTrainImages 500
-nTestImages 100
+nTrainImages 10000
+nTestImages 5000
 imageWidth 36
 imageHeight 36
 
 General
-Classifier CSVM
+Classifier SVM
 Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
@@ -25,7 +25,7 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 cellSize 6
-cellStride 2
+cellStride 6
 padding Identity
 useColourPixel false
 weightRatio 0.5

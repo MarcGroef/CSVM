@@ -70,6 +70,7 @@ namespace csvm{
     void importCodebook(string filename);
     unsigned int getNClasses();
     unsigned int getNCentroids();
+    unsigned int getNUniqueCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
     bool getGenerate();

@@ -22,7 +22,6 @@ rangeObj = c(0, maxRangeObj)
 rangeOut = c(minRangeOut, maxRangeOut)
 rangeScore = c(0, maxRangeScore)
 
-
 for(i in 0:9)
 
 {
@@ -56,19 +55,5 @@ for(i in 0:9)
 	text(round(d[length(d[,1]),1]*0.8), d[length(d[,2]),5], paste("max: ", signif((d[length(d[,2]),5]),2), sep=""))
 
 	dev.off()
-
-	dir.create(paste("Weights_SVM-",i,sep=""))
-	setwd(paste("./Weights_SVM-",i,sep=""))
-
-	for(j in 10:length(d[1,]))
-	{
-		png(filename=paste("W_", j-10, ".png", sep=""))
-		
-		with(d, plot(data.frame(c(d[1], d[j])), ylim=c(min(d[,10:length(d[1,])]),max(d[,10:length(d[1,])])), type="l", col="red3", main=paste("SVM-",i,":   Weight ", j-10), xlab=n[1], ylab=n[j]))
-	
-		dev.off()
-	}
-
-	setwd("../")
 
 }
