@@ -53,9 +53,12 @@ void CSVMClassifier::setSettings(string settingsFile){
    dataset.debugOut = settings.debugOut;
    dataset.normalOut = settings.normalOut;
    
+   settings.codebookSettings.kmeansSettings.normalOut = normalOut;
    codebook.setSettings(settings.codebookSettings);
    codebook.debugOut = settings.debugOut;
    codebook.normalOut = settings.normalOut;
+   
+   
    
    featExtr.setSettings(settings.featureSettings);
    featExtr.debugOut = settings.debugOut;

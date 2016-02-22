@@ -81,7 +81,8 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    
    
    for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
-
+      if(settings.normalOut)
+         cout << "KMeans iteration " << itx << "/" << settings.nIter << endl;
       prevTotalDistance = totalDistance;
       totalDistance = 0.0;
       

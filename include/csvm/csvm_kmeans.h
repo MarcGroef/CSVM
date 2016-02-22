@@ -23,6 +23,7 @@ namespace csvm{
       int nClusters;
       double alpha;
       unsigned int nIter;
+      bool normalOut;
    };
   
  
