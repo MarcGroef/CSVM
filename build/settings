@@ -35,6 +35,12 @@ patchWidth 6
 scanStride 1
 nRandomPatches 200000
 
+MLP
+nHiddenUnits 
+nInputUnits
+nOutputUnits
+
+
 SVM
 Kernel LINEAR
 AlphaDataInit 0.0000002
