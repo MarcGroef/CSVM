@@ -11,7 +11,7 @@ namespace csvm{
  struct MLPSettings{
     //add your settings variables here (stuff you want to set through the settingsfile)
     unsigned int nHiddenUnits;
- }
+ };
    
    
    
