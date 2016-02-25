@@ -11,6 +11,7 @@ using namespace csvm;
 
 void MLPerceptron::setSettings(MLPSettings& s){
    this->settings = s;
+   cout << "settings set\n";
 }
 
 

@@ -166,13 +166,15 @@ void CSVMClassifier::trainMLP(){
 
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
+   cout << "hoi\n";
    if(settings.codebook == CB_DEEPCODEBOOK){
       constructDeepCodebook();
       return;
    }else if(settings.codebook == CB_MLP){
+      cout << "should be training the mlp...\n";
       trainMLP();
       return;
-   }
+   } 
       
       
    //unsigned int nClasses = dataset.getNumberClasses();
@@ -318,6 +320,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
       
       patches.clear();
+      cout << "class: train mlp\n";
       dataActivation = mlp.getActivations(dataFeatures);  
    }
 

@@ -680,8 +680,9 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 	else if (value == "DEEPCODEBOOK") {
 		codebook = CB_DEEPCODEBOOK;
 	}
-	else if(value == "MLP")
+	else if(value == "MLP"){
       codebook = CB_MLP;
+   }
 	else {
 		cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
 		exit(0);
