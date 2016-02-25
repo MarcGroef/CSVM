@@ -19,14 +19,15 @@ namespace csvm{
    
    
  class MLP{
+ private:
     //class variables
-    
+    MLPSettings settings;
     
  public:
     void train(vector<Feature>& randomFeatures);
     
     vector<double> getActivations(vector<Feature>& imageFeatures);
-    
+    void setSettings(MLPSettings& s);
  };
    
 }
