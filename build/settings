@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 6000
-nTestImages 1000
+nTrainImages 50000
+nTestImages 10000
 imageWidth 0
 imageHeight 0
 
@@ -14,19 +14,19 @@ debugOut FALSE
 normalOut TRUE
 
 Codebook
-generate FALSE 
+generate FALSE
 method KMEANS
 nClusters 400
-nIterations 20
+nIterations 25
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method CLEAN
 cellSize 6
-cellStride 2
+cellStride 1
 padding None
-useColourPixel false
+useColourPixel true
 weightRatio 0.5
 
 ImageScanner
