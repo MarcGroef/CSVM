@@ -21,6 +21,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){
    cout << "get activation vector from image patches\n";
-   return vector<double>();
+   return vector<double>(10,0);
 }
 

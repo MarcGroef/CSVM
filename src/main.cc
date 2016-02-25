@@ -59,7 +59,7 @@ int main(int argc,char**argv){
    c.dataset.loadDataset("../datasets/");
 
    
-  
+   /* BoW import export. Not needed for MLP
    if (c.getGenerateCB()){
       if (normalOut)
          cout << "constructing codebook" << endl;
@@ -70,8 +70,8 @@ int main(int argc,char**argv){
       c.importCodebook("LAST_USED.bin");
    }
    c.exportCodebook("LAST_USED.bin");
-
-
+   */
+   c.constructCodebook();
    if(normalOut)
       cout << "initializing SVMs" << endl;
    c.initSVMs();
