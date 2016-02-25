@@ -14,9 +14,7 @@ namespace csvm{
     unsigned int nInputUnits;
     unsigned int nOutputUnits;
  };
-
-   
-   
+ 
    
  class MLP{
     //class variables
