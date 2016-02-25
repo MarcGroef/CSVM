@@ -28,6 +28,7 @@
 //#include "csvm_cluster_analyser.h"
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
+#include "csvm_mlp.h"
 
 using namespace std;
 
@@ -47,6 +48,7 @@ namespace csvm{
    enum CODEBOOK{
       CB_CODEBOOK,
       CB_DEEPCODEBOOK,
+      MLP
    };
 
    //this class should be able to read a settingsfile, or write a default settings file.
@@ -68,7 +70,7 @@ namespace csvm{
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
-      
+      MLPSettings mlpSettings;
       //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();
@@ -81,6 +83,7 @@ namespace csvm{
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
       void parseConvSVMSettings(ifstream& stream);
+      void parseMLPSettings(ifstream& stream);
       void parseGeneralSettings(ifstream& stream);
    };
 

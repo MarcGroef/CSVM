@@ -5,3 +5,10 @@
 //desired output
 //backprogation algorithm
 //input vector
+
+using namespace std;
+using namespace csvm;
+
+void MLPerceptron::setSettings(MLPSettings& s){
+   this->settings = s;
+}
