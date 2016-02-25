@@ -64,6 +64,7 @@ namespace csvm{
       ~CSVMClassifier();
       void setSettings(string settingsFile);
       void constructCodebook();
+      void trainMLP();
       void constructDeepCodebook();
       bool getGenerateCB();
       

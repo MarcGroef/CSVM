@@ -616,11 +616,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
 void CSVMSettings::parseMLPSettings(ifstream& stream){
    string type, setting;
    
-   stream >> type;
-   if (type != "MLP") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
+   
    
    stream >> setting;
    if (setting == "nHiddenUnits") {
@@ -684,6 +680,8 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 	else if (value == "DEEPCODEBOOK") {
 		codebook = CB_DEEPCODEBOOK;
 	}
+	else if(value == "MLP")
+      codebook = CB_MLP;
 	else {
 		cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
 		exit(0);
@@ -738,6 +736,8 @@ void CSVMSettings::readSettingsFile(string dir) {
 	parseFeatureExtractorSettings(file);
 	while (getline(file, line) && line != "ImageScanner");
 	parseImageScannerSettings(file);
+   while (getline(file, line) && line != "MLP");
+   parseMLPSettings(file);
 	while (getline(file, line) && line != "SVM");
 	parseSVMSettings(file);
 	while (getline(file, line) && line != "LinNet");

@@ -146,12 +146,35 @@ unsigned int CSVMClassifier::getNoClasses(){
 }
 
 
+void CSVMClassifier::trainMLP(){
+  unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+   
+   vector<Feature> pretrainDump;
+
+
+   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+      
+      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
+      Feature newFeat = featExtr.extract(patch);
+      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+
+      
+   }
+   mlp.train(pretrainDump);
+}
+
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){
    if(settings.codebook == CB_DEEPCODEBOOK){
       constructDeepCodebook();
       return;
+   }else if(settings.codebook == CB_MLP){
+      trainMLP();
+      return;
    }
+      
+      
    //unsigned int nClasses = dataset.getNumberClasses();
    
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
@@ -218,9 +241,35 @@ void CSVMClassifier::trainConvSVMs(){
          //get cluster activations for the features
          datasetActivations.push_back(dataActivation);
          dataActivation.clear();
-     }else{
+     }else if(settings.codebook == CB_DEEPCODEBOOK){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
-     }
+     }else if(settings.codebook == CB_MLP)
+        
+        patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
+         dataActivation.clear();
+         dataFeatures.clear();
+         //clear previous features
+         
+         //allocate for new features
+         dataFeatures.reserve(patches.size());
+         
+         //extract features from all patches
+         for(size_t patch = 0; patch < patches.size(); ++patch){
+            dataFeatures.push_back(featExtr.extract(patches[patch]));
+         }
+         
+         patches.clear();
+         
+         //get cluster activations for the features
+         dataActivation = mlp.getActivations(dataFeatures); 
+         dataFeatures.clear();
+      
+         patches.clear();
+         
+
+         //get cluster activations for the features
+         datasetActivations.push_back(dataActivation);
+         dataActivation.clear();
    }
    convSVM.train(datasetActivations, &dataset);
 }
@@ -250,8 +299,26 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
       
       patches.clear();
       dataActivation = codebook.getActivations(dataFeatures); 
-   }else{      
+   }else if(settings.codebook == CB_DEEPCODEBOOK){      
       dataActivation = deepCodebook->getActivations(image);
+   }else if(settings.codebook == CB_MLP){
+      vector<Patch> patches;
+      vector<Feature> dataFeatures;
+      
+      //extract patches
+      patches = imageScanner.scanImage(image);
+         
+      //clear previous features
+      dataFeatures.clear();
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+      
+      patches.clear();
+      dataActivation = mlp.getActivations(dataFeatures);  
    }
 
    return convSVM.classify(dataActivation);

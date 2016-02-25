@@ -48,7 +48,7 @@ namespace csvm{
    enum CODEBOOK{
       CB_CODEBOOK,
       CB_DEEPCODEBOOK,
-      MLP
+      CB_MLP,
    };
 
    //this class should be able to read a settingsfile, or write a default settings file.

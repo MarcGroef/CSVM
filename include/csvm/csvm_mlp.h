@@ -1,6 +1,7 @@
 #ifndef CSVM_MLP_H
 #define CSVM_MLP_H
 
+#include <iostream>
 #include <vector>
 #include "csvm_feature.h"
 

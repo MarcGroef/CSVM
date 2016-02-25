@@ -36,9 +36,9 @@ scanStride 1
 nRandomPatches 200000
 
 MLP
-nHiddenUnits 
-nInputUnits
-nOutputUnits
+nHiddenUnits 10
+nInputUnits 10
+nOutputUnits 10
 
 
 SVM
