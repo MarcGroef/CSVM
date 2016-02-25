@@ -24,13 +24,14 @@
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
 #include "csvm_conv_svm.h"
-
+#include "csvm_mlp.h"
 
 using namespace std;
 namespace csvm{
    
    class CSVMClassifier{
       CSVMSettings settings;
+      MLPerceptron mlp;
       Codebook codebook;
       DeepCodebook* deepCodebook;
       ImageScanner imageScanner;

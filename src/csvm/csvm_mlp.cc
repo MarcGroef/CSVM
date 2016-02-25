@@ -3,6 +3,6 @@
 using namespace std;
 using namespace csvm;
 
-void MLP::setSettings(MLPSettings& s){
+void MLPerceptron::setSettings(MLPSettings& s){
    this->settings = s;
 }
