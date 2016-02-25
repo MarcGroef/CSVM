@@ -33,7 +33,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 2000
 
 MLP
 nHiddenUnits 10

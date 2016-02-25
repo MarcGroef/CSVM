@@ -737,8 +737,8 @@ void CSVMSettings::readSettingsFile(string dir) {
 	parseFeatureExtractorSettings(file);
 	while (getline(file, line) && line != "ImageScanner");
 	parseImageScannerSettings(file);
-   while (getline(file, line) && line != "MLP");
-   parseMLPSettings(file);
+    while (getline(file, line) && line != "MLP");
+    parseMLPSettings(file);
 	while (getline(file, line) && line != "SVM");
 	parseSVMSettings(file);
 	while (getline(file, line) && line != "LinNet");
