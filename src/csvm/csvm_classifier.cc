@@ -73,6 +73,8 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.setSettings(settings.convSVMSettings);
    convSVM.debugOut = settings.debugOut;
    convSVM.normalOut = settings.normalOut;
+   
+   mlp.setSettings(settings.mlpSettings);
 }
 
 //Train the system
