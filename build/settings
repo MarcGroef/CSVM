@@ -14,11 +14,7 @@ debugOut FALSE
 normalOut TRUE
 
 Codebook
-<<<<<<< HEAD
 generate TRUE 
-=======
-generate TRUE
->>>>>>> 92ebef3796f8bf0c14de932f8ea50967ed202671
 method KMEANS
 nClusters 400
 nIterations 20
@@ -37,7 +33,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 2000
 
 MLP
 nHiddenUnits 10
