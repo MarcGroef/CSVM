@@ -6,6 +6,7 @@ using namespace Eigen;
 
 
 void Whitener::analyze(vector<Feature>& collection){
+   cout << "analyzing features....\n";
    size_t collectionSize = collection.size();
    
    //substract mean from data.
@@ -43,18 +44,27 @@ void Whitener::analyze(vector<Feature>& collection){
    //now get the eigenvectors of this thing.
    EigenSolver<MatrixXd> es(sigma, true);
    eigenVectors = es.eigenvectors();
-   
+   cout << "I have eigen vectors me\n";
    
    VectorXd t = MatrixXd((MatrixXd(es.eigenvalues().real().asDiagonal()).array() + 0.1).cwiseInverse().array().sqrt()).diagonal();
-   pc = eigenVectors.real() * t;// * eigenVectors.real().adjoint();
+   pc = (eigenVectors.real() * t ).transpose() * (eigenVectors.real().inverse());
+   //cout << "nRows: "  << MatrixXd(eigenVectors.real() * t).rows() << ", nCols = " << MatrixXd(eigenVectors.real() * t).cols() <<endl;// * (eigenVectors.real().adjoint());
+   //cout << "nRows: "  << (eigenVectors.real().adjoint()).rows() << ", nCols = " << (eigenVectors.real().adjoint()).cols() <<endl;//
    cout << "Done with PCA!\n";
+   cout << "nRows: "  << pc.rows() << ", nCols = " << pc.cols() << endl;//
 }
 
 void Whitener::transform(Feature& f){
    size_t dims = f.content.size();
+   //cout << "trasnform!\n";
+   double mean = 0;
    
    for(size_t dIdx = 0; dIdx != dims; ++dIdx){
-      f.content[dIdx] -= means[dIdx];
+      mean += f.content[dIdx];
+   }
+   mean /= dims;
+   for(size_t dIdx = 0; dIdx != dims; ++dIdx){
+      f.content[dIdx] -= mean;
    }
    
    
@@ -62,10 +72,13 @@ void Whitener::transform(Feature& f){
    double* data = f.content.data();
    VectorXd m = Map<VectorXd>(data, dims);
    
-   VectorXd res = m * pc;
+   //cout << m << endl;
+   //return;
+   VectorXd res = m.transpose() * pc;
    
 
    f.content = vector<double>(res.data(), res.data() + res.rows() * res.cols());
-
+   if(f.content.size() != dims)
+      cout << "WARNING: Whitener::transform() I/O dims dont match!\n";
 
 }

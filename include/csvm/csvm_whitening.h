@@ -12,7 +12,6 @@ using namespace Eigen;
 namespace csvm{
    
    class Whitener{
-      vector<double> means;
       //vector< vector<double> > sigma;
       MatrixXd sigma;
       MatrixXcd eigenVectors;
