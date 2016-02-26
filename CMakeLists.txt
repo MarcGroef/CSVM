@@ -41,6 +41,7 @@ src/csvm/csvm_annotated_kmeans.cc
 src/csvm/csvm_conv_svm.cc
 src/csvm/csvm_merge_descriptor.cc
 src/csvm/csvm_interpolator.cc
+src/csvm/csvm_whitening.cc
 ##png library
 src/lodepng/lodepng.cc
 
