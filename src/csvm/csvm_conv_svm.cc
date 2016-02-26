@@ -41,6 +41,8 @@ using namespace csvm;
       
       weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
       biases  = vector<double>(settings.nClasses, 0);
+      double objective = 0;
+      double prevObjective = 0;
 
       //############ Logging functions ################
       maxOuts = vector<double>(settings.nClasses, 0);
@@ -191,7 +193,8 @@ using namespace csvm;
             //calculate objective function
 
             // calculating first term of objective function
-            double objective = 0;
+            prevObjective = objective;
+            objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
             }
@@ -234,6 +237,14 @@ using namespace csvm;
             // online trainings output
             if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
             if(debugOut)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
+
+
+// TMP STOPCRITERIUM:
+
+if (abs(prevObjective - objective) < prevObjective * 0.00001) break;
+
+// _________________
+
 
          }//itIdx
          
