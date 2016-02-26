@@ -4,6 +4,8 @@
 #include <time.h>
 #include <cstdlib>
 
+#include <Eigen/Dense>
+
 
 #include <csvm/csvm_interpolator.h>
 /*Optimze technique
@@ -16,6 +18,7 @@
 
 using namespace csvm;
 using namespace std;
+
 
 void showUsage(){
    cout << "CSVM: An experimental platform for the Convolutional Support Vector Machine architecture\n" 
@@ -41,7 +44,9 @@ void printKernel(vector< vector<Feature> > kernels){
 }
 
 int main(int argc,char**argv){
+
    
+
    //cout << "started main of CSVM" << endl;
    bool normalOut;
    if(argc!=2){

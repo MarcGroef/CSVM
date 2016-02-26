@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (CSVM)
 
+
+
 add_executable(
 CSVM
 
@@ -51,6 +53,7 @@ src/lodepng/lodepng.cc
 #src/dnn/dnn_weights.c
 
 )
+##add_subdirectory(include/Eigen)
 
 #find_package(SWIG REQUIRED)
 #include(${SWIG_USE_FILE})
