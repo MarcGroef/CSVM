@@ -16,33 +16,29 @@ normalOut TRUE
 Codebook
 generate TRUE
 method KMEANS
-<<<<<<< HEAD
-nClusters 400
+nClusters 20
 nIterations 150
-=======
-nClusters 100
-nIterations 10
->>>>>>> 57483edfbb9d5250a99a1dab9519ecb1365ab1ea
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method CLEAN
+method HOG
+nBins 6
 cellSize 6
-cellStride 1
+cellStride 3
+patchSize 14
 padding None
 useColourPixel true
-weightRatio 0.5
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing norm
+debugLevel 0
 
 ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-<<<<<<< HEAD
-nRandomPatches 500000
-=======
-nRandomPatches 2000
->>>>>>> 57483edfbb9d5250a99a1dab9519ecb1365ab1ea
+nRandomPatches 50000
 
 SVM
 Kernel LINEAR
