@@ -17,7 +17,7 @@ Codebook
 generate FALSE
 method KMEANS
 nClusters 400
-nIterations 25
+nIterations 150
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
@@ -33,7 +33,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 200000
+nRandomPatches 500000
 
 SVM
 Kernel LINEAR
@@ -51,7 +51,7 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000002
+learningRate 0.0000005
 nIterations 2000
 initWeight 0.000002
 CSVM_C 500
