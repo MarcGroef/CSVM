@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 50000
-nTestImages 10000
+nTrainImages 500
+nTestImages 100
 imageWidth 0
 imageHeight 0
 
@@ -14,10 +14,15 @@ debugOut FALSE
 normalOut TRUE
 
 Codebook
-generate FALSE
+generate TRUE
 method KMEANS
+<<<<<<< HEAD
 nClusters 400
 nIterations 150
+=======
+nClusters 100
+nIterations 10
+>>>>>>> 57483edfbb9d5250a99a1dab9519ecb1365ab1ea
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
@@ -33,7 +38,11 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
+<<<<<<< HEAD
 nRandomPatches 500000
+=======
+nRandomPatches 2000
+>>>>>>> 57483edfbb9d5250a99a1dab9519ecb1365ab1ea
 
 SVM
 Kernel LINEAR
