@@ -68,12 +68,12 @@ void Codebook::constructCodebook(vector<Feature> featureset){
    //cout << "constructing codebook for label " << labelId << " in ";
    unsigned int nFeatures = featureset.size();
    
-   w.analyze(featureset);
+   //w.analyze(featureset);
    
-   for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx){
-      standardize(featureset[fIdx].content, 10);
-      w.transform(featureset[fIdx]);
-   }
+   //for(size_t fIdx = 0; fIdx != nFeatures; ++fIdx){
+   //   standardize(featureset[fIdx].content, 10);
+   //   w.transform(featureset[fIdx]);
+   //}
    switch(settings.method){
       case LVQ_Clustering:
          //bow[labelId] = lvq.cluster(featureset, labelId, settings.numberVisualWords, 0.1,120);

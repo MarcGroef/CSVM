@@ -35,11 +35,11 @@ vector<Patch> ImageScanner::scanImage(Image* image){
    if(scanWidth == 0 || scanHeight == 0){
       return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
    }
-
+  // cout << "********** -- new extraction -- *********************\n";
   
    for(size_t x = 0; x + settings.patchWidth  <= image->getWidth(); x += settings.stride){
       for(size_t y = 0; y + settings.patchHeight  <= image->getHeight(); y += settings.stride){
-         
+         //cout << "extracting patch at " << x  << ", " << y << endl;
          patches.push_back(Patch(image, x, y, settings.patchWidth, settings.patchHeight));
          
       }
