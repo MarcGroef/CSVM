@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 500
-nTestImages 100
+nTrainImages 5000
+nTestImages 1000
 imageWidth 0
 imageHeight 0
 
@@ -18,8 +18,8 @@ generate TRUE
 standardize TRUE
 whitening FALSE
 method KMEANS
-nClusters 20
-nIterations 10
+nClusters 400
+nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
@@ -37,10 +37,10 @@ postprocessing L2
 debugLevel 0
 
 ImageScanner
-patchHeight 14
-patchWidth 14
+patchHeight 6
+patchWidth 6
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR
@@ -58,9 +58,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.0000001
-nIterations 10000
-initWeight 0.000002
-CSVM_C 200
+learningRate 0.000002
+nIterations 1000
+initWeight 0.00002
+CSVM_C 1000
 L2 FALSE
 

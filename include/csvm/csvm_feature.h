@@ -16,10 +16,10 @@ using namespace std;
 namespace csvm{
   
   class Feature{
-    
-    
+      
+      
   public:
-     bool debugOut, normalOut;
+      bool debugOut, normalOut;
       vector< double> content;
       string label;
       int labelId;

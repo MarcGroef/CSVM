@@ -7,7 +7,7 @@ using namespace Eigen;
 
 void Whitener::analyze(vector<Feature>& collection){
    cout << "analyzing features....\n";
-   return;
+   //return;
    size_t collectionSize = collection.size();
    
    //substract mean from data.
@@ -45,10 +45,14 @@ void Whitener::analyze(vector<Feature>& collection){
    //now get the eigenvectors of this thing.
    EigenSolver<MatrixXd> es(sigma, true);
    eigenVectors = es.eigenvectors();
+   MatrixXd eigenvalues = es.eigenvalues().real();
+   cout << "eigenVectors: nRows: "  << eigenVectors.rows() << ", nCols = " << eigenVectors.cols() << endl;// * (eigenVectors.real().adjoint());
+   cout << "eigenvalues: nRows: "  << eigenvalues.rows() << ", nCols = " << eigenvalues.cols() << endl;// * (eigenVectors.real().adjoint());
    cout << "I have eigen vectors me\n";
-   return;
-   //VectorXd t = MatrixXd((MatrixXd(es.eigenvalues().real().asDiagonal()).array() + 0.1).cwiseInverse().array().sqrt()).diagonal();
-   //pc = (eigenVectors.real() * t ).transpose() * (eigenVectors.real().inverse());
+   //return;
+   MatrixXd t = MatrixXd((eigenvalues.array() + 0.1).cwiseInverse().sqrt()).asDiagonal();
+   cout << "T: nRows: "  << t.rows() << ", nCols = " << t.cols() <<endl;// * (eigenVectors.real().adjoint());
+   pc = (eigenVectors.real() * t ) * (eigenVectors.real().adjoint());
    //cout << "nRows: "  << MatrixXd(eigenVectors.real() * t).rows() << ", nCols = " << MatrixXd(eigenVectors.real() * t).cols() <<endl;// * (eigenVectors.real().adjoint());
    //cout << "nRows: "  << (eigenVectors.real().adjoint()).rows() << ", nCols = " << (eigenVectors.real().adjoint()).cols() <<endl;//
    cout << "Done with PCA!\n";
@@ -56,7 +60,7 @@ void Whitener::analyze(vector<Feature>& collection){
 }
 
 void Whitener::transform(Feature& f){
-   return;
+   //return;
    size_t dims = f.content.size();
    //cout << "trasnform!\n";
    double mean = 0;
