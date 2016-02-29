@@ -33,11 +33,11 @@ Feature CleanDescriptor::describe(Patch p){
          f.content[idxY * imWidth + idxX] = (double)(p.getGreyPixel(idxX,idxY)) ;
       }
    }*/
-  
+  double mean = 0.0;
+      double stddev = 0.0;
    for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
       
-      double mean = 0.0;
-      double stddev = 0.0;
+      
       
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
@@ -46,10 +46,10 @@ Feature CleanDescriptor::describe(Patch p){
             
          }
       }
-   
+   }
   
-      mean /= (imWidth * imHeight * numColours);//3);
-   //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+   mean /= (imWidth * imHeight * numColours);//3);
+   for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
       for(size_t idxX = 0; idxX < imWidth; ++idxX){
          for(size_t idxY = 0; idxY < imHeight; ++idxY){
             
@@ -57,20 +57,20 @@ Feature CleanDescriptor::describe(Patch p){
             
          }
       }
-      //}
-      stddev /= (imWidth * imHeight * numColours);
-      stddev = sqrt(stddev);
-      if (stddev > 0){
-      //for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+   }
+   stddev /= (imWidth * imHeight * numColours);
+   stddev = sqrt(stddev);
+   if (stddev > 0){
+      for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
          for(size_t idxX = 0; idxX < imWidth; ++idxX){
             for(size_t idxY = 0; idxY < imHeight; ++idxY){
                f.content[chIdx * chSize + idxY * imWidth + idxX] = (f.content[chIdx * chSize + idxY * imWidth + idxX] - mean)/stddev;
                
             }
          }
-      //}
       }
    }
+   
    return f;
    
 }  

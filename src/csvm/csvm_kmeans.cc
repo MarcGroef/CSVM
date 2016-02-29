@@ -33,7 +33,7 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
       
       randomInt = rand() % collectionSize;
       
-      for(size_t d = 0; d < collection[0].content.size(); ++d){
+      for(size_t d = 0; d < featureSize; ++d){
          
 			double randDouble = (((double)rand() / 1000000) / RAND_MAX );
 			//randDouble -= randDouble / 2;
@@ -98,19 +98,19 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
          
       //for all data, determine the nearest centroid
       for(size_t dIdx = 0; dIdx < nData; ++dIdx){
-         closestDist = numeric_limits<double>::max();
-         unsigned int closestCentr = -1;
+         closestDist = (*centroids)[0].getDistanceSq(featureSamples[dIdx]);
+         unsigned int closestCentr = 0;
          
-         for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
+         for(size_t cIdx = 1; cIdx < nClusters; ++cIdx){
             curDist = (*centroids)[cIdx].getDistanceSq(featureSamples[dIdx]);
-            //cout << "curDist = " << curDist << endl;
+            //cout << "curDist = " << curDist << ", min dist: " << closestDist << endl;
             if(curDist < closestDist){
                closestDist = curDist;
                closestCentr = cIdx;
                
             }
          }
-         //notate total Dist, as a nice statistic, that doesnt really say anything, but you can see convergence from it.
+         //notate total Dist, as a nice statistic, that doesnt really say anything
          totalDistance += closestDist;
          
          for(size_t dim = 0; dim < dataDims; ++dim)
@@ -120,13 +120,14 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       
       //move to mean position of members
       for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
+        // cout << cIdx << " has " << nMembers[cIdx] << " members!! @ iter "<< itx <<" \n";
          if(nMembers[cIdx] > 0)
             for(size_t dim = 0; dim < dataDims; ++dim)
                (*newCentroids)[cIdx].content[dim] /= nMembers[cIdx];
          else{ //keep it at current position, if no new members
             for(size_t dim = 0; dim < dataDims; ++dim)
                (*newCentroids)[cIdx].content[dim] = (*centroids)[cIdx].content[dim];
-            cout << cIdx << " has no members!! @ iter "<< itx <<" \n";
+           cout << cIdx << " has no members!! @ iter "<< itx <<" \n";
          }
       }
       deltaDist = (prevTotalDistance - totalDistance);

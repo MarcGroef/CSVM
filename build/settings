@@ -1,10 +1,10 @@
 
 Dataset
 method CIFAR10
-nTrainImages 6000
+nTrainImages 5000
 nTestImages 1000
-imageWidth 0
-imageHeight 0
+imageWidth 30
+imageHeight 30
 
 General
 Classifier CSVM
@@ -14,20 +14,25 @@ debugOut FALSE
 normalOut TRUE
 
 Codebook
-generate FALSE 
+generate TRUE
 method KMEANS
 nClusters 400
-nIterations 20
+nIterations 50
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method CLEAN
+nBins 9
 cellSize 6
-cellStride 2
+cellStride 6
+patchSize 6
 padding None
-useColourPixel false
-weightRatio 0.5
+useColourPixel true
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing norm
+debugLevel 0
 
 ImageScanner
 patchHeight 6
@@ -51,9 +56,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-learningRate 0.000002
-nIterations 2000
+learningRate 0.000001
+nIterations 1000
 initWeight 0.000002
-CSVM_C 500
+CSVM_C 1
 L2 FALSE
 
