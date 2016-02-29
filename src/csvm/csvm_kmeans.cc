@@ -35,7 +35,7 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
       
       for(size_t d = 0; d < featureSize; ++d){
          
-			double randDouble = (((double)rand() / 1000000) / RAND_MAX );
+			double randDouble = (((double)rand() / 1000) / RAND_MAX );
 			//randDouble -= randDouble / 2;
 			
          dictionary[idx].content[d] = collection[randomInt].content[d] + randDouble;

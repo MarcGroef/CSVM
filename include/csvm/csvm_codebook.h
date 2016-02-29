@@ -46,6 +46,8 @@ namespace csvm{
       double similaritySigma;
       SimilarityFunction simFunction;
       bool generate;
+      bool standardize;
+      bool whitening;
    };
 
    

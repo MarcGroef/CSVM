@@ -190,6 +190,24 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       stream >>setting ;
       codebookSettings.generate = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
    }
+   
+   stream >> setting;
+   if (setting != "standardize") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   } else {
+      stream >>setting ;
+      codebookSettings.standardize = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
+   }
+   
+   stream >> setting;
+   if (setting != "whitening") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   } else {
+      stream >>setting ;
+      codebookSettings.whitening = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
+   }
 
    
    stream >> setting;
