@@ -783,6 +783,24 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 
 }
 
+void CSVMSettings::parseCleanDescrSettings(ifstream& stream){
+   string type, value;
+   stream >> type;
+   if(type != "standardize"){
+      cout << "csvm::CSVMSettings.parseCleanDescrSettings: Error! Invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> value;
+   if(value == "None")
+      clSettings.stdOptions = CL_NONE;
+   else if(value == "PER_CHANNEL")
+      clSettings.stdOptions = CL_PER_CHANNEL;
+   else if(value == "ALL")
+      clSettings.stdOptions = CL_ALL;
+   else
+      clSettings.stdOptions = CL_NONE;
+}
+
 void CSVMSettings::readSettingsFile(string dir) {
    ifstream file(dir.c_str(), ios::in);
    string line;
@@ -803,6 +821,8 @@ void CSVMSettings::readSettingsFile(string dir) {
    parseCodebookSettings(file);
    while (getline(file, line) && line != "FeatureExtractor");
    parseFeatureExtractorSettings(file);
+   while(getline(file, line) && line != "CleanDescriptor");
+   parseCleanDescrSettings(file);
    while (getline(file, line) && line != "ImageScanner");
    parseImageScannerSettings(file);
    while (getline(file, line) && line != "SVM");

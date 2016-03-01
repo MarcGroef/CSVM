@@ -36,6 +36,9 @@ binmethod CROSSCOLOUR
 postprocessing L2
 debugLevel 0
 
+CleanDescriptor
+standardize PER_CHANNEL
+
 ImageScanner
 patchHeight 6
 patchWidth 6
