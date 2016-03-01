@@ -22,7 +22,7 @@ namespace csvm{
   struct FeatureExtractorSettings{
     FeatureType featureType;
     HOGSettings hogSettings;
-
+    CleanSettings clSettings;
 	MERGESettings mergeSettings;	//
   };
   

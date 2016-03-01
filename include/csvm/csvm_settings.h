@@ -69,7 +69,7 @@ namespace csvm{
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
-      CleanSettings clSettings; // clean descriptor
+     // CleanSettings clSettings; // clean descriptor
       //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();

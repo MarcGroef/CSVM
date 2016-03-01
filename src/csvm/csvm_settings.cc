@@ -792,13 +792,13 @@ void CSVMSettings::parseCleanDescrSettings(ifstream& stream){
    }
    stream >> value;
    if(value == "None")
-      clSettings.stdOptions = CL_NONE;
+      featureSettings.clSettings.stdOptions = CL_NONE;
    else if(value == "PER_CHANNEL")
-      clSettings.stdOptions = CL_PER_CHANNEL;
+      featureSettings.clSettings.stdOptions = CL_PER_CHANNEL;
    else if(value == "ALL")
-      clSettings.stdOptions = CL_ALL;
+      featureSettings.clSettings.stdOptions = CL_ALL;
    else
-      clSettings.stdOptions = CL_NONE;
+      featureSettings.clSettings.stdOptions = CL_NONE;
 }
 
 void CSVMSettings::readSettingsFile(string dir) {

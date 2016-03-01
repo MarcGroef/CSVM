@@ -29,6 +29,7 @@ Feature FeatureExtractor::extract(Patch p){
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
+   clean.settings = settings.clSettings;
    if(settings.featureType == HOG)
       hog.setSettings(settings.hogSettings);
    if (settings.featureType == MERGE) {
