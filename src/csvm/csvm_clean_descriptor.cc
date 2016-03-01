@@ -28,47 +28,93 @@ Feature CleanDescriptor::describe(Patch p){
    
    f.content = vector<double>(imSize,0);
    
-   /*for(size_t idxX = 0; idxX < imWidth; ++idxX){
-      for(size_t idxY = 0; idxY < imHeight; ++idxY){
-         f.content[idxY * imWidth + idxX] = (double)(p.getGreyPixel(idxX,idxY)) ;
-      }
-   }*/
-  double mean = 0.0;
-      double stddev = 0.0;
-   for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
-      
-      
-      
-      for(size_t idxX = 0; idxX < imWidth; ++idxX){
-         for(size_t idxY = 0; idxY < imHeight; ++idxY){
-            f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
-            mean += f.content[idxY * imWidth + idxX];
-            
+   
+   //Not the most sexy way to implement the standardization option, but well, here it goes..
+   double mean = 0.0;
+   double stddev = 0.0;
+   switch(settings.stdOptions){
+      case CL_ALL:
+         mean = 0.0;
+         stddev = 0.0;
+         for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+            for(size_t idxX = 0; idxX < imWidth; ++idxX){
+               for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+                  mean += f.content[idxY * imWidth + idxX];
+                  
+               }
+            }
          }
-      }
-   }
-  
-   mean /= (imWidth * imHeight * numColours);//3);
-   for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
-      for(size_t idxX = 0; idxX < imWidth; ++idxX){
-         for(size_t idxY = 0; idxY < imHeight; ++idxY){
-            
-            stddev += (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]) * (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]);
-            
+      
+         mean /= (imWidth * imHeight * numColours);//3);
+         for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+            for(size_t idxX = 0; idxX < imWidth; ++idxX){
+               for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                  
+                  stddev += (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]) * (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]);
+                  
+               }
+            }
          }
-      }
-   }
-   stddev /= (imWidth * imHeight * numColours);
-   stddev = sqrt(stddev);
-   if (stddev > 0){
-      for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
-         for(size_t idxX = 0; idxX < imWidth; ++idxX){
-            for(size_t idxY = 0; idxY < imHeight; ++idxY){
-               f.content[chIdx * chSize + idxY * imWidth + idxX] = (f.content[chIdx * chSize + idxY * imWidth + idxX] - mean)/stddev;
+         stddev /= (imWidth * imHeight * numColours);
+         stddev = sqrt(stddev);
+         if (stddev > 0){
+            for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+               for(size_t idxX = 0; idxX < imWidth; ++idxX){
+                  for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                     f.content[chIdx * chSize + idxY * imWidth + idxX] = (f.content[chIdx * chSize + idxY * imWidth + idxX] - mean)/stddev;
+                     
+                  }
+               }
+            }
+         }
+         break;
+      case CL_PER_CHANNEL:
+         mean = 0;
+         stddev = 0;
+         for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+            
+            for(size_t idxX = 0; idxX < imWidth; ++idxX){
+               for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+                  mean += f.content[idxY * imWidth + idxX];
+                  
+               }
+            }
+         
+      
+            mean /= (imWidth * imHeight);//3);
+            for(size_t idxX = 0; idxX < imWidth; ++idxX){
+               for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                  
+                  stddev += (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]) * (mean - f.content[chIdx * chSize + idxY * imWidth + idxX]);
+                  
+               }
+            }
+            
+            stddev /= (imWidth * imHeight);
+            stddev = sqrt(stddev);
+            if (stddev > 0){
+               for(size_t idxX = 0; idxX < imWidth; ++idxX){
+                  for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                     f.content[chIdx * chSize + idxY * imWidth + idxX] = (f.content[chIdx * chSize + idxY * imWidth + idxX] - mean)/stddev;
+                     
+                  }
+               }
                
             }
          }
-      }
+         
+         break;
+      case CL_NONE:
+         for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
+            for(size_t idxX = 0; idxX < imWidth; ++idxX){
+               for(size_t idxY = 0; idxY < imHeight; ++idxY){
+                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+               }
+            }
+         }
+         break;
    }
    
    return f;

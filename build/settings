@@ -1,6 +1,6 @@
 
 Dataset
-method CIFAR10
+method MNIST
 nTrainImages 5000
 nTestImages 1000
 imageWidth 0
@@ -16,9 +16,9 @@ normalOut TRUE
 Codebook
 generate TRUE
 standardize TRUE
-whitening FALSE
+whitening TRUE
 method KMEANS
-nClusters 400
+nClusters 200
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -37,7 +37,7 @@ postprocessing L2
 debugLevel 0
 
 CleanDescriptor
-standardize PER_CHANNEL
+standardize NONE
 
 ImageScanner
 patchHeight 6
