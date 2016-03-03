@@ -46,6 +46,10 @@ double activationFunction(double summedActivation){
 	return 1/(1+exp(-summedActivation));
 }
 
+double derivativeActivationFunction(double summedActivation){
+	return exp(summedActivation)/((exp(summedActivation) + 1)*(exp(summedActivation) + 1))
+	}
+
 void feedforward(){
 	double summedActivation = 0;
 
@@ -68,6 +72,15 @@ double errorFunction(){
 	}
 	error *= 0.5;
 	return error;
+}
+//adjust weights with gradient decent
+void gradientDecent(double error){
+	deltaI = 0;
+	for(int i = 0; i < nOutputNodes;i++){
+		deltaI = 
+		
+		}
+	
 }
 
 int main( void )
