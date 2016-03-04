@@ -11,9 +11,6 @@ namespace csvm{
    
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
-      unsigned int nHiddenUnits;
-      //unsigned int nHiddenUnits2;
-      unsigned int nInputUnits;
       unsigned int nOutputUnits;
    };
 
@@ -27,7 +24,6 @@ namespace csvm{
       
    public:
       void train(vector<Feature>& randomFeatures);
-      
       vector<double> getActivations(vector<Feature>& imageFeatures);
       void setSettings(MLPSettings& s);
    };

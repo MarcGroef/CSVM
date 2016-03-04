@@ -148,7 +148,7 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 void CSVMClassifier::trainMLP(){
   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-   
+   cout << nPatches;
    vector<Feature> pretrainDump;
 
 

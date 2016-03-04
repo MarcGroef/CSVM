@@ -102,6 +102,7 @@ double errorFunction(){
 	error *= 0.5;
 	return error;
 }
+
 //adjust weights with gradient decent, also only for one output node.
 void adjustWeightsOutputUnits(){
 	double deltaI = 0;

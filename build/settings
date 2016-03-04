@@ -36,8 +36,6 @@ scanStride 1
 nRandomPatches 2000
 
 MLP
-nHiddenUnits 10
-nInputUnits 10
 nOutputUnits 10
 
 
