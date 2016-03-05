@@ -37,7 +37,7 @@ nRandomPatches 2000
 
 MLP
 nHiddenUnits 59
-nInputUnits 108
+nInputUnits 118
 nOutputUnits 10
 
 

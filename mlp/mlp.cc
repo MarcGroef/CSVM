@@ -7,11 +7,8 @@
 const int nInputNodes = 2 + 1;
 const int nHiddenNodes = 2;
 const int nOutputNodes = 1;
-const int rowSize = nHiddenNodes;
 
 double learningRate = 0.5;	
-
-//double biasHidden = 0;
 
 double weightsInputHidden[nInputNodes][nHiddenNodes];
 double weightsHiddenOutput[nHiddenNodes][nOutputNodes];

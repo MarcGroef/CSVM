@@ -14,9 +14,6 @@ using namespace std;
 using namespace csvm;
 
 //-------start variables-------
-int nInputNodes;
-int nHiddenNodes;
-int nOutputNodes = 10;
 
 std::vector<vector<double> > weightsHiddenOutput;
 std::vector<vector<double> > weightsInputHidden;
@@ -41,15 +38,16 @@ double fRand(double fMin, double fMax){
 }
 
 void randomizeWeightsInputHidden(std::vector<vector<double> > array){
-	for(int i = 0; i < nInputNodes-1;i++){
+	for(int i = 0; i < nInputNodes-10;i++){
 		for(int j = 0; j < nHiddenNodes;j++){
 			array[i][j] = fRand(-0.5,0.5);
 		}
 	}
-	
-	//set bias weight to zero
-	for(int i = 0; i < nHiddenNodes;i++){
-		array[nInputNodes-1][i] = 0;
+		//set 10 bias nodes to zero
+	for(int i = nInputNodes-10; i < nInputNodes;i++){
+		for(int j = 0; j < nHiddenNodes;j++){
+			array[i][j] = 0;
+		}
 	}
 }
 
@@ -60,6 +58,14 @@ void randomizeWeightsHiddenOutput(std::vector<vector<double> > array){
 		}
 	}
 }
+
+void setDesiredOutput(std::vector<double> desiredOutput)){
+	//get the label from the patch,
+	//When you ask for getLabel from a feature you get a number of length 10
+	//What do these numbers mean?
+	
+	//return an array with length 10 with all zero's and 1,1 
+	}
 //-------randomize weights end------
 
 
@@ -152,8 +158,8 @@ void backpropgation(){
 
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
-	nInputNodes 		= randomFeatures.at(0).size;
-	nHiddenNodes 		= (nInputNodes + nOutputNodes)/2;
+	//nInputNodes 		= randomFeatures.at(0).size; This happens in the settingsfile
+	//nHiddenNodes 		= (nInputNodes + nOutputNodes)/2;
 	
 	// set size of weight matrixes (in this case vectors of vectors)
 	weightsHiddenOutput = vector<vector<double> >(nHiddenNodes, std::vector<double>(nOutputNodes,0.0));
@@ -172,7 +178,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	
 	for(unsigned int i = 0; i < randomFeatures.size();i++){
 		input.swap(randomFeatures.at(i).content);
-		desiredOutput[0] = 1.0;
+		desiredOutput = setDesiredOutput()
 		for(int j = 1; j < 10; j++){
 			desiredOutput[j] = 0.0; //have to be changed according to the lable
 		}
