@@ -21,7 +21,9 @@ std::vector<vector<double> > weightsInputHidden;
 std::vector<double> input;
 std::vector<double> hiddenActivation;
 std::vector<double> actualOutput;
-std::vector<double> desiredOutput;
+std::vector<double> desiredOutput = {1,0,0,0,0,0,0,0,0,0};
+
+int amountOfBiasNodes = 10;
 
 double learningRate = 0.5;	
 //-------end variables---------
@@ -77,21 +79,23 @@ void feedforward(){
 	double summedActivation = 0;
 
 	for(int i = 0; i<nHiddenNodes;i++){
-		for(int j=0;j<nInputNodes-1;j++){	
-			summedActivation = summedActivation + input[j]*weightsInputHidden[j][i];
+		for(int j=0;j<nInputNodes-amountOfBiasNodes;j++){	
+			summedActivation += input[j]*weightsInputHidden[j][i];
 		}
 		//use bias
 		//????When the desired output is 0 there is no inluence of the bias????? NO IDEA IF THIS IS RIGHT
-		for(int k=0;k<nOutputNodes;k++){
-			summedActivation += weightsInputHidden[nInputNodes-1][i] * desiredOutput[k];
-		}	
+		for(int i = 0;i<amountOfBiasNodes;i++){
+			for(int j = 0;j<nHiddenNodes;j++){
+				summedActivation += weightsInputHidden[nInputNodes-amountOfBiasNodes][j] * desiredOutput[i];
+			}
+		}
 		hiddenActivation[i] = activationFunction(summedActivation);
 		summedActivation = 0;
 	}
 	
 	for(int i = 0; i<nOutputNodes;i++){
 		for(int j=0;j<nHiddenNodes;j++){	
-			summedActivation = summedActivation + hiddenActivation[j]*weightsHiddenOutput[j][i];
+			summedActivation += hiddenActivation[j]*weightsHiddenOutput[j][i];
 		}
 		//biasHidden *= 
 		//summedActivation += bias;
@@ -139,13 +143,13 @@ void adjustWeightsHiddenUnit(){
 		deltaI = derivativeActivationFunction(hiddenActivation[i]) * sumDeltaOWeights;
 		sumDeltaOWeights = 0;
 		
-		for(int k = 0; k < nInputNodes-1; k++){
-			weightsInputHidden[k][i] += learningRate * deltaI * input[k];
+		for(int j = 0; j < nInputNodes-amountOfBiasNodes; j++){
+			weightsInputHidden[j][i] += learningRate * deltaI * input[j];
 		}
 		//adjust bias
 		//????When the desired output is 0 there is no learning?????
-		for(int l = 0; l < nOutputNodes; l++){
-			weightsInputHidden[nInputNodes-1][i] += learningRate * deltaI * desiredOutput[l];
+		for(int j = 0; j < amountOfBiasNodes; j++){
+			weightsInputHidden[nInputNodes-(amountOfBiasNodes - j)][i] += learningRate * deltaI * desiredOutput[j];
 		}
 	}
 }
@@ -178,10 +182,8 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	
 	for(unsigned int i = 0; i < randomFeatures.size();i++){
 		input.swap(randomFeatures.at(i).content);
-		desiredOutput = setDesiredOutput()
-		for(int j = 1; j < 10; j++){
-			desiredOutput[j] = 0.0; //have to be changed according to the lable
-		}
+		//desiredOutput = setDesiredOutput();
+		
 		feedforward();
 		error = errorFunction();
 		std::cout << "error1: "  << error << std::endl;
