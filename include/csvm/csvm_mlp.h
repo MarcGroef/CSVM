@@ -11,14 +11,11 @@ namespace csvm{
    
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
-      unsigned int nOutputUnits;
-      unsigned int nHiddenUnits;
-      unsigned int nInputUnits;
+      int nOutputUnits;
+      int nHiddenUnits;
+      int nInputUnits;
    };
 
-      
-      
-      
    class MLPerceptron{
    private:
       //class variables
@@ -40,9 +37,8 @@ namespace csvm{
       void adjustWeightsOutputUnits();
       void adjustWeightsHiddenUnit();
       void backpropgation();
+      void setDesiredOutput(Feature f);
    };
       
 }
-
-
 #endif
