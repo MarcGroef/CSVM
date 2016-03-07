@@ -53,7 +53,7 @@ void MLPerceptron::randomizeWeightsInputHidden(std::vector<vector<double> > arra
 	}
 		//set 10 bias nodes to zero
 
-	for(int i = settings.nInputUnits-10; i < settings.nInputUnits;i++){
+	for(int i = settings.nInputUnits-amountOfBiasNodes; i < settings.nInputUnits;i++){
 		for(int j = 0; j < settings.nHiddenUnits;j++){
 			array[i][j] = 0;
 		}
@@ -68,8 +68,6 @@ void MLPerceptron::randomizeWeightsHiddenOutput(std::vector<vector<double> > arr
 		}
 	}
 }
-
-
 
 void MLPerceptron::setDesiredOutput(Feature f){
 	int label = f.getLabelId();
@@ -179,11 +177,11 @@ void MLPerceptron::backpropgation(){
 void MLPerceptron::train(vector<Feature>& randomFeatures){
   
 	// set size of weight matrixes (in this case vectors of vectors)
-	weightsHiddenOutput 	= vector<vector<double> >(settings.nHiddenUnits, std::vector<double>(settings.nOutputUnits,0.0));
+	weightsHiddenOutput = vector<vector<double> >(settings.nHiddenUnits, std::vector<double>(settings.nOutputUnits,0.0));
 	weightsInputHidden 	= vector<vector<double> >(settings.nInputUnits, std::vector<double>(settings.nHiddenUnits,0.0));
 	
 	//set size of input-, hiddenActivation-, and actalOutput-vectors
-	input 			= vector<double>(settings.nInputUnits,0.0);
+	input 				= vector<double>(settings.nInputUnits,0.0);
 	hiddenActivation 	= vector<double>(settings.nHiddenUnits,0.0);
 	actualOutput 		= vector<double>(settings.nOutputUnits,0.0);
 	desiredOutput 		= vector<double>(settings.nOutputUnits,0.0);
@@ -195,7 +193,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	
 	
 	for(int i = 0; i < randomFeatures.size();i++){
-		input.swap(randomFeatures.at(i).content);
+		input.swap(randomFeatures.at(i).content); //this sets the input?
 		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
 		error = errorFunction();
