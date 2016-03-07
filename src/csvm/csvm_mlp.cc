@@ -25,13 +25,12 @@ std::vector<vector<double> > weightsInputHidden;
 std::vector<double> input;
 std::vector<double> hiddenActivation;
 std::vector<double> actualOutput;
-int arrayDesiredOutput[10] = {1,0,0,0,0,0,0,0,0,0};
-std::vector<double> desiredOutput(&arrayDesiredOutput[0], &arrayDesiredOutput[0]+10);
+std::vector<double> desiredOutput;
 
 int amountOfBiasNodes = 10;
 
 
-double learningRate = 0.5;	
+double learningRate = 0.1;	
 //-------end variables---------
 
 void MLPerceptron::setSettings(MLPSettings s){
@@ -74,13 +73,12 @@ void MLPerceptron::randomizeWeightsHiddenOutput(std::vector<vector<double> > arr
 
 void MLPerceptron::setDesiredOutput(Feature f){
 	int label = f.getLabelId();
-	std:: cout << label << std::endl;
-	//get the label from the patch,
-	//When you ask for getLabel from a feature you get a number of length 10
-	//What do these numbers mean?
+	//std::cout << label << std::endl;
+	desiredOutput = vector<double>(settings.nOutputUnits,0.0);
+	desiredOutput.at(label) = 1;
 	
-	//return an array with length 10 with all zero's and 1,1 
 	}
+
 //-------randomize weights end------
 
 
@@ -192,21 +190,24 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	
 	double error = 0.0;
 	
-	randomizeWeightsHiddenOutput(weightsHiddenOutput); 
-	randomizeWeightsInputHidden(weightsInputHidden);
+	//randomizeWeightsHiddenOutput(weightsHiddenOutput); 
+	//randomizeWeightsInputHidden(weightsInputHidden);
 	
-	for(unsigned int i = 0; i < randomFeatures.size();i++){
-		//input.swap(randomFeatures.at(i).content);
-		//setDesiredOutput(randomFeatures.at(i));
-		
+	
+	for(int i = 0; i < randomFeatures.size();i++){
+		input.swap(randomFeatures.at(i).content);
+		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
 		error = errorFunction();
-		std::cout << "error1: "  << error << std::endl;
+		//std::cout << "error1: "  << error << std::endl;
 		backpropgation();
-		std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
+		//std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
 		//std::cout << "desiredOutput[indexInput]: "  << desiredOutput << std::endl;
 		std::cout << std::endl;
+		std::cout << "randomFeature size: " << randomFeatures.size() << std::endl;
+
 	}
+	
 }
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){

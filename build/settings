@@ -22,7 +22,7 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method CLEAN
+method HOG
 cellSize 6
 cellStride 2
 padding None
