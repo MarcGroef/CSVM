@@ -26,9 +26,10 @@ namespace csvm{
       
       
    public:
+     
       void train(vector<Feature>& randomFeatures);
       vector<double> getActivations(vector<Feature>& imageFeatures);
-      void setSettings(MLPSettings& s);
+      void setSettings(MLPSettings s);
       double fRand(double fMin, double fMax);
       void randomizeWeightsInputHidden(std::vector<vector<double> > array);
       void randomizeWeightsHiddenOutput(std::vector<vector<double> > array);
