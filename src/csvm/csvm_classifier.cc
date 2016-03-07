@@ -58,11 +58,25 @@ void CSVMClassifier::setSettings(string settingsFile){
    codebook.debugOut = settings.debugOut;
    codebook.normalOut = settings.normalOut;
    
-   
+
+   settings.codebookSettings.kmeansSettings.normalOut = normalOut;
+   codebook2.setSettings(settings.codebookSettings);
+   codebook2.debugOut = settings.debugOut;
+   codebook2.normalOut = settings.normalOut;
+
    
    featExtr.setSettings(settings.featureSettings);
    featExtr.debugOut = settings.debugOut;
    featExtr.normalOut = settings.normalOut;
+   
+   
+   featExtr2.setSettings(settings.featureSettings);
+   featExtr2.debugOut = settings.debugOut;
+   
+   featExtr2.normalOut = settings.normalOut;
+   featExtr2.flipType();
+   //set settings for 2 LFD's
+   
    
    settings.netSettings.nCentroids = settings.codebookSettings.numberVisualWords;
    
@@ -73,6 +87,8 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.setSettings(settings.convSVMSettings);
    convSVM.debugOut = settings.debugOut;
    convSVM.normalOut = settings.normalOut;
+   debugOut = settings.debugOut;
+   normalOut = settings.normalOut;
 }
 
 //Train the system
@@ -93,6 +109,10 @@ void CSVMClassifier::train(){
          trainLinearNetwork();
          
          break;
+      case CL_DUOCSVM:
+         if(normalOut) cout << "Training Conv SVM with 2 codebooks\n";
+         trainDuoConvSVMs();
+         break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";
    }
@@ -111,6 +131,9 @@ unsigned int CSVMClassifier::classify(Image* im){
          break;
       case CL_LINNET:
          result = lnClassify(im);
+         break;
+      case CL_DUOCSVM:
+         result = classifyDuoConvSVM(im);
          break;
    }
    return result;
@@ -155,26 +178,109 @@ void CSVMClassifier::constructCodebook(){
    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
    
    vector<Feature> pretrainDump;
-
+   vector<Feature> pretrainDump2;
 
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
       Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
+
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
-
-      
+      if(settings.classifier == CL_DUOCSVM){
+         Feature newFeat2 = featExtr2.extract(patch);
+         pretrainDump2.push_back(newFeat2);
+      }
    }
 
    if(debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
-   
+   if(settings.classifier == CL_DUOCSVM)
+      codebook2.constructCodebook(pretrainDump2);
    if(debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();
+   pretrainDump2.clear();
 }
 
+void CSVMClassifier::trainDuoConvSVMs(){
+   unsigned int nTrainImages = dataset.getTrainSize();
+   vector < vector < double > > datasetActivations;
+   vector < Feature > dataFeatures;
+   vector < Feature > dataFeatures2;
+   vector < Patch > patches;
+   
+   //allocate space for more vectors
+   datasetActivations.reserve(nTrainImages);
+   //for all trainings imagages:
+   for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
+      vector<double> dataActivation;
+      vector<double> dataActivation2;
+      //extract patches
+ 
+      patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
+      dataActivation.clear();
+      dataFeatures.clear();
+      //clear previous features
+      
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch){
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+         dataFeatures2.push_back(featExtr2.extract(patches[patch]));
+      }
+      
+      patches.clear();
+      
+      //get cluster activations for the features
+      dataActivation = codebook.getActivations(dataFeatures); 
+      dataActivation2 = codebook2.getActivations(dataFeatures2);
+      
+      dataFeatures.clear();
+      dataFeatures2.clear();
+      
+      patches.clear();
+      dataActivation.insert(dataActivation.end(), dataActivation2.begin(), dataActivation2.end());
+
+      //get cluster activations for the features
+      datasetActivations.push_back(dataActivation);
+      dataActivation.clear();
+     
+   }
+   convSVM.train(datasetActivations, &dataset);
+}
+
+unsigned int CSVMClassifier::classifyDuoConvSVM(Image* image){
+   vector<Patch> patches;
+   vector<Feature> dataFeatures;
+   vector<Feature> dataFeatures2;
+   
+   vector<double> dataActivation;
+   vector<double> dataActivation2;
+      
+   
+   //extract patches
+   patches = imageScanner.scanImage(image);
+      
+   //clear previous features
+   dataFeatures.clear();
+   //allocate for new features
+   dataFeatures.reserve(patches.size());
+   
+   //extract features from all patches
+   for(size_t patch = 0; patch < patches.size(); ++patch){
+      dataFeatures.push_back(featExtr.extract(patches[patch]));
+      dataFeatures2.push_back(featExtr2.extract(patches[patch]));
+   }
+   patches.clear();
+   dataActivation = codebook.getActivations(dataFeatures); 
+   dataActivation2 = codebook2.getActivations(dataFeatures2);
+   dataActivation.insert(dataActivation.end(), dataActivation2.begin(), dataActivation2.end());
+
+   return convSVM.classify(dataActivation);
+}
 
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();

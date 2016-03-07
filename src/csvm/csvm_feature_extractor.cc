@@ -20,8 +20,7 @@ Feature FeatureExtractor::extract(Patch p){
          return clean.describe(p);
 	  case HOG:
 		  return hog.getHOG(p);
-	  case MERGE:
-		  return pixhog.getMERGE(p, clean , hog);
+	  
    }
    cout << "no featuretype set, retrieving HOG" << endl;
    return hog.getHOG(p);
@@ -30,11 +29,14 @@ Feature FeatureExtractor::extract(Patch p){
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
    clean.settings = settings.clSettings;
-   if(settings.featureType == HOG)
-      hog.setSettings(settings.hogSettings);
-   if (settings.featureType == MERGE) {
-	   pixhog.setSettings(settings.mergeSettings);
-	   hog.setSettings(settings.hogSettings);
-   }
+   
+   hog.setSettings(settings.hogSettings);
+   
+   
+   
 	   
+}
+
+void FeatureExtractor::flipType(){
+   settings.featureType = settings.featureType2;
 }

@@ -43,6 +43,7 @@ namespace csvm{
       CL_SVM,
       CL_CSVM,
       CL_LINNET,
+      CL_DUOCSVM,
    };
    
    enum CODEBOOK{

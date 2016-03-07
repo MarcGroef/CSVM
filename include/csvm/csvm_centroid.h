@@ -2,8 +2,9 @@
 #define CSVM_CENTROID_H
 
 #include "csvm_feature.h"
-
-//DEPRECATED
+#include <cmath>
+#include "csvm_image.h"
+#include "csvm_interpolator.h"
 
 using namespace std;
 
@@ -15,7 +16,8 @@ namespace csvm{
       bool debugOut, normalOut;
      vector<double> content;
      double getDistanceSq(Feature f);
-	 double getDistanceSq(Centroid c);
+     double getDistanceSq(Centroid c);
+     void exportToPNG(string name);
    };
    
    

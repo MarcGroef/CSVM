@@ -21,9 +21,10 @@ namespace csvm{
   
   struct FeatureExtractorSettings{
     FeatureType featureType;
+    FeatureType featureType2;
     HOGSettings hogSettings;
     CleanSettings clSettings;
-	MERGESettings mergeSettings;	//
+    MERGESettings mergeSettings;	//
   };
   
   class FeatureExtractor{
@@ -38,6 +39,7 @@ namespace csvm{
      FeatureExtractor();
      Feature extract(Patch p);
      void setSettings(FeatureExtractorSettings s);
+     void flipType();
   };
 }
 #endif

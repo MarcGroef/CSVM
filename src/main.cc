@@ -74,7 +74,7 @@ int main(int argc,char**argv){
          cout << "importing codebook" << endl;
       c.importCodebook("LAST_USED.bin");
    }
-   c.exportCodebook("LAST_USED.bin");
+   //c.exportCodebook("LAST_USED.bin");
 
 
    if(normalOut)

@@ -38,7 +38,7 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
 			double randDouble = (((double)rand() / 1000) / RAND_MAX );
 			//randDouble -= randDouble / 2;
 			
-         dictionary[idx].content[d] = collection[randomInt].content[d] + randDouble;
+         dictionary[idx].content[d] = collection[randomInt].content[d] ;//+ randDouble;
       }
    }
    
@@ -61,6 +61,9 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    
    vector<Centroid>* centroids = &centroids0;
    vector<Centroid>* newCentroids = &centroids1;
+   
+   if(settings.nIter == 0)
+      return centroids0;
 	
    int curCentroids = 1;
    unsigned int dataDims = centroids0[0].content.size();

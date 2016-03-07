@@ -52,12 +52,12 @@ using namespace csvm;
       //for all csvms in ensemble
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          //############ Logging functions ################
-         stringstream ss;
-         ss << "statData_SVM-" << svmIdx << ".csv";
-         string fName = ss.str();
-         statDatFile.open ( fName.c_str() );
-         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
-         if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
+         //stringstream ss;
+         //ss << "statData_SVM-" << svmIdx << ".csv";
+         //string fName = ss.str();
+         //statDatFile.open ( fName.c_str() );
+        // statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
+        // if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
          
          //for all training iterations
@@ -111,9 +111,9 @@ using namespace csvm;
                else 			sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
                   
                //############ Logging functions ################
-               if (out > 0)  { maxOut += out; ++nMax; }
-               if (out < 0)  { minOut += out; ++nMin; }
-               allOuts[dIdx] = out;
+               //if (out > 0)  { maxOut += out; ++nMax; }
+               //if (out < 0)  { minOut += out; ++nMin; }
+               //allOuts[dIdx] = out;
                //###############################################
          
 
@@ -132,7 +132,7 @@ using namespace csvm;
             objective += settings.CSVM_C * sumSlack ;
            
             //############ Logging functions ################ 
-            maxOuts[svmIdx] = (double)  maxOut / nMax;
+           /* maxOuts[svmIdx] = (double)  maxOut / nMax;
             minOuts[svmIdx] = (double)  minOut / nMin;
             avOuts[svmIdx]  = (double) (maxOut + minOut) / nData;
             double stdDevMaxOutPos = 0;
@@ -158,6 +158,7 @@ using namespace csvm;
             stdDevMinOutPos = sqrt(stdDevMinOutPos / nMinPos);
             stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
             statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
+            */
             //###############################################
 
             // online trainings output
@@ -166,7 +167,7 @@ using namespace csvm;
 
          }//itIdx
          
-        statDatFile.close();  // logfile
+        //statDatFile.close();  // logfile
          
       }//svmIdx
    }

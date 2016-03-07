@@ -54,6 +54,8 @@ void Codebook::setSettings(Codebook_settings s){
    settings = s;
    kmeans.setSettings(s.kmeansSettings);
    akmeans.setSettings(s.akmeansSettings);
+   kmeans.debugOut = debugOut;
+   kmeans.normalOut = normalOut;
 }
 
 bool Codebook::getGenerate(){
@@ -88,6 +90,8 @@ void Codebook::constructCodebook(vector<Feature> featureset){
          bow = akmeans.cluster(featureset, settings.numberVisualWords, nClasses);
          break;
    }
+   
+   
    
 }
 

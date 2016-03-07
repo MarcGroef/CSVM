@@ -196,7 +196,6 @@ namespace csvm{
             break;
             case CSVM_IMAGE_UCHAR_RGB:
                error = encode(filename,image,width,height,LCT_RGB, 8);
-               cout << "warning! not yet impl. (export im)\n";
                break;
             case CSVM_IMAGE_UCHAR_GREY:
                //cout << "Export grey image. warning! not yet implementer!\n";

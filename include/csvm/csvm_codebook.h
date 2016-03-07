@@ -55,7 +55,7 @@ namespace csvm{
   class Codebook{
     Codebook_settings settings;
     LVQ lvq;
-    KMeans kmeans;
+    
 	 AKMeans akmeans;
     Whitener w;
     vector<Centroid> bow;
@@ -63,8 +63,10 @@ namespace csvm{
     unsigned int nClasses;
     void standardize(vector<double>& x, double sigmaFix);
   public:
+   KMeans kmeans;
     bool debugOut, normalOut;
     Codebook();
+    void exportToPNG();
     void constructCodebook(vector<Feature> featureset);
     void setSettings(Codebook_settings s);
     Centroid getCentroid(int centrIdx);
