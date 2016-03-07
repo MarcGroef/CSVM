@@ -16,9 +16,6 @@ namespace csvm{
       unsigned int nInputUnits;
    };
 
-      
-      
-      
    class MLPerceptron{
    private:
       //class variables
@@ -42,6 +39,4 @@ namespace csvm{
    };
       
 }
-
-
 #endif
