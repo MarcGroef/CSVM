@@ -81,8 +81,6 @@ void MLPerceptron::calculateActivationLayer(int firstLayerSize ,int secondLayerS
 	for(int i=0; i<secondLayerSize;i++){
 		for(int j=0;j<firstLayerSize;j++){	
 			summedActivation += firstLayer[j] * weights[j][i];
-			//std::cout << "weights: "  << weights[j][i] << std::endl;
-			//d::cout << "summedActivation: "  << summedActivation << std::endl;
 		}
 		secondLayer[i] = activationFunction(summedActivation);
 	}	
@@ -146,9 +144,60 @@ void MLPerceptron::adjustWeightsHiddenUnit(){
 	}
 }
 
+double deltaFunction(int indexLayer, int indexNode){
+		
+		if (indexLayer == settings.nLayers - 1){
+			return (desiredOutput[indexNode]-layers[indexLayer][indexNode])*derivativeActivationFunction(layers[indexLayer][indexNode]);
+		}
+		
+		
+		for(int i = 0; i < layers[indexLayer + 1].size();i++){
+			sumDeltaWeights += deltaFunction(indexLayer + 1, i) * weight(thisLayer->nextLayer)
+		}
+		return derivativeActivationfunction(layers[indexLayer][indexNode])*sumDeltaWeights;
+}
+/*
+double deltaFunction(int index,double sumDeltaWeights){
+		if (settings.nLayers - 2 - index == 0){
+			return sumDeltaWeights;
+		}
+		index++;
+		
+		for(int i = 0; i < layers[index].size();i++){
+			sumDeltaWeights += (desiredOutput[i] - layers[index][i])*derivativeActivationFunction(layers[index][i]);
+		  //sumDeltaWeights += delta(nextLayer) * weight(thisLayer->nextLayer)
+			if(){
+				return deltaFunction(index,sumDeltaWeights);
+			}
+		}
+		//return derivativeActivationfunction(thisNode)*sumDeltaWeights
+}*/
+
+double recursiveErrorCalculation(int index){
+	delta = deltaFunction(int index); // start indexLayer at 0 (first hidden layer)
+	}
+
+void MLPerceptron::adjustWeights(int index){
+	double deltaO = 0;
+	double deltaI = 0;
+	double sumDeltaOWeights = 0;
+	
+	//int layerNumber = settings.nLayers - index - 1;
+	weights.at(index); 
+	
+	
+	for(int i = 0; i < layerSizes[index+1];i++){
+		//recursive function
+		recursiveErrorCalculation(int index);
+	}
+}
+
 void MLPerceptron::backpropgation(){
-	adjustWeightsHiddenUnit();
-	adjustWeightsOutputUnits();
+	for(int i = 0; i < settings.nLayers-1;i++){
+		adjustWeights[i];
+		}
+	//adjustWeightsHiddenUnit();
+	//adjustWeightsOutputUnits();
 	
 	/* best thing would be if it works like this:
 	for(int i = 0; i < numberOfLayers;i++){
@@ -196,8 +245,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	double error = 0.0;
 	
 	initializeVectors();
-
-	
 	
 	for(unsigned int i = 0; i < randomFeatures.size();i++){
 		layers.at(0) = randomFeatures.at(i).content;
