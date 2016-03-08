@@ -85,26 +85,47 @@ void MLPerceptron::setDesiredOutput(Feature f){
 double MLPerceptron::activationFunction(double summedActivation){
 	return 1/(1+exp(-summedActivation));
 }
+
+void calculateActivationLayer(int firstLayerSize ,int secondLayerSize, std::vector<double> firstLayer, std::vector<vector<double> > weights,std::vector<double> secondLayer){
+	double summedActivation = 0;
+	
+	for(int i=0; i<secondLayerSize;i++){
+		for(int j=0;j<firstLayerSize-amountOfBiasNodes;j++){	
+			summedActivation += firstLayer[j] * secondLayer[j][i];
+		}
+		//use bias
+		//I believe this part is skipped if amountOfBiasNodes = 0		
+		
+		//for(int j = 0;m<amountOfBiasNodes;m++){
+		//	for(int k = 0;n<settings.nHiddenUnits;n++){
+		//		summedActivation += weightsInputHidden[settings.nInputUnits-amountOfBiasNodes][k] * desiredOutput[j];
+		//	}
+		//}
+		
+		hiddenActivation[i] = activationFunction(summedActivation);
+	}	
+}
 void MLPerceptron::feedforward(){
 	double summedActivation = 0;
 
-	for(int i = 0; i<settings.nHiddenUnits;i++){
+	/*for(int i = 0; i<settings.nHiddenUnits;i++){
 		for(int j=0;j<settings.nInputUnits-amountOfBiasNodes;j++){	
 			summedActivation += input[j]*weightsInputHidden[j][i];
 		}
 		//use bias
-		//????When the desired output is 0 there is no inluence of the bias????? NO IDEA IF THIS IS RIGHT
-
+		//I believe this part is skipped if amountOfBiasNodes = 0		
 		for(int m = 0;m<amountOfBiasNodes;m++){
 			for(int n = 0;n<settings.nHiddenUnits;n++){
 				summedActivation += weightsInputHidden[settings.nInputUnits-amountOfBiasNodes][n] * desiredOutput[m];
 			}
 		}
+		
 		hiddenActivation[i] = activationFunction(summedActivation);
 		summedActivation = 0;
-	}
+	}*/
 	
-	for(int i = 0; i<settings.nOutputUnits;i++){
+	calculateActivationLayer(settings.nInputUnits,settings.nHiddenUnits,input,weightsInputHidden,hiddenActivation);
+	/*for(int i = 0; i<settings.nOutputUnits;i++){
 		for(int j=0;j<settings.nHiddenUnits;j++){	
 
 			summedActivation += hiddenActivation[j]*weightsHiddenOutput[j][i];
@@ -113,7 +134,8 @@ void MLPerceptron::feedforward(){
 		//summedActivation += bias;
 		actualOutput[i] = activationFunction(summedActivation);
 		summedActivation = 0;
-	}
+	}*/
+	calculateActivationLayer(settings.nHiddenUnits,settings.nOutputUnits,hiddenActivation,weightsHiddenOutput,actualOutput);
 }
 //--------end FEEDFORWARD--------
 
@@ -171,6 +193,13 @@ void MLPerceptron::adjustWeightsHiddenUnit(){
 void MLPerceptron::backpropgation(){
 	adjustWeightsHiddenUnit();
 	adjustWeightsOutputUnits();
+	
+	/* best thing would be if it works like this:
+	for(int i = 0; i < numberOfLayers;i++){
+	* backprop[i];
+	* }
+	I don't know if this is possible
+	*/
 }
 //--------end BACKPROPAGATION----
 
