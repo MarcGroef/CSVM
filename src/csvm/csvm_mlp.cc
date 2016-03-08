@@ -36,6 +36,7 @@ double learningRate = 0.1;
 void MLPerceptron::setSettings(MLPSettings s){
    this->settings = s;
    cout << "settings set\n";
+   cout << "Checking settingsvalues:\nnOutputUnits = " << settings.nOutputUnits << "\nnHiddenUnits = " << settings.nHiddenUnits << "\nnInputUnits = " << settings.nInputUnits << endl;
 }
 
 //----randomize weights-----
