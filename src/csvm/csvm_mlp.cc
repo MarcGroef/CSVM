@@ -57,23 +57,8 @@ void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array){
 			std::cout << weights.at(0)[i][j] << std::endl;
 		}
 	}
-	/*	//set 10 bias nodes to zero
-
-	for(unsigned int i = array.size() - (unsigned int) amountOfBiasNodes; i < array.size();i++){
-		for(unsigned int j = 0; j < array[0].size();j++){
-			array[i][j] = 0;
-		}
-	}*/
 }
-/*
-void MLPerceptron::randomizeWeightsHiddenOutput(std::vector<vector<double> > array){
 
-	for(int i = 0; i < settings.nHiddenUnits;i++){
-		for(int j = 0; j < settings.nOutputUnits;j++){
-			array[i][j] = fRand(-0.5,0.5);
-		}
-	}
-}
 */
 void MLPerceptron::setDesiredOutput(Feature f){
 	int label = f.getLabelId();
