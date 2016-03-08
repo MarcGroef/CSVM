@@ -18,13 +18,17 @@ using namespace csvm;
 //int nHiddenUnits = 59;
 //int nInputUnits = 108 + 10;
 //int nOutputUnits = 10;
+std::vector<int> layerSizes;
 
 std::vector<vector<double> > weightsHiddenOutput;
 std::vector<vector<double> > weightsInputHidden;
+std::vector<vector<vector<double> > > weights;
 
 std::vector<double> input;
 std::vector<double> hiddenActivation;
 std::vector<double> actualOutput;
+std::vector<vector<double> > layers;
+
 std::vector<double> desiredOutput;
 
 int amountOfBiasNodes = 0;
@@ -45,22 +49,23 @@ double MLPerceptron::fRand(double fMin, double fMax){
     return fMin + f * (fMax - fMin);
 }
 
-void MLPerceptron::randomizeWeightsInputHidden(std::vector<vector<double> > array){
+void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array){
 
-	for(int i = 0; i < settings.nInputUnits - amountOfBiasNodes;i++){
-		for(int j = 0; j < settings.nHiddenUnits;j++){
+	for(unsigned int i = 0; i < array.size();i++){
+		for(unsigned int j = 0; j < array[0].size();j++){
 			array[i][j] = fRand(-0.5,0.5);
+			std::cout << weights.at(0)[i][j] << std::endl;
 		}
 	}
-		//set 10 bias nodes to zero
+	/*	//set 10 bias nodes to zero
 
-	for(int i = settings.nInputUnits-amountOfBiasNodes; i < settings.nInputUnits;i++){
-		for(int j = 0; j < settings.nHiddenUnits;j++){
+	for(unsigned int i = array.size() - (unsigned int) amountOfBiasNodes; i < array.size();i++){
+		for(unsigned int j = 0; j < array[0].size();j++){
 			array[i][j] = 0;
 		}
-	}
+	}*/
 }
-
+/*
 void MLPerceptron::randomizeWeightsHiddenOutput(std::vector<vector<double> > array){
 
 	for(int i = 0; i < settings.nHiddenUnits;i++){
@@ -69,7 +74,7 @@ void MLPerceptron::randomizeWeightsHiddenOutput(std::vector<vector<double> > arr
 		}
 	}
 }
-
+*/
 void MLPerceptron::setDesiredOutput(Feature f){
 	int label = f.getLabelId();
 	//std::cout << label << std::endl;
@@ -106,36 +111,10 @@ void MLPerceptron::calculateActivationLayer(int firstLayerSize ,int secondLayerS
 	}	
 }
 void MLPerceptron::feedforward(){
-	//double summedActivation = 0;
-
-	/*for(int i = 0; i<settings.nHiddenUnits;i++){
-		for(int j=0;j<settings.nInputUnits-amountOfBiasNodes;j++){	
-			summedActivation += input[j]*weightsInputHidden[j][i];
-		}
-		//use bias
-		//I believe this part is skipped if amountOfBiasNodes = 0		
-		for(int m = 0;m<amountOfBiasNodes;m++){
-			for(int n = 0;n<settings.nHiddenUnits;n++){
-				summedActivation += weightsInputHidden[settings.nInputUnits-amountOfBiasNodes][n] * desiredOutput[m];
-			}
-		}
-		
-		hiddenActivation[i] = activationFunction(summedActivation);
-		summedActivation = 0;
-	}*/
-	
-	calculateActivationLayer(settings.nInputUnits,settings.nHiddenUnits,input,weightsInputHidden,hiddenActivation);
-	/*for(int i = 0; i<settings.nOutputUnits;i++){
-		for(int j=0;j<settings.nHiddenUnits;j++){	
-
-			summedActivation += hiddenActivation[j]*weightsHiddenOutput[j][i];
-		}
-		//biasHidden *= 
-		//summedActivation += bias;
-		actualOutput[i] = activationFunction(summedActivation);
-		summedActivation = 0;
-	}*/
-	calculateActivationLayer(settings.nHiddenUnits,settings.nOutputUnits,hiddenActivation,weightsHiddenOutput,actualOutput);
+	for(int i=0;i<settings.nLayers-1;i++){
+		calculateActivationLayer(layerSizes[i],layerSizes[i+1],layers[i],weights[i],layers[i+1]);
+		//calculateActivationLayer(settings.nHiddenUnits,settings.nOutputUnits,hiddenActivation,weightsHiddenOutput,actualOutput);
+}
 }
 //--------end FEEDFORWARD--------
 
@@ -203,9 +182,7 @@ void MLPerceptron::backpropgation(){
 }
 //--------end BACKPROPAGATION----
 
-
-void MLPerceptron::train(vector<Feature>& randomFeatures){
-  
+void MLPerceptron::initializeVectors(){
 	// set size of weight matrixes (in this case vectors of vectors)
 	weightsHiddenOutput = vector<vector<double> >(settings.nHiddenUnits, std::vector<double>(settings.nOutputUnits,0.0));
 	weightsInputHidden 	= vector<vector<double> >(settings.nInputUnits, std::vector<double>(settings.nHiddenUnits,0.0));
@@ -214,21 +191,40 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	input 				= vector<double>(settings.nInputUnits,0.0);
 	hiddenActivation 	= vector<double>(settings.nHiddenUnits,0.0);
 	actualOutput 		= vector<double>(settings.nOutputUnits,0.0);
+	
 	desiredOutput 		= vector<double>(settings.nOutputUnits,0.0);
 	
-	double error = 0.0;
+	layerSizes			= vector<int>(settings.nLayers,0);
+	weights				= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(settings.nInputUnits, std::vector<double>(settings.nOutputUnits,0.0)));
+	layers				= vector<vector<double> >(settings.nLayers,std::vector<double>(settings.nInputUnits,0.0));
 	
+	layerSizes.at(0) = settings.nInputUnits;
+	layerSizes.at(1) = settings.nHiddenUnits;
+	layerSizes.at(2) = settings.nOutputUnits;
+	
+	//weights.at(0) = weightsInputHidden;
+	//weights.at(1) = weightsHiddenOutput;
+	
+	//layers.at(0) = input;
+	//layers.at(1) = hiddenActivation;
+	//layers.at(2) = actualOutput;
+	for(int i = 0;i < settings.layerSizes-1;i++){
+		randomizeWeights(weights.at(i));
+	}
+}
 
-	//randomizeWeightsHiddenOutput(weightsHiddenOutput); 
-	//randomizeWeightsInputHidden(weightsInputHidden);
+void MLPerceptron::train(vector<Feature>& randomFeatures){
+	//double error = 0.0;
 	
+	initializeVectors();
 	
+/*	
 	for(unsigned int i = 0; i < randomFeatures.size();i++){
 		input = randomFeatures.at(i).content;
 		
-		for(int j=0; j<settings.nInputUnits; j++){
-		  std::cout << input.at(j) << std::endl;
-		}
+		//for(int j=0; j<settings.nInputUnits; j++){
+		//  std::cout << input.at(j) << std::endl;
+		//}
 		
 		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
@@ -241,7 +237,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 		std::cout << "randomFeature size: " << randomFeatures.size() << std::endl;
 
 	}
-	
+	*/
 }
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){
