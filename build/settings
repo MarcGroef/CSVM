@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 1000
-nTestImages 100
+nTrainImages 50000
+nTestImages 10000
 imageWidth 0
 imageHeight 0
 
@@ -18,13 +18,13 @@ generate TRUE
 standardize TRUE
 whitening FALSE
 method KMEANS
-nClusters 100
-nIterations 10
+nClusters 400
+nIterations 150
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method HOG
+method CLEAN
 method2 CLEAN
 nBins 9
 cellSize 4
@@ -41,10 +41,10 @@ CleanDescriptor
 standardize None
 
 ImageScanner
-patchHeight 10
-patchWidth 10
+patchHeight 6
+patchWidth 6
 scanStride 1
-nRandomPatches 2000
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR

@@ -528,72 +528,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 
    
    
-   if (method == "PIXHOG") {
-      featureSettings.featureType = MERGE;
-   
-      stream >> setting;
-      if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-         stream >> featureSettings.hogSettings.cellSize;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-         stream >> featureSettings.hogSettings.cellStride;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-
-      stream >> setting;
-      if (setting == "padding") {//#the size of a patch
-         stream >> enumeration;
-         if (enumeration == "None")
-            featureSettings.hogSettings.padding = NONE;
-         else if (enumeration == "Identity")
-            featureSettings.hogSettings.padding = IDENTITY;
-         else if (enumeration == "Zero")
-            featureSettings.hogSettings.padding = ZERO;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "useColourPixel") {
-         stream >> useColour;
-         if (useColour == "true") {
-            featureSettings.hogSettings.useColourPixel = true;
-            featureSettings.mergeSettings.useColourPixel = true;
-         }
-         else {
-            if (useColour == "false") {
-               featureSettings.hogSettings.useColourPixel = false;
-               featureSettings.mergeSettings.useColourPixel = false;
-            }
-         }
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> setting;
-      if (setting == "weightRatio") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-         stream >> featureSettings.mergeSettings.weightRatio;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-   }
-   
+      
    if(method2 == "HOG"){
       featureSettings.featureType2 = HOG;
    }else if(method2 == "CLEAN")
