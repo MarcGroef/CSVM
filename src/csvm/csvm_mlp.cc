@@ -27,7 +27,7 @@ std::vector<double> hiddenActivation;
 std::vector<double> actualOutput;
 std::vector<double> desiredOutput;
 
-int amountOfBiasNodes = 10;
+int amountOfBiasNodes = 0;
 
 
 double learningRate = 0.1;	
@@ -188,18 +188,24 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	
 	double error = 0.0;
 	
+
 	//randomizeWeightsHiddenOutput(weightsHiddenOutput); 
 	//randomizeWeightsInputHidden(weightsInputHidden);
 	
 	
-	for(int i = 0; i < randomFeatures.size();i++){
-		input.swap(randomFeatures.at(i).content); //this sets the input?
+	for(unsigned int i = 0; i < randomFeatures.size();i++){
+		input = randomFeatures.at(i).content;
+		
+		for(int j=0; j<settings.nInputUnits; j++){
+		  std::cout << input.at(j) << std::endl;
+		}
+		
 		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
 		error = errorFunction();
-		//std::cout << "error1: "  << error << std::endl;
+		std::cout << "error1: "  << error << std::endl;
 		backpropgation();
-		//std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
+		std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
 		//std::cout << "desiredOutput[indexInput]: "  << desiredOutput << std::endl;
 		std::cout << std::endl;
 		std::cout << "randomFeature size: " << randomFeatures.size() << std::endl;
