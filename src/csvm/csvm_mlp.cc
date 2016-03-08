@@ -86,12 +86,12 @@ double MLPerceptron::activationFunction(double summedActivation){
 	return 1/(1+exp(-summedActivation));
 }
 
-void calculateActivationLayer(int firstLayerSize ,int secondLayerSize, std::vector<double> firstLayer, std::vector<vector<double> > weights,std::vector<double> secondLayer){
+void MLPerceptron::calculateActivationLayer(int firstLayerSize ,int secondLayerSize, std::vector<double> firstLayer, std::vector<vector<double> > weights,std::vector<double> secondLayer){
 	double summedActivation = 0;
 	
 	for(int i=0; i<secondLayerSize;i++){
 		for(int j=0;j<firstLayerSize-amountOfBiasNodes;j++){	
-			summedActivation += firstLayer[j] * secondLayer[j][i];
+			summedActivation += firstLayer[j] * weights[j][i];
 		}
 		//use bias
 		//I believe this part is skipped if amountOfBiasNodes = 0		
@@ -102,11 +102,11 @@ void calculateActivationLayer(int firstLayerSize ,int secondLayerSize, std::vect
 		//	}
 		//}
 		
-		hiddenActivation[i] = activationFunction(summedActivation);
+		secondLayer[i] = activationFunction(summedActivation);
 	}	
 }
 void MLPerceptron::feedforward(){
-	double summedActivation = 0;
+	//double summedActivation = 0;
 
 	/*for(int i = 0; i<settings.nHiddenUnits;i++){
 		for(int j=0;j<settings.nInputUnits-amountOfBiasNodes;j++){	
