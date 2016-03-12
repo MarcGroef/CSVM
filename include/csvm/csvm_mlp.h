@@ -34,7 +34,7 @@ namespace csvm{
       void randomizeWeights(std::vector<vector<double> >& array);
       double activationFunction(double summedActivation);
       void adjustWeights(int index);
-      void calculateActivationLayer(int firstLayerSize,int secondLayerSize,std::vector<double> &firstLayer,std::vector<vector<double> > weights,std::vector<double> &secondLayer);
+      void calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights);
       void calculateError();
       void feedforward();
       void initializeVectors();

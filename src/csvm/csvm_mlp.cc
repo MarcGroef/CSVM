@@ -3,36 +3,25 @@
 #include <math.h>
 #include <string>
 
-//Neuron
-//input connections, output connections, threshold, activation function, type
-//desired output
-//backprogation algorithm
-//input vector
+//In here still needs to be the addition of bias nodes.
+//Still unclear is how many bias nodes are needed and if all they layers except the output layer need a bias nodes.
+//The bias nodes on the input layer learn according to the output
+//But bias nodes in the 1,2 or 3 hidden layer, where do they learn according to?
 
+//I will try to implement the bias nodes for the input layer. I will make the amount of bias nodes that can be added
+//dynamic so we can always set the amount of nodes back to zero if it does not work.
 using namespace std;
 using namespace csvm;
 
 //-------start variables-------
-
-//These variables actually have to come from the settingsfile
-//int nHiddenUnits = 59;
-//int nInputUnits = 108 + 10;
-//int nOutputUnits = 10;
 std::vector<int> layerSizes;
+std::vector<int> amountOfBiasNodesLayers;
 
-std::vector<vector<double> > weightsHiddenOutput;
-std::vector<vector<double> > weightsInputHidden;
 std::vector<vector<vector<double> > > weights;
-
-std::vector<double> input;
-std::vector<double> hiddenActivation;
-std::vector<double> actualOutput;
 std::vector<vector<double> > layers;
 
 std::vector<vector<double> > deltas;
 std::vector<double> desiredOutput;
-
-int amountOfBiasNodes;
 
 double learningRate = 0.05;
 	
@@ -43,7 +32,6 @@ void MLPerceptron::setSettings(MLPSettings s){
    cout << "settings set\n";
 }
 
-//----randomize weights-----
 double MLPerceptron::fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
@@ -65,39 +53,8 @@ void MLPerceptron::setDesiredOutput(Feature f){
 	desiredOutput = vector<double>(settings.nOutputUnits,0.0);
 	desiredOutput.at(label) = 1;
 	}
-
-//-------randomize weights end------
-
-
-//------start FEEDFORWARD--------
-double MLPerceptron::activationFunction(double summedActivation){
-	return 1/(1+exp(-summedActivation));
-}
-
-void MLPerceptron::calculateActivationLayer(int firstLayerSize ,int secondLayerSize, std::vector<double> &firstLayer, std::vector<vector<double> > weights,std::vector<double> &secondLayer){
-	double summedActivation = 0;
 	
-	for(int i=0; i<secondLayerSize;i++){
-		for(int j=0;j<firstLayerSize;j++){	
-			summedActivation += firstLayer[j] * weights[j][i];
-		}
-		secondLayer[i] = activationFunction(summedActivation);
-	}	
-}
-void MLPerceptron::feedforward(){
-	for(int i=0;i<settings.nLayers-1;i++){
-		calculateActivationLayer(layerSizes[i],layerSizes[i+1],layers[i],weights[i],layers[i+1]);
-		//std::cout << "in feedforward,deltas[settings.nLayers-1][i]"  << deltas[settings.nLayers-1][i]<< std::endl;
-	}
-}
-//--------end FEEDFORWARD--------
-
-//------start BACKPROPAGATION----
-double MLPerceptron::derivativeActivationFunction(double activationNode){
-	return (1 - activationNode)*activationNode;
-}
-
-double MLPerceptron::errorFunction(){
+	double MLPerceptron::errorFunction(){
 	double error = 0;
 	
 	for (int i=0; i< layerSizes[settings.nLayers-1];i++){
@@ -107,7 +64,60 @@ double MLPerceptron::errorFunction(){
 	return error;
 }
 
-	//adjust weights with gradient decent, also only for one output node.
+
+//------start FEEDFORWARD--------
+
+double MLPerceptron::activationFunction(double summedActivation){
+	return 1/(1+exp(-summedActivation));
+}
+
+void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex){
+	double summedActivation = 0;
+	/*
+	 * Question now is, leftLayerSize will it be the amount of input nodes or the amount of input nodes plus the
+     * amount of bias nodes. It makes a difference for the implementation.
+     * 
+     * If it is going to be that leftLayerSize will be both input and bias than in the for loop below there needs to
+     * be something like layerSize - amount of bias nodes at that layer.
+     * 
+     * It feels logical to make the layerSizes plus the bias nodes, because the bias nodes are part of that particular
+     * layer. The only difference is how the activation of these nodes is calculated.
+     * 
+     * 	for(int i=0; i<rightLayerSize-amountOfBiasNodesLayers[leftLayerIndex+1];i++){
+			for(int j=0;j<leftLayerSize-amountOfBiasNodesLayers[leftLayerIndex];j++){	
+				summedActivation += leftLayer[j] * weights[j][i];
+			}
+		}
+	    for(int j = leftLayerSize-amountOfBiasNodesLayers[leftLayerIndex]; j < leftLayerSize+amountOfBiasNodesLayers[leftLayerIndex];j++){
+			summedActivation += weights[j][i] * desiredoutput[j-leftLayerSize+amountOfBiasNodesLayers[leftLayerIndex]]
+		} 
+		* Something like this could work. With this implementation there needs to be 1 bias nodes for each output node.
+		* This is still a bit shaky, because with our problem you will need 10 bias nodes.
+		* Which I am still not confinced is right.
+		* On the other hand I do not know how to give a vector of 10 to 1 bias node.
+	    */
+	for(int i=0; i<rightLayerSize;i++){
+		for(int j=0;j<leftLayerSize;j++){	
+			summedActivation += leftLayer[j] * weights[j][i];
+		}
+		
+		summedActivation += calculateBias(firstLayerSize,leftLayer,leftLayerIndex);
+		rightLayer[i] = activationFunction(summedActivation);
+	}	
+}
+
+void MLPerceptron::feedforward(){
+	for(int i=0;i<settings.nLayers-1;i++){
+		calculateActivationLayer(layerSizes[i],layerSizes[i+1],layers[i],weights[i],layers[i+1],i);
+		//std::cout << "in feedforward,deltas[settings.nLayers-1][i]"  << deltas[settings.nLayers-1][i]<< std::endl;
+	}
+}
+//--------end FEEDFORWARD--------
+
+//------start BACKPROPAGATION----
+double MLPerceptron::derivativeActivationFunction(double activationNode){
+	return (1 - activationNode)*activationNode;
+}
 
 void MLPerceptron::calculateError(int index){
 	//std::cout << "in calculateError, index: " << index << std::endl;
@@ -173,11 +183,16 @@ void MLPerceptron::backpropgation(){
 
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
-	layerSizes		= vector<int>(settings.nLayers,0);
+	layerSizes				= vector<int>(settings.nLayers,0);
+	amountOfBiasNodesLayers	= vector<int>(settings.nLayers,0);
 	
 	layerSizes.at(0) = settings.nInputUnits;
 	layerSizes.at(1) = settings.nHiddenUnits;
 	layerSizes.at(2) = settings.nOutputUnits;
+	
+	amountOfBiasNodesLayers.at(0) = 1;
+	amountOfBiasNodesLayers.at(1) = 0;
+	amountOfBiasNodesLayers.at(2) = 0;
 	
 	//returns max layer size
 	for(unsigned int i = 0; i < layerSizes.size();i++){
@@ -185,7 +200,7 @@ void MLPerceptron::initializeVectors(){
 			maxNumberOfNodes = layerSizes[i];	
 		}
 	}
-	
+	//Kind of a 'omslachtige' way to make the vectors. There should be a more aligant solution for this
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
 	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
@@ -199,7 +214,6 @@ void MLPerceptron::initializeVectors(){
 	//set bias nodes
 	amountOfBiasNodes = layerSizes.at(settings.nLayers-1);
 }
-
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
 	double error = 0.0;
@@ -219,10 +233,13 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 		//std::cout << std::endl;
 
 	}
+	/*
+	 * printing the desired output against the actual ouput after the last training cycle
 	for(int i=0;i<10;i++){
 		std::cout << "desiredOutput[1]: "  << desiredOutput[i] << std::endl;
 		std::cout << "actualOutput[2][i]: "  << layers[2][i] << std::endl;
 		}
+	*/
 }
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){
