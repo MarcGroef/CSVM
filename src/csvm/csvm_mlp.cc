@@ -231,13 +231,10 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	initializeVectors();
 	//std::cout << "in train, settings.inputLayers: " << settings.nLayers << std::endl;
 	
-	//For testing if the MLP works
+	//Testing MLP with XOR
+	/*
 	std::vector<double> 		 possibleOutput = vector<double>(4,0.0);
 	std::vector<vector<double> > input		  = vector<vector<double> >(4,std::vector<double>(2,0.0));
-	
-	
-	//input.insert (input.begin(), {{1,1},{1,0},{0,1},{0,0}});
-	//input    = {{1,1},{1,0},{0,1},{0,0}};
 	
 	input[0][0] = 1;
 	input[0][1] = 1;
@@ -256,21 +253,25 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	possibleOutput[2] = 1;
 	possibleOutput[3] = 0;
 	
-	//possibleOutput = {0,1,1,0};
+	*/
 	
 	for(unsigned int i = 0; i < randomFeatures.size();i++){
-		//layers.at(0) = randomFeatures.at(i).content;
-		//setDesiredOutput(randomFeatures.at(i));
+		layers.at(0) = randomFeatures.at(i).content;
+		setDesiredOutput(randomFeatures.at(i));
 		
+		//testing MLP with XOR
+		/*
 		int num = rand() % 4;
 		layers[0] = input[num];
 		desiredOutput[0] = possibleOutput[num];
+		*/
 		
 		feedforward();
 		backpropgation();
 		error = errorFunction();
 		
 		std::cout << "error: "  << error << std::endl;
+		
 		//std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
 		//std::cout << "desiredOutput[indexInput]: "  << desiredOutput << std::endl;
 		//std::cout << std::endl;
