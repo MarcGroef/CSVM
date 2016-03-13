@@ -13,6 +13,12 @@
 using namespace std;
 using namespace csvm;
 
+
+/*
+ * All the variables below are declared globally. They are used by all the methods in this class.
+ * In the class there is a mix between calling methods with parameters and without.
+ * This could lead to confussion.
+ */
 //-------start variables-------
 std::vector<int> layerSizes;
 std::vector<int> amountOfBiasNodesLayers;
@@ -21,7 +27,7 @@ std::vector<vector<vector<double> > > weights;
 std::vector<vector<double> > layers;
 
 std::vector<vector<double> > deltas;
-std::vector<double> desiredOutput;
+std::vector<double> desiredOutput; 
 
 double learningRate = 0.05;
 	
@@ -73,6 +79,7 @@ double MLPerceptron::activationFunction(double summedActivation){
 
 void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex){
 	double summedActivation = 0;
+	int sizeBiasNodesLeftLayer = amountOfBiasNodesLayers[leftLayerIndex];
 	/*
 	 * Question now is, leftLayerSize will it be the amount of input nodes or the amount of input nodes plus the
      * amount of bias nodes. It makes a difference for the implementation.
@@ -96,19 +103,24 @@ void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSiz
 		* Which I am still not confinced is right.
 		* On the other hand I do not know how to give a vector of 10 to 1 bias node.
 	    */
-	for(int i=0; i<rightLayerSize;i++){
+	/*for(int i=0; i<rightLayerSize;i++){
 		for(int j=0;j<leftLayerSize;j++){	
 			summedActivation += leftLayer[j] * weights[j][i];
-		}
-		
-		summedActivation += calculateBias(firstLayerSize,leftLayer,leftLayerIndex);
+		}*/
+	for(int i=0; i<rightLayerSize-amountOfBiasNodesLayers[leftLayerIndex+1];i++){
+		for(int j=0;j<leftLayerSize-sizeBiasNodesLeftLayer;j++){	
+				summedActivation += leftLayer[j] * weights[j][i];
+			}
+	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize+sizeBiasNodesLeftLayer;j++){
+			summedActivation += weights[j][i] * layers[settings.nLayers-1][j-leftLayerSize-sizeBiasNodesLeftLayer];
+		} 
 		rightLayer[i] = activationFunction(summedActivation);
 	}	
 }
 
 void MLPerceptron::feedforward(){
 	for(int i=0;i<settings.nLayers-1;i++){
-		calculateActivationLayer(layerSizes[i],layerSizes[i+1],layers[i],weights[i],layers[i+1],i);
+		calculateActivationLayer(layerSizes[i],layerSizes[i+1],layers[i],layers[i+1],weights[i],i);
 		//std::cout << "in feedforward,deltas[settings.nLayers-1][i]"  << deltas[settings.nLayers-1][i]<< std::endl;
 	}
 }
@@ -196,13 +208,13 @@ void MLPerceptron::initializeVectors(){
 	
 	//returns max layer size
 	for(unsigned int i = 0; i < layerSizes.size();i++){
-		if(maxNumberOfNodes < layerSizes[i]){
-			maxNumberOfNodes = layerSizes[i];	
+		if(maxNumberOfNodes < layerSizes[i]+amountOfBiasNodesLayers[i]){
+			maxNumberOfNodes = layerSizes[i]+amountOfBiasNodesLayers[i];	
 		}
 	}
 	//Kind of a 'omslachtige' way to make the vectors. There should be a more aligant solution for this
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
-	
+
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 	layers			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	
@@ -211,8 +223,6 @@ void MLPerceptron::initializeVectors(){
 	for(int i = 0;i < settings.nLayers-1;i++){
 		randomizeWeights(weights.at(i));
 	}
-	//set bias nodes
-	amountOfBiasNodes = layerSizes.at(settings.nLayers-1);
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
@@ -221,25 +231,67 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	initializeVectors();
 	//std::cout << "in train, settings.inputLayers: " << settings.nLayers << std::endl;
 	
+	//For testing if the MLP works
+	std::vector<double> 		 possibleOutput = vector<double>(4,0.0);
+	std::vector<vector<double> > input		  = vector<vector<double> >(4,std::vector<double>(2,0.0));
+	
+	
+	//input.insert (input.begin(), {{1,1},{1,0},{0,1},{0,0}});
+	//input    = {{1,1},{1,0},{0,1},{0,0}};
+	
+	input[0][0] = 1;
+	input[0][1] = 1;
+	
+	input[1][0] = 1;
+	input[1][1] = 0;
+	
+	input[2][0] = 0;
+	input[2][1] = 1;
+	
+	input[3][0] = 0;
+	input[3][1] = 0;
+	
+	possibleOutput[0] = 0;
+	possibleOutput[1] = 1;
+	possibleOutput[2] = 1;
+	possibleOutput[3] = 0;
+	
+	//possibleOutput = {0,1,1,0};
+	
 	for(unsigned int i = 0; i < randomFeatures.size();i++){
-		layers.at(0) = randomFeatures.at(i).content;
-		setDesiredOutput(randomFeatures.at(i));
+		//layers.at(0) = randomFeatures.at(i).content;
+		//setDesiredOutput(randomFeatures.at(i));
+		
+		int num = rand() % 4;
+		layers[0] = input[num];
+		desiredOutput[0] = possibleOutput[num];
+		
 		feedforward();
 		backpropgation();
 		error = errorFunction();
+		
 		std::cout << "error: "  << error << std::endl;
 		//std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
 		//std::cout << "desiredOutput[indexInput]: "  << desiredOutput << std::endl;
 		//std::cout << std::endl;
-
 	}
-	/*
-	 * printing the desired output against the actual ouput after the last training cycle
-	for(int i=0;i<10;i++){
-		std::cout << "desiredOutput[1]: "  << desiredOutput[i] << std::endl;
-		std::cout << "actualOutput[2][i]: "  << layers[2][i] << std::endl;
+	
+	
+	// printing the weights
+	for(int i = 0; i < settings.nInputUnits; i++){
+		for(int j = 0; j < settings.nHiddenUnits; j++){
+			std::cout << weights[0][i][j] << " ";
 		}
-	*/
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+	
+	// printing the desired output against the actual ouput after the last training cycle
+	for(int i=0;i<1;i++){
+		std::cout << "desiredOutput[0]: "  << desiredOutput[i] << std::endl;
+		std::cout << "actualOutput[2][i]: "  << layers[2][i] << std::endl;
+	}
+	
 }
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){

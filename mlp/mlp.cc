@@ -139,7 +139,7 @@ void backpropgation(){
 int main( void )
 {
 	double error;
-	int epochs = 1000000;
+	int epochs = 10000;
 
 	randomizeWeightsInputHidden(weightsInputHidden);
 	randomizeWeightsHiddenOutput(weightsHiddenOutput);
