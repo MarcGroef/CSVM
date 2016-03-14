@@ -628,7 +628,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
    if(method2 == "HOG"){
       featureSettings.featureType2 = HOG;
    }else if(method2 == "CLEAN")
-      featureSettings.featureType2 = HOG;
+      featureSettings.featureType2 = CLEAN;
    else if(method2 == "PIXHOG")
       featureSettings.featureType2 = MERGE;
    else if(method2 == "LBP")

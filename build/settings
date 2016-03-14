@@ -1,13 +1,13 @@
 
 Dataset
 method MNIST
-nTrainImages 60000
-nTestImages 10000
+nTrainImages 600
+nTestImages 100
 imageWidth 0
 imageHeight 0
 
 General
-Classifier CSVM
+Classifier DUOCSVM
 Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
@@ -19,7 +19,7 @@ standardize TRUE
 whitening TRUE
 method KMEANS
 nClusters 800
-nIterations 150
+nIterations 15
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
