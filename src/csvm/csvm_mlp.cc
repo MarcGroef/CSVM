@@ -44,9 +44,9 @@ double MLPerceptron::fRand(double fMin, double fMax){
 }
 
 
-void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array){
-	for(unsigned int i = 0; i < array.size();i++){
-		for(unsigned int j = 0; j < array[0].size();j++){
+void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexLeftLayer){
+	for(unsigned int i = 0; i < array.size()amountOfBiasNodesLayers[indexLeftLayer];i++){
+		for(unsigned int j = 0; j < array[0].size()-amountOfBiasNodesLayers[indexLeftLayer+1];j++){
 			array[i][j] = fRand(-0.5,0.5);
 			//std::cout << weights.at(0)[i][j] << std::endl;
 		}
@@ -113,11 +113,8 @@ void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSiz
 			}
 	
 
-	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize-1+sizeBiasNodesLeftLayer;j++){
-			std::cout << "in calculateActivationLayer, j: " << j << std::endl;	
-			//Segmentation fault in this for loop.
-			//summedActivation += weights[j][i] * layers[settings.nLayers-1][j-leftLayerSize-sizeBiasNodesLeftLayer];
-			std::cout << "in calculateActivationLayer, lekker" << std::endl;
+	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize;j++){	
+			summedActivation += weights[j][i] * layers[settings.nLayers-1][j-leftLayerSize-sizeBiasNodesLeftLayer];
 		} 
 		rightLayer[i] = activationFunction(summedActivation);
 	}	
@@ -232,7 +229,7 @@ void MLPerceptron::initializeVectors(){
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	
 	for(int i = 0;i < settings.nLayers-1;i++){
-		randomizeWeights(weights.at(i));
+		randomizeWeights(weights.at(i),i);
 	}
 }
 
