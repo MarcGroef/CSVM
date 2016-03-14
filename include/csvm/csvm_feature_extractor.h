@@ -24,6 +24,8 @@ namespace csvm{
     HOGSettings hogSettings;
     CleanSettings clSettings;
 	MERGESettings mergeSettings;	//
+		LBPSettings lbpSettings;
+
   };
   
   class FeatureExtractor{

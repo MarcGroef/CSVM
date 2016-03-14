@@ -15,7 +15,7 @@ Feature FeatureExtractor::extract(Patch p){
    //settings.featureType = CLEAN;
    switch(settings.featureType){
       case LBP:
-         return lbp.getLBP(p,0);
+         return lbp.getLBP(p);
       case CLEAN:
          return clean.describe(p);
 	  case HOG:
