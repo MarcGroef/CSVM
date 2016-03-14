@@ -79,6 +79,7 @@ double MLPerceptron::activationFunction(double summedActivation){
 
 void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex){
 	double summedActivation = 0;
+	//std::cout << "in calculateActivationLayer,leftlayerIndex: " << leftLayerIndex << std::endl;
 	int sizeBiasNodesLeftLayer = amountOfBiasNodesLayers[leftLayerIndex];
 	/*
 	 * Question now is, leftLayerSize will it be the amount of input nodes or the amount of input nodes plus the
@@ -114,7 +115,8 @@ void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSiz
 	
 
 	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize;j++){
-			std::cout << "in calculateActivationLayer, j: " << j << std::endl;	
+			//TODO
+			//std::cout << "in calculateActivationLayer,leftlayerIndex , j: " << leftLayerIndex << j << std::endl;	
 			summedActivation += weights[j][i] * desiredOutput[0];
 		} 
 		rightLayer[i] = activationFunction(summedActivation);
@@ -278,7 +280,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	possibleOutput[2] = 1;
 	possibleOutput[3] = 0;
 	
-	for(unsigned int i = 0; i < 1;i++){ //randomFeatures.size()
+	for(unsigned int i = 0; i < 1000;i++){ //randomFeatures.size()
 		//layers.at(0) = randomFeatures.at(i).content;
 		//setDesiredOutput(randomFeatures.at(i));
 		
@@ -300,9 +302,9 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	
 	
 	// printing the weights
-	for(int i = 0; i < settings.nInputUnits; i++){
-		for(int j = 0; j < settings.nHiddenUnits; j++){
-			std::cout << weights[0][i][j] << " ";
+	for(int i = 0; i < layerSizes[0]; i++){
+		for(int j = 0; j < layerSizes[1]; j++){
+			std::cout << weights[0][j][i] << " ";
 		}
 		std::cout << std::endl;
 	}
