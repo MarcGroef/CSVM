@@ -1,13 +1,13 @@
 
 Dataset
-method CIFAR10
-nTrainImages 50000
+method MNIST
+nTrainImages 60000
 nTestImages 10000
 imageWidth 0
 imageHeight 0
 
 General
-Classifier DUOCSVM
+Classifier CSVM
 Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
@@ -16,9 +16,9 @@ normalOut TRUE
 Codebook
 generate TRUE
 standardize TRUE
-whitening FALSE
+whitening TRUE
 method KMEANS
-nClusters 400
+nClusters 800
 nIterations 150
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -41,8 +41,8 @@ CleanDescriptor
 standardize None
 
 ImageScanner
-patchHeight 6
-patchWidth 6
+patchHeight 10
+patchWidth 10
 scanStride 1
 nRandomPatches 200000
 
