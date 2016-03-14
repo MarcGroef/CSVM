@@ -31,7 +31,7 @@ namespace csvm{
       vector<double> getActivations(vector<Feature>& imageFeatures);
       void setSettings(MLPSettings s);
       double fRand(double fMin, double fMax);
-      void randomizeWeights(std::vector<vector<double> >& array);
+      void randomizeWeights(std::vector<vector<double> >& array, int indexLeftLayer);
       double activationFunction(double summedActivation);
       void adjustWeights(int index);
       void calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex);

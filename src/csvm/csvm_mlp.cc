@@ -45,7 +45,7 @@ double MLPerceptron::fRand(double fMin, double fMax){
 
 
 void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexLeftLayer){
-	for(unsigned int i = 0; i < array.size()amountOfBiasNodesLayers[indexLeftLayer];i++){
+	for(unsigned int i = 0; i < array.size()-amountOfBiasNodesLayers[indexLeftLayer];i++){
 		for(unsigned int j = 0; j < array[0].size()-amountOfBiasNodesLayers[indexLeftLayer+1];j++){
 			array[i][j] = fRand(-0.5,0.5);
 			//std::cout << weights.at(0)[i][j] << std::endl;
@@ -113,8 +113,9 @@ void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSiz
 			}
 	
 
-	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize;j++){	
-			summedActivation += weights[j][i] * layers[settings.nLayers-1][j-leftLayerSize-sizeBiasNodesLeftLayer];
+	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize;j++){
+			std::cout << "in calculateActivationLayer, j: " << j << std::endl;	
+			summedActivation += weights[j][i] * desiredOutput[0];
 		} 
 		rightLayer[i] = activationFunction(summedActivation);
 	}	
@@ -125,7 +126,7 @@ void MLPerceptron::feedforward(){
 		calculateActivationLayer(layerSizes[i],layerSizes[i+1],layers[i],layers[i+1],weights[i],i);
 		//std::cout << "in feedforward,deltas[settings.nLayers-1][i]"  << deltas[settings.nLayers-1][i]<< std::endl;
 	}
-		std::cout << "in calculateActivationLayer, lekker: " << std::endl;		
+		//std::cout << "in feedforward, lekker: " << std::endl;		
 
 }
 //--------end FEEDFORWARD--------
@@ -176,14 +177,31 @@ void MLPerceptron::hiddenDelta(int index){
 }	
 
 void MLPerceptron::adjustWeights(int index, int sizeLeftLayer, int sizeRightLayer){
-	for(int i = 0; i < sizeRightLayer; i++){
+	double a_j = 0;
+	for(int i = 0; i < sizeRightLayer ; i++){
 		for(int j = 0; j < sizeLeftLayer; j++){
-			weights[index][i][j] += learningRate * deltas[index+1][i] * layers[index][j];
-			std::cout << weights[index][i][j] << " ";
+			if(j < sizeLeftLayer-amountOfBiasNodesLayers[index]){
+				a_j = layers[index][j];  
+			}
+			else{
+				a_j = desiredOutput[0];	
+			}
+			weights[index][j][i] += learningRate * deltas[index+1][i] * a_j;
+			std::cout << weights[index][j][i] << " ";
+		}
+		std::cout << std::endl;
+	}
+	/*
+	//Adjusting the bias weights:
+	for(int i = 0; i < sizeRightLayer; i++){
+		for(int j = sizeLeftLayer-amountOfBiasNodesLayers[index]; j < sizeLeftLayer; j++){
+			weights[index][j][i] += learningRate * deltas[index+1][i] * desiredOutput[0];
+			std::cout << weights[index][j][i] << " ";
 		}
 		std::cout << std::endl;
 	}
 //	std::cout << std::endl;
+* */
 }
 
 
