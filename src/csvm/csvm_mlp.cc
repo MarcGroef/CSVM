@@ -176,9 +176,9 @@ void MLPerceptron::hiddenDelta(int index){
 }	
 
 void MLPerceptron::adjustWeights(int index, int sizeLeftLayer, int sizeRightLayer){
-	for(int i = 0; i < sizeLeftLayer; i++){
-		for(int j = 0; j < sizeRightLayer; j++){
-			weights[index][i][j] += learningRate * deltas[index+1][j] * layers[index][i];
+	for(int i = 0; i < sizeRightLayer; i++){
+		for(int j = 0; j < sizeLeftLayer; j++){
+			weights[index][i][j] += learningRate * deltas[index+1][i] * layers[index][j];
 			std::cout << weights[index][i][j] << " ";
 		}
 		std::cout << std::endl;
