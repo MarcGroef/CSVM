@@ -29,7 +29,7 @@ std::vector<vector<double> > layers;
 std::vector<vector<double> > deltas;
 std::vector<double> desiredOutput; 
 
-double learningRate = 0.05;
+double learningRate = 0.3;
 	
 //-------end variables---------
 
@@ -45,12 +45,16 @@ double MLPerceptron::fRand(double fMin, double fMax){
 
 
 void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexLeftLayer){
-	for(unsigned int i = 0; i < array.size()-amountOfBiasNodesLayers[indexLeftLayer];i++){
-		for(unsigned int j = 0; j < array[0].size()-amountOfBiasNodesLayers[indexLeftLayer+1];j++){
+	std::cout << std::endl;
+	//std::cout << "Random weights, index: " << indexLeftLayer << std::endl;
+	for(unsigned int i = 0; i < layerSizes[indexLeftLayer]-amountOfBiasNodesLayers[indexLeftLayer];i++){
+		for(unsigned int j = 0; j < layerSizes[indexLeftLayer+1]-amountOfBiasNodesLayers[indexLeftLayer+1];j++){
 			array[i][j] = fRand(-0.5,0.5);
-			//std::cout << weights.at(0)[i][j] << std::endl;
+			std::cout << array[i][j] << " ";
 		}
+		std::cout << endl;
 	}
+	std::cout << endl;
 }
 
 void MLPerceptron::setDesiredOutput(Feature f){
@@ -58,15 +62,16 @@ void MLPerceptron::setDesiredOutput(Feature f){
 	//std::cout << label << std::endl;
 	desiredOutput = vector<double>(settings.nOutputUnits,0.0);
 	desiredOutput.at(label) = 1;
-	}
+}
 	
-	double MLPerceptron::errorFunction(){
+double MLPerceptron::errorFunction(){
 	double error = 0;
-	
 	for (int i=0; i< layerSizes[settings.nLayers-1];i++){
 		error += (desiredOutput[i] - layers[settings.nLayers-1][i])*(desiredOutput[i] - layers[settings.nLayers-1][i]);
+		//std::cout << "desiredOutput[i] - layers[settings.nLayers-1][i]: " << desiredOutput[i] - layers[settings.nLayers-1][i] << std::endl;
 	}
 	error *= 0.5;
+	
 	return error;
 }
 
@@ -81,45 +86,23 @@ void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSiz
 	double summedActivation = 0;
 	//std::cout << "in calculateActivationLayer,leftlayerIndex: " << leftLayerIndex << std::endl;
 	int sizeBiasNodesLeftLayer = amountOfBiasNodesLayers[leftLayerIndex];
-	/*
-	 * Question now is, leftLayerSize will it be the amount of input nodes or the amount of input nodes plus the
-     * amount of bias nodes. It makes a difference for the implementation.
-     * 
-     * If it is going to be that leftLayerSize will be both input and bias than in the for loop below there needs to
-     * be something like layerSize - amount of bias nodes at that layer.
-     * 
-     * It feels logical to make the layerSizes plus the bias nodes, because the bias nodes are part of that particular
-     * layer. The only difference is how the activation of these nodes is calculated.
-     * 
-     * 	for(int i=0; i<rightLayerSize-amountOfBiasNodesLayers[leftLayerIndex+1];i++){
-			for(int j=0;j<leftLayerSize-amountOfBiasNodesLayers[leftLayerIndex];j++){	
-				summedActivation += leftLayer[j] * weights[j][i];
-			}
-		}
-	    for(int j = leftLayerSize-amountOfBiasNodesLayers[leftLayerIndex]; j < leftLayerSize+amountOfBiasNodesLayers[leftLayerIndex];j++){
-			summedActivation += weights[j][i] * desiredoutput[j-leftLayerSize+amountOfBiasNodesLayers[leftLayerIndex]]
-		} 
-		* Something like this could work. With this implementation there needs to be 1 bias nodes for each output node.
-		* This is still a bit shaky, because with our problem you will need 10 bias nodes.
-		* Which I am still not confinced is right.
-		* On the other hand I do not know how to give a vector of 10 to 1 bias node.
-	    */
-	/*for(int i=0; i<rightLayerSize;i++){
-		for(int j=0;j<leftLayerSize;j++){	
-			summedActivation += leftLayer[j] * weights[j][i];
-		}*/
+	
 	for(int i=0; i<rightLayerSize-amountOfBiasNodesLayers[leftLayerIndex+1];i++){
 		for(int j=0;j<leftLayerSize-sizeBiasNodesLeftLayer;j++){	
 				summedActivation += leftLayer[j] * weights[j][i];
+				//std::cout << "in calculateActivationLayer,leftLayer[j]: " << leftLayer[j] << std::endl;
+				//std::cout << "in calculateActivationLayer,weights[j][i]: " << weights[j][i] << std::endl;
 			}
-	
+		//std::cout << "in calculateActivationLayer,summedActivation: " << summedActivation << std::endl;
 
 	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize;j++){
 			//TODO
 			//std::cout << "in calculateActivationLayer,leftlayerIndex , j: " << leftLayerIndex << j << std::endl;	
 			summedActivation += weights[j][i] * desiredOutput[0];
 		} 
+		//std::cout << "in calculateActivationLayer,summedActivation+bias: " << summedActivation << std::endl;
 		rightLayer[i] = activationFunction(summedActivation);
+		//std::cout << "in calculateActivationLayer,summedActivation after activation function: " << rightLayer[i] << std::endl;
 	}	
 }
 
@@ -170,9 +153,12 @@ void MLPerceptron::hiddenDelta(int index){
 	for(int i = 0; i < layerSizes[index];i++){
 		for(int j = 0; j < layerSizes[index+1];j++){
 			sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
+			//std::cout << "in calculateActivationLayer,deltas[index+1][j]: " << deltas[index+1][j] << std::endl;
+			//std::cout << "in calculateActivationLayer,weights[j][i]: " << weights[index][i][j] << std::endl;
 		}
+		//std::cout << "in hiddenDelta,sumDeltaWeights " << sumDeltaWeights << std::endl;
 		deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(layers[index][i]);
-		std::cout << "in hiddenDelta,deltas["<< index << "]["<< i << "]: " << deltas[index][i] << std::endl;
+		//std::cout << "in hiddenDelta,deltas["<< index << "]["<< i << "]: " << deltas[index][i] << std::endl;
 		sumDeltaWeights = 0;
 	}
 	std::cout << std::endl;
@@ -180,6 +166,7 @@ void MLPerceptron::hiddenDelta(int index){
 
 void MLPerceptron::adjustWeights(int index, int sizeLeftLayer, int sizeRightLayer){
 	double a_j = 0;
+	//std::cout << "in adjustWeights, weights[index][j][i]: " << index <<std::endl;
 	for(int i = 0; i < sizeRightLayer ; i++){
 		for(int j = 0; j < sizeLeftLayer; j++){
 			if(j < sizeLeftLayer-amountOfBiasNodesLayers[index]){
@@ -208,9 +195,8 @@ void MLPerceptron::adjustWeights(int index, int sizeLeftLayer, int sizeRightLaye
 
 
 void MLPerceptron::backpropgation(){
-	//std::cout << "in backpropgation " << std::endl;
 	calculateError(settings.nLayers-1);
-	for(int i = 0; i < settings.nLayers-2;i++){
+	for(int i = 0; i < settings.nLayers-1;i++){
 		//std::cout << "in adjusting weights: " << std::endl;
 		adjustWeights(i, layerSizes[i], layerSizes[i+1]);
 	}
@@ -249,7 +235,7 @@ void MLPerceptron::initializeVectors(){
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	
 	for(int i = 0;i < settings.nLayers-1;i++){
-		randomizeWeights(weights.at(i),i);
+		randomizeWeights(weights[i],i);
 	}
 }
 
@@ -280,7 +266,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	possibleOutput[2] = 1;
 	possibleOutput[3] = 0;
 	
-	for(unsigned int i = 0; i < 1000;i++){ //randomFeatures.size()
+	for(unsigned int i = 0; i < 10000;i++){ //randomFeatures.size()
 		//layers.at(0) = randomFeatures.at(i).content;
 		//setDesiredOutput(randomFeatures.at(i));
 		
@@ -289,26 +275,35 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 		layers[0] = input[num];
 		desiredOutput[0] = possibleOutput[num];
 		
+		std::cout << "in train, desiredOutput[0]: " << desiredOutput[0] << std::endl;
+		std::cout << "in train, layers[0][0]: " << layers[0][0] << std::endl;
+		std::cout << "in train, layers[0][1]: " << layers[0][1] << std::endl;
+		
 		feedforward();
 		backpropgation();
 		error = errorFunction();
 		
 		std::cout << "error: "  << error << std::endl;
 		
-		//std::cout << "actualOutput[0]: "  << actualOutput[0] << std::endl;
-		//std::cout << "desiredOutput[indexInput]: "  << desiredOutput << std::endl;
+		for(int i=0;i<1;i++){
+		std::cout << "desiredOutput[0]: "  << desiredOutput[i] << std::endl;
+		std::cout << "actualOutput[2][i]: "  << layers[2][i] << std::endl;
+	}
 		//std::cout << std::endl;
 	}
 	
 	
-	// printing the weights
-	for(int i = 0; i < layerSizes[0]; i++){
-		for(int j = 0; j < layerSizes[1]; j++){
-			std::cout << weights[0][j][i] << " ";
+	// printing the weights for all weight matrixs
+	for(int i = 0; i < settings.nLayers-1;i++){
+		std::cout << "weight matrix: " << i << std::endl;
+		for(int j = 0; j < layerSizes[i]; j++){
+			for(int k = 0; k < layerSizes[i+1]; k++){
+				std::cout << weights[i][j][k] << " ";
+			}
+			std::cout << std::endl;
 		}
 		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+}
 	
 	// printing the desired output against the actual ouput after the last training cycle
 	for(int i=0;i<1;i++){
