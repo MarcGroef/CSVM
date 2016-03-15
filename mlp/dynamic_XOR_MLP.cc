@@ -27,9 +27,7 @@ std::vector<vector<vector<double> > > weights;
 std::vector<vector<double> > layers;
 
 std::vector<vector<double> > deltas;
-std::vector<double> desiredOutput;
-
-std::vector<double> testingOuput; 
+std::vector<double> desiredOutput; 
 
 double learningRate = 0.4;
 	
@@ -194,7 +192,6 @@ void MLPerceptron::backpropgation(){
 }
 //--------end BACKPROPAGATION----
 
-
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
 	layerSizes				= vector<int>(settings.nLayers,0);
@@ -226,8 +223,6 @@ void MLPerceptron::initializeVectors(){
 	
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	
-	testingOuput    = vector<double>(settings.nOutputUnits,0.0);
-	
 	for(int i = 0;i < settings.nLayers-1;i++){
 		randomizeWeights(weights[i],i);
 	}
@@ -242,7 +237,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	//std::cout << "in train, settings.inputLayers: " << settings.nLayers << std::endl;
 	
 	//Testing MLP with XOR
-	std::vector<double> possibleOutput = vector<double>(4,0.0);
+	/*std::vector<double> possibleOutput = vector<double>(4,0.0);
 	std::vector<vector<double> > input = vector<vector<double> >(4,std::vector<double>(2,0.0));
 	
 	input[0][0] = 1;
@@ -261,13 +256,12 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	possibleOutput[1] = 1;
 	possibleOutput[2] = 1;
 	possibleOutput[3] = 0;
-	
+	*/
 	std::vector<double> errorArray = vector<double>(4,0.0);
 	
 		for(unsigned int i = 0; i < 60000;i++){ //randomFeatures.size()
 		//layers.at(0) = randomFeatures.at(i).content;
 		//setDesiredOutput(randomFeatures.at(i));
-		
 		//testing MLP with XOR
 		int num = rand() % 4;
 		layers[0] = input[num];
@@ -318,16 +312,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 		std::cout << "actualOutput[2][i]: "  << layers[2][i] << std::endl;
 	}
 */
-}
-
-void MLPerceptron::test(vector<Feature>& testFeatures){
-	int num = rand() % 4;
-	layers[0] = input[num];
-	
-	feedforward();
-	
-	cout << layers[2][0];
-	
 }
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){

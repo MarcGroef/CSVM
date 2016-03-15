@@ -148,9 +148,8 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 void CSVMClassifier::trainMLP(){
   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-   cout << nPatches;
    vector<Feature> pretrainDump;
-
+   vector<Feature> testData;
 
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       
@@ -158,10 +157,19 @@ void CSVMClassifier::trainMLP(){
       Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
-
       
    }
    mlp.train(pretrainDump);
+   
+   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+      
+	//patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
+      Feature newFeat = featExtr.extract(patch);
+      testData.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+      
+   }
+   mlp.test(testData);
 }
 
 //construct a codebook using the current dataset
