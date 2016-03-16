@@ -65,6 +65,7 @@ namespace csvm{
       void setSettings(string settingsFile);
       void constructCodebook();
       void trainMLP();
+		unsigned int mlpClassify(Image* im);
       void constructDeepCodebook();
       bool getGenerateCB();
       

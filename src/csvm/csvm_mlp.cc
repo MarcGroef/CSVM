@@ -312,6 +312,12 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	}
 }
 
+unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
+	//classification code goes here
+	return 0;
+}
+
+
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){
    //cout << "get activation vector from image patches\n";
    //cout << imageFeatures.size;
