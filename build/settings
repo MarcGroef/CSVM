@@ -7,7 +7,7 @@ imageWidth 0
 imageHeight 0
 
 General
-Classifier CSVM
+Classifier MLP
 Codebook MLP
 nClasses 10
 debugOut FALSE

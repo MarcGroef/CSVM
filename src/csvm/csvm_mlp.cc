@@ -314,6 +314,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	//classification code goes here
+	cout << "classifying image!\n";
 	return 0;
 }
 
