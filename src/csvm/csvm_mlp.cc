@@ -84,20 +84,20 @@ double MLPerceptron::activationFunction(double summedActivation){
 	return 1/(1+exp(-summedActivation));
 }
 
-void MLPerceptron::calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex){
+void MLPerceptron::calculateActivationLayer(std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex){
 	double summedActivation = 0;
 	//std::cout << "in calculateActivationLayer,leftlayerIndex: " << leftLayerIndex << std::endl;
 	int sizeBiasNodesLeftLayer = amountOfBiasNodesLayers[leftLayerIndex];
 	
-	for(int i=0; i<rightLayerSize-amountOfBiasNodesLayers[leftLayerIndex+1];i++){
-		for(int j=0;j<leftLayerSize-sizeBiasNodesLeftLayer;j++){	
+	for(int i=0; i<layerSizes[leftLayerIndex+1]-amountOfBiasNodesLayers[leftLayerIndex+1];i++){
+		for(int j=0;j<layerSizes[leftLayerIndex]-sizeBiasNodesLeftLayer;j++){	
 				summedActivation += leftLayer[j] * weights[j][i];
 				//std::cout << "in calculateActivationLayer,leftLayer[j]: " << leftLayer[j] << std::endl;
 				//std::cout << "in calculateActivationLayer,weights[j][i]: " << weights[j][i] << std::endl;
 			}
 		//std::cout << "in calculateActivationLayer,summedActivation: " << summedActivation << std::endl;
 
-	    for(int j = leftLayerSize-sizeBiasNodesLeftLayer; j < leftLayerSize;j++){
+	    for(int j = layerSizes[leftLayerIndex]-sizeBiasNodesLeftLayer; j < layerSizes[leftLayerIndex];j++){
 			//TODO
 			//std::cout << "in calculateActivationLayer,leftlayerIndex , j: " << leftLayerIndex << j << std::endl;	
 			summedActivation += weights[j][i] * desiredOutput[0];
@@ -329,6 +329,13 @@ void MLPerceptron::test(vector<Feature>& testFeatures){
 	cout << layers[2][0];
 	
 }
+
+unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
+	//classification code goes here
+	cout << "classifying image!\n";
+	return 0;
+}
+
 
 vector<double> MLPerceptron::getActivations(vector<Feature>& imageFeatures){
    //cout << "get activation vector from image patches\n";

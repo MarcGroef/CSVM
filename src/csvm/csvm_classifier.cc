@@ -93,7 +93,9 @@ void CSVMClassifier::train(){
       case CL_LINNET:
          if(normalOut) cout << "Training LinNet..\n";
          trainLinearNetwork();
-         
+		case CL_MLP:
+			if(normalOut) cout << "Training MLP..\n";
+			trainMLP();
          break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";
@@ -114,6 +116,9 @@ unsigned int CSVMClassifier::classify(Image* im){
       case CL_LINNET:
          result = lnClassify(im);
          break;
+		case CL_MLP:
+			result = mlpClassify(im);
+			break;
    }
    return result;
 }
@@ -170,6 +175,24 @@ void CSVMClassifier::trainMLP(){
       
    }
    mlp.test(testData);
+}
+
+unsigned int CSVMClassifier::mlpClassify(Image* im){
+	
+		vector<Patch> patches;
+      vector<Feature> dataFeatures;
+      
+      //extract patches
+      patches = imageScanner.scanImage(im);
+
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+		
+		return mlp.classify(dataFeatures);
 }
 
 //construct a codebook using the current dataset

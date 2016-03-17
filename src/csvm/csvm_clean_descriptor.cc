@@ -24,7 +24,8 @@ Feature CleanDescriptor::describe(Patch p){
    unsigned int chSize = imWidth * imHeight;
    
    Feature f(imSize,0);
-   
+   f.labelId = p.getLabelId();
+   f.label = p.getLabel();
    
    f.content = vector<double>(imSize,0);
    

@@ -48,7 +48,8 @@ namespace csvm{
       void hiddenDelta(int index);
       void outputDelta();
       void calculateError(int index);
-      void test(vector<Feature>& testFeatures);
+	  unsigned int classify(vector<Feature> imageFeatures);
+
    };
       
 }

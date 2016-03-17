@@ -670,6 +670,9 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
 		classifier = CL_CSVM;
 	else if (value == "LINNET")
 		classifier = CL_LINNET;
+	else if (value == "MLP"){
+		classifier = CL_MLP;
+	}
 	else {
 		cout << "csvm::parseGeneralSettings: " << value << " is not a recognized classifier method. Exitting..\n";
 		exit(0);
