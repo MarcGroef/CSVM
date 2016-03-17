@@ -34,7 +34,7 @@ namespace csvm{
       void randomizeWeights(std::vector<vector<double> >& array, int indexLeftLayer);
       double activationFunction(double summedActivation);
       void adjustWeights(int index);
-      void calculateActivationLayer(int leftLayerSize ,int rightLayerSize, std::vector<double> &leftLayer,std::vector<double> &rightLayer, std::vector<vector<double> > weights,int leftLayerIndex);
+	  void calculateActivationLayer(int bottomLayer);
       void calculateError();
       void feedforward();
       void initializeVectors();
@@ -44,12 +44,11 @@ namespace csvm{
       void adjustWeightsHiddenUnit();
       void backpropgation();
       void setDesiredOutput(Feature f);
-      void adjustWeights(int index, int sizeLeftLayer, int sizeRightLayer);
       void hiddenDelta(int index);
       void outputDelta();
       void calculateError(int index);
+      void test(vector<Feature>& testFeatures);
 	  unsigned int classify(vector<Feature> imageFeatures);
-
    };
       
 }

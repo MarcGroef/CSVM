@@ -165,7 +165,7 @@ void CSVMClassifier::trainMLP(){
       
    }
    mlp.train(pretrainDump);
-   
+   /*
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       
 	//patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
@@ -174,12 +174,12 @@ void CSVMClassifier::trainMLP(){
       testData.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
       
    }
-   mlp.test(testData);
+   mlp.test(testData);*/
 }
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){
 	
-		vector<Patch> patches;
+	  vector<Patch> patches;
       vector<Feature> dataFeatures;
       
       //extract patches
