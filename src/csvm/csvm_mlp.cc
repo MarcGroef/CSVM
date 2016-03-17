@@ -30,7 +30,7 @@ std::vector<vector<double> > activations;
 std::vector<vector<double> > deltas;
 std::vector<double> desiredOutput;
 
-std::vector<double> testingOuput; 
+std::vector<vector<double> > finalOutputs; 
 
 double learningRate = 0.21;
 	
@@ -48,8 +48,8 @@ double MLPerceptron::fRand(double fMin, double fMax){
 
 
 void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexLeftLayer){
-	for(unsigned int i = 0; i < layerSizes[indexLeftLayer];i++){
-		for(unsigned int j = 0; j < layerSizes[indexLeftLayer+1];j++){
+	for( int i = 0; i < layerSizes[indexLeftLayer];i++){
+		for(int j = 0; j < layerSizes[indexLeftLayer+1];j++){
 			array[i][j] = fRand(-0.5,0.5);
 		}
 	}
@@ -159,7 +159,7 @@ void MLPerceptron::backpropgation(){
 
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
-	int failure = 0;
+	
 	layerSizes		 = vector<int>(settings.nLayers,0);
 		
 	layerSizes.at(0) = settings.nInputUnits;
@@ -173,7 +173,7 @@ void MLPerceptron::initializeVectors(){
 		}
 	}
 	//Kind of a 'omslachtige' way to make the vectors. There should be a more aligant solution for this
-	biasNodes 		 = vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
+	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
 	
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
 
@@ -182,139 +182,54 @@ void MLPerceptron::initializeVectors(){
 	
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	
-	testingOuput    = vector<double>(settings.nOutputUnits,0.0);
-	
 	for(int i = 0;i < settings.nLayers-1;i++){
 		randomizeWeights(weights[i],i);
 	}
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
-	int failure = 0;
-	for(int k = 0; k < 10;k++){
-	learningRate += 0.01;
-	
-	for(int j = 0; j<4000;j++){
-	//std::cout<< "percentage done: " << (j/1000.0)*100.0 <<"%"<<std::endl;
 	initializeVectors();
-	//std::cout << "in train, settings.inputLayers: " << settings.nLayers << std::endl;
-	
-	//Testing MLP with XOR
-	std::vector<double> possibleOutput = vector<double>(4,0.0);
-	std::vector<vector<double> > input = vector<vector<double> >(4,std::vector<double>(2,0.0));
-	
-	input[0][0] = 1;
-	input[0][1] = 1;
-	
-	input[1][0] = 1;
-	input[1][1] = 0;
-	
-	input[2][0] = 0;
-	input[2][1] = 1;
-	
-	input[3][0] = 0;
-	input[3][1] = 0;
-	
-	possibleOutput[0] = 0;
-	possibleOutput[1] = 1;
-	possibleOutput[2] = 1;
-	possibleOutput[3] = 0;
-	
-	for(unsigned int i = 0; i < 60000;i++){ //randomFeatures.size()
-		//activations.at(0) = randomFeatures.at(i).content;
-		//setDesiredOutput(randomFeatures.at(i));
-		
-		//testing MLP with XOR
-		int num = rand() % 4;
-		activations[0] = input[num];
-		desiredOutput[0] = possibleOutput[num];
-		
+
+	for(unsigned int i = 0; i < randomFeatures.size();i++){
+		activations.at(0) = randomFeatures.at(i).content;
+		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
 		backpropgation();
 		error = errorFunction();
+	}
+}
 
-		//errorArray[num] = error;
-		/*for(int i=0;i<1;i++){
-		std::cout << "desiredOutput[0]: "  << desiredOutput[i] << std::endl;
-		std::cout << "actualOutput[2][i]: "  << activations[2][i] << std::endl;
-	}*/
-		//std::cout << std::endl;
-	}
-	
-		
-	for(int i = 0; i < 4;i++){
-		int num = i;
-		double answer = 0;
-		
-		activations[0] = input[num];
-		desiredOutput[0] = possibleOutput[num];
-	
-		feedforward();
-		answer = round(activations[2][0]);
-		
-		//std::cout << "activations[2][0];: "<< activations[2][0] << std::endl;
-		//std::cout << "desiredOuput: "<< desiredOutput[0] << std::endl;
-		
-		if(desiredOutput[0] != answer){
-			
-			//std::cout << "input: "<< activations[0][0] << activations[0][1] << std::endl;
-			//std::cout << "failure desiredOutput[0]: "<< desiredOutput[0] << std::endl;
-			//std::cout << "answer: "<< answer << std::endl;
-			failure++;
-			break;
-		}
-	}
-}
-std::cout << "failureRate: "  << (failure/4000.0)*100.0 << "%"<< std::endl;
-std::cout << "learningRate: "  << learningRate << std::endl;
-std::cout << std::endl;
-failure = 0;
-}
-}
 
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
-	int failure = 0;
-	std::vector<double> possibleOutput = vector<double>(4,0.0);
-	std::vector<vector<double> > input = vector<vector<double> >(4,std::vector<double>(2,0.0));
+	double highestActivationClass;	//activatio of the class with the highest activation
+	int outputClassTemp = 0;			//temporary output class, used to find the class a patch is classified to
+	int voteCounter = 0;				//counter for which class has the most votes
+	unsigned int mostVotedClass = 0;				
+
+	std::vector<int> outputClass(settings.nOutputUnits, 0); //Class histogram for majority voting
+	finalOutputs    = vector<vector<double> >(imageFeatures.size(),std::vector<double>(settings.nOutputUnits,0.0));
 	
-	input[0][0] = 1;
-	input[0][1] = 1;
-	
-	input[1][0] = 1;
-	input[1][1] = 0;
-	
-	input[2][0] = 0;
-	input[2][1] = 1;
-	
-	input[3][0] = 0;
-	input[3][1] = 0;
-	
-	possibleOutput[0] = 0;
-	possibleOutput[1] = 1;
-	possibleOutput[2] = 1;
-	possibleOutput[3] = 0;
-	
-	for(int i = 0; i < 4;i++){
-		int num = i;
-		double answer = 0;
-		
-		activations[0] = input[num];
-		desiredOutput[0] = possibleOutput[num];
-	
+	for (unsigned int i = 0; i<imageFeatures.size();i++){
+		activations.at(0) = imageFeatures.at(i).content;
 		feedforward();
-	
-		answer = round(activations[2][0]);
-		
-		
-		if(desiredOutput[0] != answer){
-			failure++;
+		finalOutputs.at(i) = activations.at(settings.nLayers-1);
+		highestActivationClass = 0;
+		for (int j = 0; j<settings.nOutputUnits;j++){
+			if(finalOutputs[i][j]>highestActivationClass){
+				highestActivationClass = finalOutputs[i][j];
+				outputClassTemp = j;
+			}	
+		}
+		outputClass[outputClassTemp] += 1;
+	}
+	for (int k = 0; k < settings.nOutputUnits; k++){
+		if (outputClass[k] > voteCounter){   //what happens if two classes have the same amount of votes?
+			voteCounter = outputClass[k];
+			mostVotedClass = k;
 		}
 	}
-	std::cout << "failureRate: "  << (failure/20000.0)*100.0 << "%"<< std::endl;
-	
-	//classification code goes here
-	cout << "classifying image!\n";
-	return 0;
+		
+	return mostVotedClass;
 }
 
 
