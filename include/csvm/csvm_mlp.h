@@ -31,7 +31,7 @@ namespace csvm{
       vector<double> getActivations(vector<Feature>& imageFeatures);
       void setSettings(MLPSettings s);
       double fRand(double fMin, double fMax);
-      void randomizeWeights(std::vector<vector<double> >& array, int indexLeftLayer);
+      void randomizeWeights(std::vector<vector<double> >& array, int indexBottomLayer);
       double activationFunction(double summedActivation);
       void adjustWeights(int index);
 	  void calculateActivationLayer(int bottomLayer);
@@ -46,7 +46,7 @@ namespace csvm{
       void setDesiredOutput(Feature f);
       void hiddenDelta(int index);
       void outputDelta();
-      void calculateError(int index);
+      void calculateDeltas(int index);
       void test(vector<Feature>& testFeatures);
 	  unsigned int classify(vector<Feature> imageFeatures);
    };

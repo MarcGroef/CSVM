@@ -165,16 +165,6 @@ void CSVMClassifier::trainMLP(){
       
    }
    mlp.train(pretrainDump);
-   /*
-   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-      
-	//patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
-      Feature newFeat = featExtr.extract(patch);
-      testData.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
-      
-   }
-   mlp.test(testData);*/
 }
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){
@@ -201,12 +191,12 @@ void CSVMClassifier::constructCodebook(){
    if(settings.codebook == CB_DEEPCODEBOOK){
       constructDeepCodebook();
       return;
-   }else if(settings.codebook == CB_MLP){
-      cout << "should be training the mlp...\n";
-      trainMLP();
+   }else if(settings.codebook == CB_None){
+      //cout << "should be training the mlp...\n";
+      //trainMLP();
       return;
    } 
-      
+  
       
    //unsigned int nClasses = dataset.getNumberClasses();
    
@@ -277,7 +267,7 @@ void CSVMClassifier::trainConvSVMs(){
      }else if(settings.codebook == CB_DEEPCODEBOOK){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }else if(settings.codebook == CB_MLP)
-        
+        /*
         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
          dataActivation.clear();
          dataFeatures.clear();
@@ -302,7 +292,7 @@ void CSVMClassifier::trainConvSVMs(){
 
          //get cluster activations for the features
          datasetActivations.push_back(dataActivation);
-         dataActivation.clear();
+         dataActivation.clear();*/
    }
    convSVM.train(datasetActivations, &dataset);
 }

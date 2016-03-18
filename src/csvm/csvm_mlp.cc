@@ -21,6 +21,7 @@ using namespace csvm;
  */
 //-------start variables-------
 double error = 0.0;
+
 std::vector<int> layerSizes;
 std::vector<vector<double> >  biasNodes;
 
@@ -47,9 +48,9 @@ double MLPerceptron::fRand(double fMin, double fMax){
 }
 
 
-void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexLeftLayer){
-	for( int i = 0; i < layerSizes[indexLeftLayer];i++){
-		for(int j = 0; j < layerSizes[indexLeftLayer+1];j++){
+void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexBottomLayer){
+	for( int i = 0; i < layerSizes[indexBottomLayer];i++){
+		for(int j = 0; j < layerSizes[indexBottomLayer+1];j++){
 			array[i][j] = fRand(-0.5,0.5);
 		}
 	}
@@ -65,7 +66,6 @@ double MLPerceptron::errorFunction(){
 	double error = 0;
 	for (int i=0; i< layerSizes[settings.nLayers-1];i++){
 		error += (desiredOutput[i] - activations[settings.nLayers-1][i])*(desiredOutput[i] - activations[settings.nLayers-1][i]);
-		//std::cout << "desiredOutput[i] - layers[settings.nLayers-1][i]: " << desiredOutput[i] - layers[settings.nLayers-1][i] << std::endl;
 	}
 	error *= 0.5;
 	
@@ -105,7 +105,7 @@ double MLPerceptron::derivativeActivationFunction(double activationNode){
 	return (1 - activationNode)*activationNode;
 }
 
-void MLPerceptron::calculateError(int index){
+void MLPerceptron::calculateDeltas(int index){
 	if (index == 0){
 		return;
 	}
@@ -116,7 +116,7 @@ void MLPerceptron::calculateError(int index){
 		hiddenDelta(index);
 	}
 	index--;
-	return calculateError(index);
+	return calculateDeltas(index);
 }
 
 void MLPerceptron::outputDelta(){
@@ -127,7 +127,6 @@ void MLPerceptron::outputDelta(){
 	
 void MLPerceptron::hiddenDelta(int index){
 	double sumDeltaWeights = 0;
-	//loop over all hidden layer nodes
 	for(int i = 0; i < layerSizes[index];i++){
 		for(int j = 0; j < layerSizes[index+1];j++){
 			sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
@@ -143,13 +142,11 @@ void MLPerceptron::adjustWeights(int index){
 			weights[index][j][i] += learningRate * deltas[index+1][i] * activations[index][j];
 		}
 		biasNodes[index][i] += learningRate * deltas[index+1][i] * 1;
-		//std::cout << "biasNodes[" <<index <<"]["<< i <<"]: " << biasNodes[index][i] <<std::endl;
 	}
 }
 
-
 void MLPerceptron::backpropgation(){
-	calculateError(settings.nLayers-1);
+	calculateDeltas(settings.nLayers-1);
 	for(int i = 0; i < settings.nLayers-1;i++){
 		adjustWeights(i);
 	}
@@ -189,19 +186,21 @@ void MLPerceptron::initializeVectors(){
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
 	initializeVectors();
+	unsigned int epochs = randomFeatures.size();
 
-	for(unsigned int i = 0; i < randomFeatures.size();i++){
+	for(unsigned int i = 0; i < epochs;i++){
 		activations.at(0) = randomFeatures.at(i).content;
 		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
 		backpropgation();
 		error = errorFunction();
+		std::cout << "amount of training done: " << ((double) i/(double)epochs) * 100.0 << "%" << std::endl;
 	}
 }
 
 
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
-	double highestActivationClass;	//activatio of the class with the highest activation
+	double highestActivationClass;	    //activatio of the class with the highest activation
 	int outputClassTemp = 0;			//temporary output class, used to find the class a patch is classified to
 	int voteCounter = 0;				//counter for which class has the most votes
 	unsigned int mostVotedClass = 0;				
