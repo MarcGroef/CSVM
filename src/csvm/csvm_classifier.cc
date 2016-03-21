@@ -191,12 +191,11 @@ void CSVMClassifier::constructCodebook(){
    if(settings.codebook == CB_DEEPCODEBOOK){
       constructDeepCodebook();
       return;
-   }else if(settings.codebook == CB_None){
+   }else if(settings.codebook == CB_MLP){
       //cout << "should be training the mlp...\n";
       //trainMLP();
       return;
    } 
-  
       
    //unsigned int nClasses = dataset.getNumberClasses();
    
@@ -266,7 +265,7 @@ void CSVMClassifier::trainConvSVMs(){
          dataActivation.clear();
      }else if(settings.codebook == CB_DEEPCODEBOOK){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
-     }else if(settings.codebook == CB_MLP)
+     }else if(settings.codebook == CB_MLP){
         /*
         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
          dataActivation.clear();
@@ -279,7 +278,7 @@ void CSVMClassifier::trainConvSVMs(){
          //extract features from all patches
          for(size_t patch = 0; patch < patches.size(); ++patch){
             dataFeatures.push_back(featExtr.extract(patches[patch]));
-         }
+         */}
          
          patches.clear();
          
@@ -292,7 +291,7 @@ void CSVMClassifier::trainConvSVMs(){
 
          //get cluster activations for the features
          datasetActivations.push_back(dataActivation);
-         dataActivation.clear();*/
+         dataActivation.clear();
    }
    convSVM.train(datasetActivations, &dataset);
 }

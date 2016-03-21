@@ -221,10 +221,10 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 		}
 		outputClass[outputClassTemp] += 1;
 	}
-	for (int k = 0; k < settings.nOutputUnits; k++){
-		if (outputClass[k] > voteCounter){   //what happens if two classes have the same amount of votes?
-			voteCounter = outputClass[k];
-			mostVotedClass = k;
+	for (int i = 0; i < settings.nOutputUnits; i++){
+		if (outputClass[i] > voteCounter){   //what happens if two classes have the same amount of votes?
+			voteCounter = outputClass[i];
+			mostVotedClass = i;
 		}
 	}
 		
