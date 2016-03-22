@@ -3,6 +3,7 @@
 #include <iostream>
 #include <time.h>
 #include <cstdlib>
+#include <fstream>
 
 
 #include <csvm/csvm_interpolator.h>
@@ -93,7 +94,8 @@ int main(int argc,char**argv){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
-
+	  
+	  
       if (result == answer){
          ++nCorrect;
       } else {
@@ -110,8 +112,11 @@ int main(int argc,char**argv){
    if(normalOut)
       cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
+	std::ofstream myfile;
+	myfile.open("scores.txt", std::ios_base::app);
+	myfile << ((double)nCorrect * 100)/(nCorrect + nFalse)<< ",";
    //****************************** Print ConfusionMatrix for TRAINSET *******************
-
+/*
    bool printConfusionMatrix = true;
 
    if (normalOut && printConfusionMatrix) {
@@ -140,7 +145,7 @@ int main(int argc,char**argv){
          precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
-   }
+   }*/
 
 
   
@@ -188,7 +193,7 @@ int main(int argc,char**argv){
    if(normalOut)cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    if(normalOut)cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
-
+/*
    if (normalOut && printConfusionMatrix) {
       int   total;
       double precision;
@@ -215,7 +220,11 @@ int main(int argc,char**argv){
          precision = (double) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
-   }
+   }*/
+
+  
+  myfile << ((double)nCorrect*100)/(nCorrect + nFalse)<< std::endl;
+  myfile.close();
    return 0;
 }
 

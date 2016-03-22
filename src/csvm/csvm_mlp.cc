@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string>
+#include <iostream>
+#include <fstream>
+
 
 //In here still needs to be the addition of bias nodes.
 //Still unclear is how many bias nodes are needed and if all they layers except the output layer need a bias nodes.
@@ -20,20 +23,19 @@ using namespace csvm;
  * This could lead to confussion.
  */
 //-------start variables-------
-double error = 0.0;
+double error = 1;
+int sizeRandomFeat = 0;
 
 std::vector<int> layerSizes;
-std::vector<vector<double> >  biasNodes;
+
+std::vector<double> desiredOutput;
+std::vector<double> votingHistogram;
+
+std::vector<vector<double> > biasNodes;
+std::vector<vector<double> > activations;
+std::vector<vector<double> > deltas;
 
 std::vector<vector<vector<double> > > weights;
-std::vector<vector<double> > activations;
-
-std::vector<vector<double> > deltas;
-std::vector<double> desiredOutput;
-
-std::vector<vector<double> > finalOutputs; 
-
-double learningRate = 0.21;
 	
 //-------end variables---------
 
@@ -139,9 +141,9 @@ void MLPerceptron::hiddenDelta(int index){
 void MLPerceptron::adjustWeights(int index){
 	for(int i = 0; i < layerSizes[index + 1]; i++){
 		for(int j = 0; j < layerSizes[index]; j++){
-			weights[index][j][i] += learningRate * deltas[index+1][i] * activations[index][j];
+			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j];
 		}
-		biasNodes[index][i] += learningRate * deltas[index+1][i] * 1;
+		biasNodes[index][i] += settings.learningRate * deltas[index+1][i] * 1;
 	}
 }
 
@@ -152,16 +154,58 @@ void MLPerceptron::backpropgation(){
 	}
 }
 //--------end BACKPROPAGATION----
+//---------start VOTING----------
+void MLPerceptron::majorityVoting(){
+	int indexHighestAct = 0;
+	double highestActivationClass = 0;
+	
+	for (int i=0; i<settings.nOutputUnits;i++){
+		if(activations[settings.nLayers-1][i]>highestActivationClass){
+			highestActivationClass = activations[settings.nLayers-1][i];
+			indexHighestAct = i;
+		}	
+	}
+	votingHistogram[indexHighestAct] += 1;
+}
 
+void MLPerceptron::sumVoting(){
+	for (int i=0; i<settings.nOutputUnits;i++){
+			votingHistogram[i] += activations[settings.nLayers-1][i];	
+	}
+	
+}
 
+void MLPerceptron::voting(){
+	if(settings.voting == "MAJORITY"){
+		majorityVoting();
+	}else if (settings.voting == "SUM"){
+		sumVoting();
+		}else{
+			std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl;
+		}
+}
+unsigned int MLPerceptron::mostVotedClass(){
+	unsigned int mostVotedClass = 0;
+	double voteCounter = 0;
+	
+	for (int i = 0; i < settings.nOutputUnits; i++){
+		if (votingHistogram[i] > voteCounter){   //what happens if two classes have the same amount of votes?
+			voteCounter = votingHistogram[i];
+			mostVotedClass = i;
+		}
+	}
+	return mostVotedClass;
+}
+
+//---------end VOTING----------
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
 	
 	layerSizes		 = vector<int>(settings.nLayers,0);
 		
-	layerSizes.at(0) = settings.nInputUnits;
-	layerSizes.at(1) = settings.nHiddenUnits;
-	layerSizes.at(2) = settings.nOutputUnits;
+	layerSizes[0] = settings.nInputUnits;
+	layerSizes[1] = settings.nHiddenUnits;
+	layerSizes[2] = settings.nOutputUnits;
 	
 	//returns max layer size
 	for(unsigned int i = 0; i < layerSizes.size();i++){
@@ -170,65 +214,72 @@ void MLPerceptron::initializeVectors(){
 		}
 	}
 	//Kind of a 'omslachtige' way to make the vectors. There should be a more aligant solution for this
-	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
+	//Lets make a class for these vectors
+	//Because now we have 100 hidden units and 9 input and 10 output
+	//This way we allocated a lot of space that is never used.
 	
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
 
-	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 	activations		= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
-	
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
+	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
 	
+	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
+
 	for(int i = 0;i < settings.nLayers-1;i++){
 		randomizeWeights(weights[i],i);
 	}
+  std::ofstream myfile;
+  myfile.open("scores.txt", std::ios_base::app);
+  myfile <<sizeRandomFeat <<","<<settings.nHiddenUnits<<","<< settings.learningRate <<",";
+  myfile.close();
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
+	int epochs = randomFeatures.size();
+	sizeRandomFeat = epochs;
 	initializeVectors();
-	unsigned int epochs = randomFeatures.size();
+	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
+	double maxError = 1;
 
-	for(unsigned int i = 0; i < epochs;i++){
+	//for(unsigned int i = 0; i < randomFeatures.size();i++){
+	while(maxError > .1){
+		maxError = 0;
+		int i = rand() % epochs;
 		activations.at(0) = randomFeatures.at(i).content;
 		setDesiredOutput(randomFeatures.at(i));
 		feedforward();
 		backpropgation();
 		error = errorFunction();
-		std::cout << "amount of training done: " << ((double) i/(double)epochs) * 100.0 << "%" << std::endl;
+		
+		errorClasses[randomFeatures.at(i).getLabelId()] = error;
+		
+		for(int i = 0; i < settings.nOutputUnits;i++){
+			if(errorClasses[i] > maxError){
+				maxError = errorClasses[i];
+			}
+		}
 	}
+	//for(int i = 0; i < settings.nOutputUnits;i++){
+	//	std::cout << "errorClasses[" << i <<"]: " << errorClasses[i] << std::endl;
+	//}
 }
 
 
-unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
-	double highestActivationClass;	    //activatio of the class with the highest activation
-	int outputClassTemp = 0;			//temporary output class, used to find the class a patch is classified to
-	int voteCounter = 0;				//counter for which class has the most votes
-	unsigned int mostVotedClass = 0;				
-
-	std::vector<int> outputClass(settings.nOutputUnits, 0); //Class histogram for majority voting
-	finalOutputs    = vector<vector<double> >(imageFeatures.size(),std::vector<double>(settings.nOutputUnits,0.0));
+unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){				
+	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
-		activations.at(0) = imageFeatures.at(i).content;
+		activations[0] = imageFeatures[0].content;
 		feedforward();
-		finalOutputs.at(i) = activations.at(settings.nLayers-1);
-		highestActivationClass = 0;
-		for (int j = 0; j<settings.nOutputUnits;j++){
-			if(finalOutputs[i][j]>highestActivationClass){
-				highestActivationClass = finalOutputs[i][j];
-				outputClassTemp = j;
-			}	
-		}
-		outputClass[outputClassTemp] += 1;
+		voting();
 	}
-	for (int i = 0; i < settings.nOutputUnits; i++){
-		if (outputClass[i] > voteCounter){   //what happens if two classes have the same amount of votes?
-			voteCounter = outputClass[i];
-			mostVotedClass = i;
-		}
-	}
-		
-	return mostVotedClass;
+		/*for(int i = 0; i < settings.nOutputUnits;i++){
+			std::cout << "votingHistogram[" << i <<"]: " << votingHistogram[i] << std::endl;
+		} 
+		std::cout << std::endl;*/
+	
+	return mostVotedClass();
 }
 
 

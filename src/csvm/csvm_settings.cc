@@ -652,6 +652,22 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
+     stream >> setting;
+   if (setting == "learningRate") {
+      stream >> mlpSettings.learningRate;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+    stream >> type;
+   if (type == "voting") {
+      stream >> mlpSettings.voting;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
 }
 
 void CSVMSettings::parseGeneralSettings(ifstream& stream) {

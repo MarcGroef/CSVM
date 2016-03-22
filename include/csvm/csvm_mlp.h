@@ -9,7 +9,11 @@
 using namespace std;
 
 namespace csvm{
-   
+ 
+  enum VotingType{
+    MAJORITY,
+    SUM,
+  };
    
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
@@ -17,6 +21,8 @@ namespace csvm{
       int nHiddenUnits;
       int nInputUnits;
       int nLayers;
+      double learningRate;
+      string voting;
    };
 
    class MLPerceptron{
@@ -47,6 +53,12 @@ namespace csvm{
       void hiddenDelta(int index);
       void outputDelta();
       void calculateDeltas(int index);
+      
+      void voting();
+      void majorityVoting();
+      void sumVoting();
+      unsigned int mostVotedClass();
+      
       void test(vector<Feature>& testFeatures);
 	  unsigned int classify(vector<Feature> imageFeatures);
    };
