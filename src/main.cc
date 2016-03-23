@@ -116,7 +116,7 @@ int main(int argc,char**argv){
 	myfile.open("scores.txt", std::ios_base::app);
 	myfile << ((double)nCorrect * 100)/(nCorrect + nFalse)<< ",";
    //****************************** Print ConfusionMatrix for TRAINSET *******************
-/*
+
    bool printConfusionMatrix = true;
 
    if (normalOut && printConfusionMatrix) {
@@ -145,7 +145,7 @@ int main(int argc,char**argv){
          precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
-   }*/
+   }
 
 
   
@@ -193,7 +193,7 @@ int main(int argc,char**argv){
    if(normalOut)cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
    if(normalOut)cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
    
-/*
+
    if (normalOut && printConfusionMatrix) {
       int   total;
       double precision;
@@ -220,7 +220,7 @@ int main(int argc,char**argv){
          precision = (double) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
-   }*/
+   }
 
   
   myfile << ((double)nCorrect*100)/(nCorrect + nFalse)<< std::endl;

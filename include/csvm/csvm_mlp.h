@@ -58,6 +58,7 @@ namespace csvm{
       void majorityVoting();
       void sumVoting();
       unsigned int mostVotedClass();
+      void printingWeights();
       
       void test(vector<Feature>& testFeatures);
 	  unsigned int classify(vector<Feature> imageFeatures);

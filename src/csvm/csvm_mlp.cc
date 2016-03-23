@@ -197,6 +197,26 @@ unsigned int MLPerceptron::mostVotedClass(){
 	return mostVotedClass;
 }
 
+void MLPerceptron::printingWeights(){
+		std::cout << "input-hidden weights: " << std::endl;
+		for(int j = 0;j<settings.nInputUnits;j++){
+			for(int k = 0;k<settings.nHiddenUnits;k++){
+				std::cout << weights[0][j][k] << " ";
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+			
+		std::cout << "hidden-output weights: " << std::endl;
+		for(int j = 0;j<settings.nHiddenUnits;j++){
+			for(int k = 0;k<settings.nOutputUnits;k++){
+				std::cout << weights[1][j][k] << " ";
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+}
+
 //---------end VOTING----------
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
@@ -240,29 +260,32 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	sizeRandomFeat = epochs;
 	initializeVectors();
 	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
-	double maxError = 1;
-
-	//for(unsigned int i = 0; i < randomFeatures.size();i++){
-	while(maxError > .1){
-		maxError = 0;
-		int i = rand() % epochs;
-		activations.at(0) = randomFeatures.at(i).content;
-		setDesiredOutput(randomFeatures.at(i));
-		feedforward();
-		backpropgation();
-		error = errorFunction();
+	//double maxError = 1;
+	for (int i = 0;i<10;i++){
+		std::cout << "i: " << i << std::endl;
+		for(unsigned int j = 0; j < randomFeatures.size();j++){
+		//while(maxError > .1){
+			//maxError = 0;
+			//int i = rand() % epochs;
+			activations.at(0) = randomFeatures.at(j).content;
+			setDesiredOutput(randomFeatures.at(j));
+			feedforward();
+			backpropgation();
+			error = errorFunction();
 		
-		errorClasses[randomFeatures.at(i).getLabelId()] = error;
-		
-		for(int i = 0; i < settings.nOutputUnits;i++){
-			if(errorClasses[i] > maxError){
-				maxError = errorClasses[i];
-			}
+			//errorClasses[randomFeatures.at(i).getLabelId()] = error;
+			
+			//for(int i = 0; i < settings.nOutputUnits;i++){
+			//	if(errorClasses[i] > maxError){
+			//		maxError = errorClasses[i];
+			//	}
+			//}
 		}
 	}
 	//for(int i = 0; i < settings.nOutputUnits;i++){
 	//	std::cout << "errorClasses[" << i <<"]: " << errorClasses[i] << std::endl;
 	//}
+	printingWeights();
 }
 
 
