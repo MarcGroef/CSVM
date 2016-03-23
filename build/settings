@@ -35,11 +35,11 @@ scanStride 1
 nRandomPatches 100000
 
 MLP
-nHiddenUnits 200
+nHiddenUnits 170
 nInputUnits 9
 nOutputUnits 10
 nLayers 3
-learningRate .1
+learningRate .01
 voting MAJORITY
 
 SVM
