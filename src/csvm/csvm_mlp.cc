@@ -251,7 +251,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 		feedforward();
 		backpropgation();
 		error = errorFunction();
-		
+
 		errorClasses[randomFeatures.at(i).getLabelId()] = error;
 		
 		for(int i = 0; i < settings.nOutputUnits;i++){

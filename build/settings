@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 100
-nTestImages 10
+nTrainImages 6000
+nTestImages 1000
 imageWidth 10
 imageHeight 10
 
@@ -32,10 +32,10 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 100000
+nRandomPatches 10000
 
 MLP
-nHiddenUnits 200
+nHiddenUnits 100
 nInputUnits 9
 nOutputUnits 10
 nLayers 3
