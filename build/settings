@@ -32,14 +32,14 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 10000
+nRandomPatches 50000
 
 MLP
-nHiddenUnits 100
+nHiddenUnits 200
 nInputUnits 9
 nOutputUnits 10
 nLayers 3
-learningRate .1
+learningRate .01
 voting MAJORITY
 
 SVM

@@ -23,7 +23,10 @@ using namespace csvm;
  * This could lead to confussion.
  */
 //-------start variables-------
-double error = 1;
+double errorTrain = 1;
+double errorValidation = 1;
+int iterations = 1;
+
 int sizeRandomFeat = 0;
 
 std::vector<int> layerSizes;
@@ -236,30 +239,44 @@ void MLPerceptron::initializeVectors(){
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
+	bool threshold = 1;
 	int epochs = randomFeatures.size();
 	sizeRandomFeat = epochs;
 	initializeVectors();
 	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
 	double maxError = 1;
-
-	//for(unsigned int i = 0; i < randomFeatures.size();i++){
-	while(maxError > .1){
-		maxError = 0;
-		int i = rand() % epochs;
-		activations.at(0) = randomFeatures.at(i).content;
-		setDesiredOutput(randomFeatures.at(i));
-		feedforward();
-		backpropgation();
-		error = errorFunction();
-
-		errorClasses[randomFeatures.at(i).getLabelId()] = error;
+	
+	while (threshold == 1){
+		std::cout << "number of iterations " << iterations << std::endl;
+		iterations++;
+		for(unsigned int i = 0; i < randomFeatures.size();i++){
 		
-		for(int i = 0; i < settings.nOutputUnits;i++){
-			if(errorClasses[i] > maxError){
-				maxError = errorClasses[i];
+		//while(maxError > .1){
+		maxError = 0;
+		//int i = rand() % epochs;
+			
+			activations.at(0) = randomFeatures.at(i).content;
+			setDesiredOutput(randomFeatures.at(i));
+			feedforward();
+			if(i<(0.8*randomFeatures.size())){
+			backpropgation();
+			errorTrain = errorFunction();
+			}else{
+			errorValidation	= errorFunction();
+			errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
+				for(int i = 0; i < settings.nOutputUnits;i++){
+					if(errorClasses[i] > maxError){
+						maxError = errorClasses[i];
+					}
+				if(maxError < 0.01){
+					std::cout << "max error Validation set" << maxError << std::endl;
+					threshold = 0;
+					}
+				}
 			}
 		}
 	}
+		
 	//for(int i = 0; i < settings.nOutputUnits;i++){
 	//	std::cout << "errorClasses[" << i <<"]: " << errorClasses[i] << std::endl;
 	//}
