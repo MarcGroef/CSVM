@@ -240,10 +240,12 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 	int iterations = 1; 
 	double errorTrain = 0;
 	double errorValidation = 0;
-	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
+	double tempErrorValidation = 0;
+	vector<int> counterValidation(settings.nOutputUnits,0);
+	std::vector<std::vector<double> > errorClasses(settings.nOutputUnits, vector<double>(100,1.0));
 	double maxError = 1;
 	
-	while (threshold = 1){
+	while (threshold != 1){
 		std::cout << "number of iterations " << iterations << std::endl;
 		iterations++;
 		for(unsigned int i = 0; i < randomFeatures.size();i++){
@@ -255,29 +257,38 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 				errorTrain = errorFunction();
 			}else{
 				errorValidation	= errorFunction();
-				errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
-				for(int i = 0; i < settings.nOutputUnits;i++){
-					if(errorClasses[i] > maxError){
-						maxError = errorClasses[i];
-					}
-					if(maxError < 0.01){
-						std::cout << "max error Validation set" << maxError << std::endl;
-						threshold = 0;
+				errorClasses[randomFeatures.at(i).getLabelId()][counterValidation[randomFeatures.at(i).getLabelId()] % 100] = errorValidation;
+				counterValidation[randomFeatures.at(i).getLabelId()] ++;
+				for(int j = 0; j < settings.nOutputUnits;j++){
+					if (counterValidation[j] >= 100){	// only calculate average error if there have been 100 patches with that lable in the validation set till now
+						tempErrorValidation = 0;
+						for(unsigned int k = 0; k < 100; k++){		//average last 100 errors of one class
+							tempErrorValidation += errorClasses[j][k];
+						}
+						tempErrorValidation /= 100;
+						if(tempErrorValidation > maxError){
+								maxError = tempErrorValidation;
+						}
+						if(maxError < 0.01){
+							std::cout << "max error Validation set" << maxError << std::endl;
+							threshold = 1;
+						}
 					}
 				}
+				maxError = 0;
 			}
 		}
 	}
 }
 
 void MLPerceptron::rerun(vector<Feature>& randomFeatures){
-	int epochs = 1;
+	int epochs = 3;
 	//double error = 0;
 	votingHistogram = vector<double>(settings.nOutputUnits,1);
 	for (int i = 0;i<epochs;i++){
 		std::cout << "i: " << i << std::endl;
 		for(unsigned int j = 0; j < randomFeatures.size();j++){
-			std::cout << "j: " << j << std::endl;
+			//std::cout << "j: " << j << std::endl;
 			activations.at(0) = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
 			feedforward();

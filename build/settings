@@ -1,6 +1,6 @@
 Dataset
 method CIFAR10
-nTrainImages 6000
+nTrainImages 100
 nTestImages 1000
 imageWidth 15
 imageHeight 15
@@ -32,7 +32,7 @@ ImageScanner
 patchHeight 10
 patchWidth 10
 scanStride 1
-nRandomPatches 1000
+nRandomPatches 10000
 
 
 MLP
@@ -42,7 +42,7 @@ nOutputUnits 10
 nLayers 3
 learningRate .1
 voting SUM
-testing RERUN
+testing CROSSVALIDATION
 
 SVM
 Kernel LINEAR
