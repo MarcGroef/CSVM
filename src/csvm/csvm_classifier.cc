@@ -153,11 +153,33 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 void CSVMClassifier::trainMLP(){
   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+   
    vector<Feature> pretrainDump;
    vector<Feature> testData;
-
-   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+  
+//validation set
+   /*vector<Feature> validationSet;
+   int i = 0;
+   
+   while(i < (dataset.getTrainSize()*.2/)){
+	  vector<Patch> patches;
+      vector<Feature> dataFeatures;
       
+      Image im = dataset.getImagePtr(rand() % dataset.getTotalImages())
+      //extract patches
+      patches = imageScanner.scanImage(im);
+
+      //allocate for new features
+      dataFeatures.reserve(patches.size());
+      
+      //extract features from all patches
+      for(size_t patch = 0; patch < patches.size(); ++patch)
+         dataFeatures.push_back(featExtr.extract(patches[patch]));
+	   }
+	   i++;
+	}
+*/
+   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % dataset.getTrainSize()));
       Feature newFeat = featExtr.extract(patch);

@@ -1,9 +1,9 @@
 Dataset
 method CIFAR10
-nTrainImages 100
+nTrainImages 6000
 nTestImages 1000
-imageWidth 10
-imageHeight 10
+imageWidth 15
+imageHeight 15
 
 General
 Classifier MLP
@@ -32,16 +32,16 @@ ImageScanner
 patchHeight 10
 patchWidth 10
 scanStride 1
-nRandomPatches 10000
+nRandomPatches 1000
 
 
 MLP
-nHiddenUnits 250
+nHiddenUnits 350
 nInputUnits 300
 nOutputUnits 10
 nLayers 3
 learningRate .1
-voting MAJORITY
+voting SUM
 testing RERUN
 
 SVM

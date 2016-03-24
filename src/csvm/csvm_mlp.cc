@@ -271,12 +271,13 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 }
 
 void MLPerceptron::rerun(vector<Feature>& randomFeatures){
-	int epochs = 100;
+	int epochs = 1;
 	//double error = 0;
 	votingHistogram = vector<double>(settings.nOutputUnits,1);
 	for (int i = 0;i<epochs;i++){
 		std::cout << "i: " << i << std::endl;
 		for(unsigned int j = 0; j < randomFeatures.size();j++){
+			std::cout << "j: " << j << std::endl;
 			activations.at(0) = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
 			feedforward();
