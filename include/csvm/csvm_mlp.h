@@ -23,6 +23,7 @@ namespace csvm{
       int nLayers;
       double learningRate;
       string voting;
+      string testing;
    };
 
    class MLPerceptron{
@@ -46,8 +47,6 @@ namespace csvm{
       void initializeVectors();
       double derivativeActivationFunction(double activationNode);
       double errorFunction();
-      void adjustWeightsOutputUnits();
-      void adjustWeightsHiddenUnit();
       void backpropgation();
       void setDesiredOutput(Feature f);
       void hiddenDelta(int index);
@@ -58,6 +57,9 @@ namespace csvm{
       void majorityVoting();
       void sumVoting();
       unsigned int mostVotedClass();
+      
+      void testing();
+      
       void printingWeights();
       
       void test(vector<Feature>& testFeatures);

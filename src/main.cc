@@ -72,11 +72,13 @@ int main(int argc,char**argv){
    }
    c.exportCodebook("LAST_USED.bin");
    */
-   c.constructCodebook();
+   
+  //This is not needed for the MLP training 
+   /*c.constructCodebook();
    if(normalOut)
       cout << "initializing SVMs" << endl;
    c.initSVMs();
-
+*/
    if(normalOut)
       cout << "training classifier" << endl;
    c.train();

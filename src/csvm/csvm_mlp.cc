@@ -158,6 +158,16 @@ void MLPerceptron::backpropgation(){
 }
 //--------end BACKPROPAGATION----
 //---------start VOTING----------
+void MLPerceptron::voting(){
+	if(settings.voting == "MAJORITY"){
+		majorityVoting();
+	}else if (settings.voting == "SUM"){
+		sumVoting();
+		}else{
+			std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl;
+		}
+}
+
 void MLPerceptron::majorityVoting(){
 	int indexHighestAct = 0;
 	double highestActivationClass = 0;
@@ -178,15 +188,6 @@ void MLPerceptron::sumVoting(){
 	
 }
 
-void MLPerceptron::voting(){
-	if(settings.voting == "MAJORITY"){
-		majorityVoting();
-	}else if (settings.voting == "SUM"){
-		sumVoting();
-		}else{
-			std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl;
-		}
-}
 unsigned int MLPerceptron::mostVotedClass(){
 	unsigned int mostVotedClass = 0;
 	double voteCounter = 0;
@@ -221,6 +222,39 @@ void MLPerceptron::printingWeights(){
 }
 
 //---------end VOTING----------
+
+//---------start testing--------
+void MLPerceptron::testing(){
+	if(settings.testing == "CROSSVALIDATION"){
+		//crossvaldiation();
+	}else if (settings.voting == "RERUN"){
+		//rerun();
+		}else{
+			std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl;
+		}
+}
+
+void crossvaldiation(){
+	errorValidation	= errorFunction();
+	errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
+	
+		for(int i = 0; i < settings.nOutputUnits;i++){
+			if(errorClasses[i] > maxError){
+				maxError = errorClasses[i];
+			}
+			if(maxError < 0.01){
+				std::cout << "max error Validation set" << maxError << std::endl;
+				threshold = 0;
+			}
+		}
+	}	
+}
+
+void rerun(){
+	
+}
+
+//--------end testing-----------
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
 	
@@ -264,17 +298,19 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	sizeRandomFeat = epochs;
 	initializeVectors();
 	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
+	cout << randomFeatures.at(0).content.size();
+	//double maxError = 1;
+	
+	testing();
+	for (int i = 0;i<1;i++){
+		std::cout << "i: " << i << std::endl;
+		for(unsigned int j = 0; j < randomFeatures.size();j++){
 	double maxError = 1;
 	
 	while (threshold == 1){
 		std::cout << "number of iterations " << iterations << std::endl;
 		iterations++;
 		for(unsigned int i = 0; i < randomFeatures.size();i++){
-		
-		//while(maxError > .1){
-		maxError = 0;
-		//int i = rand() % epochs;
-			
 			activations.at(0) = randomFeatures.at(i).content;
 			setDesiredOutput(randomFeatures.at(i));
 			feedforward();
@@ -282,17 +318,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 			backpropgation();
 			errorTrain = errorFunction();
 			}else{
-			errorValidation	= errorFunction();
-			errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
-				for(int i = 0; i < settings.nOutputUnits;i++){
-					if(errorClasses[i] > maxError){
-						maxError = errorClasses[i];
-					}
-				if(maxError < 0.01){
-					std::cout << "max error Validation set" << maxError << std::endl;
-					threshold = 0;
-					}
-				}
+				testing();	
 			}
 		}
 	}
@@ -300,7 +326,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	//for(int i = 0; i < settings.nOutputUnits;i++){
 	//	std::cout << "errorClasses[" << i <<"]: " << errorClasses[i] << std::endl;
 	//}
-	printingWeights();
+	//printingWeights();
 }
 
 
