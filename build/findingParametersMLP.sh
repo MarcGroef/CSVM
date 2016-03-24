@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-NHIDDENUNITS=150
+NRANDOMPATCHES=30000
 #LEARNINGRATE=.1
 
-line_number_hidden_units=$(awk '/nHiddenUnits/{ print NR; exit }' settings)
+line_number_hidden_units=$(awk '/nRandomPatches/{ print NR; exit }' settings)
 #line_number_learningRate=$(awk '/learningRate/{ print NR; exit }' settings)
 
 #for i in {1..20}
@@ -13,10 +13,10 @@ line_number_hidden_units=$(awk '/nHiddenUnits/{ print NR; exit }' settings)
 	#((LEARNINGRATE=LEARNINGRATE+.05)) | bc 
 #	echo $LEARNINGRATE
 #	sed -i settings -e "$line_number_learningRate s/.*/learningRate $LEARNINGRATE/"
-	for j in {1..100}
+	for j in {1..5}
 	do
-		((NHIDDENUNITS=NHIDDENUNITS+20))
-		sed -i settings -e "$line_number_hidden_units s/.*/nHiddenUnits $NHIDDENUNITS/"
+		((NRANDOMPATCHES=NRANDOMPATCHES+20000))
+		sed -i settings -e "$line_number_hidden_units s/.*/nRandomPatches $NRANDOMPATCHES/"
 		./CSVM settings
 	done
 #done
