@@ -23,11 +23,8 @@ using namespace csvm;
  * This could lead to confussion.
  */
 //-------start variables-------
-double errorTrain = 1;
-double errorValidation = 1;
-int iterations = 1;
+int sizeRandomFeat;
 
-int sizeRandomFeat = 0;
 
 std::vector<int> layerSizes;
 
@@ -159,6 +156,7 @@ void MLPerceptron::backpropgation(){
 //--------end BACKPROPAGATION----
 //---------start VOTING----------
 void MLPerceptron::voting(){
+	cout << settings.voting;
 	if(settings.voting == "MAJORITY"){
 		majorityVoting();
 	}else if (settings.voting == "SUM"){
@@ -224,34 +222,70 @@ void MLPerceptron::printingWeights(){
 //---------end VOTING----------
 
 //---------start testing--------
-void MLPerceptron::testing(){
+void MLPerceptron::testing(vector<Feature>& randomFeatures){
+	std::cout << settings.testing;
 	if(settings.testing == "CROSSVALIDATION"){
-		//crossvaldiation();
-	}else if (settings.voting == "RERUN"){
-		//rerun();
+		crossvaldiation(randomFeatures);
+	}else if (settings.testing == "RERUN"){
+		rerun(randomFeatures);
 		}else{
-			std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl;
+			//std::cout << "This testing type is unknown. Change to a known voting type in the settings file" << std::endl;
 		}
+	printingWeights();
 }
 
-void crossvaldiation(){
-	errorValidation	= errorFunction();
-	errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
+
 	
-		for(int i = 0; i < settings.nOutputUnits;i++){
-			if(errorClasses[i] > maxError){
-				maxError = errorClasses[i];
-			}
-			if(maxError < 0.01){
-				std::cout << "max error Validation set" << maxError << std::endl;
-				threshold = 0;
+
+void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
+	int threshold = 0;
+	int iterations = 1; 
+	double errorTrain = 0;
+	double errorValidation = 0;
+	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
+	double maxError = 1;
+	
+	while (threshold = 1){
+		std::cout << "number of iterations " << iterations << std::endl;
+		iterations++;
+		for(unsigned int i = 0; i < randomFeatures.size();i++){
+			activations.at(0) = randomFeatures.at(i).content;
+			setDesiredOutput(randomFeatures.at(i));
+			feedforward();
+			if(i<(0.8*randomFeatures.size())){
+				backpropgation();
+				errorTrain = errorFunction();
+			}else{
+				errorValidation	= errorFunction();
+				errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
+				for(int i = 0; i < settings.nOutputUnits;i++){
+					if(errorClasses[i] > maxError){
+						maxError = errorClasses[i];
+					}
+					if(maxError < 0.01){
+						std::cout << "max error Validation set" << maxError << std::endl;
+						threshold = 0;
+					}
+				}
 			}
 		}
-	}	
+	}
 }
 
-void rerun(){
+void MLPerceptron::rerun(vector<Feature>& randomFeatures){
+	int epochs = 100;
+	double error = 0;
 	
+	for (int i = 0;i<epochs;i++){
+		std::cout << "i: " << i << std::endl;
+		for(unsigned int j = 0; j < randomFeatures.size();j++){
+			activations.at(0) = randomFeatures.at(i).content;
+			setDesiredOutput(randomFeatures.at(i));
+			feedforward();
+			backpropgation();
+			error = errorFunction();
+		}
+	}
 }
 
 //--------end testing-----------
@@ -293,41 +327,11 @@ void MLPerceptron::initializeVectors(){
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
-	bool threshold = 1;
-	int epochs = randomFeatures.size();
-	sizeRandomFeat = epochs;
 	initializeVectors();
-	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
-	cout << randomFeatures.at(0).content.size();
-	//double maxError = 1;
-	
-	testing();
-	for (int i = 0;i<1;i++){
-		std::cout << "i: " << i << std::endl;
-		for(unsigned int j = 0; j < randomFeatures.size();j++){
-	double maxError = 1;
-	
-	while (threshold == 1){
-		std::cout << "number of iterations " << iterations << std::endl;
-		iterations++;
-		for(unsigned int i = 0; i < randomFeatures.size();i++){
-			activations.at(0) = randomFeatures.at(i).content;
-			setDesiredOutput(randomFeatures.at(i));
-			feedforward();
-			if(i<(0.8*randomFeatures.size())){
-			backpropgation();
-			errorTrain = errorFunction();
-			}else{
-				testing();	
-			}
-		}
-	}
-		
-	//for(int i = 0; i < settings.nOutputUnits;i++){
-	//	std::cout << "errorClasses[" << i <<"]: " << errorClasses[i] << std::endl;
-	//}
-	//printingWeights();
+	testing(randomFeatures);
+			
 }
+
 
 
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){				
