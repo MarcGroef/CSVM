@@ -232,9 +232,42 @@ void MLPerceptron::testing(vector<Feature>& randomFeatures){
 	//printingWeights();
 }
 
+
+	
+
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
+	int threshold = 0;
+	int iterations = 1; 
+	double errorTrain = 0;
+	double errorValidation = 0;
+	std::vector<double> errorClasses = vector<double>(settings.nOutputUnits,1);
+	double maxError = 1;
 	
-	
+	while (threshold = 1){
+		std::cout << "number of iterations " << iterations << std::endl;
+		iterations++;
+		for(unsigned int i = 0; i < randomFeatures.size();i++){
+			activations.at(0) = randomFeatures.at(i).content;
+			setDesiredOutput(randomFeatures.at(i));
+			feedforward();
+			if(i<(0.8*randomFeatures.size())){
+				backpropgation();
+				errorTrain = errorFunction();
+			}else{
+				errorValidation	= errorFunction();
+				errorClasses[randomFeatures.at(i).getLabelId()] = errorValidation;
+				for(int i = 0; i < settings.nOutputUnits;i++){
+					if(errorClasses[i] > maxError){
+						maxError = errorClasses[i];
+					}
+					if(maxError < 0.01){
+						std::cout << "max error Validation set" << maxError << std::endl;
+						threshold = 0;
+					}
+				}
+			}
+		}
+	}
 }
 
 void MLPerceptron::rerun(vector<Feature>& randomFeatures){
@@ -300,8 +333,8 @@ void MLPerceptron::initializeVectors(){
 
 void MLPerceptron::train(vector<Feature>& randomFeatures){
 	initializeVectors();
-	sizeRandomFeat = randomFeatures.size();
 	testing(randomFeatures);
+			
 }
 
 
