@@ -670,7 +670,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
     stream >> type;
    if (type == "testing") {
-      stream >> mlpSettings.voting;
+      stream >> mlpSettings.testing;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
