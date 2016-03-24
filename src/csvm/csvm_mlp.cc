@@ -200,6 +200,26 @@ unsigned int MLPerceptron::mostVotedClass(){
 	return mostVotedClass;
 }
 
+void MLPerceptron::printingWeights(){
+		std::cout << "input-hidden weights: " << std::endl;
+		for(int j = 0;j<settings.nInputUnits;j++){
+			for(int k = 0;k<settings.nHiddenUnits;k++){
+				std::cout << weights[0][j][k] << " ";
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+			
+		std::cout << "hidden-output weights: " << std::endl;
+		for(int j = 0;j<settings.nHiddenUnits;j++){
+			for(int k = 0;k<settings.nOutputUnits;k++){
+				std::cout << weights[1][j][k] << " ";
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+}
+
 //---------end VOTING----------
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
@@ -280,6 +300,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures){
 	//for(int i = 0; i < settings.nOutputUnits;i++){
 	//	std::cout << "errorClasses[" << i <<"]: " << errorClasses[i] << std::endl;
 	//}
+	printingWeights();
 }
 
 

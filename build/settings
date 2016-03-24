@@ -1,6 +1,10 @@
 Dataset
 method CIFAR10
+<<<<<<< HEAD
 nTrainImages 6000
+=======
+nTrainImages 200
+>>>>>>> b15366964b2e8e558ab20e349dd35f532018d4ea
 nTestImages 1000
 imageWidth 10
 imageHeight 10
@@ -32,14 +36,21 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
+<<<<<<< HEAD
 nRandomPatches 50000
 
 MLP
 nHiddenUnits 200
+=======
+nRandomPatches 400000
+
+MLP
+nHiddenUnits 30
+>>>>>>> b15366964b2e8e558ab20e349dd35f532018d4ea
 nInputUnits 9
 nOutputUnits 10
 nLayers 3
-learningRate .01
+learningRate .1
 voting MAJORITY
 
 SVM
