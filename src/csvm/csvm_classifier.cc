@@ -159,7 +159,7 @@ void CSVMClassifier::trainMLP(){
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
+      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % dataset.getTrainSize()));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
       

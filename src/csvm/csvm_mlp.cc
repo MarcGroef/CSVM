@@ -156,7 +156,6 @@ void MLPerceptron::backpropgation(){
 //--------end BACKPROPAGATION----
 //---------start VOTING----------
 void MLPerceptron::voting(){
-	cout << settings.voting;
 	if(settings.voting == "MAJORITY"){
 		majorityVoting();
 	}else if (settings.voting == "SUM"){
@@ -223,15 +222,14 @@ void MLPerceptron::printingWeights(){
 
 //---------start testing--------
 void MLPerceptron::testing(vector<Feature>& randomFeatures){
-	std::cout << settings.testing;
 	if(settings.testing == "CROSSVALIDATION"){
 		crossvaldiation(randomFeatures);
 	}else if (settings.testing == "RERUN"){
 		rerun(randomFeatures);
 		}else{
-			//std::cout << "This testing type is unknown. Change to a known voting type in the settings file" << std::endl;
+			std::cout << "This testing type is unknown. Change to a known voting type in the settings file" << std::endl;
 		}
-	printingWeights();
+	//printingWeights();
 }
 
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
@@ -241,18 +239,25 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 
 void MLPerceptron::rerun(vector<Feature>& randomFeatures){
 	int epochs = 100;
-	double error = 0;
-	
+	//double error = 0;
+	votingHistogram = vector<double>(settings.nOutputUnits,1);
 	for (int i = 0;i<epochs;i++){
 		std::cout << "i: " << i << std::endl;
 		for(unsigned int j = 0; j < randomFeatures.size();j++){
-			activations.at(0) = randomFeatures.at(i).content;
-			setDesiredOutput(randomFeatures.at(i));
+			activations.at(0) = randomFeatures.at(j).content;
+			setDesiredOutput(randomFeatures.at(j));
 			feedforward();
 			backpropgation();
-			error = errorFunction();
+			
+			votingHistogram[randomFeatures.at(j).getLabelId()] = errorFunction();
+			
+			//std::cout << errorFunction() << "label: " << randomFeatures.at(j).getLabelId() << std::endl;
 		}
 	}
+	for(int i = 0; i < settings.nOutputUnits;i++){
+			std::cout << "votingHistogram[" << i <<"]: " << votingHistogram[i] << std::endl;
+		} 
+		std::cout << std::endl;
 }
 
 //--------end testing-----------

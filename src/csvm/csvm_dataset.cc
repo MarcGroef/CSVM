@@ -125,7 +125,6 @@ Image* CSVMDataset::getTestImagePtr(int testIdx){
 
 
 int CSVMDataset::getTrainSize(){
-   
    return settings.nTrainImages;
 }
 

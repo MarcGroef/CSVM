@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-NHIDDENUNITS=50
+NHIDDENUNITS=200
 
 LEARNINGRATE=.1
 
@@ -14,7 +14,7 @@ line_number_hidden_units=$(awk '/nHiddenUnits/{ print NR; exit }' settings)
 	#((LEARNINGRATE=LEARNINGRATE+.05)) | bc 
 #	echo $LEARNINGRATE
 #	sed -i settings -e "$line_number_learningRate s/.*/learningRate $LEARNINGRATE/"
-	for j in {1..5  }
+	for j in {1..5}
 	do
 		((NHIDDENUNITS=NHIDDENUNITS+50))
 		sed -i settings -e "$line_number_hidden_units s/.*/nHiddenUnits $NHIDDENUNITS/"
