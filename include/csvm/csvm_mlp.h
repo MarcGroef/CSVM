@@ -34,7 +34,7 @@ namespace csvm{
       
    public:
      
-      void train(vector<Feature>& randomFeatures);
+      void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
       vector<double> getActivations(vector<Feature>& imageFeatures);
       void setSettings(MLPSettings s);
       double fRand(double fMin, double fMax);
@@ -58,8 +58,8 @@ namespace csvm{
       void sumVoting();
       unsigned int mostVotedClass();
       
-      void testing(vector<Feature>& randomFeatures);
-      void crossvaldiation(vector<Feature>& randomFeatures);
+      void testing(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+      void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
       void rerun(vector<Feature>& randomFeatures);
       
       void printingWeights();

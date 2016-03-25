@@ -152,33 +152,39 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 
 void CSVMClassifier::trainMLP(){
-  unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-   
-   vector<Feature> pretrainDump;
-   vector<Feature> testData;
+	unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+    
+	vector<Feature> pretrainDump;
+	vector<Feature> testData;
   
-//validation set
-   /*vector<Feature> validationSet;
-   int i = 0;
-   
-   while(i < (dataset.getTrainSize()*.2/)){
-	  vector<Patch> patches;
-      vector<Feature> dataFeatures;
+	vector<int> classes = vector<int>(10,1);
+	
+//---------------start validation set--------------------
+	int i = 0;
+    int j = 0;
+      vector<Patch> patches;
+      vector<Feature> validationSet;
       
-      Image im = dataset.getImagePtr(rand() % dataset.getTotalImages())
+    
+   while(i < 10){
+	   Image* im;
+	  do{
+		  im = dataset.getImagePtr(rand() % dataset.getTotalImages());
+		  j=im->getLabelId();
+		  }while(classes[j] == -1);
+		  classes[j] = -1;
       //extract patches
       patches = imageScanner.scanImage(im);
 
       //allocate for new features
-      dataFeatures.reserve(patches.size());
+      validationSet.reserve(patches.size());
       
       //extract features from all patches
       for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-	   }
-	   i++;
-	}
-*/
+         validationSet.push_back(featExtr.extract(patches[patch]));
+	  i++;
+}
+
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % dataset.getTrainSize()));
@@ -186,7 +192,7 @@ void CSVMClassifier::trainMLP(){
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
       
    }
-   mlp.train(pretrainDump);
+   mlp.train(pretrainDump,validationSet);
 }
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){

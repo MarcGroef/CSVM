@@ -20,3 +20,4 @@ nRandomPatches,nHiddenUnits,learningRate,TrainSetScore,TestSetScore
 0,350,0.1,93,16.2
 0,350,0.1,97,18.5
 0,350,0.1,89,16.7
+0,350,0.1,0,350,0.1,

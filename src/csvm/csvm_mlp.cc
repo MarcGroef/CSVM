@@ -221,9 +221,9 @@ void MLPerceptron::printingWeights(){
 //---------end VOTING----------
 
 //---------start testing--------
-void MLPerceptron::testing(vector<Feature>& randomFeatures){
+void MLPerceptron::testing(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	if(settings.testing == "CROSSVALIDATION"){
-		crossvaldiation(randomFeatures);
+		crossvaldiation(randomFeatures,validationSet);
 	}else if (settings.testing == "RERUN"){
 		rerun(randomFeatures);
 		}else{
@@ -235,10 +235,9 @@ void MLPerceptron::testing(vector<Feature>& randomFeatures){
 
 	
 
-void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
+void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	int threshold = 0;
 	int iterations = 1; 
-	double errorTrain = 0;
 	double errorValidation = 0;
 	double tempErrorValidation = 0;
 	vector<int> counterValidation(settings.nOutputUnits,0);
@@ -254,7 +253,6 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 			feedforward();
 			if(i<(0.8*randomFeatures.size())){
 				backpropgation();
-				errorTrain = errorFunction();
 			}else{
 				errorValidation	= errorFunction();
 				errorClasses[randomFeatures.at(i).getLabelId()][counterValidation[randomFeatures.at(i).getLabelId()] % 100] = errorValidation;
@@ -267,7 +265,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 						}
 						tempErrorValidation /= 100;
 						if(tempErrorValidation > maxError){
-								maxError = tempErrorValidation;
+							maxError = tempErrorValidation;
 						}
 						if(maxError < 0.01){
 							std::cout << "max error Validation set" << maxError << std::endl;
@@ -321,10 +319,6 @@ void MLPerceptron::initializeVectors(){
 			maxNumberOfNodes = layerSizes[i];	
 		}
 	}
-	//Kind of a 'omslachtige' way to make the vectors. There should be a more aligant solution for this
-	//Lets make a class for these vectors
-	//Because now we have 100 hidden units and 9 input and 10 output
-	//This way we allocated a lot of space that is never used.
 	
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
 
@@ -343,9 +337,9 @@ void MLPerceptron::initializeVectors(){
   myfile.close();
 }
 
-void MLPerceptron::train(vector<Feature>& randomFeatures){
+void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	initializeVectors();
-	testing(randomFeatures);
+	testing(randomFeatures,validationSet);
 			
 }
 
@@ -359,11 +353,6 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 		feedforward();
 		voting();
 	}
-		/*for(int i = 0; i < settings.nOutputUnits;i++){
-			std::cout << "votingHistogram[" << i <<"]: " << votingHistogram[i] << std::endl;
-		} 
-		std::cout << std::endl;*/
-	
 	return mostVotedClass();
 }
 
