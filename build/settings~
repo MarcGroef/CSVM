@@ -1,24 +1,19 @@
-
 Dataset
 method CIFAR10
 nTrainImages 6000
 nTestImages 1000
-imageWidth 0
-imageHeight 0
+imageWidth 15
+imageHeight 15
 
 General
-Classifier CSVM
+Classifier MLP
 Codebook MLP
 nClasses 10
 debugOut FALSE
 normalOut TRUE
 
 Codebook
-<<<<<<< HEAD
 generate TRUE 
-=======
-generate TRUE
->>>>>>> 92ebef3796f8bf0c14de932f8ea50967ed202671
 method KMEANS
 nClusters 400
 nIterations 20
@@ -34,16 +29,20 @@ useColourPixel false
 weightRatio 0.5
 
 ImageScanner
-patchHeight 6
-patchWidth 6
+patchHeight 10
+patchWidth 10
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 60000
+
 
 MLP
-nHiddenUnits 10
-nInputUnits 10
+nHiddenUnits 250
+nInputUnits 300
 nOutputUnits 10
-
+nLayers 3
+learningRate .001
+voting SUM
+testing CROSSVALIDATION
 
 SVM
 Kernel LINEAR
@@ -66,4 +65,3 @@ nIterations 2000
 initWeight 0.000002
 CSVM_C 500
 L2 FALSE
-

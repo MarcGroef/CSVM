@@ -232,9 +232,43 @@ void MLPerceptron::testing(vector<Feature>& randomFeatures,vector<Feature>& vali
 	//printingWeights();
 }
 
+void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
+	bool stopCondition = 0;
+	int iter = 0;
+	while(!stopCondition){
+		iter = (iter + 1) % 3000;
+		//std::cout << iter << std::endl;
+		//for(unsigned int i = 0; i < randomFeatures.size();i++){
+			int j = rand() % randomFeatures.size();
+			activations.at(0) = randomFeatures.at(j).content;
+			setDesiredOutput(randomFeatures.at(j));
+			feedforward();
+			backpropgation();
+			if(iter == 0 && errorOnValidationSet(validationSet)){
+				stopCondition = 1;
+			}
+			//std::cout << iter << std::endl;
+		//}
+	}
+}
 
-	
+bool MLPerceptron::errorOnValidationSet(vector<Feature>& validationSet){
+	int classifiedWrong = 0;
+	int patchesPerIm = validationSet.size() / settings.nOutputUnits;
+	for(int i = 0; i < settings.nOutputUnits;i++){
+		vector<Feature>::const_iterator first = validationSet.begin() + (patchesPerIm *i);
+		vector<Feature>::const_iterator last = validationSet.begin() + (patchesPerIm *(i+1));
+		if(validationSet[i*patchesPerIm].getLabelId()-classify(vector<Feature>(first,last)) != 0)
+			classifiedWrong++;
+	}
+	std::cout << "classifiedWrong: " << classifiedWrong << std::endl;
+	std::cout << "error: " << errorFunction() << std::endl;
+	if(classifiedWrong > 2) //magic number
+		return 0;
+	return 1;
+}
 
+/*
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	int threshold = 0;
 	int iterations = 1; 
@@ -278,7 +312,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		}
 	}
 }
-
+*/
 void MLPerceptron::rerun(vector<Feature>& randomFeatures){
 	int epochs = 3;
 	//double error = 0;
@@ -343,13 +377,12 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 			
 }
 
-
-
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){				
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
-		activations[0] = imageFeatures[0].content;
+//		std::cout << "label[" << i << "]: " << imageFeatures[i].getLabelId() << std::endl;
+		activations[0] = imageFeatures[i].content;
 		feedforward();
 		voting();
 	}

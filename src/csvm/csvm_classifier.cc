@@ -158,8 +158,8 @@ void CSVMClassifier::trainMLP(){
 	vector<Feature> testData;
   
 	vector<int> classes = vector<int>(10,1);
-	
-//---------------start validation set--------------------
+
+	//---------------start validation set--------------------
 	int i = 0;
     int j = 0;
       vector<Patch> patches;
@@ -171,27 +171,28 @@ void CSVMClassifier::trainMLP(){
 	  do{
 		  im = dataset.getImagePtr(rand() % dataset.getTotalImages());
 		  j=im->getLabelId();
-		  }while(classes[j] == -1);
+	  }while(classes[j] == -1);
 		  classes[j] = -1;
+      
       //extract patches
       patches = imageScanner.scanImage(im);
 
       //allocate for new features
-      validationSet.reserve(patches.size());
+      validationSet.reserve(36*10);
       
       //extract features from all patches
       for(size_t patch = 0; patch < patches.size(); ++patch)
          validationSet.push_back(featExtr.extract(patches[patch]));
 	  i++;
-}
-
+    }
+   std::cout << "start: feature extraction training set..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % dataset.getTrainSize()));
       Feature newFeat = featExtr.extract(patch);
-      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
-      
+      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());      
    }
+   std::cout << "end: feature extraction training set..." << std::endl;
    mlp.train(pretrainDump,validationSet);
 }
 

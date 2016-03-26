@@ -27,7 +27,7 @@ namespace csvm{
    };
 
    class MLPerceptron{
-   private:
+      private:
       //class variables
       MLPSettings settings;
       
@@ -61,7 +61,7 @@ namespace csvm{
       void testing(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
       void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
       void rerun(vector<Feature>& randomFeatures);
-      
+      bool errorOnValidationSet(vector<Feature>& validationSet);
       void printingWeights();
 	  
 	  unsigned int classify(vector<Feature> imageFeatures);
