@@ -169,7 +169,7 @@ void CSVMClassifier::trainMLP(){
    while(i < 10){
 	   Image* im;
 	  do{
-		  im = dataset.getImagePtr(rand() % dataset.getTotalImages());
+		  im = dataset.getTrainImagePtr(rand() % dataset.getTrainSize());
 		  j=im->getLabelId();
 	  }while(classes[j] == -1);
 		  classes[j] = -1;
@@ -185,14 +185,14 @@ void CSVMClassifier::trainMLP(){
          validationSet.push_back(featExtr.extract(patches[patch]));
 	  i++;
     }
-   std::cout << "start: feature extraction training set..." << std::endl;
+   std::cout << "Feature extraction training set..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+	    std::cout << pIdx << std::endl;
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % dataset.getTrainSize()));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());      
    }
-   std::cout << "end: feature extraction training set..." << std::endl;
    mlp.train(pretrainDump,validationSet);
 }
 

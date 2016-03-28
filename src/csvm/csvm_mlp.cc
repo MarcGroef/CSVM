@@ -218,7 +218,7 @@ void MLPerceptron::printingWeights(){
 			std::cout << std::endl;
 }
 
-//---------end VOTING----------
+//---------end VOTING-----------
 
 //---------start testing--------
 void MLPerceptron::testing(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
@@ -235,37 +235,38 @@ void MLPerceptron::testing(vector<Feature>& randomFeatures,vector<Feature>& vali
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	bool stopCondition = 0;
 	int iter = 0;
+	int i = 0;
+	double averageError = 0;
 	while(!stopCondition){
 		iter = (iter + 1) % 3000;
-		//std::cout << iter << std::endl;
-		//for(unsigned int i = 0; i < randomFeatures.size();i++){
-			int j = rand() % randomFeatures.size();
-			activations.at(0) = randomFeatures.at(j).content;
-			setDesiredOutput(randomFeatures.at(j));
-			feedforward();
-			backpropgation();
-			if(iter == 0 && errorOnValidationSet(validationSet)){
-				stopCondition = 1;
+		i = (i+1) % randomFeatures.size();
+		activations.at(0) = randomFeatures.at(i).content;
+		setDesiredOutput(randomFeatures.at(i));
+		feedforward();
+		backpropgation();
+		averageError += errorFunction();
+		if(iter == 0){
+			std::cout << "averageError: " << averageError/3000.0 << std::endl;
+			averageError = 0;
 			}
-			//std::cout << iter << std::endl;
-		//}
+		if(iter == 0 && errorOnValidationSet(validationSet))
+			stopCondition = 1;
 	}
 }
 
 bool MLPerceptron::errorOnValidationSet(vector<Feature>& validationSet){
-	int classifiedWrong = 0;
+	int classifiedCorrect = 0;
 	int patchesPerIm = validationSet.size() / settings.nOutputUnits;
 	for(int i = 0; i < settings.nOutputUnits;i++){
 		vector<Feature>::const_iterator first = validationSet.begin() + (patchesPerIm *i);
 		vector<Feature>::const_iterator last = validationSet.begin() + (patchesPerIm *(i+1));
-		if(validationSet[i*patchesPerIm].getLabelId()-classify(vector<Feature>(first,last)) != 0)
-			classifiedWrong++;
+		if(validationSet[i*patchesPerIm].getLabelId()-classify(vector<Feature>(first,last)) == 0)
+			classifiedCorrect++;
 	}
-	std::cout << "classifiedWrong: " << classifiedWrong << std::endl;
-	std::cout << "error: " << errorFunction() << std::endl;
-	if(classifiedWrong > 2) //magic number
-		return 0;
-	return 1;
+	std::cout << "correctly classified: " << classifiedCorrect << std::endl;
+	if(classifiedCorrect == 10) //magic number
+		return 1;
+	return 0;
 }
 
 /*
@@ -366,12 +367,13 @@ void MLPerceptron::initializeVectors(){
 		randomizeWeights(weights[i],i);
 	}
   std::ofstream myfile;
-  myfile.open("scores.txt", std::ios_base::app);
+  myfile.open("scores.csv", std::ios_base::app);
   myfile <<sizeRandomFeat <<","<<settings.nHiddenUnits<<","<< settings.learningRate <<",";
   myfile.close();
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
+	sizeRandomFeat = randomFeatures.size();
 	initializeVectors();
 	testing(randomFeatures,validationSet);
 			

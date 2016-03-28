@@ -116,7 +116,7 @@ int main(int argc,char**argv){
       cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
  
 	std::ofstream myfile;
-	myfile.open("scores.txt", std::ios_base::app);
+	myfile.open("scores.csv", std::ios_base::app);
 	myfile << ((double)nCorrect * 100)/(nCorrect + nFalse)<< ",";
    //****************************** Print ConfusionMatrix for TRAINSET *******************
 

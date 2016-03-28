@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 10000
-nTestImages 1000
+nTrainImages 500
+nTestImages 50
 imageWidth 15
 imageHeight 15
 
@@ -21,7 +21,7 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method CLEAN
+method HOG
 cellSize 6
 cellStride 2
 padding None
@@ -32,16 +32,16 @@ ImageScanner
 patchHeight 10
 patchWidth 10
 scanStride 1
-nRandomPatches 100000
+nRandomPatches 20000
 
 
 MLP
-nHiddenUnits 250
-nInputUnits 300
+nHiddenUnits 150
+nInputUnits 81
 nOutputUnits 10
 nLayers 3
-learningRate .001
-voting SUM
+learningRate .05
+voting MAJORITY
 testing CROSSVALIDATION
 
 SVM
