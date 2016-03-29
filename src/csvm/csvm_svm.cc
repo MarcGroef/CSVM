@@ -199,11 +199,11 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
       //calculate objective
       sum0 = 0.0;
       sum1 = 0.0;
-      for(size_t dIdx0 = 0; dIdx0 < simKernel.size(); ++dIdx0){
+      for(size_t dIdx0 = 0; dIdx0 != simKernel.size(); ++dIdx0){
          yData0 = (ds->getTrainImagePtr(dIdx0)->getLabelId() == classId ? 1.0 : -1.0);
          
          sum0 += alphaData[dIdx0];
-         for(size_t dIdx1 = 0; dIdx1 < simKernel.size(); ++dIdx1){
+         for(size_t dIdx1 = 0; dIdx1 != simKernel.size(); ++dIdx1){
             if(dIdx1 > dIdx0){
                kernelIdx0 = dIdx1;
                kernelIdx1 = dIdx0;
@@ -223,7 +223,8 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
          
      //if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
       //compute trainings-score:
-      
+      if(round % 100 == 0 )
+	cout << "SVM " << classId << ": " << round << "/ " << settings.nIterations << endl;
    }
    calculateBiasClassic(simKernel, ds);
    //for(size_t aIdx = 0; aIdx < alphaData.size(); ++aIdx)

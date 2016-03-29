@@ -319,7 +319,7 @@ void CSVMClassifier::trainClassicSVMs(){
    if(debugOut) cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
    for(size_t dIdx0 = 0; dIdx0 < nTrainImages; ++dIdx0){
-      //cout << "done with similarity of " << dIdx0 << endl;
+      
       for(size_t dIdx1 = 0; dIdx1 <= dIdx0; ++dIdx1){
          dataKernel[dIdx0].resize(dIdx0 + 1);
          double sum = 0;
@@ -327,7 +327,7 @@ void CSVMClassifier::trainClassicSVMs(){
          if(settings.svmSettings.kernelType == RBF){
             
 
-
+	    sum = 0;
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][centr] - datasetActivations[dIdx1][centr])*(datasetActivations[dIdx0][centr] - datasetActivations[dIdx1][centr]);
             }
@@ -337,19 +337,22 @@ void CSVMClassifier::trainClassicSVMs(){
             
          }else if (settings.svmSettings.kernelType == LINEAR){
 
-            for(size_t cl = 0; cl < 1; ++cl){
-
-               for(size_t centr = 0; centr < nCentroids; ++centr){
-                  sum += (datasetActivations[dIdx0][centr] * datasetActivations[dIdx1][centr]);
-               }
-            }
+            
+	    sum = 0;
+	    for(size_t centr = 0; centr < nCentroids; ++centr){
+	      sum += (datasetActivations[dIdx0][centr] * datasetActivations[dIdx1][centr]);
+	    }
+            
             //cout << "Writing " << sum << " to " << dIdx0 << ", " << dIdx1 << endl;
             dataKernel[dIdx0][dIdx1] = sum;
+	   // smallKernel[(int)(0.5 * dIdx0 * dIdx0 + 0.5 * dIdx0 + dIdx1)] = sum;
             //dataKernel[dIdx1][dIdx0] = sum;
          }else
             cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
-         
+	 
       }
+      cout << "done with similarity of " << dIdx0 << endl;
+
    }
 
    

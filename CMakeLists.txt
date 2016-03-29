@@ -80,7 +80,7 @@ set_target_properties(CSVM PROPERTIES RUNTIME_OUTPUT_DIRECTORY "build/")
 #-Wall instructs g++ the show all compile warnings. There should be no compile warnings.
 #-g causes the linker to link c++ code with the machinecode, such that e.g. valgrind can give directed messeges towards your code, which is nice :)
 
-add_definitions("-std=c++11 -Wall -g -O2 -c")   
+add_definitions("-std=c++11 -Wall -g -O3 -c")   
 
 #link the std math library to the program
 target_link_libraries( CSVM
