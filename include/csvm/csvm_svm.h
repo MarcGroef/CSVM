@@ -48,8 +48,8 @@ namespace csvm{
 
       
     //functions for KKT-SVM
-      double constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
-      double updateAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
+      void constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
+      void updateAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
       void calculateBiasClassic(vector<vector<double> >& simKernel, CSVMDataset* ds);
       
   public:

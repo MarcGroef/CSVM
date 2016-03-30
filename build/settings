@@ -1,7 +1,7 @@
 
 Dataset
 method MNIST
-nTrainImages 2400
+nTrainImages 600
 nTestImages 100
 imageWidth 36
 imageHeight 36

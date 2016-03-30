@@ -34,10 +34,8 @@ void SVM::setSettings(SVM_Settings s){
 
 
 //update alphaData for dual obj. SVM with alpha_i, alpha_j, given a similarity kernel between two activation vectors:
-double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMDataset* ds){
-   
-   double diff = 0.0;
-   double deltaDiff = 0.0;
+void SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMDataset* ds){
+
    double target;
    double sum = 0.0;
    double yData0;
@@ -50,13 +48,12 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
 	
    //for all alpha's:
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
-		
-      deltaDiff = 0.0;
+
       yData0 = ((ds->getTrainImagePtr(dIdx0)->getLabelId()) == classId ? 1.0 : -1.0);
       
 		
       //calculate the sum
-		sum = 0.0;
+      sum = 0.0;
       for(size_t dIdx1 = 0; dIdx1 < nData; ++dIdx1){
          yData1 = ((ds->getTrainImagePtr(dIdx1)->getLabelId()) == classId ? 1.0 : -1.0);
          if(dIdx1 > dIdx0){
@@ -81,18 +78,16 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
       target = target < 0.0 ? 0.0 : target;
       /*if(settings.kernelType != LINEAR)*/ 
       //else target = target < settings.SVM_C_Data ? settings.SVM_C_Data : target;
-      deltaDiff = alphaData[dIdx0] - target;
-      diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
+
       //set new value
       alphaData[dIdx0] = target;
       
    }
    
-   return diff;
 }
 
 //make sure  sum(alphaCentroid * yCentroid) == 0, or below threshold
-double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds){
+void SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds){
    
    
    double oldVal;
@@ -101,8 +96,6 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    double yData; 
    double target;
    
-   double diff = 0.0;
-   double deltaDiff = 0.0;
    double sum = 0;
    double threshold = 0.00001;
    
@@ -124,14 +117,10 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
          target = alphaData[dIdx0] + deltaAlpha * settings.learningRate;
          target = target > settings.SVM_C_Data ? settings.SVM_C_Data : target;
          target = target < 0.0 ? 0.0 : target;
-         deltaDiff = alphaData[dIdx0] - target;
-         diff += (deltaDiff < 0.0 ? deltaDiff * -1.0 : deltaDiff);
-         
          alphaData[dIdx0] = target;
          sum += (alphaData[dIdx0] - oldVal) * yData;
       }
    }
-   return diff;
 }
 
 void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
@@ -173,28 +162,23 @@ void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset
 }
 void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
    
-   double sumDeltaAlpha = 1000.0;
+   //double sumDeltaAlpha = 1000.0;
    //double prevSumDeltaAlpha = 100.0;
-   double deltaAlphaData;
+   //double deltaAlphaData;
 
 
    //double objective = 0.0;
-   double sum0 = 0.0;
-   double sum1 = 0.0;
+  // double sum0 = 0.0;
+   //double sum1 = 0.0;
    
-   unsigned int kernelIdx0, kernelIdx1;
+   //unsigned int kernelIdx0, kernelIdx1;
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
 
-      //prevSumDeltaAlpha = sumDeltaAlpha;
-      sumDeltaAlpha = 0.0;
-      deltaAlphaData = updateAlphaDataClassic(simKernel, ds);
-      deltaAlphaData = deltaAlphaData < 0.0 ? deltaAlphaData * -1.0 : deltaAlphaData;
-      sumDeltaAlpha += deltaAlphaData;
-      
+      updateAlphaDataClassic(simKernel, ds);
       constrainAlphaDataClassic(simKernel, ds);
       
       
-      double yData0, yData1;
+      /*double yData0, yData1;
       
       //calculate objective
       sum0 = 0.0;
@@ -220,7 +204,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
          }
       }
       //objective = sum0 - 0.5 * sum1;
-         
+         */
      //if(round % 100 == 0 )cout << "SVM " << classId << " training round " << round << ".  Sum of Change  = " << fixed << sumDeltaAlpha << "\tDeltaSOC = " << (prevSumDeltaAlpha - sumDeltaAlpha) << "  \tObjective : " << objective << endl;   
       //compute trainings-score:
       if(round % 100 == 0 )
