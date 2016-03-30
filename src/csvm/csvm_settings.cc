@@ -370,97 +370,97 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
       featureSettings.featureType = LBP;
 
 
-	  stream >> setting;
-	  if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-		  stream >> featureSettings.lbpSettings.cellSize;
+      stream >> setting;
+      if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
+          stream >> featureSettings.lbpSettings.cellSize;
 
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
-	  stream >> setting;
-	  if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-		  stream >> featureSettings.lbpSettings.cellStride;
+      stream >> setting;
+      if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
+          stream >> featureSettings.lbpSettings.cellStride;
 
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
-	  stream >> setting;
-	  if (setting == "patchSize") {  // 
-		  stream >> featureSettings.lbpSettings.patchSize;
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      stream >> setting;
+      if (setting == "patchSize") {  // 
+          stream >> featureSettings.lbpSettings.patchSize;
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
 
-	  stream >> setting;
-	  if (setting == "padding") {//#the size of a patch
-		  stream >> enumeration;
-		  if (enumeration == "None" || enumeration == "none" || enumeration == "NONE")
-			  featureSettings.lbpSettings.padding = LNONE;
-		  else if (enumeration == "Identity" || enumeration == "identity" || enumeration == "IDENTITY")
-			  featureSettings.lbpSettings.padding = LIDENTITY;
-		  else if (enumeration == "Zero" || enumeration == "zero" || enumeration == "ZERO")
-			  featureSettings.lbpSettings.padding = LZERO;
+      stream >> setting;
+      if (setting == "padding") {//#the size of a patch
+          stream >> enumeration;
+          if (enumeration == "None" || enumeration == "none" || enumeration == "NONE")
+              featureSettings.lbpSettings.padding = LNONE;
+          else if (enumeration == "Identity" || enumeration == "identity" || enumeration == "IDENTITY")
+              featureSettings.lbpSettings.padding = LIDENTITY;
+          else if (enumeration == "Zero" || enumeration == "zero" || enumeration == "ZERO")
+              featureSettings.lbpSettings.padding = LZERO;
 
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
-	  stream >> setting;
-	  if (setting == "useColourPixel") {//if we use grey images
-		  stream >> useColour;
-		  if (useColour == "true" || useColour == "True")
-			  featureSettings.lbpSettings.useColourPixel = true;
-		  else {
-			  if (useColour == "false" || useColour == "False")
-				  featureSettings.lbpSettings.useColourPixel = false;
-		  }
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      stream >> setting;
+      if (setting == "useColourPixel") {//if we use grey images
+          stream >> useColour;
+          if (useColour == "true" || useColour == "True")
+              featureSettings.lbpSettings.useColourPixel = true;
+          else {
+              if (useColour == "false" || useColour == "False")
+                  featureSettings.lbpSettings.useColourPixel = false;
+          }
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
-	  stream >> setting;
-	  if (setting == "useUniformity") {//if we use grey images
-		  stream >> enumeration;
-		  if (enumeration == "UNIFORM" || enumeration == "True" || enumeration == "true")
-			  featureSettings.lbpSettings.uniform = LUNIFORM;
-		  else {
-			  if (enumeration == "false" || enumeration == "false" || enumeration == "PURE")
-				  featureSettings.lbpSettings.uniform = LPURE;
-		  }
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      stream >> setting;
+      if (setting == "useUniformity") {//if we use grey images
+          stream >> enumeration;
+          if (enumeration == "UNIFORM" || enumeration == "True" || enumeration == "true")
+              featureSettings.lbpSettings.uniform = LUNIFORM;
+          else {
+              if (enumeration == "false" || enumeration == "false" || enumeration == "PURE")
+                  featureSettings.lbpSettings.uniform = LPURE;
+          }
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
-	  stream >> setting;
-	  if (setting == "binmethod") {  // things
-		  stream >> enumeration;
-		  if (enumeration == "CROSSCOLOUR" || enumeration == "CrossColour" || enumeration == "crosscolour" || enumeration == "Crosscolour")
-			  featureSettings.lbpSettings.binmethod = LCROSSCOLOUR;
-		  else {
-			  if (enumeration == "BYCOLOUR" || enumeration == "ByColour" || enumeration == "bycolour" || enumeration == "Bycolour")
-				  featureSettings.lbpSettings.binmethod = LBYCOLOUR;
-		  }
+      stream >> setting;
+      if (setting == "binmethod") {  // things
+          stream >> enumeration;
+          if (enumeration == "CROSSCOLOUR" || enumeration == "CrossColour" || enumeration == "crosscolour" || enumeration == "Crosscolour")
+              featureSettings.lbpSettings.binmethod = LCROSSCOLOUR;
+          else {
+              if (enumeration == "BYCOLOUR" || enumeration == "ByColour" || enumeration == "bycolour" || enumeration == "Bycolour")
+                  featureSettings.lbpSettings.binmethod = LBYCOLOUR;
+          }
 
-	  }
-	  else {
-		  cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
-		  exit(-1);
-	  }
+      }
+      else {
+          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
+          exit(-1);
+      }
 
 
 
@@ -931,3 +931,4 @@ void CSVMSettings::readSettingsFile(string dir) {
 
    file.close();
 }
+

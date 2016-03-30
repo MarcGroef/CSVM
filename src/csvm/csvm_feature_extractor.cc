@@ -32,6 +32,8 @@ void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    clean.settings = settings.clSettings;
    if(settings.featureType == HOG)
       hog.setSettings(settings.hogSettings);
+   if (settings.featureType == LBP)
+	   lbp.setSettings(settings.lbpSettings);
    if (settings.featureType == MERGE) {
 	   pixhog.setSettings(settings.mergeSettings);
 	   hog.setSettings(settings.hogSettings);

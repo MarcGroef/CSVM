@@ -52,12 +52,12 @@ using namespace csvm;
       //for all csvms in ensemble
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          //############ Logging functions ################
-         stringstream ss;
-         ss << "statData_SVM-" << svmIdx << ".csv";
-         string fName = ss.str();
-         statDatFile.open ( fName.c_str() );
-         statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
-         if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
+         //stringstream ss;
+        // ss << "statData_SVM-" << svmIdx << ".csv";
+        // string fName = ss.str();
+       //  statDatFile.open ( fName.c_str() );
+       //  statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
+        // if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
          
          //for all training iterations
@@ -90,14 +90,14 @@ using namespace csvm;
                   if(yData * out < 1){
                      if (not settings.L2){
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
-                        ++wrong;
+                        //++wrong;
                      } else {
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) - ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
-                        ++wrong;
+                        //++wrong;
                      }
                   } else {
                      weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
-                     ++right;
+                     //++right;
                   }
 
                }//centrIdx
@@ -111,9 +111,9 @@ using namespace csvm;
                else 			sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
                   
                //############ Logging functions ################
-               if (out > 0)  { maxOut += out; ++nMax; }
-               if (out < 0)  { minOut += out; ++nMin; }
-               allOuts[dIdx] = out;
+               //if (out > 0)  { maxOut += out; ++nMax; }
+               //if (out < 0)  { minOut += out; ++nMin; }
+               //allOuts[dIdx] = out;
                //###############################################
          
 
@@ -122,7 +122,7 @@ using namespace csvm;
             //calculate objective function
 
             // calculating first term of objective function
-            double objective = 0;
+            /*double objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
             }
@@ -159,14 +159,14 @@ using namespace csvm;
             stdDevMinOutNeg = sqrt(stdDevMinOutNeg / nMinNeg);
             statDatFile << itIdx << "," << objective << "," << float (right / (right+wrong) * 100) << "," << minOuts[svmIdx] << "," << maxOuts[svmIdx] << "," << stdDevMinOutPos << "," << stdDevMinOutNeg << "," << stdDevMaxOutPos << "," << stdDevMaxOutNeg << "," << hypPlane / objective * 100 << endl;
             //###############################################
-
+*/
             // online trainings output
-            if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
-            if(debugOut)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
-
-         }//itIdx
+            //if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
+            //if(debugOut)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
+	    if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << " : " << itIdx << " / " << settings.nIter << endl;
+          }//itIdx
          
-        statDatFile.close();  // logfile
+        //statDatFile.close();  // logfile
          
       }//svmIdx
    }

@@ -1,4 +1,3 @@
-
 #ifndef CSVM_LBP_DESCRIPTOR_H
 #define CSVM_LBP_DESCRIPTOR_H
 
