@@ -249,23 +249,30 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			std::cout << "averageError: " << averageError/3000.0 << std::endl;
 			averageError = 0;
 			}
-		if(iter == 0 && errorOnValidationSet(validationSet))
-			stopCondition = 1;
+		if(iter == 0 && errorOnValidationSet(validationSet)){
+			stopCondition = 1;	
+		}
 	}
 }
 
 bool MLPerceptron::errorOnValidationSet(vector<Feature>& validationSet){
 	int classifiedCorrect = 0;
+	double errorValidation = 0;
 	int patchesPerIm = validationSet.size() / settings.nOutputUnits;
+
 	for(int i = 0; i < settings.nOutputUnits;i++){
 		vector<Feature>::const_iterator first = validationSet.begin() + (patchesPerIm *i);
 		vector<Feature>::const_iterator last = validationSet.begin() + (patchesPerIm *(i+1));
 		if(validationSet[i*patchesPerIm].getLabelId()-classify(vector<Feature>(first,last)) == 0)
 			classifiedCorrect++;
+			errorValidation += errorFunction();
 	}
+	std::cout << "error Validation: " << errorValidation/10.0 << std::endl;
+	
 	std::cout << "correctly classified: " << classifiedCorrect << std::endl;
-	if(classifiedCorrect == 10) //magic number
+	if(classifiedCorrect == 10){ //magic number
 		return 1;
+	}
 	return 0;
 }
 
