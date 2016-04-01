@@ -30,7 +30,7 @@ using namespace std;
 namespace csvm{
    
    class CSVMClassifier{
-      CSVMSettings settings;
+      
       MLPerceptron mlp;
       Codebook codebook;
       DeepCodebook* deepCodebook;
@@ -57,6 +57,7 @@ namespace csvm{
       unsigned int classifyClassicSVMs(Image* im, bool printResults);
       
    public:
+      CSVMSettings settings;
       //public vars
       CSVMDataset dataset;
       bool debugOut, normalOut;
