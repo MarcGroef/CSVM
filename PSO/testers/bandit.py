@@ -30,7 +30,7 @@ class BanditTester(ParameterTester):
        #'nTrainingIterations',
        #'codebookSimilaritySigma',
        #'SVMSimilaritySigma',
-       #'SVM_C']
+       'SVM_C']
     parameters = {  'learningRate':   {"type": "float",
                                         "scaling": "log",
                                         "min": 0.0000001,
@@ -69,10 +69,11 @@ class BanditTester(ParameterTester):
                     #                    "max": 50000,
                     #                    "distribution": "uniform",},
        
-                    #'SVM_C':            {"type": "int",
-                    #                    "scaling": "log",
-                    #                    "min": 1.0,
-                    #                    "max": 1000000}}
+                    'SVM_C':            {"type": "int",
+                                        "scaling": "log",
+                                        "min": 1.0,
+                                        "max": 1000000}}
+                    
     config_file = \
 """
 Dataset
@@ -140,7 +141,7 @@ ConvSVM
 learningRate 0.000002
 nIterations 2000
 initWeight 0.000002
-CSVM_C 500
+CSVM_C %(SVM_C).7f
 L2 FALSE
 """
 
@@ -178,7 +179,7 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
-    result = tst.set_options(gen, BanditTester, 2, 10, processing_timeout = 66000) # number of threads and single function evaluations
+    result = tst.set_options(gen, BanditTester, 1, 2, processing_timeout = 66000) # number of threads and single function evaluations
 
     if not result is True:
         print result
