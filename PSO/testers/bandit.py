@@ -26,16 +26,16 @@ class BanditTester(ParameterTester):
        #'nCentroids',
        #'patchSize',
        #'patchStride',
-       'learningRate',
+       'learningRate']
        #'nTrainingIterations',
        #'codebookSimilaritySigma',
        #'SVMSimilaritySigma',
-       'SVM_C']
+       #'SVM_C']
     parameters = {  'learningRate':   {"type": "float",
                                         "scaling": "log",
                                         "min": 0.0000001,
                                         "max": 0.01,
-                                        "distribution": "uniform",},
+                                        "distribution": "uniform",}}
     
                     #'nCentroids':       {"type": "int",
                     #                    "scaling": "linear",
@@ -69,10 +69,10 @@ class BanditTester(ParameterTester):
                     #                    "max": 50000,
                     #                    "distribution": "uniform",},
        
-                    'SVM_C':            {"type": "int",
-                                        "scaling": "log",
-                                        "min": 1.0,
-                                        "max": 1000000}}
+                    #'SVM_C':            {"type": "int",
+                    #                    "scaling": "log",
+                    #                    "min": 1.0,
+                    #                    "max": 1000000}}
                     
     config_file = \
 """
@@ -141,7 +141,7 @@ ConvSVM
 learningRate 0.000002
 nIterations 2000
 initWeight 0.000002
-CSVM_C %(SVM_C).7f
+CSVM_C 2048
 L2 FALSE
 """
 
