@@ -1,0 +1,74 @@
+SETTINGS: Score: 333
+
+
+Dataset
+method CIFAR10
+nTrainImages 6000
+nTestImages 1000
+imageWidth 0
+imageHeight 0
+
+General
+Classifier CSVM
+Codebook MLP
+nClasses 10
+debugOut FALSE
+normalOut TRUE
+
+Codebook
+<<<<<<< HEAD
+generate TRUE 
+=======
+generate TRUE
+>>>>>>> 92ebef3796f8bf0c14de932f8ea50967ed202671
+method KMEANS
+nClusters 400
+nIterations 20
+SimilarityFunction SOFT_ASSIGNMENT
+similaritySigma 0.05
+
+FeatureExtractor
+method CLEAN
+cellSize 6
+cellStride 2
+padding None
+useColourPixel false
+weightRatio 0.5
+
+ImageScanner
+patchHeight 6
+patchWidth 6
+scanStride 1
+nRandomPatches 20000
+
+MLP
+nHiddenUnits 10
+nInputUnits 10
+nOutputUnits 10
+
+
+SVM
+Kernel LINEAR
+AlphaDataInit 0.0000002
+nIterations 500
+learningRate 0.000001
+SVM_C_Data 1000
+Cost 1
+D2 1
+sigmaClassicSimilarity 500
+
+LinNet
+nIterations 10
+initWeight 0.01
+learningRate 0.000005
+
+ConvSVM
+learningRate 0.000002
+nIterations 2000
+initWeight 0.000002
+CSVM_C 500
+L2 FALSE
+
+
+
+csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...

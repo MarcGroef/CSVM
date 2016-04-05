@@ -4,15 +4,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <boost/lexical_cast.hpp>
 
-
-//In here still needs to be the addition of bias nodes.
-//Still unclear is how many bias nodes are needed and if all they layers except the output layer need a bias nodes.
-//The bias nodes on the input layer learn according to the output
-//But bias nodes in the 1,2 or 3 hidden layer, where do they learn according to?
-
-//I will try to implement the bias nodes for the input layer. I will make the amount of bias nodes that can be added
-//dynamic so we can always set the amount of nodes back to zero if it does not work.
 using namespace std;
 using namespace csvm;
 
@@ -143,7 +136,7 @@ void MLPerceptron::adjustWeights(int index){
 		for(int j = 0; j < layerSizes[index]; j++){
 			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j];
 		}
-		biasNodes[index][i] += settings.learningRate * deltas[index+1][i] * 1;
+		biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
 	}
 }
 
@@ -221,7 +214,7 @@ void MLPerceptron::printingWeights(){
 //---------end VOTING-----------
 
 //---------start testing--------
-void MLPerceptron::testing(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
+void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	if(settings.testing == "CROSSVALIDATION"){
 		crossvaldiation(randomFeatures,validationSet);
 	}else if (settings.testing == "RERUN"){
@@ -231,48 +224,62 @@ void MLPerceptron::testing(vector<Feature>& randomFeatures,vector<Feature>& vali
 		}
 	//printingWeights();
 }
+void valueToScoreFile(string value){
+	std::ofstream myfile;
+  myfile.open("train-validation.csv", std::ios_base::app);
+  myfile << value << ",";
+  myfile.close();
+}
+
+void lastInputLine(string value){
+	std::ofstream myfile;
+	
+  myfile.open("train-validation.csv", std::ios_base::app);
+  myfile << value << std::endl;
+  myfile.close();
+}
 
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
-	bool stopCondition = 0;
-	int iter = 0;
-	int i = 0;
 	double averageError = 0;
-	while(!stopCondition){
-		iter = (iter + 1) % 3000;
-		i = (i+1) % randomFeatures.size();
-		activations.at(0) = randomFeatures.at(i).content;
-		setDesiredOutput(randomFeatures.at(i));
-		feedforward();
-		backpropgation();
-		averageError += errorFunction();
-		if(iter == 0){
-			std::cout << "averageError: " << averageError/3000.0 << std::endl;
-			averageError = 0;
-			}
-		if(iter == 0 && errorOnValidationSet(validationSet)){
-			stopCondition = 1;	
+	int epochs = 800;
+	for(int i = 0; i<epochs;i++){
+		for(unsigned int j = 0;j<randomFeatures.size();j++){
+			activations.at(0) = randomFeatures.at(j).content;
+			setDesiredOutput(randomFeatures.at(j));
+			feedforward();
+			backpropgation();
+			averageError += errorFunction();
 		}
+		valueToScoreFile(boost::lexical_cast<string>(averageError/(double)randomFeatures.size()));
+		
+		if(errorOnValidationSet(validationSet))
+			break;	
+		
+		std::cout << "averageError: " << averageError/(double)randomFeatures.size() << std::endl;
+		
+		averageError = 0;
 	}
 }
 
 bool MLPerceptron::errorOnValidationSet(vector<Feature>& validationSet){
+	int amountOfImValidationSet = validationSet.size()/36;
 	int classifiedCorrect = 0;
-	double errorValidation = 0;
-	int patchesPerIm = validationSet.size() / settings.nOutputUnits;
+	int patchesPerIm = validationSet.size() / amountOfImValidationSet;
 
-	for(int i = 0; i < settings.nOutputUnits;i++){
+	for(int i = 0; i < amountOfImValidationSet;i++){
 		vector<Feature>::const_iterator first = validationSet.begin() + (patchesPerIm *i);
 		vector<Feature>::const_iterator last = validationSet.begin() + (patchesPerIm *(i+1));
+		
 		if(validationSet[i*patchesPerIm].getLabelId()-classify(vector<Feature>(first,last)) == 0)
 			classifiedCorrect++;
-			errorValidation += errorFunction();
 	}
-	std::cout << "error Validation: " << errorValidation/10.0 << std::endl;
-	
+	  
+	lastInputLine(boost::lexical_cast<string>(1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet)));
 	std::cout << "correctly classified: " << classifiedCorrect << std::endl;
-	if(classifiedCorrect == 10){ //magic number
+	
+	if(classifiedCorrect >= amountOfImValidationSet*0.5) //magic number
 		return 1;
-	}
+		
 	return 0;
 }
 
@@ -373,16 +380,17 @@ void MLPerceptron::initializeVectors(){
 	for(int i = 0;i < settings.nLayers-1;i++){
 		randomizeWeights(weights[i],i);
 	}
-  std::ofstream myfile;
-  myfile.open("scores.csv", std::ios_base::app);
-  myfile <<sizeRandomFeat <<","<<settings.nHiddenUnits<<","<< settings.learningRate <<",";
-  myfile.close();
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	sizeRandomFeat = randomFeatures.size();
+	
+	valueToScoreFile(boost::lexical_cast<string>(sizeRandomFeat));
+	valueToScoreFile(boost::lexical_cast<string>(settings.nHiddenUnits));
+	lastInputLine(boost::lexical_cast<string>(settings.learningRate));
+	
 	initializeVectors();
-	testing(randomFeatures,validationSet);
+	training(randomFeatures,validationSet);
 			
 }
 

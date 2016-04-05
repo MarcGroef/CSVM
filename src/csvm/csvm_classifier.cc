@@ -160,31 +160,24 @@ void CSVMClassifier::trainMLP(){
 	vector<int> classes = vector<int>(10,1);
 
 	//---------------start validation set--------------------
-	int i = 0;
-    int j = 0;
-      vector<Patch> patches;
-      vector<Feature> validationSet;
-      
-    
-   while(i < 10){
-	   Image* im;
-	  do{
-		  im = dataset.getTrainImagePtr(rand() % dataset.getTrainSize());
-		  j=im->getLabelId();
-	  }while(classes[j] == -1);
-		  classes[j] = -1;
-      
-      //extract patches
-      patches = imageScanner.scanImage(im);
+	int crossvaldiationSize = dataset.getTrainSize() * 0.2;
 
-      //allocate for new features
-      validationSet.reserve(36*10);
+  vector<Patch> patches;
+  vector<Feature> validationSet;
+    
+  validationSet.reserve(36*crossvaldiationSize);
+  
+	for(int i = 0; i < crossvaldiationSize;i++){
+		Image* im = dataset.getImagePtr(rand() % dataset.getTotalImages());
+		 
+    //extract patches
+    patches = imageScanner.scanImage(im);
       
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         validationSet.push_back(featExtr.extract(patches[patch]));
-	  i++;
-    }
+    //extract features from all patches
+    for(size_t patch = 0; patch < patches.size(); ++patch)
+			validationSet.push_back(featExtr.extract(patches[patch]));
+	}
+	
    std::cout << "Feature extraction training set..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
 	    std::cout << pIdx << std::endl;

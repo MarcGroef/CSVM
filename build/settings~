@@ -41,7 +41,7 @@ nInputUnits 81
 nOutputUnits 10
 nLayers 3
 learningRate .05
-voting MAJORITY
+voting SUM
 testing CROSSVALIDATION
 
 SVM
