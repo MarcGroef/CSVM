@@ -122,7 +122,6 @@ void CSVMClassifier::train(){
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
-   cout << "activation size = " << datasetActivations[0].size() << endl;
    // this is enough for the linear network to train on, so if it is chosen, train it and return
    if(settings.classifier == CL_LINNET){
      linNetwork.train(datasetActivations, &dataset);
