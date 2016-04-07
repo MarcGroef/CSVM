@@ -15,7 +15,7 @@ Feature FeatureExtractor::extract(Patch p){
    //settings.featureType = CLEAN;
    switch(settings.featureType){
       case LBP:
-         return lbp.getLBP(p,0);
+         return lbp.getLBP(p);
       case CLEAN:
          return clean.describe(p);
 	  case HOG:
@@ -29,8 +29,11 @@ Feature FeatureExtractor::extract(Patch p){
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
+   clean.settings = settings.clSettings;
    if(settings.featureType == HOG)
       hog.setSettings(settings.hogSettings);
+   if (settings.featureType == LBP)
+	   lbp.setSettings(settings.lbpSettings);
    if (settings.featureType == MERGE) {
 	   pixhog.setSettings(settings.mergeSettings);
 	   hog.setSettings(settings.hogSettings);
