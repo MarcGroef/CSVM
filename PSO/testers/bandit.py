@@ -92,6 +92,8 @@ normalOut TRUE
 
 Codebook
 generate TRUE 
+standardize TRUE
+whitening FALSE
 method KMEANS
 nClusters 400
 nIterations 20
@@ -100,11 +102,19 @@ similaritySigma 0.05
 
 FeatureExtractor
 method HOG
-cellSize 6
-cellStride 2
-padding None
+nBins 9
+cellSize 10
+cellStride 10
+patchSize 10
+padding Identity
 useColourPixel false
-weightRatio 0.5
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing L2
+debugLevel 0
+
+CleanDescriptor
+standardize NONE
 
 ImageScanner
 patchHeight 10
@@ -141,7 +151,7 @@ ConvSVM
 learningRate 0.000002
 nIterations 2000
 initWeight 0.000002
-CSVM_C 2048
+CSVM_C 500
 L2 FALSE
 """
 

@@ -14,6 +14,8 @@ normalOut TRUE
 
 Codebook
 generate TRUE 
+standardize TRUE
+whitening FALSE
 method KMEANS
 nClusters 400
 nIterations 20
@@ -21,12 +23,29 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
+<<<<<<< HEAD
 method CLEAN
 cellSize 6
 cellStride 2
 padding None
 useColourPixel true
 weightRatio 0.5
+=======
+method HOG
+nBins 9
+cellSize 10
+cellStride 10
+patchSize 10
+padding Identity
+useColourPixel false
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing L2
+debugLevel 0
+
+CleanDescriptor
+standardize NONE
+>>>>>>> addce062377c986375eb9b1b657125013533328a
 
 ImageScanner
 patchHeight 10

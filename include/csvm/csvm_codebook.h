@@ -19,6 +19,7 @@
 #include "csvm_kmeans.h"
 #include "csvm_annotated_kmeans.h"
 #include "csvm_centroid.h"
+#include "csvm_whitening.h"
 
 using namespace std;
 namespace csvm{
@@ -45,6 +46,8 @@ namespace csvm{
       double similaritySigma;
       SimilarityFunction simFunction;
       bool generate;
+      bool standardize;
+      bool whitening;
    };
 
    
@@ -54,7 +57,7 @@ namespace csvm{
     LVQ lvq;
     KMeans kmeans;
 	 AKMeans akmeans;
-
+    Whitener w;
     vector<Centroid> bow;
 
     unsigned int nClasses;

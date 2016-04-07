@@ -22,12 +22,14 @@
 #include "csvm_svm.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_codebook.h"
+#include "csvm_clean_descriptor.h"
 #include "csvm_image_scanner.h"
 #include "csvm_dataset.h"
 #include "csvm_conv_svm.h"
 //#include "csvm_cluster_analyser.h"
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
+
 #include "csvm_mlp.h"
 
 using namespace std;
@@ -43,7 +45,7 @@ namespace csvm{
       CL_SVM,
       CL_CSVM,
       CL_LINNET,
-		CL_MLP,
+      CL_MLP,
    };
    
    enum CODEBOOK{
@@ -72,6 +74,8 @@ namespace csvm{
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
       MLPSettings mlpSettings;
+      
+     // CleanSettings clSettings; // clean descriptor
       //ClusterAnalyserSettings analyserSettings;
    
       ~CSVMSettings();
@@ -84,8 +88,9 @@ namespace csvm{
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
       void parseConvSVMSettings(ifstream& stream);
-      void parseMLPSettings(ifstream& stream);
+      void parseCleanDescrSettings(ifstream& stream);
       void parseGeneralSettings(ifstream& stream);
+      void parseMLPSettings(ifstream& stream);
    };
 
 }
