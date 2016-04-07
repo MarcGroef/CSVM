@@ -26,16 +26,16 @@ class BanditTester(ParameterTester):
        #'nCentroids',
        #'patchSize',
        #'patchStride',
-       'learningRate',
+       'learningRate']
        #'nTrainingIterations',
        #'codebookSimilaritySigma',
        #'SVMSimilaritySigma',
-       'SVM_C']
+       #'SVM_C']
     parameters = {  'learningRate':   {"type": "float",
                                         "scaling": "log",
                                         "min": 0.0000001,
                                         "max": 0.01,
-                                        "distribution": "uniform",},
+                                        "distribution": "uniform",}}
     
                     #'nCentroids':       {"type": "int",
                     #                    "scaling": "linear",
@@ -69,70 +69,80 @@ class BanditTester(ParameterTester):
                     #                    "max": 50000,
                     #                    "distribution": "uniform",},
        
-                    'SVM_C':            {"type": "int",
-                                        "scaling": "log",
-                                        "min": 1.0,
-                                        "max": 1000000}}
+                    #'SVM_C':            {"type": "int",
+                    #                    "scaling": "log",
+                    #                    "min": 1.0,
+                    #                    "max": 1000000}}
+                    
     config_file = \
 """
 Dataset
-method MNIST
-nTrainImages 60000
-nTestImages 10000
-imageWidth 0
-imageHeight 0
+method CIFAR10
+nTrainImages 500
+nTestImages 50
+imageWidth 15
+imageHeight 15
 
 General
-Classifier CSVM
-Codebook CODEBOOK
+Classifier MLP
+Codebook MLP
 nClasses 10
 debugOut FALSE
-normalOut FALSE
+normalOut TRUE
 
 Codebook
-generate TRUE
+generate TRUE 
 method KMEANS
-nClusters 500
+nClusters 400
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
-similaritySigma 0.2
-
+similaritySigma 0.05
 
 FeatureExtractor
 method HOG
 cellSize 6
-cellStride 6
-padding Identity
-useColourPixel true
+cellStride 2
+padding None
+useColourPixel false
 weightRatio 0.5
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 2
+patchHeight 10
+patchWidth 10
+scanStride 1
 nRandomPatches 20000
+
+
+MLP
+nHiddenUnits 150
+nInputUnits 81
+nOutputUnits 10
+nLayers 3
+learningRate %(learningRate).7f
+voting MAJORITY
+testing CROSSVALIDATION
 
 SVM
 Kernel LINEAR
-AlphaDataInit 0.001
-nIterations 1000
-learningRate %(learningRate).7f
-SVM_C_Data %(SVM_C)d
+AlphaDataInit 0.0000002
+nIterations 500
+learningRate 0.000001
+SVM_C_Data 1000
 Cost 1
 D2 1
-sigmaClassicSimilarity 0.002
+sigmaClassicSimilarity 500
 
 LinNet
-nIterations 1000
+nIterations 10
 initWeight 0.01
-learningRate %(learningRate).7f
+learningRate 0.000005
 
 ConvSVM
-learningRate %(learningRate).7f
-nIterations 50000
-initWeight 0.002
-CSVM_C %(SVM_C).7f
-L2 TRUE
+learningRate 0.000002
+nIterations 2000
+initWeight 0.000002
+CSVM_C 2048
+L2 FALSE
 """
 
     def run_algorithm(self):
@@ -169,7 +179,7 @@ if __name__ == "__main__":
     BanditTester.add_parameters(gen)
 
     tst = PerformTest()
-    result = tst.set_options(gen, BanditTester, 6, 10, processing_timeout = 66000) # number of threads and single function evaluations
+    result = tst.set_options(gen, BanditTester, 1, 2, processing_timeout = 66000) # number of threads and single function evaluations
 
     if not result is True:
         print result

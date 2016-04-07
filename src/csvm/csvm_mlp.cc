@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/lexical_cast.hpp>
+#include <algorithm>   
 
 using namespace std;
 using namespace csvm;
@@ -148,7 +149,21 @@ void MLPerceptron::backpropgation(){
 }
 //--------end BACKPROPAGATION----
 //---------start VOTING----------
+
+void MLPerceptron::activationsToOutputProbabilities(){
+	double sumOfActivations = 0.0;
+	for(int i = 0; i< settings.nOutputUnits; i++){
+		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
+		sumOfActivations += activations[settings.nLayers -1][i];
+	}
+	for(int i = 0; i< settings.nOutputUnits; i++){
+		activations[settings.nLayers -1][i] /= sumOfActivations;
+	}
+}
+
+
 void MLPerceptron::voting(){
+	activationsToOutputProbabilities();
 	if(settings.voting == "MAJORITY"){
 		majorityVoting();
 	}else if (settings.voting == "SUM"){
@@ -241,8 +256,11 @@ void lastInputLine(string value){
 
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	double averageError = 0;
-	int epochs = 800;
+	int epochs = 100;
+	std::cout << "validationError, averageError" << std::endl;
 	for(int i = 0; i<epochs;i++){
+		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
+	
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations.at(0) = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
@@ -255,27 +273,29 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		if(errorOnValidationSet(validationSet))
 			break;	
 		
-		std::cout << "averageError: " << averageError/(double)randomFeatures.size() << std::endl;
+		std::cout << averageError/(double)randomFeatures.size() << std::endl;
 		
 		averageError = 0;
 	}
 }
 
 bool MLPerceptron::errorOnValidationSet(vector<Feature>& validationSet){
-	int amountOfImValidationSet = validationSet.size()/36;
+	int amountOfImValidationSet = validationSet.size()/noPatchesPerImage;
 	int classifiedCorrect = 0;
 	int patchesPerIm = validationSet.size() / amountOfImValidationSet;
+
 
 	for(int i = 0; i < amountOfImValidationSet;i++){
 		vector<Feature>::const_iterator first = validationSet.begin() + (patchesPerIm *i);
 		vector<Feature>::const_iterator last = validationSet.begin() + (patchesPerIm *(i+1));
 		
-		if(validationSet[i*patchesPerIm].getLabelId()-classify(vector<Feature>(first,last)) == 0)
+		if(validationSet[i*patchesPerIm].getLabelId() == classify(vector<Feature>(first,last)))
 			classifiedCorrect++;
 	}
 	  
 	lastInputLine(boost::lexical_cast<string>(1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet)));
-	std::cout << "correctly classified: " << classifiedCorrect << std::endl;
+	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", ";
+	//std::cout << "correctly classified: " << (double)classifiedCorrect/(double)(validationSet.size()/noPatchesPerImage) * 100 << "%" << std::endl;
 	
 	if(classifiedCorrect >= amountOfImValidationSet*0.5) //magic number
 		return 1;
@@ -382,11 +402,14 @@ void MLPerceptron::initializeVectors(){
 	}
 }
 
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
+void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int noPatchPerIm){
+	noPatchesPerImage = noPatchPerIm;
+	
 	sizeRandomFeat = randomFeatures.size();
 	
 	valueToScoreFile(boost::lexical_cast<string>(sizeRandomFeat));
 	valueToScoreFile(boost::lexical_cast<string>(settings.nHiddenUnits));
+	valueToScoreFile(boost::lexical_cast<string>(settings.voting));
 	lastInputLine(boost::lexical_cast<string>(settings.learningRate));
 	
 	initializeVectors();

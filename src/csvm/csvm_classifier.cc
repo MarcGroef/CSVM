@@ -153,6 +153,11 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 void CSVMClassifier::trainMLP(){
 	unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+    unsigned int imageHeight = settings.datasetSettings.imHeight;
+    unsigned int imageWidth = settings.datasetSettings.imWidth;
+    unsigned int patchHeight = settings.scannerSettings.patchHeight;
+    unsigned int patchWidth = settings.scannerSettings.patchWidth;
+    unsigned int stride = settings.scannerSettings.stride;
     
 	vector<Feature> pretrainDump;
 	vector<Feature> testData;
@@ -160,14 +165,16 @@ void CSVMClassifier::trainMLP(){
 	vector<int> classes = vector<int>(10,1);
 
 	//---------------start validation set--------------------
-	int crossvaldiationSize = dataset.getTrainSize() * 0.2;
+	int crossvalidationSize = dataset.getTrainSize() * 0.2;
 
   vector<Patch> patches;
   vector<Feature> validationSet;
     
-  validationSet.reserve(36*crossvaldiationSize);
+  int noPatchesPerImage = ((int)((imageHeight - patchHeight) / stride) + 1) * ((int)((imageWidth - patchWidth) / stride) + 1) ;
+    
+  validationSet.reserve(noPatchesPerImage*crossvalidationSize);
   
-	for(int i = 0; i < crossvaldiationSize;i++){
+	for(int i = dataset.getTrainSize() - crossvalidationSize; i < dataset.getTrainSize();i++){
 		Image* im = dataset.getImagePtr(rand() % dataset.getTotalImages());
 		 
     //extract patches
@@ -180,13 +187,13 @@ void CSVMClassifier::trainMLP(){
 	
    std::cout << "Feature extraction training set..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-	    std::cout << pIdx << std::endl;
+	  //std::cout << pIdx << std::endl;
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % dataset.getTrainSize()));
+      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() %  (int)(dataset.getTrainSize()*0.8)));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());      
    }
-   mlp.train(pretrainDump,validationSet);
+   mlp.train(pretrainDump,validationSet,noPatchesPerImage);
 }
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){

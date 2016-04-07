@@ -30,11 +30,12 @@ namespace csvm{
       private:
       //class variables
       MLPSettings settings;
+      int noPatchesPerImage;
       
       
    public:
      
-      void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+      void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int noPatchPerIm);
       vector<double> getActivations(vector<Feature>& imageFeatures);
       void setSettings(MLPSettings s);
       double fRand(double fMin, double fMax);
@@ -53,6 +54,8 @@ namespace csvm{
       void outputDelta();
       void calculateDeltas(int index);
       
+      
+      void activationsToOutputProbabilities();
       void voting();
       void majorityVoting();
       void sumVoting();

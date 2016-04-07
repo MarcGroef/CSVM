@@ -1,9 +1,1 @@
-nRandomPatches,nHiddenUnits,LearningRate,correctTrainSet,correctTestSet
-20000,150,0.05,98.2,26
-20000,150,0.001,29,24
-40.4,24
-40.8,20
-33.3,21
-36.9,21
-39.8,25
-39.6,23
+
