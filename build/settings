@@ -28,7 +28,7 @@ method HOG
 nBins 9
 cellSize 10
 cellStride 10
-patchSize 20
+patchSize 22
 padding None
 useColourPixel false
 interpolation INTERPOLATE_LINEAR
@@ -40,8 +40,8 @@ CleanDescriptor
 standardize NONE
 
 ImageScanner
-patchHeight 20
-patchWidth 20
+patchHeight 22
+patchWidth 22
 scanStride 1
 nRandomPatches 20000
 

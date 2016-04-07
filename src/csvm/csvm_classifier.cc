@@ -152,7 +152,6 @@ void CSVMClassifier::train(){
        eIdx += nTrainsPerValidation;
      }
      else{
-       cout << "training " << (nTrainEpochs - eIdx - 1) << " epochs" << endl;
        convSVM.train(datasetActivations, nTrainEpochs - eIdx, &dataset);
        eIdx += nTrainEpochs - eIdx;
      }

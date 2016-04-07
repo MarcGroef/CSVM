@@ -41,7 +41,6 @@ using namespace csvm;
    void ConvSVM::train(vector< vector<double> >& activations, unsigned int nIterations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
-      cout << "nData = " << nData << endl;
       cout << fixed << setprecision(5);
 
 
