@@ -50,7 +50,7 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
 //The actual KMeans clusterings
 vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int nClusters){
    unsigned int nData = featureSamples.size(); 
-	
+   cout << "clustering " << nClusters << "centroids \n";
 	//location of 2-times the centroids. One for currect centroid location, and one for the next iteration.
 	//pointers 'centroids' and 'newCentroids' denote them, and are updated at the end of each iteration to point to the correct one.
 	//This minimalizes memory hassle.

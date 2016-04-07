@@ -17,23 +17,23 @@ namespace csvm{
     LBP,
     CLEAN,
     HOG,
-	MERGE,
+    MERGE,
   };
   
   struct FeatureExtractorSettings{
     FeatureType featureType;
     HOGSettings hogSettings;
     CleanSettings clSettings;
-	MERGESettings mergeSettings;	//
-	LBPSettings lbpSettings;
+    MERGESettings mergeSettings;	//
+    LBPSettings lbpSettings;
   };
   
   class FeatureExtractor{
     FeatureExtractorSettings settings;
     LBPDescriptor lbp;
-	 HOGDescriptor hog;
+    HOGDescriptor hog;
     CleanDescriptor clean;
-	MERGEDescriptor pixhog;
+    MERGEDescriptor pixhog;
     
   public:
      bool debugOut, normalOut;

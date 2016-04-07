@@ -26,6 +26,28 @@ bool CSVMClassifier::getGenerateCB(){
    return codebook.getGenerate();
 }
 
+/**Some often used functionality:*/
+
+vector<Feature> CSVMClassifier::collectFeaturesFromImage(Image* im){
+  vector<Feature> features; 
+  vector<Patch> patches = imageScanner.scanImage(im);
+  size_t nPatches = patches.size();
+  for(size_t pIdx = 0; pIdx != nPatches; ++pIdx){
+    features.push_back(featExtr.extract(patches[pIdx]));
+  }
+  return features;
+}
+
+vector<double> CSVMClassifier::getActivationsFromImage(Image* im){
+  return codebook.getActivations(collectFeaturesFromImage(im));
+}
+
+
+
+
+/////////////////////////////////////
+
+
 //initialize the SVMs, by telling them the dataset size, amount of classes, centroids, and the respective label of the SVM
 void CSVMClassifier::initSVMs(){
    
@@ -51,12 +73,13 @@ void CSVMClassifier::setSettings(string settingsFile){
    
    dataset.setSettings(settings.datasetSettings);
    dataset.debugOut = settings.debugOut;
-   dataset.normalOut = settings.normalOut;
    
-   settings.codebookSettings.kmeansSettings.normalOut = normalOut;
+   dataset.normalOut = settings.normalOut;
+   settings.codebookSettings.kmeansSettings.normalOut = settings.normalOut;
    codebook.setSettings(settings.codebookSettings);
    codebook.debugOut = settings.debugOut;
    codebook.normalOut = settings.normalOut;
+
    
    
    
@@ -73,28 +96,69 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.setSettings(settings.convSVMSettings);
    convSVM.debugOut = settings.debugOut;
    convSVM.normalOut = settings.normalOut;
+   
+   
 }
 
 //Train the system
 void CSVMClassifier::train(){
-   switch(settings.classifier){
-      case CL_SVM:
-         if(normalOut) cout << "Training SVM..\n";
+   if(settings.classifier == CL_SVM){
+      if(settings.normalOut) cout << "Training SVM..\n";
          trainClassicSVMs();
-         
-         break;
-      case CL_CSVM:
-         if(normalOut) cout << "Training Conv SVM..\n";
-         trainConvSVMs();
-         
-         break;
-      case CL_LINNET:
-         if(normalOut) cout << "Training LinNet..\n";
-         trainLinearNetwork();
-         
-         break;
-      default:
-         cout << "WARNING! couldnt recognize selected classifier!\n";
+      return;
+   }
+   
+   unsigned int nTrainImages = dataset.getTrainSize();
+   unsigned int nTestImages = dataset.getTestSize();
+   vector < vector < double > > datasetActivations;
+   vector < vector < double > > validationActivations;
+   
+   
+   //get codebook activations for all train images
+   for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
+      if(settings.codebook == CB_CODEBOOK){
+        datasetActivations.push_back(getActivationsFromImage(dataset.getTrainImagePtr(dataIdx)));
+     }else{
+        datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
+     }
+   }
+   cout << "activation size = " << datasetActivations[0].size() << endl;
+   // this is enough for the linear network to train on, so if it is chosen, train it and return
+   if(settings.classifier == CL_LINNET){
+     linNetwork.train(datasetActivations, &dataset);
+     return;
+   }
+   
+
+   //get codebook activations for all test images, for validation stats
+   for(size_t dataIdx = 0; dataIdx < nTestImages; ++dataIdx){
+     if(settings.codebook == CB_CODEBOOK){
+        validationActivations.push_back(getActivationsFromImage(dataset.getTestImagePtr(dataIdx)));
+     }else{
+        validationActivations.push_back(deepCodebook->getActivations(dataset.getTestImagePtr(dataIdx)));
+     }
+   }
+   convSVM.settings.nCentroids = datasetActivations[0].size();
+   convSVM.initialize();
+   
+   //All other classifiers are handled, so lets train the csvm, with validation stats
+   size_t nTrainEpochs = settings.convSVMSettings.nIter;
+   size_t nTrainsPerValidation = 50;
+   cout << "trainSize = " << datasetActivations.size() << endl;
+   for(size_t eIdx = 0; eIdx != nTrainEpochs;){
+     cout << "epoch " << eIdx << endl;
+     if(eIdx + nTrainsPerValidation < nTrainEpochs){
+       convSVM.train(datasetActivations, nTrainsPerValidation, &dataset);
+       eIdx += nTrainsPerValidation;
+     }
+     else{
+       cout << "training " << (nTrainEpochs - eIdx - 1) << " epochs" << endl;
+       convSVM.train(datasetActivations, nTrainEpochs - eIdx, &dataset);
+       eIdx += nTrainEpochs - eIdx;
+     }
+
+     
+     cout << "validation score: " << convSVM.validate(validationActivations, &dataset) << endl;
    }
 }
 
@@ -115,6 +179,7 @@ unsigned int CSVMClassifier::classify(Image* im){
    }
    return result;
 }
+
 
 
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
@@ -167,10 +232,10 @@ void CSVMClassifier::constructCodebook(){
       
    }
 
-   if(debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
+   if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
    
-   if(debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
+   if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();
 }
@@ -179,75 +244,26 @@ void CSVMClassifier::constructCodebook(){
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
    vector < vector < double > > datasetActivations;
-   vector < Feature > dataFeatures;
-   vector < Patch > patches;
    
    //allocate space for more vectors
    datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
-      vector<double> dataActivation;
-      //extract patches
-      
       if(settings.codebook == CB_CODEBOOK){
-         
-         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
-         dataActivation.clear();
-         dataFeatures.clear();
-         //clear previous features
-         
-         //allocate for new features
-         dataFeatures.reserve(patches.size());
-         
-         //extract features from all patches
-         for(size_t patch = 0; patch < patches.size(); ++patch){
-            dataFeatures.push_back(featExtr.extract(patches[patch]));
-         }
-         
-         patches.clear();
-         
-         //get cluster activations for the features
-         dataActivation = codebook.getActivations(dataFeatures); 
-         dataFeatures.clear();
-      
-         patches.clear();
-         
-
-         //get cluster activations for the features
-         datasetActivations.push_back(dataActivation);
-         dataActivation.clear();
+         datasetActivations.push_back(getActivationsFromImage(dataset.getTrainImagePtr(dataIdx)));
      }else{
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
-   convSVM.train(datasetActivations, &dataset);
+   convSVM.train(datasetActivations, settings.convSVMSettings.nIter, &dataset);
 }
 
 
 unsigned int CSVMClassifier::classifyConvSVM(Image* image){
-   vector<Patch> patches;
-   vector<Feature> dataFeatures;
    vector<double> dataActivation;
    
    if(settings.codebook == CB_CODEBOOK){
-      
-      vector<Patch> patches;
-      vector<Feature> dataFeatures;
-      
-      //extract patches
-      patches = imageScanner.scanImage(image);
-         
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-      
-      patches.clear();
-      dataActivation = codebook.getActivations(dataFeatures); 
+      dataActivation = getActivationsFromImage(image);
    }else{      
       dataActivation = deepCodebook->getActivations(image);
    }
@@ -279,83 +295,46 @@ void CSVMClassifier::trainClassicSVMs(){
       
       //extract patches
       if(settings.codebook == CB_CODEBOOK){
-         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
-         dataActivation.clear();
-         dataFeatures.clear();
-         //clear previous features
-         
-         //allocate for new features
-         dataFeatures.reserve(patches.size());
-         
-         //extract features from all patches
-         for(size_t patch = 0; patch < patches.size(); ++patch){
-            dataFeatures.push_back(featExtr.extract(patches[patch]));
-            //cout << "Patch at " << patches[patch].getX() << ", " << patches[patch].getY() << endl;
-         }
-         
-         
-         patches.clear();
-         
-         //get cluster activations for the features
-         dataActivation = codebook.getActivations(dataFeatures); 
-         dataFeatures.clear();
-      
-         patches.clear();
-         
+         datasetActivations.push_back(getActivationsFromImage(dataset.getTrainImagePtr(dataIdx)));
 
-         //get cluster activations for the features
-         datasetActivations.push_back(dataActivation);
-         dataActivation.clear();
      }else{
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
    }
-   nClasses = dataset.getNumberClasses();
    nCentroids = datasetActivations[0].size();
    
-   if(debugOut) cout << "nClasses = " << nClasses << endl;
-   if(debugOut) cout << "nCentroids = " << nCentroids << endl;
+   if(settings.debugOut) cout << "nClasses = " << nClasses << endl;
+   if(settings.debugOut) cout << "nCentroids = " << nCentroids << endl;
    
-   if(debugOut) cout << "Calculating similarities\n";
+   if(settings.debugOut) cout << "Calculating similarities\n";
    //calculate similarity kernal between activation vectors
-   for(size_t dIdx0 = 0; dIdx0 < nTrainImages; ++dIdx0){
-      
+   for(size_t dIdx0 = 0; dIdx0 < nTrainImages; ++dIdx0){ 
       for(size_t dIdx1 = 0; dIdx1 <= dIdx0; ++dIdx1){
          dataKernel[dIdx0].resize(dIdx0 + 1);
          double sum = 0;
 	 
          if(settings.svmSettings.kernelType == RBF){
             
-
 	    sum = 0;
             for(size_t centr = 0; centr < nCentroids; ++centr){
                sum += (datasetActivations[dIdx0][centr] - datasetActivations[dIdx1][centr])*(datasetActivations[dIdx0][centr] - datasetActivations[dIdx1][centr]);
             }
-            
             dataKernel[dIdx0][dIdx1] = exp((-1.0 * sum)/settings.svmSettings.sigmaClassicSimilarity);
             //dataKernel[dIdx1][dIdx0] = dataKernel[dIdx0][dIdx1];
             
          }else if (settings.svmSettings.kernelType == LINEAR){
-
-            
+ 
 	    sum = 0;
 	    for(size_t centr = 0; centr < nCentroids; ++centr){
 	      sum += (datasetActivations[dIdx0][centr] * datasetActivations[dIdx1][centr]);
 	    }
-            
-            //cout << "Writing " << sum << " to " << dIdx0 << ", " << dIdx1 << endl;
             dataKernel[dIdx0][dIdx1] = sum;
-	   // smallKernel[(int)(0.5 * dIdx0 * dIdx0 + 0.5 * dIdx0 + dIdx1)] = sum;
-            //dataKernel[dIdx1][dIdx0] = sum;
          }else
             cout << "CSVM::svm::Error! No valid kernel type selected! Try: RBF or LINEAR\n"  ;
 	 
       }
       cout << "done with similarity of " << dIdx0 << endl;
-
    }
-
-   
    for(size_t cl = 0; cl < nClasses; ++cl){
       svms[cl].trainClassic(dataKernel, &dataset);  
    }
@@ -365,29 +344,13 @@ void CSVMClassifier::trainClassicSVMs(){
 
 //classify an image using the regular-SVM
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
-   unsigned int nClasses = dataset.getNumberClasses();
    
+   unsigned int nClasses = dataset.getNumberClasses();
    vector<double> dataActivation;
+   
    if(settings.codebook == CB_CODEBOOK){
-      vector<Patch> patches;
-      vector<Feature> dataFeatures;
-      
-      //extract patches
-      patches = imageScanner.scanImage(image);
-         
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-      patches.clear();
-      dataActivation = codebook.getActivations(dataFeatures); 
+      dataActivation = getActivationsFromImage(image);
    }else{
-      
-      
       dataActivation = deepCodebook->getActivations(image);
    }
    //append centroid activations to activations from 0th quadrant.
@@ -419,9 +382,7 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
 void CSVMClassifier::trainLinearNetwork(){
    unsigned int nTrainImages = dataset.getTrainSize();
    vector < vector < double > > datasetActivations;
-   
-   vector < Patch > patches;
-   vector<double> dataActivation;
+
    //allocate space for more vectors
    datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
@@ -429,32 +390,7 @@ void CSVMClassifier::trainLinearNetwork(){
       vector < Feature > dataFeatures;
       //extract patches
       if(settings.codebook == CB_CODEBOOK){
-         patches = imageScanner.scanImage(dataset.getTrainImagePtr(dataIdx));
-         dataActivation.clear();
-         dataFeatures.clear();
-         //clear previous features
-         
-         //allocate for new features
-         dataFeatures.reserve(patches.size());
-         
-         //cout << patches[qIdx].size() << " patches" << endl;
-         //extract features from all patches
-         for(size_t patch = 0; patch < patches.size(); ++patch){
-            dataFeatures.push_back(featExtr.extract(patches[patch]));
-         }
-         
-         patches.clear();
-         
-         //get cluster activations for the features
-         dataActivation = codebook.getActivations(dataFeatures); 
-         dataFeatures.clear();
-      
-         patches.clear();
-         
-
-         //get cluster activations for the features
-         datasetActivations.push_back(dataActivation);
-         dataActivation.clear();
+        datasetActivations.push_back(getActivationsFromImage(dataset.getTrainImagePtr(dataIdx)));
      }else{
         datasetActivations.push_back(deepCodebook->getActivations(dataset.getTrainImagePtr(dataIdx)));
      }
@@ -472,29 +408,11 @@ unsigned int CSVMClassifier::lnClassify(Image* image){
    //extract patches
   
    if(settings.codebook == CB_CODEBOOK){
-      vector<Patch> patches;
-      vector<Feature> dataFeatures;
-      
-      //extract patches
-      patches = imageScanner.scanImage(image);
-         
-      //clear previous features
-      dataFeatures.clear();
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
-      
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
-      patches.clear();
-      dataActivation = codebook.getActivations(dataFeatures); 
+      dataActivation = getActivationsFromImage(image);
    }else{
-      
-      
       dataActivation = deepCodebook->getActivations(image);
    }
-   
-
+  
    return linNetwork.classify(dataActivation);
 
 }

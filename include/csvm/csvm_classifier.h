@@ -43,7 +43,8 @@ namespace csvm{
       vector< vector<double> > classicTrainActivations;
       
             
-      
+      vector<Feature> collectFeaturesFromImage(Image* im);
+      vector<double> getActivationsFromImage(Image* im);
       
       void trainLinearNetwork();
       unsigned int lnClassify(Image* image);

@@ -323,32 +323,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
             }
          }
       }
-         
-      /*
-      //standardize data
-      double mean = 0;
-      double stddev = 0;
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         mean += activations[qIdx * settings.numberVisualWords + word];
-      }
-      
-      mean /= settings.numberVisualWords;
-      
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         stddev += (activations[qIdx * settings.numberVisualWords + word] - mean) * (activations[qIdx * settings.numberVisualWords + word] - mean);
-      }
-      
-      stddev /= settings.numberVisualWords;
-      stddev += 0.01; //no devision by zero
-      stddev = sqrt(stddev);
-      
-      for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
-         activations[qIdx * settings.numberVisualWords + word] = (activations[qIdx * settings.numberVisualWords + word] - mean) / stddev;
-      }
-      */
-      
-	
-      
+
    }
    standardize(activations, 0.01);
    return activations;

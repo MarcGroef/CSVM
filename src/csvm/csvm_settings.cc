@@ -222,6 +222,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       stream >> setting;
       if (setting == "nClusters") {
          stream >> codebookSettings.lvqSettings.nClusters;
+	 codebookSettings.numberVisualWords = codebookSettings.lvqSettings.nClusters; 
       }
       else {
          cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -307,6 +308,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       stream >> setting;
       if (setting == "nClusters") {
          stream >> codebookSettings.numberVisualWords;
+	 
       }
       else {
          cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -348,7 +350,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       }
 
 
-
+      
 
 
    }

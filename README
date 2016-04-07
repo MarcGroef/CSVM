@@ -11,7 +11,7 @@ datasets.
 
 ####################### -GNU/Linux Usage- ############################# 
 
-Usage: (linux using g++, CMake, Make, SWIG, python)
+Usage: (gnu/linux using g++, CMake, Make, SWIG, python)
 
 1. Download the repository, if not already done so.
 2. Download the dataset as described in the README in the "datasets/" folder.

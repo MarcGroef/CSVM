@@ -12,14 +12,19 @@ using namespace csvm;
    void ConvSVM::setSettings(ConvSVMSettings s){
       settings = s;
       
+      
    }
 	
-	
+   void ConvSVM::initialize(){
+      weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
+      biases  = vector<double>(settings.nClasses, 0);
+   }
 
    // classification given an activation vector
    double ConvSVM::output(vector<double>& activations, unsigned int svmIdx){
       
       unsigned int nCentroids = activations.size();
+      //cout << "nCentroid@out = " << nCentroids << " at svm " << svmIdx << endl;
       double out = 0;
       
       for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
@@ -33,14 +38,12 @@ using namespace csvm;
 
 
    // training
-   void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
+   void ConvSVM::train(vector< vector<double> >& activations, unsigned int nIterations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
-      settings.nCentroids = activations[0].size();
+      cout << "nData = " << nData << endl;
       cout << fixed << setprecision(5);
-      
-      weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
-      biases  = vector<double>(settings.nClasses, 0);
+
 
       //############ Logging functions ################
       maxOuts = vector<double>(settings.nClasses, 0);
@@ -48,9 +51,9 @@ using namespace csvm;
       avOuts  = vector<double>(settings.nClasses, 0);
       ofstream statDatFile;
       //###############################################
-
-      //for all csvms in ensemble
-      for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
+      //for all training iterations
+      for(size_t itIdx = 0; itIdx < nIterations; ++itIdx){
+      
          //############ Logging functions ################
          //stringstream ss;
         // ss << "statData_SVM-" << svmIdx << ".csv";
@@ -59,9 +62,9 @@ using namespace csvm;
        //  statDatFile << "Iteration,Objective,Score,MinOut,MaxOut,stdDevMinOutPos,stdDevMinOutNeg,StdDevMaxOutPos,StdDevMaxOutNeg,HyperplanePercentage" << endl;
         // if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
+         //for all csvms in ensemble
+	 for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          
-         //for all training iterations
-         for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
             
             double sumSlack = 0;
             float right = 0;
@@ -82,10 +85,9 @@ using namespace csvm;
                unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
                double yData = (label == svmIdx ? 1.0 : -1.0);
                double out = output(activations[dIdx], svmIdx);
-             
+	       
                // for all centers 
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
-
                   // partial derivatives to the weights
                   if(yData * out < 1){
                      if (not settings.L2){
@@ -163,7 +165,7 @@ using namespace csvm;
             // online trainings output
             //if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
             //if(debugOut)cout << "CSVM " << svmIdx << ":\tObjective = " << objective << "\t Score = " << (right / (right+wrong) * 100.0) << "\tBias: " << biases[svmIdx] << endl;   
-	    if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << " : " << itIdx << " / " << settings.nIter << endl;
+	    //if(normalOut && not debugOut && itIdx % 100 == 0)cout << "CSVM " << svmIdx << " : " << itIdx << " / " << settings.nIter << endl;
           }//itIdx
          
         //statDatFile.close();  // logfile
@@ -191,4 +193,17 @@ using namespace csvm;
 
       return maxLabel;
 
+   }
+   
+   double ConvSVM::validate(vector< vector<double> >& validationActivations, CSVMDataset* dataset){
+      size_t nTestImages = dataset->getTestSize();
+      unsigned int nCorrect = 0;
+      unsigned int result;
+      
+      for(size_t dIdx = 0; dIdx != nTestImages; ++dIdx){
+	result = classify(validationActivations[dIdx]);
+	if(result == dataset->getTestImagePtr(dIdx)->getLabelId())
+	  ++nCorrect;
+      }
+      return (double)nCorrect / nTestImages;
    }

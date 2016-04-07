@@ -34,7 +34,7 @@ namespace csvm{
    
    class ConvSVM{
       
-      ConvSVMSettings settings;
+
       
       vector< vector<double> > weights;
       vector<double> biases;
@@ -50,11 +50,14 @@ namespace csvm{
 
    public:
       bool debugOut, normalOut;
-      void setSettings(ConvSVMSettings s);
+      ConvSVMSettings settings;
       
-      void train(vector< vector<double> >& activations, CSVMDataset* ds);
+      void setSettings(ConvSVMSettings s);
+      void initialize();
+      void train(vector< vector<double> >& activations, unsigned int nIterations, CSVMDataset* ds);
       unsigned int classify(vector<double>& activations);
-
+      double validate(vector< vector<double> >& validationActivations, CSVMDataset* dataset);
+      
    };
 
 
