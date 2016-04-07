@@ -62,7 +62,7 @@ learningRate 0.000005
 
 ConvSVM
 learningRate 0.000002
-nIterations 100
+nIterations 2000
 initWeight 0.000002
 CSVM_C 2048
 L2 TRUE
