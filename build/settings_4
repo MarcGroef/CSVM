@@ -1,0 +1,79 @@
+Dataset
+method CIFAR10
+nTrainImages 10000
+nTestImages 1000
+imageWidth 36
+imageHeight 36
+
+General
+Classifier MLP
+Codebook MLP
+nClasses 10
+debugOut FALSE
+normalOut TRUE
+
+Codebook
+generate TRUE 
+standardize TRUE
+whitening FALSE
+method KMEANS
+nClusters 400
+nIterations 20
+SimilarityFunction SOFT_ASSIGNMENT
+similaritySigma 0.05
+
+FeatureExtractor
+method CLEAN
+nBins 9
+cellSize 10
+cellStride 10
+patchSize 10
+padding Identity
+useColourPixel true
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing L2
+debugLevel 0
+
+CleanDescriptor
+standardize NONE
+
+
+ImageScanner
+patchHeight 10
+patchWidth 10
+scanStride 1
+nRandomPatches 100000
+
+
+MLP
+nHiddenUnits 400
+nInputUnits 300
+nOutputUnits 10
+nLayers 3
+learningRate .01
+voting SUM
+testing CROSSVALIDATION
+epochs 10000
+
+SVM
+Kernel LINEAR
+AlphaDataInit 0.0000002
+nIterations 500
+learningRate 0.001
+SVM_C_Data 1000
+Cost 1
+D2 1
+sigmaClassicSimilarity 500
+
+LinNet
+nIterations 10
+initWeight 0.01
+learningRate 0.000005
+
+ConvSVM
+learningRate 0.000002
+nIterations 2000
+initWeight 0.000002
+CSVM_C 500
+L2 FALSE

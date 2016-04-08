@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <boost/lexical_cast.hpp>
+//#include <boost/lexical_cast.hpp>
 #include <algorithm>   
 
 using namespace std;
@@ -256,7 +256,7 @@ void lastInputLine(string value){
 
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	double averageError = 0;
-	int epochs = 100;
+	int epochs = settings.epochs;
 	std::cout << "validationError, averageError" << std::endl;
 	for(int i = 0; i<epochs;i++){
 		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
@@ -268,7 +268,8 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			backpropgation();
 			averageError += errorFunction();
 		}
-		valueToScoreFile(boost::lexical_cast<string>(averageError/(double)randomFeatures.size()));
+	
+		//valueToScoreFile(boost::lexical_cast<string>(averageError/(double)randomFeatures.size()));
 		
 		if(errorOnValidationSet(validationSet))
 			break;	
@@ -293,7 +294,7 @@ bool MLPerceptron::errorOnValidationSet(vector<Feature>& validationSet){
 			classifiedCorrect++;
 	}
 	  
-	lastInputLine(boost::lexical_cast<string>(1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet)));
+	//lastInputLine(boost::lexical_cast<string>(1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet)));
 	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", ";
 	//std::cout << "correctly classified: " << (double)classifiedCorrect/(double)(validationSet.size()/noPatchesPerImage) * 100 << "%" << std::endl;
 	
@@ -407,10 +408,9 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	
 	sizeRandomFeat = randomFeatures.size();
 	
-	valueToScoreFile(boost::lexical_cast<string>(sizeRandomFeat));
-	valueToScoreFile(boost::lexical_cast<string>(settings.nHiddenUnits));
-	valueToScoreFile(boost::lexical_cast<string>(settings.voting));
-	lastInputLine(boost::lexical_cast<string>(settings.learningRate));
+	//valueToScoreFile(boost::lexical_cast<string>(sizeRandomFeat));
+	//valueToScoreFile(boost::lexical_cast<string>(settings.voting));
+	//lastInputLine(boost::lexical_cast<string>(settings.learningRate));
 	
 	initializeVectors();
 	training(randomFeatures,validationSet);

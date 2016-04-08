@@ -24,6 +24,7 @@ namespace csvm{
       double learningRate;
       string voting;
       string testing;
+      int epochs;
    };
 
    class MLPerceptron{

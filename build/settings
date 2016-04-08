@@ -1,7 +1,7 @@
 Dataset
-method CIFAR10
-nTrainImages 1000
-nTestImages 100
+method MNIST
+nTrainImages 10
+nTestImages 1
 imageWidth 36
 imageHeight 36
 
@@ -23,13 +23,13 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method HOG
+method CLEAN
 nBins 9
 cellSize 10
 cellStride 10
 patchSize 10
 padding Identity
-useColourPixel false
+useColourPixel true
 interpolation INTERPOLATE_LINEAR
 binmethod CROSSCOLOUR
 postprocessing L2
@@ -43,7 +43,7 @@ ImageScanner
 patchHeight 10
 patchWidth 10
 scanStride 1
-nRandomPatches 1000
+nRandomPatches 100
 
 
 MLP
@@ -54,6 +54,7 @@ nLayers 3
 learningRate .01
 voting SUM
 testing CROSSVALIDATION
+epochs 30
 
 SVM
 Kernel LINEAR
