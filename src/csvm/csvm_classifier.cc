@@ -182,8 +182,8 @@ unsigned int CSVMClassifier::classify(Image* im){
 
 
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
-void CSVMClassifier::exportCodebook(string filename){
-   codebook.exportCodebook(filename);
+void CSVMClassifier::exportCodebook(string filenamesstream){
+   codebook.exportCodebook(filenamesstream);
 }
 
 
@@ -198,6 +198,7 @@ void CSVMClassifier::constructDeepCodebook(){
    deepCodebook->debugOut = settings.debugOut;
    deepCodebook->normalOut = settings.normalOut;
    deepCodebook->generateCentroids();
+   
    if(normalOut) cout << "Done constructing deep codebook\n";
 }
 
@@ -233,13 +234,13 @@ void CSVMClassifier::constructCodebook(){
 
    if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
-   
+   codebook.exportToPNG();
    if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();
 }
 
-
+//Not used anymore. All training is done in the train function itself.
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
    vector < vector < double > > datasetActivations;

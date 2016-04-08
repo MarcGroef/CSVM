@@ -15,7 +15,7 @@ normalOut TRUE
 
 Codebook
 generate TRUE
-standardize TRUE
+standardize FALSE
 whitening FALSE
 method KMEANS
 nClusters 200
@@ -24,7 +24,7 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method HOG
+method CLEAN
 nBins 9
 cellSize 10
 cellStride 10
@@ -40,10 +40,10 @@ CleanDescriptor
 standardize NONE
 
 ImageScanner
-patchHeight 22
-patchWidth 22
+patchHeight 20
+patchWidth 20
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR

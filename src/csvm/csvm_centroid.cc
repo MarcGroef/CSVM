@@ -23,3 +23,30 @@ double Centroid::getDistanceSq(Centroid c) {
 	}
 	return sum;
 }
+
+void Centroid::exportToPNG(string name){
+   unsigned int size = content.size();// / 3;
+   unsigned int width = sqrt(size);
+   unsigned int height = width;
+   
+   if((width * width != size))
+      ++height;
+   cout << "imHeight = " << height << ", width = " << width << endl;
+   //Image im(width, height, CSVM_IMAGE_UCHAR_RGB);
+   Image im(width, height, CSVM_IMAGE_UCHAR_GREY);
+   
+   size_t fIdx = 0;
+   for(size_t chIdx = 0; chIdx != 1; ++chIdx){
+      for(size_t xIdx = 0; xIdx != width; ++xIdx){
+         for(size_t yIdx = 0; yIdx != height; ++yIdx){
+         
+            //cout << "chIdx = " << chIdx << " xIdx = " << xIdx << ", yIdx = " << yIdx << ", value = " <<    (content[chIdx * 3 + yIdx * width + xIdx]) <<endl;
+         
+            im.setPixel(xIdx, yIdx, chIdx, (unsigned char) (content[chIdx * (width * height) + yIdx * width + xIdx]));
+         }
+      }
+   }
+   Interpolator ip;
+   im.exportImage(name + ".png");
+   //ip.interpolate_bicubic(im, 40, 40).exportImage(name + ".png");
+}
