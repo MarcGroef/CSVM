@@ -116,7 +116,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
             (*newCentroids)[closestCentr].content[dim] += featureSamples[dIdx].content[dim];
          ++nMembers[closestCentr];
       }
-      
+      if(settings.normalOut)cout << "Total distance = " << prevTotalDistance << endl;
       //move to mean position of members
       for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){
         // cout << cIdx << " has " << nMembers[cIdx] << " members!! @ iter "<< itx <<" \n";

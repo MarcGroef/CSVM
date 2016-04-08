@@ -9,6 +9,17 @@
 using namespace std;
 using namespace csvm;
 
+//unions for binary export;
+union charInt{
+   char chars[4];
+   unsigned int intVal;
+};
+
+union charDouble{
+   char chars[8];
+   double doubleVal;
+};
+
    void ConvSVM::setSettings(ConvSVMSettings s){
       settings = s;
       
@@ -205,4 +216,85 @@ using namespace csvm;
 	  ++nCorrect;
       }
       return (double)nCorrect / nTestImages;
+   }
+   
+   void ConvSVM::exportToFile(string fname){
+      //first: int with number of outputNodes;
+      //second: int with number of weigths per node;
+      //third: bias per node
+      //fourth: weigths per node
+      
+      charInt fancyInt;
+      charDouble fancyDouble;
+   
+      ofstream file(fname.c_str(), ios::binary);
+      
+      //write nr of output nodes
+      fancyInt.intVal = settings.nClasses;
+      file.write(fancyInt.chars, 4);
+      
+      //write nWeightsPerNode
+      fancyInt.intVal = settings.nCentroids;
+      file.write(fancyInt.chars, 4);
+      
+      //write biases
+      for(size_t nIdx = 0; nIdx != settings.nClasses; ++nIdx){
+         fancyDouble.doubleVal = biases[nIdx];
+         file.write(fancyDouble.chars, 8);
+         
+      }
+      
+      //write weights
+      for(size_t nIdx = 0; nIdx != settings.nClasses; ++nIdx){
+         for(size_t cIdx = 0; cIdx != settings.nCentroids; ++cIdx){
+            fancyDouble.doubleVal = weights[nIdx][cIdx];
+            file.write(fancyDouble.chars, 8);
+         }
+      }
+      
+      file.close();
+      
+      
+   }
+   
+   void ConvSVM::importFromFile(string fname){
+      //first: int with number of outputNodes;
+      //second: int with number of weigths per node;
+      //third: bias per node
+      //fourth: weigths per node
+      
+      charInt fancyInt;
+      charDouble fancyDouble;
+      
+      ifstream file(fname.c_str(), ios::binary);
+      
+      //read nNodes
+      file.read(fancyInt.chars, 4);
+      settings.nClasses = fancyInt.intVal;
+      
+      //read nr of weights per node
+      file.read(fancyInt.chars, 4);
+      settings.nCentroids = fancyInt.intVal;
+      
+      //prepare/reset bias vector
+      biases = vector<double>();
+      
+      //read biases
+      for(size_t nIdx = 0; nIdx != settings.nClasses; ++nIdx){
+         file.read(fancyDouble.chars, 8);
+         biases.push_back(fancyDouble.doubleVal);
+      }
+      
+      //prepare/reset weights
+      weights = vector< vector<double> >();
+      
+      for(size_t nIdx = 0; nIdx != settings.nClasses; ++nIdx){
+         vector<double> nodeWeights;
+         for(size_t cIdx = 0; cIdx != settings.nCentroids; ++cIdx){
+            file.read(fancyDouble.chars, 8);
+            nodeWeights.push_back(fancyDouble.doubleVal);
+         }
+         weights.push_back(nodeWeights);
+      }
+      file.close();
    }

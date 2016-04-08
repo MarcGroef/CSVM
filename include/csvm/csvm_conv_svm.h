@@ -13,6 +13,7 @@
 #include <limits>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <cmath>
 
 #include "csvm_codebook.h"
@@ -57,7 +58,8 @@ namespace csvm{
       void train(vector< vector<double> >& activations, unsigned int nIterations, CSVMDataset* ds);
       unsigned int classify(vector<double>& activations);
       double validate(vector< vector<double> >& validationActivations, CSVMDataset* dataset);
-      
+      void exportToFile(string fname);
+      void importFromFile(string fname);
    };
 
 

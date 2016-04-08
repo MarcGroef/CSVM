@@ -18,7 +18,7 @@ generate TRUE
 standardize FALSE
 whitening FALSE
 method KMEANS
-nClusters 200
+nClusters 400
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
@@ -40,8 +40,8 @@ CleanDescriptor
 standardize NONE
 
 ImageScanner
-patchHeight 20
-patchWidth 20
+patchHeight 6
+patchWidth 6
 scanStride 1
 nRandomPatches 20000
 

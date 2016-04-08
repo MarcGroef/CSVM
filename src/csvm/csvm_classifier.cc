@@ -124,6 +124,7 @@ void CSVMClassifier::train(){
    }
    cout << "activation size = " << datasetActivations[0].size() << endl;
    // this is enough for the linear network to train on, so if it is chosen, train it and return
+   
    if(settings.classifier == CL_LINNET){
      linNetwork.train(datasetActivations, &dataset);
      return;
@@ -184,7 +185,6 @@ unsigned int CSVMClassifier::classify(Image* im){
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
 void CSVMClassifier::exportCodebook(string filenamesstream){
    codebook.exportCodebook(filenamesstream);
-   system("./centrExport/construct.sh");
 }
 
 
