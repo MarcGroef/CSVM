@@ -77,7 +77,7 @@ namespace csvm{
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
     bool getGenerate();
-    void exportToPNG();
+    void exportToPNG(unsigned int nChannels);
     
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);

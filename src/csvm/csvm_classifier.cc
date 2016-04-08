@@ -234,7 +234,7 @@ void CSVMClassifier::constructCodebook(){
 
    if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
-   codebook.exportToPNG();
+   codebook.exportToPNG(dataset.getTrainImagePtr(0)->getNChannels());
    if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();

@@ -16,7 +16,7 @@ namespace csvm{
     vector<double> content;
     double getDistanceSq(Feature f);
 	 double getDistanceSq(Centroid c);
-    void exportToPNG(string name);
+    void exportToPNG(string name, unsigned int nChannels);
    };
    
    
