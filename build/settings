@@ -15,7 +15,7 @@ normalOut TRUE
 
 
 Codebook
-generate TRUE
+generate FALSE
 standardize FALSE
 whitening FALSE
 method KMEANS
@@ -62,9 +62,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-loadLastUsed FALSE
+loadLastUsed TRUE
 learningRate 0.000002
-nIterations 2000
+nIterations 200
 initWeight 0.000002
 CSVM_C 2048
 L2 TRUE
