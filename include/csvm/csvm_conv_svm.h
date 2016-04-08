@@ -30,12 +30,11 @@ namespace csvm{
      unsigned int nClasses;
      unsigned int nCentroids;
      bool L2;
+     bool loadLastUsed;
    };
    
    
    class ConvSVM{
-      
-
       
       vector< vector<double> > weights;
       vector<double> biases;

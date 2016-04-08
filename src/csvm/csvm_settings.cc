@@ -27,6 +27,18 @@ void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
    string setting;
    string method;
    string value;
+   
+   stream >> setting;
+   if (setting != "loadLastUsed") {
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   else {
+      stream >> value;
+      convSVMSettings.loadLastUsed = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
+   }
+   
+   
    stream >> setting;
    if (setting != "learningRate") {
       cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";

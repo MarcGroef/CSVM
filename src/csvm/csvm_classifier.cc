@@ -140,7 +140,11 @@ void CSVMClassifier::train(){
      }
    }
    convSVM.settings.nCentroids = datasetActivations[0].size();
-   convSVM.initialize();
+   
+   if(!settings.convSVMSettings.loadLastUsed)
+      convSVM.initialize();
+   else
+      convSVM.importFromFile("LAST_USED_CSVM");
    
    //All other classifiers are handled, so lets train the csvm, with validation stats
    size_t nTrainEpochs = settings.convSVMSettings.nIter;
@@ -160,6 +164,7 @@ void CSVMClassifier::train(){
      
      cout << "validation score: " << convSVM.validate(validationActivations, &dataset) << endl;
    }
+   convSVM.exportToFile("LAST_USED_CSVM");
 }
 
 //Classify an image, given its pointer
