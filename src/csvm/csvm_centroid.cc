@@ -31,7 +31,7 @@ void Centroid::exportToPNG(string name, unsigned int nChannels){
    
    if((width * width != size))
       ++height;
-   cout << "imHeight = " << height << ", width = " << width << endl;
+   //cout << "imHeight = " << height << ", width = " << width << endl;
    //Image im(width, height, CSVM_IMAGE_UCHAR_RGB);
    Image im(width, height, nChannels == 1 ? CSVM_IMAGE_UCHAR_GREY : CSVM_IMAGE_UCHAR_RGB);
    
