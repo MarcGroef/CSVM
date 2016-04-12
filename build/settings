@@ -1,8 +1,8 @@
 
 Dataset
-method CIFAR10
-nTrainImages 1000
-nTestImages 100
+method MNIST
+nTrainImages 10000
+nTestImages 1000
 imageWidth 0
 imageHeight 0
 
@@ -15,9 +15,10 @@ normalOut TRUE
 
 
 Codebook
-generate FALSE
+generate TRUE
 standardize FALSE
 whitening FALSE
+rootNPartitions 5
 method KMEANS
 nClusters 400
 nIterations 20
@@ -44,7 +45,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 200000
 
 SVM
 Kernel LINEAR
@@ -62,9 +63,9 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
-loadLastUsed TRUE
+loadLastUsed FALSE
 learningRate 0.000002
-nIterations 200
+nIterations 2000
 initWeight 0.000002
 CSVM_C 2048
 L2 TRUE

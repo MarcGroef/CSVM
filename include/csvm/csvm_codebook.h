@@ -43,6 +43,7 @@ namespace csvm{
       KMeans_settings kmeansSettings;
 	   AKMeans_settings akmeansSettings;
       CodebookClusterMethod method;
+      unsigned int rootNPartitions;
       unsigned int numberVisualWords;
       double similaritySigma;
       SimilarityFunction simFunction;

@@ -220,7 +220,14 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       stream >>setting ;
       codebookSettings.whitening = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
    }
-
+   
+   stream >> setting;
+   if (setting != "rootNPartitions") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   } else {
+      stream >> codebookSettings.rootNPartitions;
+   }
    
    stream >> setting;
    if (setting != "method") {
