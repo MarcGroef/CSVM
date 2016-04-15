@@ -500,15 +500,11 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 	string enumeration;
 	string useColour;
    
-   string line;
-   string hogLayout;
-   stringstream hogLayoutss;
-   while(getline(stream, line) && line != "debug"){
-      hogLayoutss << line;
-   }
-   hogLayout = hogLayoutss.str();
+   pos_type position = stream.tellg();
    
 	if (nHOG <= 1) {
+   for(){
+      stream.seekg(position);
 		featureSettings.hogSettings[0].patchSize = scannerSettings.patchHeight;
 		//featureSettings.featureType.insert(featureSettings.featureType.end(), HOG);
 		//.insert(returnHOG.end(), redCellOrientationHistogram.begin(), redCellOrientationHistogram.end());
