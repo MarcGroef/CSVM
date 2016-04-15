@@ -437,7 +437,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 		cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
 		exit(-1);
 	}
-	getline(stream, method);
+	//getline(stream, method);
 	//stream >> method;
 	cout << "we read:" << method << endl;
 	string singleFD;
@@ -445,7 +445,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 	nHOG = 0;
 	nLBP = 0;
 	nClean = 0;
-   for(singleFD = parseNthToken(method, LFDnum) ; singleFD != "" ; singleFD = parseNthToken(method, LFDnum)){
+   for(singleFD = parseNthToken(stream, LFDnum) ; singleFD != "" ; singleFD = parseNthToken(stream, LFDnum)){
 
 		if (singleFD == "CLEAN" || singleFD == "clean" || singleFD == "raw" || singleFD == "RAW" || singleFD == " CLEAN" || singleFD == "CLEAN ") {
 			featureSettings.featureType.insert(featureSettings.featureType.end(), CLEAN);
@@ -467,11 +467,31 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 
 }
 
-string CSVMSettings::parseNthToken(ifstream& values, int i) {
+string CSVMSettings::parseNthToken(ifstream& values, size_t i) {
+   char c;
+   char buffer[100];
+   string returnValue;
+   values >> c;
+   if(c != '[')
+      cout << "parseTokenError..\n";
+      exit(-1);
+   
+   unsigned int nCommas = 0;
+   for(values >> c; nCommas != i - 1 ; values >> c){
+      if(c == ' ')
+         continue;
+      if(c == ',')
+         ++nCommas;
+   }
+   //return 1 character
+   values.putback(c);
+   values.getline(buffer,100, ',');
+   returnValue = string(buffer);
+   for(values >> c; c != ']'; values >> c);
+   return returnValue;
    
    
-   
-   
+   /*
    if (values.at(1) == '[') {
 		values.erase(values.begin() + 1);
 		values.erase(values.end() - 1);
@@ -496,6 +516,7 @@ string CSVMSettings::parseNthToken(ifstream& values, int i) {
 	else {
 		return values;
 	}
+	*/
 }
 
 void CSVMSettings::parseHogSettings(ifstream& stream) {
@@ -504,18 +525,18 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 	string enumeration;
 	string useColour;
    
-   pos_type position = stream.tellg();
+   iostream::pos_type position = stream.tellg();
    
 	
-   for(int idx = 0;idx <nHOG;++idx){
+   for(size_t idx = 0; idx != nHOG; ++idx){
       stream.seekg(position);
 		featureSettings.hogSettings[idx].patchSize = scannerSettings.patchHeight;
 		//featureSettings.featureType.insert(featureSettings.featureType.end(), HOG);
 		//.insert(returnHOG.end(), redCellOrientationHistogram.begin(), redCellOrientationHistogram.end());
 		stream >> setting;
 		if (setting == "nBins") {  // #nbins is conventionally 9, but can be different.
-			stream >> setting;
-         featureSettings.hogSettings[idx].nBins = parseNthToken(setting,idx);
+			//stream >> setting;
+         featureSettings.hogSettings[idx].nBins = stoi(parseNthToken(stream,idx));
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG nBins not set! Exitting...\n";

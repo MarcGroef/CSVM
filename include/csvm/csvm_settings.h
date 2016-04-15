@@ -89,7 +89,7 @@ namespace csvm{
 	  void parseCleanSettings(ifstream& stream);
 	  void parseLBPSettings(ifstream& stream);
 
-	  string parseNthToken(ifstream& values, int i);
+	  string parseNthToken(ifstream& values, size_t i);
       void parseImageScannerSettings(ifstream& stream);
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
