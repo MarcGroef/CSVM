@@ -467,8 +467,12 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 
 }
 
-string CSVMSettings::parseNthToken(string values, int i) {
-	if (values.at(1) == '[') {
+string CSVMSettings::parseNthToken(ifstream& values, int i) {
+   
+   
+   
+   
+   if (values.at(1) == '[') {
 		values.erase(values.begin() + 1);
 		values.erase(values.end() - 1);
 		int valueNo = 0;
@@ -502,15 +506,16 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
    
    pos_type position = stream.tellg();
    
-	if (nHOG <= 1) {
-   for(){
+	
+   for(int idx = 0;idx <nHOG;++idx){
       stream.seekg(position);
-		featureSettings.hogSettings[0].patchSize = scannerSettings.patchHeight;
+		featureSettings.hogSettings[idx].patchSize = scannerSettings.patchHeight;
 		//featureSettings.featureType.insert(featureSettings.featureType.end(), HOG);
 		//.insert(returnHOG.end(), redCellOrientationHistogram.begin(), redCellOrientationHistogram.end());
 		stream >> setting;
 		if (setting == "nBins") {  // #nbins is conventionally 9, but can be different.
-			stream >> featureSettings.hogSettings[0].nBins;
+			stream >> setting;
+         featureSettings.hogSettings[idx].nBins = parseNthToken(setting,idx);
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG nBins not set! Exitting...\n";
@@ -519,7 +524,7 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 
 		stream >> setting;
 		if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-			stream >> featureSettings.hogSettings[0].cellSize;
+			stream >> featureSettings.hogSettings[idx].cellSize;
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -528,7 +533,7 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 
 		stream >> setting;
 		if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-			stream >> featureSettings.hogSettings[0].cellStride;
+			stream >> featureSettings.hogSettings[idx].cellStride;
 
 		}
 		else {
@@ -539,7 +544,7 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		/* TO DO :::: */
 		stream >> setting;
 		if (setting == "patchSize") {  // 
-			stream >> featureSettings.hogSettings[0].patchSize;
+			stream >> featureSettings.hogSettings[idx].patchSize;
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
@@ -551,11 +556,11 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		if (setting == "padding") {//#the size of a patch
 			stream >> enumeration;
 			if (enumeration == "None" || enumeration == "none" || enumeration == "NONE")
-				featureSettings.hogSettings[0].padding = NONE;
+				featureSettings.hogSettings[idx].padding = NONE;
 			else if (enumeration == "Identity" || enumeration == "identity" || enumeration == "IDENTITY")
-				featureSettings.hogSettings[0].padding = IDENTITY;
+				featureSettings.hogSettings[idx].padding = IDENTITY;
 			else if (enumeration == "Zero" || enumeration == "zero" || enumeration == "ZERO")
-				featureSettings.hogSettings[0].padding = ZERO;
+				featureSettings.hogSettings[idx].padding = ZERO;
 
 		}
 		else {
@@ -567,10 +572,10 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		if (setting == "useColourPixel") {//if we use grey images
 			stream >> useColour;
 			if (useColour == "true" || useColour == "True")
-				featureSettings.hogSettings[0].useColourPixel = true;
+				featureSettings.hogSettings[idx].useColourPixel = true;
 			else {
 				if (useColour == "false" || useColour == "False")
-					featureSettings.hogSettings[0].useColourPixel = false;
+					featureSettings.hogSettings[idx].useColourPixel = false;
 			}
 		}
 		else {
@@ -582,10 +587,10 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		if (setting == "interpolation") {  // things
 			stream >> enumeration;
 			if (enumeration == "INTERPOLATE_BINARY" || enumeration == "binary" || enumeration == "BINARY" || enumeration == "Binary")
-				featureSettings.hogSettings[0].interpol = INTERPOLATE_BINARY;
+				featureSettings.hogSettings[idx].interpol = INTERPOLATE_BINARY;
 			else {
 				if (enumeration == "INTERPOLATE_LINEAR" || enumeration == "linear" || enumeration == "LINEAR" || enumeration == "Linear")
-					featureSettings.hogSettings[0].interpol = INTERPOLATE_LINEAR;
+					featureSettings.hogSettings[idx].interpol = INTERPOLATE_LINEAR;
 			}
 
 		}
@@ -598,10 +603,10 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		if (setting == "binmethod") {  // things
 			stream >> enumeration;
 			if (enumeration == "CROSSCOLOUR" || enumeration == "CrossColour" || enumeration == "crosscolour" || enumeration == "Crosscolour")
-				featureSettings.hogSettings[0].binmethod = CROSSCOLOUR;
+				featureSettings.hogSettings[idx].binmethod = CROSSCOLOUR;
 			else {
 				if (enumeration == "BYCOLOUR" || enumeration == "ByColour" || enumeration == "bycolour" || enumeration == "Bycolour")
-					featureSettings.hogSettings[0].binmethod = BYCOLOUR;
+					featureSettings.hogSettings[idx].binmethod = BYCOLOUR;
 			}
 
 		}
@@ -614,15 +619,15 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		if (setting == "postprocessing") {  // things
 			stream >> enumeration;
 			if (enumeration == "PURE" || enumeration == "Pure" || enumeration == "pure")
-				featureSettings.hogSettings[0].postproccess = PURE;
+				featureSettings.hogSettings[idx].postproccess = PURE;
 			if (enumeration == "STANDARDISATION" || enumeration == "Standardise" || enumeration == "standardise" || enumeration == "std" || enumeration == "STD")
-				featureSettings.hogSettings[0].postproccess = STANDARDISATION;
+				featureSettings.hogSettings[idx].postproccess = STANDARDISATION;
 			if (enumeration == "NORMALISATION" || enumeration == "norm" || enumeration == "Norm" || enumeration == "NORM")
-				featureSettings.hogSettings[0].postproccess = NORMALISATION;
+				featureSettings.hogSettings[idx].postproccess = NORMALISATION;
 			if (enumeration == "LTWONORM" || enumeration == "L2NORM" || enumeration == "L2" || enumeration == "l2norm")
-				featureSettings.hogSettings[0].postproccess = LTWONORM;
+				featureSettings.hogSettings[idx].postproccess = LTWONORM;
 			if (enumeration == "CLIPNORM" || enumeration == "clipping" || enumeration == "clipnorm" || enumeration == "cnorm")
-				featureSettings.hogSettings[0].postproccess = CLIPNORM;
+				featureSettings.hogSettings[idx].postproccess = CLIPNORM;
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! at HOG postprocessing settings Invalid settingsfile layout. Exitting...\n";
@@ -633,22 +638,19 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 		if (setting == "debugLevel") {  // things
 			stream >> enumeration;
 			if (enumeration == "-1")
-				featureSettings.hogSettings[0].debugLevel = -1;
+				featureSettings.hogSettings[idx].debugLevel = -1;
 			if (enumeration == "0")
-				featureSettings.hogSettings[0].debugLevel = 0;
+				featureSettings.hogSettings[idx].debugLevel = 0;
 			if (enumeration == "1")
-				featureSettings.hogSettings[0].debugLevel = 1;
+				featureSettings.hogSettings[idx].debugLevel = 1;
 			if (enumeration == "2")
-				featureSettings.hogSettings[0].debugLevel = 2;
+				featureSettings.hogSettings[idx].debugLevel = 2;
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
 			exit(-1);
 		}
 	}
-else {		//if we have more HOG parts
-
-}
 }
 
 
