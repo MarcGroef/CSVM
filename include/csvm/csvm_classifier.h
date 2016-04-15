@@ -12,6 +12,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 #include "csvm_settings.h"
 #include "csvm_dataset.h"
@@ -33,13 +34,12 @@ namespace csvm{
       CSVMSettings settings;
       
       vector<Codebook> codebooks;
-      vector<ImageScanner> imageScanners;
-      vector<FeatureExtractor> featExtractors;
+      ImageScanner imageScanner;
+      
       
       DeepCodebook* deepCodebook;
       
-      Codebook codebook;
-      ImageScanner imageScanner;
+
       FeatureExtractor featExtr;
       
       vector< SVM > svms;
@@ -49,7 +49,7 @@ namespace csvm{
       vector< vector<double> > classicTrainActivations;
       
             
-      vector<Feature> collectFeaturesFromImage(Image* im);
+      vector<Feature> collectFeaturesFromImage(Image* im, unsigned int cbIdx);
       vector<double> getActivationsFromImage(Image* im);
       
       void trainLinearNetwork();
