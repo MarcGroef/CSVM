@@ -686,7 +686,7 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 
 	iostream::pos_type position = stream.tellg();
 
-	for (int idx = 0; idx < nLBP; ++idx) {
+	for (size_t idx = 0; idx < nLBP; ++idx) {
 		stream.seekg(position);
 		featureSettings.lbpSettings[idx].patchSize = scannerSettings.patchHeight;
 
@@ -801,7 +801,7 @@ void CSVMSettings::parseCleanSettings(ifstream& stream) {
 
 	iostream::pos_type position = stream.tellg();
 
-	for (int idx = 0; idx < nClean; ++idx) {
+	for (size_t idx = 0; idx < nClean; ++idx) {
 		stream.seekg(position);
 		stream >> type;
 		if (type != "standardize") {
