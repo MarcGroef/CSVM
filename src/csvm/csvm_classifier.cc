@@ -65,7 +65,15 @@ void CSVMClassifier::initSVMs(){
 
 //read settings file, and pass the settings to respective modules
 void CSVMClassifier::setSettings(string settingsFile){
+   
+   //read settings file
    settings.readSettingsFile(settingsFile);
+   
+   //prepare architecture for nCodebooks;
+   codebooks.resize(settings.nCodebooks);
+   featExtractors.resize(settings.nHOG + settings.nLBP + settings.nClean);
+   imageScanners.resize(settings.nCodebooks);
+   
    //analyser.setSettings(settings.analyserSettings);
    imageScanner.setSettings(settings.scannerSettings);
    imageScanner.debugOut = settings.debugOut;
