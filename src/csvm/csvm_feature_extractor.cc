@@ -10,9 +10,24 @@ FeatureExtractor::FeatureExtractor(){
     //settings.featureType = HOG;
 }
 
-Feature FeatureExtractor::extract(Patch p){
+Feature FeatureExtractor::extract(Patch p, unsigned int cbIdx){
 	//cout << "extracting something" << endl;
    //settings.featureType = CLEAN;
+   if(cbIdx < nLBP)
+      return lbp[cbIdx].getLBP(p);
+   cbIdx -= nLBP;
+   
+   if(cbIdx < nHOG)
+      return hog[cbIdx].getHOG(p);
+   cbIdx -= nHOG;
+   
+   if(cbIdx < nClean)
+      return clean[cbIdx].describe(p);
+   
+   
+   cout << "nCodebooks is higher than the amounst of feature extractors specified...\nExitting..\n";
+   exit(-1);
+   /*
    switch(settings.featureType){
       case LBP:
          return lbp.getLBP(p);
@@ -25,6 +40,7 @@ Feature FeatureExtractor::extract(Patch p){
    }
    cout << "no featuretype set, retrieving HOG" << endl;
    return hog.getHOG(p);
+   */
 }
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){

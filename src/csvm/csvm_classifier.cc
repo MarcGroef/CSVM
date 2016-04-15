@@ -28,18 +28,23 @@ bool CSVMClassifier::getGenerateCB(){
 
 /**Some often used functionality:*/
 
-vector<Feature> CSVMClassifier::collectFeaturesFromImage(Image* im){
+vector<Feature> CSVMClassifier::collectFeaturesFromImage(Image* im, unsigned int codebookIdx){
   vector<Feature> features; 
-  vector<Patch> patches = imageScanner.scanImage(im);
+  vector<Patch> patches = imageScanners[codebookIdx].scanImage(im);
   size_t nPatches = patches.size();
   for(size_t pIdx = 0; pIdx != nPatches; ++pIdx){
-    features.push_back(featExtr.extract(patches[pIdx]));
+    features.push_back(featExtr.extract(patches[pIdx], codebookIdx));
   }
   return features;
 }
 
 vector<double> CSVMClassifier::getActivationsFromImage(Image* im){
-  return codebook.getActivations(collectFeaturesFromImage(im));
+  vector<double> appendedActivations;
+  for(size_t cbIdx = 0; cbIdx != settings.nCodebooks; ++cbIdx){
+      vector<double> activations = codebooks[cbIdx].getActivations(collectFeaturesFromImage(im, cbIdx));
+      appendedActivations.insert(appendedActivations.end(), activations.begin(), activations.end());
+  }
+  return appendedActivations;
 }
 
 
@@ -71,7 +76,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    
    //prepare architecture for nCodebooks;
    codebooks.resize(settings.nCodebooks);
-   featExtractors.resize(settings.nHOG + settings.nLBP + settings.nClean);
+   
    imageScanners.resize(settings.nCodebooks);
    
    //analyser.setSettings(settings.analyserSettings);
@@ -229,29 +234,32 @@ void CSVMClassifier::constructCodebook(){
       constructDeepCodebook();
       return;
    }
+   unsigned int nCbs = settings.nCodebooks;
+   
    //unsigned int nClasses = dataset.getNumberClasses();
-   
-   unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-   
-   vector<Feature> pretrainDump;
-
-
-   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+   for(size_t cbIdx = 0; cbIdx != nCbs; ++cbIdx){
+      unsigned int nPatches = settings.scannerSettings.nRandomPatches;
       
-      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
-      Feature newFeat = featExtr.extract(patch);
-      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+      vector<Feature> pretrainDump;
 
+
+      for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+         
+         //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
+         Patch patch = imageScanners[cbIdx].getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
+         Feature newFeat = featExtr.extract(patch, cbIdx);
+         pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
+
+         
+      }
+
+      if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
+      codebook.constructCodebook(pretrainDump);
+      codebook.exportToPNG(dataset.getTrainImagePtr(0)->getNChannels());
+      if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
       
+      pretrainDump.clear();
    }
-
-   if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
-   codebook.constructCodebook(pretrainDump);
-   codebook.exportToPNG(dataset.getTrainImagePtr(0)->getNChannels());
-   if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
-   
-   pretrainDump.clear();
 }
 
 //Not used anymore. All training is done in the train function itself.

@@ -34,7 +34,7 @@ namespace csvm{
       
       vector<Codebook> codebooks;
       vector<ImageScanner> imageScanners;
-      vector<FeatureExtractor> featExtractors;
+      
       
       DeepCodebook* deepCodebook;
       
@@ -49,7 +49,7 @@ namespace csvm{
       vector< vector<double> > classicTrainActivations;
       
             
-      vector<Feature> collectFeaturesFromImage(Image* im);
+      vector<Feature> collectFeaturesFromImage(Image* im, unsigned int cbIdx);
       vector<double> getActivationsFromImage(Image* im);
       
       void trainLinearNetwork();
