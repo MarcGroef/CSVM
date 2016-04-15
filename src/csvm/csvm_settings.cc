@@ -662,14 +662,21 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 	string method;
 	string enumeration;
 	string useColour;
-	stream >> method;
-	featureSettings.featureType.insert(featureSettings.featureType.end(), LBP);
+
+	iostream::pos_type position = stream.tellg();
+
+	for (int idx = 0; idx < nLBP; ++idx) {
+		stream.seekg(position);
+		featureSettings.lbpSettings[idx].patchSize = scannerSettings.patchHeight;
+
+
+
+		//featureSettings.featureType.insert(featureSettings.featureType.end(), LBP);
 
 
 		stream >> setting;
 		if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-			stream >> featureSettings.lbpSettings[0].cellSize;
-
+			featureSettings.lbpSettings[idx].cellSize = stoi(parseNthToken(stream, idx));
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -678,7 +685,7 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 
 		stream >> setting;
 		if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-			stream >> featureSettings.lbpSettings[0].cellStride;
+			featureSettings.lbpSettings[idx].cellStride = stoi(parseNthToken(stream, idx));
 
 		}
 		else {
@@ -686,25 +693,25 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 			exit(-1);
 		}
 
-		stream >> setting;
+		/*stream >> setting;
 		if (setting == "patchSize") {  // 
-			stream >> featureSettings.lbpSettings[0].patchSize;
+			stream >> featureSettings.lbpSettings[idx].patchSize;
 		}
 		else {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
 			exit(-1);
 		}
-
+		*/
 
 		stream >> setting;
 		if (setting == "padding") {//#the size of a patch
-			stream >> enumeration;
+			enumeration = parseNthToken(stream, idx);
 			if (enumeration == "None" || enumeration == "none" || enumeration == "NONE")
-				featureSettings.lbpSettings[0].padding = LNONE;
+				featureSettings.lbpSettings[idx].padding = LNONE;
 			else if (enumeration == "Identity" || enumeration == "identity" || enumeration == "IDENTITY")
-				featureSettings.lbpSettings[0].padding = LIDENTITY;
+				featureSettings.lbpSettings[idx].padding = LIDENTITY;
 			else if (enumeration == "Zero" || enumeration == "zero" || enumeration == "ZERO")
-				featureSettings.lbpSettings[0].padding = LZERO;
+				featureSettings.lbpSettings[idx].padding = LZERO;
 
 		}
 		else {
@@ -714,12 +721,12 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 
 		stream >> setting;
 		if (setting == "useColourPixel") {//if we use grey images
-			stream >> useColour;
+			useColour = parseNthToken(stream, idx);
 			if (useColour == "true" || useColour == "True")
-				featureSettings.lbpSettings[0].useColourPixel = true;
+				featureSettings.lbpSettings[idx].useColourPixel = true;
 			else {
 				if (useColour == "false" || useColour == "False")
-					featureSettings.lbpSettings[0].useColourPixel = false;
+					featureSettings.lbpSettings[idx].useColourPixel = false;
 			}
 		}
 		else {
@@ -729,12 +736,12 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 
 		stream >> setting;
 		if (setting == "useUniformity") {//if we use grey images
-			stream >> enumeration;
+			enumeration = parseNthToken(stream, idx);
 			if (enumeration == "UNIFORM" || enumeration == "True" || enumeration == "true")
-				featureSettings.lbpSettings[0].uniform = LUNIFORM;
+				featureSettings.lbpSettings[idx].uniform = LUNIFORM;
 			else {
 				if (enumeration == "false" || enumeration == "false" || enumeration == "PURE")
-					featureSettings.lbpSettings[0].uniform = LPURE;
+					featureSettings.lbpSettings[idx].uniform = LPURE;
 			}
 		}
 		else {
@@ -744,12 +751,12 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 
 		stream >> setting;
 		if (setting == "binmethod") {  // things
-			stream >> enumeration;
+			enumeration = parseNthToken(stream, idx);
 			if (enumeration == "CROSSCOLOUR" || enumeration == "CrossColour" || enumeration == "crosscolour" || enumeration == "Crosscolour")
-				featureSettings.lbpSettings[0].binmethod = LCROSSCOLOUR;
+				featureSettings.lbpSettings[idx].binmethod = LCROSSCOLOUR;
 			else {
 				if (enumeration == "BYCOLOUR" || enumeration == "ByColour" || enumeration == "bycolour" || enumeration == "Bycolour")
-					featureSettings.lbpSettings[0].binmethod = LBYCOLOUR;
+					featureSettings.lbpSettings[idx].binmethod = LBYCOLOUR;
 			}
 
 		}
@@ -757,33 +764,39 @@ void CSVMSettings::parseLBPSettings(ifstream& stream) {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
 			exit(-1);
 		}
-
+	}
 }
 
 void CSVMSettings::parseCleanSettings(ifstream& stream) {
-	
+
 	string setting;
 	string method;
 	string enumeration;
 	string useColour;
-	stream >> method;
-	featureSettings.featureType.insert(featureSettings.featureType.end(), CLEAN);
+	//stream >> method;
+	//featureSettings.featureType.insert(featureSettings.featureType.end(), CLEAN);
 
 	string type, value;
-	stream >> type;
-	if (type != "standardize") {
-		cout << "csvm::CSVMSettings.parseCleanDescrSettings: Error! Invalid settingsfile layout. Exitting..\n";
-		exit(0);
+
+	iostream::pos_type position = stream.tellg();
+
+	for (int idx = 0; idx < nClean; ++idx) {
+		stream.seekg(position);
+		stream >> type;
+		if (type != "standardize") {
+			cout << "csvm::CSVMSettings.parseCleanDescrSettings: Error! Invalid settingsfile layout. Exitting..\n";
+			exit(0);
+		}
+		value = parseNthToken(stream, idx);
+		if (value == "None")
+			featureSettings.clSettings[0].stdOptions = CL_NONE;
+		else if (value == "PER_CHANNEL")
+			featureSettings.clSettings[0].stdOptions = CL_PER_CHANNEL;
+		else if (value == "ALL")
+			featureSettings.clSettings[0].stdOptions = CL_ALL;
+		else
+			featureSettings.clSettings[0].stdOptions = CL_NONE;
 	}
-	stream >> value;
-	if (value == "None")
-		featureSettings.clSettings[0].stdOptions = CL_NONE;
-	else if (value == "PER_CHANNEL")
-		featureSettings.clSettings[0].stdOptions = CL_PER_CHANNEL;
-	else if (value == "ALL")
-		featureSettings.clSettings[0].stdOptions = CL_ALL;
-	else
-		featureSettings.clSettings[0].stdOptions = CL_NONE;
 }
 
 void CSVMSettings::parseSVMSettings(ifstream& stream) {
