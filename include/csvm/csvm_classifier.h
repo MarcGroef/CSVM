@@ -38,6 +38,10 @@ namespace csvm{
       
       DeepCodebook* deepCodebook;
       
+      Codebook codebook;
+      ImageScanner imageScanner;
+      FeatureExtractor featExtr;
+      
       vector< SVM > svms;
       LinNetwork linNetwork;
       ConvSVM convSVM;
