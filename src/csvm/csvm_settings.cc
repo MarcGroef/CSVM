@@ -439,14 +439,15 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 	}
 	//getline(stream, method);
 	//stream >> method;
-	cout << "we read:" << method << endl;
+	//cout << "we read:" << method << endl;
 	string singleFD;
 	int LFDnum = 0;
 	nHOG = 0;
 	nLBP = 0;
 	nClean = 0;
+   cout << "hoi" << endl;
    for(singleFD = parseNthToken(stream, LFDnum) ; singleFD != "" ; singleFD = parseNthToken(stream, LFDnum)){
-
+      cout << "Reading " << singleFD << ", "<< LFDnum << "-th descriptor settings\n";
 		if (singleFD == "CLEAN" || singleFD == "clean" || singleFD == "raw" || singleFD == "RAW" || singleFD == " CLEAN" || singleFD == "CLEAN ") {
 			featureSettings.featureType.insert(featureSettings.featureType.end(), CLEAN);
 			++nClean;
@@ -467,28 +468,49 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 
 }
 
-string CSVMSettings::parseNthToken(ifstream& values, size_t i) {
+string CSVMSettings::parseNthToken(ifstream& stream, size_t i) {
    char c;
-   char buffer[100];
-   string returnValue;
-   values >> c;
-   if(c != '[')
-      cout << "parseTokenError..\n";
-      exit(-1);
-   
-   unsigned int nCommas = 0;
-   for(values >> c; nCommas != i - 1 ; values >> c){
-      if(c == ' ')
-         continue;
-      if(c == ',')
-         ++nCommas;
+   stream >> c;
+   stream.putback(c);
+   if (c == '['){ //we're dealing with a value-list
+      //stream >> c;
+      
+      string singleFD;
+      string fullFDlist;
+      getline(stream, fullFDlist, ']');
+      
+      cout << "fulleFDlist is: " << fullFDlist << endl;
+      stringstream fullFDstream;
+      
+      fullFDstream.str(fullFDlist);
+      
+      size_t valueNo = 0;
+      
+      while (getline(fullFDstream, singleFD, ',')) {
+         if (singleFD == " ") {
+            
+         }
+         else {
+            if (valueNo == i) {
+               return singleFD;
+            }
+            ++valueNo;
+         }
+      }
+      getline(fullFDstream, singleFD);
+      if (singleFD == " ") {
+            
+         }
+         else {
+            if (valueNo == i) {
+               return singleFD;
+            }
+            ++valueNo;
+         }
+      cout << "-1" << endl;
+      return "";
+      
    }
-   //return 1 character
-   values.putback(c);
-   values.getline(buffer,100, ',');
-   returnValue = string(buffer);
-   for(values >> c; c != ']'; values >> c);
-   return returnValue;
    
    
    /*
@@ -517,6 +539,10 @@ string CSVMSettings::parseNthToken(ifstream& values, size_t i) {
 		return values;
 	}
 	*/
+   string returnStr;
+   stream >> returnStr;
+   cout << "returnstr is: " << returnStr << endl;
+   return returnStr;
 }
 
 void CSVMSettings::parseHogSettings(ifstream& stream) {
@@ -1026,11 +1052,11 @@ void CSVMSettings::readSettingsFile(string dir) {
    parseFeatureExtractorSettings(file);
    //while(getline(file, line) && line != "CleanDescriptor");
    //parseCleanDescrSettings(file);
+   while (getline(file, line) && line != "CLEAN");
+   parseHogSettings(file);
    while (getline(file, line) && line != "HOG");
    parseHogSettings(file);
    while (getline(file, line) && line != "LBP");
-   parseHogSettings(file);
-   while (getline(file, line) && line != "CLEAN");
    parseHogSettings(file);
 
    while (getline(file, line) && line != "SVM");

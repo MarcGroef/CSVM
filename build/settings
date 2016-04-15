@@ -40,7 +40,7 @@ standardize NONE
 HOG
 nBins [9,18]
 cellSize [10 , 6]
-cellStride [10 , 
+cellStride [10 , 10]
 padding [None , None]
 interpolation [INTERPOLATE_LINEAR , INTERPOLATE_LINEAR]
 binmethod [CROSSCOLOUR , BYCOLOUR]
