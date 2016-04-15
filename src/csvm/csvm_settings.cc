@@ -872,6 +872,13 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
       exit(0);
    }
+   
+   stream >> type;
+   if (type != "nCodebooks"){
+      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      exit(0);
+   }
+   stream >> nCodebooks;
 
    stream >> type;
    if (type != "nClasses") {
