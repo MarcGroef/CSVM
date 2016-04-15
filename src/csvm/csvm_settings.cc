@@ -445,13 +445,8 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 	nHOG = 0;
 	nLBP = 0;
 	nClean = 0;
-	while (true) {
-		singleFD = parseNthToken(method, LFDnum);
-		cout << "token: " << LFDnum << " is: " << singleFD << endl;
-		if (singleFD == "") {
-			cout << "we broke out of read loop" << endl;
-			break;
-		}
+   for(singleFD = parseNthToken(method, LFDnum) ; singleFD != "" ; singleFD = parseNthToken(method, LFDnum)){
+
 		if (singleFD == "CLEAN" || singleFD == "clean" || singleFD == "raw" || singleFD == "RAW" || singleFD == " CLEAN" || singleFD == "CLEAN ") {
 			featureSettings.featureType.insert(featureSettings.featureType.end(), CLEAN);
 			++nClean;
@@ -504,6 +499,15 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 	string method;
 	string enumeration;
 	string useColour;
+   
+   string line;
+   string hogLayout;
+   stringstream hogLayoutss;
+   while(getline(stream, line) && line != "debug"){
+      hogLayoutss << line;
+   }
+   hogLayout = hogLayoutss.str();
+   
 	if (nHOG <= 1) {
 		featureSettings.hogSettings[0].patchSize = scannerSettings.patchHeight;
 		//featureSettings.featureType.insert(featureSettings.featureType.end(), HOG);
