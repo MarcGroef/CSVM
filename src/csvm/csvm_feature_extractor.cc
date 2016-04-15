@@ -13,7 +13,7 @@ FeatureExtractor::FeatureExtractor(){
 Feature FeatureExtractor::extract(Patch p){
 	//cout << "extracting something" << endl;
    //settings.featureType = CLEAN;
-   switch(settings.featureType){
+   switch(settings.featureType[0]){
       case LBP:
          return lbp.getLBP(p);
       case CLEAN:
@@ -29,14 +29,10 @@ Feature FeatureExtractor::extract(Patch p){
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
-   clean.settings = settings.clSettings;
-   if(settings.featureType == HOG)
-      hog.setSettings(settings.hogSettings);
-   if (settings.featureType == LBP)
-	   lbp.setSettings(settings.lbpSettings);
-   if (settings.featureType == MERGE) {
-	   pixhog.setSettings(settings.mergeSettings);
-	   hog.setSettings(settings.hogSettings);
-   }
+   clean.settings = settings.clSettings[0];
+   if(settings.featureType[0] == HOG)
+      hog.setSettings(settings.hogSettings[0]);
+   if (settings.featureType[0] == LBP)
+	   lbp.setSettings(settings.lbpSettings[0]);
 	   
 }

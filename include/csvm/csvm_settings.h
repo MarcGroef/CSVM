@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <assert.h>
 #include <cstdlib>
@@ -73,6 +74,7 @@ namespace csvm{
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
+
      // CleanSettings clSettings; // clean descriptor
       //ClusterAnalyserSettings analyserSettings;
    
@@ -81,12 +83,18 @@ namespace csvm{
       void readSettingsFile(string dir);
       //void parseClusterAnalserData(ifstream& stream);
       void parseCodebookSettings(ifstream& stream);
+
       void parseFeatureExtractorSettings(ifstream& stream);
+	  void parseHogSettings(ifstream& stream);
+	  void parseCleanSettings(ifstream& stream);
+	  void parseLBPSettings(ifstream& stream);
+
+	  string parseNthToken(string values, int i);
       void parseImageScannerSettings(ifstream& stream);
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
       void parseConvSVMSettings(ifstream& stream);
-      void parseCleanDescrSettings(ifstream& stream);
+      //void parseCleanDescrSettings(ifstream& stream);
       void parseGeneralSettings(ifstream& stream);
    };
 

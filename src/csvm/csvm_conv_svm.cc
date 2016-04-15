@@ -100,7 +100,7 @@ union charDouble{
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                   // partial derivatives to the weights
                   if(yData * out < 1){
-                     if (not settings.L2){
+                     if (! settings.L2){
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
                         //++wrong;
                      } else {
@@ -119,7 +119,7 @@ union charDouble{
                   biases[svmIdx] += settings.learningRate * (yData - out);
 
                // calculating second term of objective function               
-               if (not settings.L2) 	sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out);
+               if (! settings.L2) 	sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out);
                else 			sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
                   
                //############ Logging functions ################
