@@ -149,16 +149,13 @@ void CSVMClassifier::train(){
    ofstream statFile;
    statFile.open( "INTERM_SCORE.csv" );
    system("Rscript ../genRplotsLive INTERM_SCORE &> ./logs/errorLOG");
-   statFile << "TrainingRound,Score" << endl;
+   statFile << "TrainingRound,Score" << endl << "0,0" << endl;
  
    //All other classifiers are handled, so lets train the csvm, with validation stats
    size_t nTrainEpochs = settings.convSVMSettings.nIter;
    size_t nTrainsPerValidation = 50;
    cout << "trainSize = " << datasetActivations.size() << endl;
    for(size_t eIdx = 0; eIdx != nTrainEpochs;){
-     double validScore = convSVM.validate(validationActivations, &dataset);
-     statFile << eIdx << "," << validScore << endl;
-     if (settings.debugOut) cout << "epoch " << eIdx << "\t\tScore: " << validScore << endl;
      if(eIdx + nTrainsPerValidation < nTrainEpochs){
        convSVM.train(datasetActivations, nTrainsPerValidation, &dataset);
        eIdx += nTrainsPerValidation;
@@ -167,7 +164,9 @@ void CSVMClassifier::train(){
        convSVM.train(datasetActivations, nTrainEpochs - eIdx, &dataset);
        eIdx += nTrainEpochs - eIdx;
      }
-
+     double validScore = convSVM.validate(validationActivations, &dataset);
+     statFile << eIdx << "," << validScore << endl;
+     if (settings.debugOut) cout << "epoch " << eIdx << "\t\tScore: " << validScore << endl;
    }
    statFile << "EOF" << endl;
    statFile.close();
