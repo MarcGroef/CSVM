@@ -31,11 +31,13 @@ namespace csvm{
    
    class CSVMClassifier{
       CSVMSettings settings;
-      Codebook codebook;
+      
+      vector<Codebook> codebooks;
+      vector<ImageScanner> imageScanners;
+      vector<FeatureExtractor> featExtractors;
+      
       DeepCodebook* deepCodebook;
-      ImageScanner imageScanner;
-      //ClusterAnalyser analyser;
-      FeatureExtractor featExtr;
+      
       vector< SVM > svms;
       LinNetwork linNetwork;
       ConvSVM convSVM;

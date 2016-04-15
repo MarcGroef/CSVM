@@ -9,6 +9,7 @@ imageHeight 0
 General
 Classifier CSVM
 Codebook CODEBOOK
+nCodebooks 2
 nClasses 10
 debugOut FALSE
 normalOut TRUE
@@ -18,7 +19,7 @@ Codebook
 generate TRUE
 standardize FALSE
 whitening FALSE
-rootNPartitions 5
+rootNPartitions 8
 method KMEANS
 nClusters 400
 nIterations 20

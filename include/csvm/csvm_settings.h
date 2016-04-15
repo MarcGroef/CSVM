@@ -59,6 +59,10 @@ namespace csvm{
       CLASSIFIER classifier;
       CODEBOOK codebook;
       
+      unsigned int nCodebooks;
+      unsigned int nHOG;
+      unsigned int nLBP;
+      unsigned int nClean;
       
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
