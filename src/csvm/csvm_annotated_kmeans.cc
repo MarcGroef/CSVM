@@ -157,6 +157,10 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    double totalDistance = 1;	//used to track cluster changes in mean
    double deltaDist = 1;
    double closestDist;
+
+   ofstream statFile;
+   statFile.open( "CL_DIST.csv" );
+   system("R --no-save < ../genRplotsLive &> ./logs/errorLOG");
    
    for (size_t clIdx = 0; clIdx < nClusters; ++clIdx) {
 	   centroids1[clIdx].content.resize(dataDims);
@@ -245,8 +249,12 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
       }
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
+
+      statFile << totalDistance << endl;
    
    }
+
+   statFile.close();
    
    ///////////////////////////////////////////////////////
 

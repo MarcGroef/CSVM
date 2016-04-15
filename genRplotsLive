@@ -1,0 +1,39 @@
+options(echo=FALSE)
+##showplots
+
+x11()
+args <- commandArgs(trailingOnly = TRUE)
+
+counter = 1
+names=scan(paste(args[1],".csv",sep=""),what=" ",nlines=1,quiet=TRUE,sep=",")
+Raw_line = c()
+data = c()
+
+while(1){
+
+	timer = 0
+	while (length(Raw_line)<=0){	
+		Raw_line=scan(paste(args[1],".csv",sep=""),what="",skip=counter,nlines=1,quiet=TRUE,sep=",")		
+		##Sys.sleep(0.01)
+		##timer=timer+1
+		##if (Raw_line[1]=="EOF") break() 
+	}
+
+	if (Raw_line[1]=="EOF"){ png(filename=paste(args[1],".png",sep=""))}
+	else {
+		##newrow = c(counter,Raw_line)
+		data = rbind(data,Raw_line)
+	}
+
+	plot(data,type='l',main=args[1],ylab=names[2],xlab=names[1])
+	grid()
+	counter=counter+1
+
+	if (Raw_line[1]=="EOF"){ 
+		dev.off() 
+		q("no", status = 1, runLast = FALSE)
+	}
+
+	Raw_line = c()
+
+}
