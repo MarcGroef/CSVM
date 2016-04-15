@@ -12,6 +12,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 #include "csvm_settings.h"
 #include "csvm_dataset.h"
@@ -33,13 +34,12 @@ namespace csvm{
       CSVMSettings settings;
       
       vector<Codebook> codebooks;
-      vector<ImageScanner> imageScanners;
+      ImageScanner imageScanner;
       
       
       DeepCodebook* deepCodebook;
       
-      Codebook codebook;
-      ImageScanner imageScanner;
+
       FeatureExtractor featExtr;
       
       vector< SVM > svms;

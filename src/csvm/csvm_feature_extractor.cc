@@ -45,14 +45,23 @@ Feature FeatureExtractor::extract(Patch p, unsigned int cbIdx){
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
-   clean.settings = settings.clSettings;
-   if(settings.featureType == HOG)
-      hog.setSettings(settings.hogSettings);
-   if (settings.featureType == LBP)
-	   lbp.setSettings(settings.lbpSettings);
-   if (settings.featureType == MERGE) {
-	   pixhog.setSettings(settings.mergeSettings);
-	   hog.setSettings(settings.hogSettings);
-   }
+   
+   nClean = s.clean.size();
+   nHOG = s.hog.size();
+   nLBP = s.lbp.size();
+   
+   lbp.resize(nLBP);
+   hog.resize(nHOG);
+   nClean.resize(nClean);
+   
+   for(size_t clIdx = 0; clIdx != nClean; ++clIdx)
+      clean[clIdx].settings = settings.clSettings[clIdx];
+   
+   for(size_t hIdx = 0; hIdx != nHOG; ++hIdx)
+      hog[hIdx].setSettings(settings.hogSettings[hIdx]);
+   
+   for(size_t lbpIdx = 0; lbpIdx != nLBP; ++lbpIdx)
+      lbp[lbpIdx].setSettings(settings.lbpSettings[lbpIdx]);
+
 	   
 }

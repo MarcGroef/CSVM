@@ -23,14 +23,14 @@ CSVMClassifier::~CSVMClassifier(){
 }
 
 bool CSVMClassifier::getGenerateCB(){
-   return codebook.getGenerate();
+   return codebooks[0].getGenerate();
 }
 
 /**Some often used functionality:*/
 
 vector<Feature> CSVMClassifier::collectFeaturesFromImage(Image* im, unsigned int codebookIdx){
   vector<Feature> features; 
-  vector<Patch> patches = imageScanners[codebookIdx].scanImage(im);
+  vector<Patch> patches = imageScanner.scanImage(im);
   size_t nPatches = patches.size();
   for(size_t pIdx = 0; pIdx != nPatches; ++pIdx){
     features.push_back(featExtr.extract(patches[pIdx], codebookIdx));
@@ -59,8 +59,14 @@ void CSVMClassifier::initSVMs(){
    unsigned int ensembleSize = dataset.getNumberClasses();
    
    svms.reserve(dataset.getNumberClasses());
+   unsigned int nAppendedCentroids = 0;
+   
+   for(size_t cbIdx = 0; cbIdx != settings.nCodebooks; ++cbIdx)
+      nAppendedCentroids += codebooks[cbIdx].getNCentroids();
+   
+   
    for(size_t svmIdx = 0; svmIdx < ensembleSize; ++svmIdx){
-      svms.push_back(SVM(dataset.getTrainSize(), codebook.getNClasses(), codebook.getNCentroids(), svmIdx));
+      svms.push_back(SVM(dataset.getTrainSize(), codebooks[0].getNClasses(), nAppendedCentroids, svmIdx));
       svms[svmIdx].setSettings(settings.svmSettings);
       svms[svmIdx].debugOut = settings.debugOut;
       svms[svmIdx].normalOut = settings.normalOut;
@@ -77,7 +83,6 @@ void CSVMClassifier::setSettings(string settingsFile){
    //prepare architecture for nCodebooks;
    codebooks.resize(settings.nCodebooks);
    
-   imageScanners.resize(settings.nCodebooks);
    
    //analyser.setSettings(settings.analyserSettings);
    imageScanner.setSettings(settings.scannerSettings);
@@ -88,10 +93,13 @@ void CSVMClassifier::setSettings(string settingsFile){
    dataset.debugOut = settings.debugOut;
    
    dataset.normalOut = settings.normalOut;
+   
    settings.codebookSettings.kmeansSettings.normalOut = settings.normalOut;
-   codebook.setSettings(settings.codebookSettings);
-   codebook.debugOut = settings.debugOut;
-   codebook.normalOut = settings.normalOut;
+   for(size_t cbIdx = 0; cbIdx != settings.nCodebooks; ++cbIdx){
+      codebooks[cbIdx].setSettings(settings.codebookSettings);
+      codebooks[cbIdx].debugOut = settings.debugOut;
+      codebooks[cbIdx].normalOut = settings.normalOut;
+   }
 
    
    
@@ -202,13 +210,24 @@ unsigned int CSVMClassifier::classify(Image* im){
 
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
 void CSVMClassifier::exportCodebook(string filenamesstream){
-   codebook.exportCodebook(filenamesstream);
+   
+   for(size_t cbIdx = 0; cbIdx != settings.nCodebooks; ++cbIdx){
+      stringstream ss;
+      ss << filenamesstream;
+      ss << cbIdx;
+      codebooks[cbIdx].exportCodebook(ss.str());
+   }
 }
 
 
 //import the current codebook
 void CSVMClassifier::importCodebook(string filename){
-   codebook.importCodebook(filename);
+   for(size_t cbIdx = 0; cbIdx != settings.nCodebooks; ++cbIdx){
+      stringstream ss;
+      ss << filename;
+      ss << cbIdx;
+      codebooks[cbIdx].importCodebook(ss.str());
+   }
 }
 
 
@@ -246,7 +265,7 @@ void CSVMClassifier::constructCodebook(){
       for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
          
          //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-         Patch patch = imageScanners[cbIdx].getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
+         Patch patch = imageScanner.getRandomPatch(dataset.getImagePtr(rand() % dataset.getTotalImages()));
          Feature newFeat = featExtr.extract(patch, cbIdx);
          pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());
 
@@ -254,8 +273,7 @@ void CSVMClassifier::constructCodebook(){
       }
 
       if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
-      codebook.constructCodebook(pretrainDump);
-      codebook.exportToPNG(dataset.getTrainImagePtr(0)->getNChannels());
+      codebooks[cbIdx].constructCodebook(pretrainDump);
       if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
       
       pretrainDump.clear();

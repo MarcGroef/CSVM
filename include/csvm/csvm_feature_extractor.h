@@ -24,10 +24,9 @@ namespace csvm{
   
   struct FeatureExtractorSettings{
     FeatureType featureType;
-    HOGSettings hogSettings;
-    CleanSettings clSettings;
-    MERGESettings mergeSettings;	//
-    LBPSettings lbpSettings;
+    vector<HOGSettings> hogSettings;
+    vector<CleanSettings> clSettings;
+    vector<LBPSettings> lbpSettings;
   };
   
   class FeatureExtractor{
