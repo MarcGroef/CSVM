@@ -440,9 +440,11 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 	getline(stream, method);
 	//stream >> method;
 	cout << "we read:" << method << endl;
-	int numOfLFDs = 0;
 	string singleFD;
 	int LFDnum = 0;
+	nHOG = 0;
+	nLBP = 0;
+	nClean = 0;
 	while (true) {
 		singleFD = parseNthToken(method, LFDnum);
 		cout << "token: " << LFDnum << " is: " << singleFD << endl;
@@ -452,16 +454,21 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 		}
 		if (singleFD == "CLEAN" || singleFD == "clean" || singleFD == "raw" || singleFD == "RAW" || singleFD == " CLEAN" || singleFD == "CLEAN ") {
 			featureSettings.featureType.insert(featureSettings.featureType.end(), CLEAN);
+			++nClean;
 		}
 		if (singleFD == "HOG" || singleFD == "hog" || singleFD == " HOG" || singleFD == "HOG ") {
 			featureSettings.featureType.insert(featureSettings.featureType.end(), HOG);
+			++nHOG;
 		}
 		if (singleFD == "LBP" || singleFD == "lbp" || singleFD == " LBP" || singleFD == "LBP ") {
 			featureSettings.featureType.insert(featureSettings.featureType.end(), LBP);
+			++nLBP;
 		}
 
 		++LFDnum;
 	}
+
+
 
 }
 
@@ -497,8 +504,8 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 	string method;
 	string enumeration;
 	string useColour;
-	stream >> setting;
-	if (!method.at(0) == '[') {
+	if (nHOG <= 1) {
+		featureSettings.hogSettings[0].patchSize = scannerSettings.patchHeight;
 		//featureSettings.featureType.insert(featureSettings.featureType.end(), HOG);
 		//.insert(returnHOG.end(), redCellOrientationHistogram.begin(), redCellOrientationHistogram.end());
 		stream >> setting;
@@ -529,6 +536,7 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 			exit(-1);
 		}
 
+		/* TO DO :::: */
 		stream >> setting;
 		if (setting == "patchSize") {  // 
 			stream >> featureSettings.hogSettings[0].patchSize;
@@ -537,6 +545,7 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 			cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
 			exit(-1);
 		}
+		/* PATHC SIZE */
 
 		stream >> setting;
 		if (setting == "padding") {//#the size of a patch
@@ -637,6 +646,9 @@ void CSVMSettings::parseHogSettings(ifstream& stream) {
 			exit(-1);
 		}
 	}
+else {		//if we have more HOG parts
+
+}
 }
 
 
@@ -978,6 +990,13 @@ void CSVMSettings::readSettingsFile(string dir) {
    parseFeatureExtractorSettings(file);
    //while(getline(file, line) && line != "CleanDescriptor");
    //parseCleanDescrSettings(file);
+   while (getline(file, line) && line != "HOG");
+   parseHogSettings(file);
+   while (getline(file, line) && line != "LBP");
+   parseHogSettings(file);
+   while (getline(file, line) && line != "CLEAN");
+   parseHogSettings(file);
+
    while (getline(file, line) && line != "SVM");
    parseSVMSettings(file);
    while (getline(file, line) && line != "LinNet");
