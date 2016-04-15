@@ -46,21 +46,15 @@ Feature FeatureExtractor::extract(Patch p, unsigned int cbIdx){
 
 void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    settings = s;
-<<<<<<< HEAD
-   clean.settings = settings.clSettings[0];
-   if(settings.featureType[0] == HOG)
-      hog.setSettings(settings.hogSettings[0]);
-   if (settings.featureType[0] == LBP)
-	   lbp.setSettings(settings.lbpSettings[0]);
-=======
+
    
-   nClean = s.clean.size();
-   nHOG = s.hog.size();
-   nLBP = s.lbp.size();
+   nClean = s.clSettings.size();
+   nHOG = s.hogSettings.size();
+   nLBP = s.lbpSettings.size();
    
    lbp.resize(nLBP);
    hog.resize(nHOG);
-   nClean.resize(nClean);
+   clean.resize(nClean);
    
    for(size_t clIdx = 0; clIdx != nClean; ++clIdx)
       clean[clIdx].settings = settings.clSettings[clIdx];
@@ -71,6 +65,6 @@ void FeatureExtractor::setSettings(FeatureExtractorSettings s){
    for(size_t lbpIdx = 0; lbpIdx != nLBP; ++lbpIdx)
       lbp[lbpIdx].setSettings(settings.lbpSettings[lbpIdx]);
 
->>>>>>> c31dbd797cc0277564b71b81b049ccdbe2944bf1
+
 	   
 }
