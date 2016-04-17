@@ -111,6 +111,12 @@
     <ClCompile Include="src\csvm\csvm_merge_descriptor.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\csvm\csvm_interpolator.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\csvm\csvm_whitening.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\csvm\csvm.h">
@@ -210,6 +216,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\csvm\csvm_merge_descriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_interpolator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\csvm\csvm_whitening.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

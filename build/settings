@@ -9,6 +9,7 @@ imageHeight 0
 General
 Classifier CSVM
 Codebook CODEBOOK
+nCodebooks 2
 nClasses 10
 debugOut FALSE
 normalOut TRUE
@@ -18,34 +19,44 @@ Codebook
 generate TRUE
 standardize FALSE
 whitening FALSE
-rootNPartitions 5
+rootNPartitions 3
 method KMEANS
 nClusters 400
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
-FeatureExtractor
-method CLEAN
-nBins 9
-cellSize 10
-cellStride 10
-patchSize 22
-padding None
-useColourPixel false
-interpolation INTERPOLATE_LINEAR
-binmethod CROSSCOLOUR
-postprocessing L2
-debugLevel 0
-
-CleanDescriptor
-standardize NONE
-
 ImageScanner
-patchHeight 6
-patchWidth 6
+patchSize 16
 scanStride 1
 nRandomPatches 200000
+
+FeatureExtractor
+method [CLEAN,HOG,LBP,HOG]
+
+CLEAN
+standardize [NONE]
+
+HOG
+nBins [9,18]
+cellSize [10 , 6]
+cellStride [10 , 10]
+padding [None , None]
+useColourPixel [true, true]
+interpolation [INTERPOLATE_LINEAR , INTERPOLATE_LINEAR]
+binmethod [CROSSCOLOUR , BYCOLOUR]
+postprocessing [PURE , PURE]
+debugLevel [0 , 0]
+
+LBP
+cellSize [6]
+cellStride [6]
+padding [None]
+useColourPixel [true]
+useUniformity [true]
+binmethod [CROSSCOLOUR]
+
+
 
 SVM
 Kernel LINEAR

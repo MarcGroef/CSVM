@@ -234,7 +234,7 @@ vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, u
 vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
    //cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
    if(depth == 0){//first layer, thus use image-patch extraction
-      Feature f = featExtr->extract(scanner->getPatchAt(im, x, y));
+      Feature f = featExtr->extract(scanner->getPatchAt(im, x, y),0);
       return calcSimilarity(f, layerStack[depth]);
    }else{//recursive step
       vector<double> pm = calculatePoolMapAt(im, depth - 1, x, y);
@@ -256,7 +256,7 @@ void DeepCodebook::generateCentroids(){
          if(debugOut)
             cout << "Collecting patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
-            randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages))));
+            randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages)),0));
          }
          if(debugOut)
             cout << "Clustering at 0th layer..\n";

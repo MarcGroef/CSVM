@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <assert.h>
 #include <cstdlib>
@@ -54,11 +55,25 @@ namespace csvm{
    //The settingsfile should contain all experiment parameters and relative directories of the datasets.
 
    class CSVMSettings{
+     void parseUInt(unsigned int& intVal, ifstream& stream, string setting, string error);
+     void parseDouble(double& doubleVal, ifstream& stream, string setting, string error);
+     void parseBool(bool& booVal, ifstream& stream, string setting, string error);
+     
+     vector<string> parseStringArray(ifstream& stream, string setting, string error);
+     vector<unsigned int> parseUIntArray(ifstream& stream, string setting, string error);
+     vector<int> parseIntArray(ifstream& stream, string setting, string error);
+     vector<double> parseDoubleArray(ifstream& stream, string setting, string error);
+     vector<bool> parseBoolArray(ifstream& stream, string setting, string error);
+     
      public:
       bool debugOut, normalOut;
       CLASSIFIER classifier;
       CODEBOOK codebook;
       
+      unsigned int nCodebooks;
+      unsigned int nHOG;
+      unsigned int nLBP;
+      unsigned int nClean;
       
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
@@ -69,6 +84,7 @@ namespace csvm{
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
+
      // CleanSettings clSettings; // clean descriptor
       //ClusterAnalyserSettings analyserSettings;
    
@@ -77,12 +93,18 @@ namespace csvm{
       void readSettingsFile(string dir);
       //void parseClusterAnalserData(ifstream& stream);
       void parseCodebookSettings(ifstream& stream);
+
       void parseFeatureExtractorSettings(ifstream& stream);
+	  void parseHogSettings(ifstream& stream);
+	  void parseCleanSettings(ifstream& stream);
+	  void parseLBPSettings(ifstream& stream);
+
+	  string parseNthToken(ifstream& values, size_t i);
       void parseImageScannerSettings(ifstream& stream);
       void parseSVMSettings(ifstream& stream);
       void parseLinNetSettings(ifstream& stream);
       void parseConvSVMSettings(ifstream& stream);
-      void parseCleanDescrSettings(ifstream& stream);
+      //void parseCleanDescrSettings(ifstream& stream);
       void parseGeneralSettings(ifstream& stream);
    };
 

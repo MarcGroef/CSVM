@@ -23,211 +23,184 @@ CSVMSettings::~CSVMSettings() {
 
 }
 
+
+//Some often used low level parsing private methods:
+void CSVMSettings::parseUInt(unsigned int& intVal, ifstream& stream, string setting, string error){
+  string s;
+  stream >> s;
+  if(s != setting)
+    cout << error;
+  stream >> intVal;
+}
+
+void CSVMSettings::parseDouble(double& doubleVal, ifstream& stream, string setting, string error){
+  string s;
+  stream >> s;
+  if(s != setting)
+    cout << error;
+  stream >> doubleVal;
+}
+
+void CSVMSettings::parseBool(bool& boolVal, ifstream& stream, string setting, string error){
+  string s;
+  stream >> s;
+  if(s != setting)
+    cout << error;
+  stream >> s;
+  boolVal = (s == "TRUE" || s == "True" || s == "true" || s == "T" || s == "t" || s == "1" || s == "Y" || s == "y");
+}
+
+vector<string> CSVMSettings::parseStringArray(ifstream& stream, string setting, string error){
+  vector<string> elements;
+  vector<unsigned int> values;
+  string s;
+  char c;
+  bool isEnded = false;
+  
+  stream >> s;
+  if(s != setting){
+    cout << error;
+    exit(-1);
+  }
+  for(stream >> c; c != '['; stream >> c){
+    if(c == '\n'){
+      cout << error;
+      exit(-1);
+    }
+  }
+  for(size_t elementIdx = 0; !isEnded; ++elementIdx){
+    string element = "";
+    for(stream >> c; true; stream >> c){
+      //skip spaces
+      if(c == ' ')
+        continue;
+      //stop when ']' is read
+      if(c == ']'){
+        elements.push_back(element);
+        isEnded = true;
+        break;
+      }
+      if(c == ','){
+        elements.push_back(element);
+        break;
+      }
+      element += c;
+    }
+  }
+  return elements;
+}
+
+vector<unsigned int> CSVMSettings::parseUIntArray(ifstream& stream, string setting, string error){
+  vector<unsigned int> values;
+  vector<string> elements = parseStringArray(stream, setting, error);
+  unsigned int nElements = elements.size();
+  unsigned int buf;
+  
+  for(size_t idx = 0; idx != nElements; ++idx){
+    buf = stoi(elements[idx]);
+    values.push_back(buf);
+  }
+  return values;
+}
+
+vector<int> CSVMSettings::parseIntArray(ifstream& stream, string setting, string error){
+  vector<int> values;
+  vector<string> elements = parseStringArray(stream, setting, error);
+  unsigned int nElements = elements.size();
+  int buf;
+  
+  for(size_t idx = 0; idx != nElements; ++idx){
+    buf = stoi(elements[idx]);
+    values.push_back(buf);
+  }
+  return values;
+}
+vector<bool> CSVMSettings::parseBoolArray(ifstream& stream, string setting, string error){
+  vector<bool> values;
+  vector<string> elements = parseStringArray(stream, setting, error);
+  unsigned int nElements = elements.size();
+  bool buf;
+  
+  for(size_t idx = 0; idx != nElements; ++idx){
+    buf = (elements[idx] == "TRUE" || elements[idx] == "True" || elements[idx] == "true" || elements[idx] == "T" || elements[idx] == "t" || elements[idx] == "1" || elements[idx] == "Y" || elements[idx] == "y");  
+    values.push_back(buf);
+  }
+  return values;
+}
+
+vector<double> CSVMSettings::parseDoubleArray(ifstream& stream, string setting, string error){
+  vector<double> values;
+  vector<string> elements = parseStringArray(stream, setting, error);
+  unsigned int nElements = elements.size();
+  double buf;
+  
+  for(size_t idx = 0; idx != nElements; ++idx){
+    buf = stod(elements[idx]);
+    values.push_back(buf);
+  }
+  return values;
+}
+
+
+//High level parsing methods
+
 void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
    string setting;
    string method;
    string value;
+   string error = "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
    
-   stream >> setting;
-   if (setting != "loadLastUsed") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> value;
-      convSVMSettings.loadLastUsed = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
-   }
-   
-   
-   stream >> setting;
-   if (setting != "learningRate") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.learningRate;
-
-   }
-
-   stream >> setting;
-   if (setting != "nIterations") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.nIter;
-   }
-
-   stream >> setting;
-   if (setting != "initWeight") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.initWeight;
-   }
-
-   stream >> setting;
-   if (setting != "CSVM_C") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.CSVM_C;
-   }
-
-   stream >> setting;
-   if (setting != "L2") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> value;
-      convSVMSettings.L2 = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
-   }
-
-
-
-
-
-
+   parseBool(convSVMSettings.loadLastUsed, stream, "loadLastUsed", error);
+   parseDouble(convSVMSettings.learningRate, stream, "learningRate", error);
+   parseUInt(convSVMSettings.nIter, stream, "nIterations", error);
+   parseDouble(convSVMSettings.initWeight, stream, "initWeight", error);
+   parseDouble(convSVMSettings.CSVM_C, stream, "CSVM_C", error);
+   parseBool(convSVMSettings.L2, stream, "L2", error);
 }
 
 void CSVMSettings::parseLinNetSettings(ifstream& stream) {
-
-
-   string setting;
-   string method;
-
-   stream >> setting;
-   if (setting != "nIterations") {
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> netSettings.nIter;
-
-   }
-
-   stream >> setting;
-   if (setting != "initWeight") {
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> netSettings.initWeight;
-
-   }
-   stream >> setting;
-   if (setting != "learningRate") {
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> netSettings.learningRate;
-   }
-
+   string error = "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+   
+   parseUInt(netSettings.nIter, stream, "nIterations", error);
+   parseDouble(netSettings.initWeight, stream, "initWeight", error);
+   parseDouble(netSettings.learningRate, stream, "learningRate", error);
 
 }
 
 void CSVMSettings::parseDatasetSettings(ifstream& stream) {
 
-
+   string error = "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
    string setting;
    string method;
+   
    stream >> setting;
    if (setting != "method") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      cout << error;
       exit(-1);
    }
    stream >> method;
-
-   if (method == "CIFAR10") {
+   if (method == "CIFAR10")
       datasetSettings.type = DATASET_CIFAR10;
-      stream >> setting;
-      if (setting != "nTrainImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTrainImages;
-
-      stream >> setting;
-      if (setting != "nTestImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTestImages;
-
-   }
-   else if (method == "MNIST") {
+   else if (method == "MNIST") 
       datasetSettings.type = DATASET_MNIST;
-      stream >> setting;
-      if (setting != "nTrainImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In MNIST parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTrainImages;
-
-      stream >> setting;
-      if (setting != "nTestImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In MNIST parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTestImages;
-   }
-   stream >> setting;
-   if (setting != "imageWidth") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   stream >> datasetSettings.imWidth;
    
-   stream >> setting;
-   if (setting != "imageHeight") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   stream >> datasetSettings.imHeight;
+   parseUInt(datasetSettings.nTrainImages, stream, "nTrainImages", error);
+   parseUInt(datasetSettings.nTestImages, stream, "nTestImages", error);
+   parseUInt(datasetSettings.imWidth, stream, "imageWidth", error);
+   parseUInt(datasetSettings.imHeight, stream, "imageHeight", error);
+
 }
 
 
 void CSVMSettings::parseCodebookSettings(ifstream& stream) {
-   string setting;
-   string method;
-   stream >> setting;
-   if (setting != "generate") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >>setting ;
-      codebookSettings.generate = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
-   }
+   string error = "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+   string setting, method;
    
-   stream >> setting;
-   if (setting != "standardize") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >>setting ;
-      codebookSettings.standardize = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
-   }
-   
-   stream >> setting;
-   if (setting != "whitening") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >>setting ;
-      codebookSettings.whitening = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
-   }
-   
-   stream >> setting;
-   if (setting != "rootNPartitions") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >> codebookSettings.rootNPartitions;
-   }
+   parseBool(codebookSettings.generate, stream, "generate", error);
+   parseBool(codebookSettings.standardize, stream, "standardize", error);
+   parseBool(codebookSettings.whitening, stream, "whitening", error);
+   parseUInt(codebookSettings.rootNPartitions, stream, "rootNPartitions", error);
+ 
    
    stream >> setting;
    if (setting != "method") {
@@ -237,516 +210,252 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
    stream >> method;
    if (method == "LVQ") {
       codebookSettings.method = LVQ_Clustering;
-
-      stream >> setting;
-      if (setting == "nClusters") {
-         stream >> codebookSettings.lvqSettings.nClusters;
-	 codebookSettings.numberVisualWords = codebookSettings.lvqSettings.nClusters; 
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "learningRate") {
-         stream >> codebookSettings.lvqSettings.alpha;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-
-
-
-   }
-
-   if (method == "KMEANS") {
+   } else if (method == "KMEANS") {
       codebookSettings.method = KMeans_Clustering;
-
-      stream >> setting;
-      if (setting == "nClusters") {
-         stream >> codebookSettings.numberVisualWords;
-         dcbSettings.nCentroids = codebookSettings.numberVisualWords;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "nIterations") {
-         stream >> codebookSettings.kmeansSettings.nIter;
-         dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "SimilarityFunction") {
-         stream >> method;
-         if (method == "RBF") {
-            codebookSettings.simFunction = CB_RBF;
-            dcbSettings.simFunction = DCB_RBF;
-         }
-         else if (method == "SOFT_ASSIGNMENT") {
-            codebookSettings.simFunction = SOFT_ASSIGNMENT;
-            dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
-         }
-         else if(method == "COSINE_SOFT_ASSIGNMENT"){
-            codebookSettings.simFunction = COSINE_SOFT_ASSIGNMENT;
-            dcbSettings.simFunction = DCB_COSINE_SOFT_ASSIGNMENT;
-         }
-         else
-            cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "similaritySigma") {
-         stream >> codebookSettings.similaritySigma;
-         dcbSettings.similaritySigma = codebookSettings.similaritySigma;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-   }
-
-   if (method == "AKMEANS") {
+   } else if (method == "AKMEANS") {
       codebookSettings.method = AKMeans_Clustering;
-
-      stream >> setting;
-      if (setting == "nClusters") {
-         stream >> codebookSettings.numberVisualWords;
-	 
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "nIterations") {
-         stream >> codebookSettings.akmeansSettings.nIter;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "SimilarityFunction") {
-         stream >> method;
-         if (method == "RBF")
-            codebookSettings.simFunction = CB_RBF;
-         else if (method == "SOFT_ASSIGNMENT")
-            codebookSettings.simFunction = SOFT_ASSIGNMENT;
-         else
-            cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "similaritySigma") {
-         stream >> codebookSettings.similaritySigma;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-
-      
-
-
    }
-
-}
-
-void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
-   string setting;
-   string method;
-   string enumeration;
-   string useColour;
+   
+   parseUInt(codebookSettings.numberVisualWords, stream, "nClusters", error);
+   parseUInt(codebookSettings.kmeansSettings.nIter, stream, "nIterations", error);
+   dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
+   
+   //parse SimilarityFunction enum
    stream >> setting;
-   if (setting != "method") {
-      cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+   if (setting == "SimilarityFunction") {
+      stream >> method;
+      if (method == "RBF") {
+         codebookSettings.simFunction = CB_RBF;
+         dcbSettings.simFunction = DCB_RBF;
+      }
+      else if (method == "SOFT_ASSIGNMENT") {
+         codebookSettings.simFunction = SOFT_ASSIGNMENT;
+         dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
+      }
+      else if(method == "COSINE_SOFT_ASSIGNMENT"){
+         codebookSettings.simFunction = COSINE_SOFT_ASSIGNMENT;
+         dcbSettings.simFunction = DCB_COSINE_SOFT_ASSIGNMENT;
+      }
+      else
+         cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
+   }
+   else {
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
       exit(-1);
    }
-   stream >> method;
-   if (method == "LBP") {
-      featureSettings.featureType = LBP;
 
-
-      stream >> setting;
-      if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-          stream >> featureSettings.lbpSettings.cellSize;
-
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-          stream >> featureSettings.lbpSettings.cellStride;
-
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "patchSize") {  // 
-          stream >> featureSettings.lbpSettings.patchSize;
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-
-      stream >> setting;
-      if (setting == "padding") {//#the size of a patch
-          stream >> enumeration;
-          if (enumeration == "None" || enumeration == "none" || enumeration == "NONE")
-              featureSettings.lbpSettings.padding = LNONE;
-          else if (enumeration == "Identity" || enumeration == "identity" || enumeration == "IDENTITY")
-              featureSettings.lbpSettings.padding = LIDENTITY;
-          else if (enumeration == "Zero" || enumeration == "zero" || enumeration == "ZERO")
-              featureSettings.lbpSettings.padding = LZERO;
-
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "useColourPixel") {//if we use grey images
-          stream >> useColour;
-          if (useColour == "true" || useColour == "True")
-              featureSettings.lbpSettings.useColourPixel = true;
-          else {
-              if (useColour == "false" || useColour == "False")
-                  featureSettings.lbpSettings.useColourPixel = false;
-          }
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "useUniformity") {//if we use grey images
-          stream >> enumeration;
-          if (enumeration == "UNIFORM" || enumeration == "True" || enumeration == "true")
-              featureSettings.lbpSettings.uniform = LUNIFORM;
-          else {
-              if (enumeration == "false" || enumeration == "false" || enumeration == "PURE")
-                  featureSettings.lbpSettings.uniform = LPURE;
-          }
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "binmethod") {  // things
-          stream >> enumeration;
-          if (enumeration == "CROSSCOLOUR" || enumeration == "CrossColour" || enumeration == "crosscolour" || enumeration == "Crosscolour")
-              featureSettings.lbpSettings.binmethod = LCROSSCOLOUR;
-          else {
-              if (enumeration == "BYCOLOUR" || enumeration == "ByColour" || enumeration == "bycolour" || enumeration == "Bycolour")
-                  featureSettings.lbpSettings.binmethod = LBYCOLOUR;
-          }
-
-      }
-      else {
-          cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
-          exit(-1);
-      }
-
-
-
-   }
-   else if (method == "HOG") {
-      featureSettings.featureType = HOG;
-
-      stream >> setting;
-      if (setting == "nBins") {  // #nbins is conventionally 9, but can be different.
-         stream >> featureSettings.hogSettings.nBins;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG nBins not set! Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-         stream >> featureSettings.hogSettings.cellSize;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-         stream >> featureSettings.hogSettings.cellStride;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "patchSize") {  // 
-         stream >> featureSettings.hogSettings.patchSize;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! HOG patchSize not specified! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "padding") {//#the size of a patch
-         stream >> enumeration;
-         if (enumeration == "None" || enumeration == "none" || enumeration == "NONE")
-            featureSettings.hogSettings.padding = NONE;
-         else if (enumeration == "Identity" || enumeration == "identity" || enumeration == "IDENTITY")
-            featureSettings.hogSettings.padding = IDENTITY;
-         else if (enumeration == "Zero" || enumeration == "zero" || enumeration == "ZERO")
-            featureSettings.hogSettings.padding = ZERO;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "useColourPixel") {//if we use grey images
-         stream >> useColour;
-         if (useColour == "true" || useColour == "True")
-            featureSettings.hogSettings.useColourPixel = true;
-         else {
-            if (useColour == "false" || useColour == "False")
-               featureSettings.hogSettings.useColourPixel = false;
-         }
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "interpolation") {  // things
-         stream >> enumeration;
-         if (enumeration == "INTERPOLATE_BINARY" || enumeration == "binary" || enumeration == "BINARY" || enumeration == "Binary")
-            featureSettings.hogSettings.interpol = INTERPOLATE_BINARY;
-         else {
-            if (enumeration == "INTERPOLATE_LINEAR" || enumeration == "linear" || enumeration == "LINEAR" || enumeration == "Linear")
-               featureSettings.hogSettings.interpol = INTERPOLATE_LINEAR;
-         }
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at interpolationmethod! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "binmethod") {  // things
-         stream >> enumeration;
-         if (enumeration == "CROSSCOLOUR" || enumeration == "CrossColour" || enumeration == "crosscolour" || enumeration == "Crosscolour")
-            featureSettings.hogSettings.binmethod = CROSSCOLOUR;
-         else {
-            if (enumeration == "BYCOLOUR" || enumeration == "ByColour" || enumeration == "bycolour" || enumeration == "Bycolour")
-               featureSettings.hogSettings.binmethod = BYCOLOUR;
-         }
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "postprocessing") {  // things
-         stream >> enumeration;
-         if (enumeration == "PURE" || enumeration == "Pure" || enumeration == "pure")
-            featureSettings.hogSettings.postproccess = PURE;
-         if (enumeration == "STANDARDISATION" || enumeration == "Standardise" || enumeration == "standardise" || enumeration == "std" || enumeration == "STD")
-               featureSettings.hogSettings.postproccess = STANDARDISATION;
-         if (enumeration == "NORMALISATION" || enumeration == "norm" || enumeration == "Norm" || enumeration == "NORM")
-            featureSettings.hogSettings.postproccess = NORMALISATION;
-         if (enumeration == "LTWONORM" || enumeration == "L2NORM" || enumeration == "L2" || enumeration == "l2norm")
-            featureSettings.hogSettings.postproccess = LTWONORM;
-         if (enumeration == "CLIPNORM" || enumeration == "clipping" || enumeration == "clipnorm" || enumeration == "cnorm")
-            featureSettings.hogSettings.postproccess = CLIPNORM;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! at HOG postprocessing settings Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "debugLevel") {  // things
-         stream >> enumeration;
-         if (enumeration == "-1" )
-            featureSettings.hogSettings.debugLevel = -1;
-         if (enumeration == "0")
-            featureSettings.hogSettings.debugLevel = 0;
-         if (enumeration == "1")
-            featureSettings.hogSettings.debugLevel = 1;
-         if (enumeration == "2")
-            featureSettings.hogSettings.debugLevel = 2;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error at binmethod! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-   }
-   else if (method == "CLEAN") {
-      featureSettings.featureType = CLEAN;
-   }
-   else if (method == "PIXHOG") {
-      featureSettings.featureType = MERGE;
-
-      stream >> setting;
-      if (setting == "cellSize") {  // #cellSize is best an even-numbered, divisor of patch size. By default it'll be half of patch size
-         stream >> featureSettings.hogSettings.cellSize;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "cellStride") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-         stream >> featureSettings.hogSettings.cellStride;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-
-      stream >> setting;
-      if (setting == "padding") {//#the size of a patch
-         stream >> enumeration;
-         if (enumeration == "None")
-            featureSettings.hogSettings.padding = NONE;
-         else if (enumeration == "Identity")
-            featureSettings.hogSettings.padding = IDENTITY;
-         else if (enumeration == "Zero")
-            featureSettings.hogSettings.padding = ZERO;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "useColourPixel") {//if we use grey images
-         stream >> useColour;
-         if (useColour == "true") {
-            featureSettings.hogSettings.useColourPixel = true;
-            featureSettings.mergeSettings.useColourPixel = true;
-         }
-         else {
-            if (useColour == "false") {
-               featureSettings.hogSettings.useColourPixel = false;
-               featureSettings.mergeSettings.useColourPixel = false;
-            }
-         }
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> setting;
-      if (setting == "weightRatio") { //#cellStride is best an even-numbered, divisor of cellSize. By default it's the same value as cellSize, meaning the patch is divided into quadrants, and not iterated over 
-         stream >> featureSettings.mergeSettings.weightRatio;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-   }
-
-
+   parseDouble(codebookSettings.similaritySigma, stream, "similaritySigma", error);
+   dcbSettings.similaritySigma = codebookSettings.similaritySigma;
 
 }
+
 
 void CSVMSettings::parseImageScannerSettings(ifstream& stream) {
-   string setting;
-   string method;
-   stream >> setting;
-   if (setting == "patchHeight") {
-      stream >> scannerSettings.patchHeight;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "patchWidth") {
-      stream >> scannerSettings.patchWidth;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "scanStride") {
-      stream >> scannerSettings.stride;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "nRandomPatches") {
-      stream >> scannerSettings.nRandomPatches;
+      string error = "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout... Exitting...\n";
+      
+      parseUInt(scannerSettings.patchHeight, stream, "patchSize", error);
+      scannerSettings.patchWidth = scannerSettings.patchHeight;
+      parseUInt(scannerSettings.stride, stream, "scanStride", error);
+      parseUInt(scannerSettings.nRandomPatches, stream, "nRandomPatches", error);
       dcbSettings.nRandomPatches = scannerSettings.nRandomPatches;
+}
 
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
 
+
+void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
+	string setting;
+	string method;
+	string enumeration;
+	string useColour;
+  string error = "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+	
+	nHOG = 0;
+	nLBP = 0;
+	nClean = 0;
+  
+  vector<string> tokens = parseStringArray(stream, "method", error);
+  unsigned int nTokens = tokens.size();
+  for(size_t tIdx = 0; tIdx != nTokens; ++tIdx){
+    if(tokens[tIdx] == "CLEAN" || tokens[tIdx] == "clean" || tokens[tIdx] == "raw" || tokens[tIdx] == "RAW"){
+      featureSettings.featureType.push_back(CLEAN);
+      ++nClean;
+    }
+    else if(tokens[tIdx] == "HOG" || tokens[tIdx] == "hog"){
+      featureSettings.featureType.push_back(HOG);
+      ++nHOG;
+    }
+    else if(tokens[tIdx] == "LBP" || tokens[tIdx] == "lbp"){
+      featureSettings.featureType.push_back(LBP);
+      ++nLBP;
+    }
+  }
+  featureSettings.hogSettings.resize(nHOG);
+  featureSettings.lbpSettings.resize(nLBP);
+  featureSettings.clSettings.resize(nClean);
+
+}
+
+
+
+void CSVMSettings::parseHogSettings(ifstream& stream) {
+
+    string error = "csvm::csvm_settings:parseHOGSettings(): Error reading settings... Exitting...\n";
+    
+    vector<unsigned int> uintArBuf;
+    vector<string> strArBuf;
+    vector<bool> boolArBuf;
+    vector<int> intArBuf;
+    
+    for(size_t hIdx = 0; hIdx != nHOG; ++hIdx)
+      featureSettings.hogSettings[hIdx].patchSize = scannerSettings.patchHeight;
+    
+    uintArBuf = parseUIntArray(stream, "nBins", error);
+		for(size_t idx = 0; idx != nHOG && idx != uintArBuf.size(); ++idx){
+      featureSettings.hogSettings[idx].nBins = uintArBuf[idx];
+    }
+
+    uintArBuf = parseUIntArray(stream, "cellSize", error);
+    for(size_t idx = 0; idx != nHOG && idx != uintArBuf.size(); ++idx){
+      featureSettings.hogSettings[idx].cellSize = uintArBuf[idx];
+    }
+    
+    uintArBuf = parseUIntArray(stream, "cellStride", error);
+    for(size_t idx = 0; idx != nHOG && idx != uintArBuf.size(); ++idx){
+      featureSettings.hogSettings[idx].cellStride = uintArBuf[idx];
+    }
+		
+    strArBuf = parseStringArray(stream, "padding", error);
+    for(size_t idx = 0; idx != nHOG && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "None" || strArBuf[idx] == "none" || strArBuf[idx] == "NONE")
+        featureSettings.hogSettings[idx].padding = NONE;
+      else if(strArBuf[idx] == "Identity" || strArBuf[idx] == "identity" || strArBuf[idx] == "IDENTITY")
+        featureSettings.hogSettings[idx].padding = IDENTITY;
+      else if(strArBuf[idx] == "Zero" || strArBuf[idx] == "zero" || strArBuf[idx] == "ZERO")
+        featureSettings.hogSettings[idx].padding = ZERO;
+    }
+		
+    boolArBuf = parseBoolArray(stream, "useColourPixel", error);
+    for(size_t idx = 0; idx != nHOG && idx != boolArBuf.size(); ++idx){
+      featureSettings.hogSettings[idx].useColourPixel = boolArBuf[idx];
+    }
+    
+    strArBuf = parseStringArray(stream, "interpolation", error);
+    for(size_t idx = 0; idx != nHOG && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "INTERPOLATE_BINARY" || strArBuf[idx] == "binary" || strArBuf[idx] == "BINARY" || strArBuf[idx] == "Binary")
+        featureSettings.hogSettings[idx].interpol = INTERPOLATE_BINARY;
+      else if(strArBuf[idx] == "INTERPOLATE_LINEAR" || strArBuf[idx] == "linear" || strArBuf[idx] == "LINEAR" || strArBuf[idx] == "Linear")
+        featureSettings.hogSettings[idx].interpol = INTERPOLATE_LINEAR;
+    }
+    
+    strArBuf = parseStringArray(stream, "binmethod", error);
+    for(size_t idx = 0; idx != nHOG && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "CROSSCOLOUR" || strArBuf[idx] == "CrossColour" || strArBuf[idx] == "crosscolour" || strArBuf[idx] == "Crosscolour")
+        featureSettings.hogSettings[idx].binmethod = CROSSCOLOUR;
+      else if(strArBuf[idx] == "BYCOLOUR" || strArBuf[idx] == "ByColour" || strArBuf[idx] == "bycolour" || strArBuf[idx] == "Bycolour")
+        featureSettings.hogSettings[idx].binmethod = BYCOLOUR;
+    }
+    
+    strArBuf = parseStringArray(stream, "postprocessing", error);
+    for(size_t idx = 0; idx != nHOG && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "PURE" || strArBuf[idx] == "Pure" || strArBuf[idx] == "pure")
+        featureSettings.hogSettings[idx].postproccess = PURE;
+      else if(strArBuf[idx] == "STANDARDISATION" || strArBuf[idx] == "Standardise" || strArBuf[idx] == "std" || strArBuf[idx] == "STD")
+        featureSettings.hogSettings[idx].postproccess = STANDARDISATION;
+      else if(strArBuf[idx] == "NORMALISATION" || strArBuf[idx] == "norm" || strArBuf[idx] == "Norm" || strArBuf[idx] == "NORM")
+        featureSettings.hogSettings[idx].postproccess = NORMALISATION;
+      else if(strArBuf[idx] == "LTWONORM" || strArBuf[idx] == "L2NORM" || strArBuf[idx] == "L2" || strArBuf[idx] == "l2norm")
+        featureSettings.hogSettings[idx].postproccess = LTWONORM;
+      else if(strArBuf[idx] == "CLIPNORM" || strArBuf[idx] == "clipping" || strArBuf[idx] == "clipnorm" || strArBuf[idx] == "cnorm")
+        featureSettings.hogSettings[idx].postproccess = CLIPNORM;
+    }
+  
+    intArBuf = parseIntArray(stream, "debugLevel", error);
+    for(size_t idx = 0; idx != nHOG && idx != intArBuf.size(); ++idx){
+      featureSettings.hogSettings[idx].debugLevel = intArBuf[idx];
+    }
+
+	
+}
+
+
+
+
+
+void CSVMSettings::parseLBPSettings(ifstream& stream) {
+    string error = "csvm::csvm_settings:parseFeatureExtractorSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+    vector<unsigned int> uintArBuf;
+    vector<string> strArBuf;
+    vector<bool> boolArBuf;
+    
+    for (size_t idx = 0; idx < nLBP; ++idx) {
+      featureSettings.lbpSettings[idx].patchSize = scannerSettings.patchHeight;
+    }
+    
+    uintArBuf = parseUIntArray(stream, "cellSize", error);
+    for(size_t idx = 0; idx != uintArBuf.size() && idx != nLBP; ++idx){
+      featureSettings.lbpSettings[idx].cellSize = uintArBuf[idx];
+    }
+    
+    uintArBuf = parseUIntArray(stream, "cellStride", error);
+    for(size_t idx = 0; idx != uintArBuf.size() && idx != nLBP; ++idx){
+      featureSettings.lbpSettings[idx].cellStride = uintArBuf[idx];
+    }
+    
+    strArBuf = parseStringArray(stream, "padding", error);
+    for(size_t idx = 0; idx != nLBP && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "None" || strArBuf[idx] == "none" || strArBuf[idx] == "NONE")
+        featureSettings.lbpSettings[idx].padding = LNONE;
+      else if(strArBuf[idx] == "Identity" || strArBuf[idx] == "identity" || strArBuf[idx] == "IDENTITY")
+        featureSettings.lbpSettings[idx].padding = LIDENTITY;
+      else if(strArBuf[idx] == "Zero" || strArBuf[idx] == "zero" || strArBuf[idx] == "ZERO")
+        featureSettings.lbpSettings[idx].padding = LZERO;
+    }
+
+    boolArBuf = parseBoolArray(stream, "useColourPixel", error);
+    for(size_t idx = 0; idx != nHOG && idx != boolArBuf.size(); ++idx){
+      featureSettings.lbpSettings[idx].useColourPixel = boolArBuf[idx];
+    }
+
+    strArBuf = parseStringArray(stream, "useUniformity", error);
+    for(size_t idx = 0; idx != nLBP && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "UNIFORM" || strArBuf[idx] == "True" || strArBuf[idx] == "true")
+        featureSettings.lbpSettings[idx].uniform = LUNIFORM;
+      else if(strArBuf[idx] == "false" || strArBuf[idx] == "False" || strArBuf[idx] == "PURE")
+        featureSettings.lbpSettings[idx].uniform = LPURE;
+    }
+    
+    strArBuf = parseStringArray(stream, "binmethod", error);
+    for(size_t idx = 0; idx != nLBP && idx != strArBuf.size(); ++idx){
+      if(strArBuf[idx] == "CROSSCOLOUR" || strArBuf[idx] == "CrossColour" || strArBuf[idx] == "crosscolour" || strArBuf[idx] == "Crosscolour")
+        featureSettings.lbpSettings[idx].binmethod = LCROSSCOLOUR;
+      else if(strArBuf[idx] == "BYCOLOUR" || strArBuf[idx] == "ByColour" || strArBuf[idx] == "bycolour" || strArBuf[idx] == "Bycolour")
+        featureSettings.lbpSettings[idx].binmethod = LBYCOLOUR;
+    }
+
+
+}
+
+void CSVMSettings::parseCleanSettings(ifstream& stream) {
+  string error = "csvm::CSVMSettings.parseCleanDescrSettings: Error! Invalid settingsfile layout. Exitting..\n";
+  vector<string> strArBuf;
+
+  strArBuf = parseStringArray(stream, "standardize", error);
+  for(size_t idx = 0; idx != nClean && idx != strArBuf.size(); ++idx){
+    if(strArBuf[idx] == "None")
+      featureSettings.clSettings[idx].stdOptions = CL_NONE;
+    else if(strArBuf[idx] == "PER_CHANNEL")
+      featureSettings.clSettings[idx].stdOptions = CL_PER_CHANNEL;
+    else if(strArBuf[idx] == "ALL")
+      featureSettings.clSettings[idx].stdOptions = CL_ALL;
+    else
+      featureSettings.clSettings[idx].stdOptions = CL_NONE;
+  }
 }
 
 void CSVMSettings::parseSVMSettings(ifstream& stream) {
    string setting;
    string method;
-
+   string error = "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout... Exitting...\n";
 
    stream >> setting;
    if (setting == "Kernel") {
@@ -764,86 +473,26 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       exit(-1);
    }
 
-   stream >> setting;
-   if (setting == "AlphaDataInit") {
-      stream >> svmSettings.alphaDataInit;
-
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-
-
-   stream >> setting;
-   if (setting == "nIterations") {
-      stream >> svmSettings.nIterations;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "learningRate") {
-      stream >> svmSettings.learningRate;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "SVM_C_Data") {
-      stream >> svmSettings.SVM_C_Data;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-
-   stream >> setting;
-   if (setting == "Cost") {
-      stream >> svmSettings.cost;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "D2") {
-      stream >> svmSettings.D2;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "sigmaClassicSimilarity") {
-      stream >> svmSettings.sigmaClassicSimilarity;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
+   parseDouble(svmSettings.alphaDataInit, stream, "AlphaDataInit", error);
+   parseUInt(svmSettings.nIterations, stream, "nIterations", error);
+   parseDouble(svmSettings.learningRate, stream, "learningRate", error);
+   parseDouble(svmSettings.SVM_C_Data, stream, "SVM_C_Data", error);
+   parseDouble(svmSettings.cost, stream, "Cost", error);
+   parseDouble(svmSettings.D2, stream, "D2", error);
+   parseDouble(svmSettings.sigmaClassicSimilarity, stream, "sigmaClassicSimilarity", error);
 
 }
 
 void CSVMSettings::parseGeneralSettings(ifstream& stream) {
    string type, value;
-
+   string error = "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+   
    stream >> type;
    if (type != "Classifier") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      cout << error;
       exit(0);
    }
    stream >> value;
-
    if (value == "SVM")
       classifier = CL_SVM;
    else if (value == "CSVM")
@@ -860,7 +509,6 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
       exit(0);
    }
-
    stream >> value;
    if (value == "CODEBOOK") {
       codebook = CB_CODEBOOK;
@@ -872,35 +520,16 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
       exit(0);
    }
-
-   stream >> type;
-   if (type != "nClasses") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
-   stream >> netSettings.nClasses;
+   
+   parseUInt(nCodebooks, stream, "nCodebooks", error);
+   parseUInt(netSettings.nClasses, stream, "nClasses", error);
    convSVMSettings.nClasses = netSettings.nClasses;
    datasetSettings.nClasses = netSettings.nClasses;
-   
-   stream >> type;
-   if (type != "debugOut") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
-   stream >> value;
-   debugOut = (value == "TRUE");
-   
-   stream >> type;
-   if (type != "normalOut") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
-   stream >> value;
-   normalOut = (value == "TRUE");
-
+   parseBool(debugOut, stream, "debugOut", error);
+   parseBool(normalOut, stream, "normalOut", error);
 }
 
-void CSVMSettings::parseCleanDescrSettings(ifstream& stream){
+/*void CSVMSettings::parseCleanDescrSettings(ifstream& stream){
    string type, value;
    stream >> type;
    if(type != "standardize"){
@@ -916,7 +545,7 @@ void CSVMSettings::parseCleanDescrSettings(ifstream& stream){
       featureSettings.clSettings.stdOptions = CL_ALL;
    else
       featureSettings.clSettings.stdOptions = CL_NONE;
-}
+}*/
 
 void CSVMSettings::readSettingsFile(string dir) {
    ifstream file(dir.c_str(), ios::in);
@@ -936,12 +565,19 @@ void CSVMSettings::readSettingsFile(string dir) {
    parseGeneralSettings(file);
    while (getline(file, line) && line != "Codebook");
    parseCodebookSettings(file);
-   while (getline(file, line) && line != "FeatureExtractor");
-   parseFeatureExtractorSettings(file);
-   while(getline(file, line) && line != "CleanDescriptor");
-   parseCleanDescrSettings(file);
    while (getline(file, line) && line != "ImageScanner");
    parseImageScannerSettings(file);
+   while (getline(file, line) && line != "FeatureExtractor");
+   parseFeatureExtractorSettings(file);
+   //while(getline(file, line) && line != "CleanDescriptor");
+   //parseCleanDescrSettings(file);
+   while (getline(file, line) && line != "CLEAN");
+   parseCleanSettings(file);
+   while (getline(file, line) && line != "HOG");
+   parseHogSettings(file);
+   while (getline(file, line) && line != "LBP");
+   parseLBPSettings(file);
+
    while (getline(file, line) && line != "SVM");
    parseSVMSettings(file);
    while (getline(file, line) && line != "LinNet");
