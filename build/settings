@@ -1,8 +1,13 @@
 
 Dataset
 method MNIST
+<<<<<<< HEAD
 nTrainImages 60000
 nTestImages 10000
+=======
+nTrainImages 10000
+nTestImages 1000
+>>>>>>> 2df014fb92042cf0f05639bb3c5f3baaa3144217
 imageWidth 0
 imageHeight 0
 
@@ -13,18 +18,24 @@ nClasses 10
 debugOut FALSE
 normalOut TRUE
 
+
 Codebook
 generate TRUE
-standardize TRUE
+standardize FALSE
 whitening FALSE
+rootNPartitions 5
 method KMEANS
 nClusters 400
+<<<<<<< HEAD
 nIterations 50
+=======
+nIterations 20
+>>>>>>> 2df014fb92042cf0f05639bb3c5f3baaa3144217
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method HOG
+method CLEAN
 nBins 9
 cellSize 10
 cellStride 10
@@ -40,8 +51,8 @@ CleanDescriptor
 standardize NONE
 
 ImageScanner
-patchHeight 22
-patchWidth 22
+patchHeight 6
+patchWidth 6
 scanStride 1
 nRandomPatches 200000
 
@@ -61,6 +72,7 @@ initWeight 0.01
 learningRate 0.000005
 
 ConvSVM
+loadLastUsed FALSE
 learningRate 0.000002
 nIterations 10000
 initWeight 0.000002

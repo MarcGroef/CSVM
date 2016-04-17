@@ -13,6 +13,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include "csvm_feature.h"
 #include "csvm_lvq.h"
@@ -42,6 +43,7 @@ namespace csvm{
       KMeans_settings kmeansSettings;
 	   AKMeans_settings akmeansSettings;
       CodebookClusterMethod method;
+      unsigned int rootNPartitions;
       unsigned int numberVisualWords;
       double similaritySigma;
       SimilarityFunction simFunction;
@@ -76,6 +78,7 @@ namespace csvm{
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
     vector< double > getQActivations(vector<Feature> features);
     bool getGenerate();
+    void exportToPNG(unsigned int nChannels);
     
 	//for akmeans:
 	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);

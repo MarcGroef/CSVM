@@ -27,6 +27,18 @@ void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
    string setting;
    string method;
    string value;
+   
+   stream >> setting;
+   if (setting != "loadLastUsed") {
+      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   else {
+      stream >> value;
+      convSVMSettings.loadLastUsed = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
+   }
+   
+   
    stream >> setting;
    if (setting != "learningRate") {
       cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -208,7 +220,14 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       stream >>setting ;
       codebookSettings.whitening = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
    }
-
+   
+   stream >> setting;
+   if (setting != "rootNPartitions") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   } else {
+      stream >> codebookSettings.rootNPartitions;
+   }
    
    stream >> setting;
    if (setting != "method") {

@@ -123,6 +123,7 @@ void CSVMClassifier::train(){
      }
    }
    // this is enough for the linear network to train on, so if it is chosen, train it and return
+   
    if(settings.classifier == CL_LINNET){
      linNetwork.train(datasetActivations, &dataset);
      return;
@@ -138,14 +139,22 @@ void CSVMClassifier::train(){
      }
    }
    convSVM.settings.nCentroids = datasetActivations[0].size();
-   convSVM.initialize();
    
+   if(!settings.convSVMSettings.loadLastUsed)
+      convSVM.initialize();
+   else
+      convSVM.importFromFile("LAST_USED_CSVM");
+  
+   ofstream statFile;
+   statFile.open( "INTERM_SCORE.csv" );
+   system("Rscript ../genRplotsLive INTERM_SCORE &> ./logs/errorLOG");
+   statFile << "TrainingRound,Score" << endl << "0,0" << endl;
+ 
    //All other classifiers are handled, so lets train the csvm, with validation stats
    size_t nTrainEpochs = settings.convSVMSettings.nIter;
    size_t nTrainsPerValidation = 50;
    cout << "trainSize = " << datasetActivations.size() << endl;
    for(size_t eIdx = 0; eIdx != nTrainEpochs;){
-     cout << "epoch " << eIdx << endl;
      if(eIdx + nTrainsPerValidation < nTrainEpochs){
        convSVM.train(datasetActivations, nTrainsPerValidation, &dataset);
        eIdx += nTrainsPerValidation;
@@ -154,10 +163,13 @@ void CSVMClassifier::train(){
        convSVM.train(datasetActivations, nTrainEpochs - eIdx, &dataset);
        eIdx += nTrainEpochs - eIdx;
      }
-
-     
-     cout << "validation score: " << convSVM.validate(validationActivations, &dataset) << endl;
+     double validScore = convSVM.validate(validationActivations, &dataset);
+     statFile << eIdx << "," << validScore << endl;
+     if (settings.debugOut) cout << "epoch " << eIdx << "\t\tScore: " << validScore << endl;
    }
+   statFile << "EOF" << endl;
+   statFile.close();
+   convSVM.exportToFile("LAST_USED_CSVM");
 }
 
 //Classify an image, given its pointer
@@ -181,8 +193,8 @@ unsigned int CSVMClassifier::classify(Image* im){
 
 
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
-void CSVMClassifier::exportCodebook(string filename){
-   codebook.exportCodebook(filename);
+void CSVMClassifier::exportCodebook(string filenamesstream){
+   codebook.exportCodebook(filenamesstream);
 }
 
 
@@ -197,6 +209,7 @@ void CSVMClassifier::constructDeepCodebook(){
    deepCodebook->debugOut = settings.debugOut;
    deepCodebook->normalOut = settings.normalOut;
    deepCodebook->generateCentroids();
+   
    if(normalOut) cout << "Done constructing deep codebook\n";
 }
 
@@ -232,13 +245,13 @@ void CSVMClassifier::constructCodebook(){
 
    if(settings.debugOut) cout << "Collected " << pretrainDump.size()<< " features\n";
    codebook.constructCodebook(pretrainDump);
-   
+   codebook.exportToPNG(dataset.getTrainImagePtr(0)->getNChannels());
    if(settings.debugOut) cout << "done constructing codebook using "  << settings.scannerSettings.nRandomPatches << " patches\n";
    
    pretrainDump.clear();
 }
 
-
+//Not used anymore. All training is done in the train function itself.
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
    vector < vector < double > > datasetActivations;

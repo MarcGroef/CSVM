@@ -122,13 +122,11 @@ fi
 		if [ $tmpFolderName != "LAST_RUN" ] ; then mkdir ./logs/$tmpFolderName &> ./logs/errorLOG ; fi
 
 		cp ./logs/$logName ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./SVM_* ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./overview.png ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./statData_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp ./*.png ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./settings ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./LAST_USED.bin ./logs/$tmpFolderName &> ./logs/errorLOG
-		cp ./R_dataDump_SVM* ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp ./LAST_USED* ./logs/$tmpFolderName &> ./logs/errorLOG
 		cp ./logs/errorLOG ./logs/$tmpFolderName &> ./logs/errorLOG
+		cp ./*.csv ./logs/$tmpFolderName &> ./logs/errorLOG
 
 		if [ $alert == 1 ] ; then aplay /usr/share/sounds/alsa/Side_Right.wav &> /dev/null &> ./logs/errorLOG ; fi
 
@@ -136,8 +134,7 @@ fi
 
 	done
 
-	rm ./SVM_* &> ./logs/errorLOG
-	rm ./statData* &> ./logs/errorLOG
-	rm ./R_dataDump* &> ./logs/errorLOG
+	rm ./*.csv &> ./logs/errorLOG
+	rm ./*.png &> ./logs/errorLOG
 
 fi

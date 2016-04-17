@@ -91,6 +91,16 @@ void Codebook::constructCodebook(vector<Feature> featureset){
    
 }
 
+void Codebook::exportToPNG(unsigned int nChannels){
+   size_t nCentroids = settings.numberVisualWords;
+   
+   for(size_t cIdx = 0; cIdx != nCentroids; ++cIdx){
+      stringstream stream;
+      stream << "centrExport/centr";
+      stream << cIdx;
+      bow[cIdx].exportToPNG(stream.str(), nChannels);
+   }
+}
 
 
 
