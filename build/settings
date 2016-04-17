@@ -1,8 +1,8 @@
 
 Dataset
 method MNIST
-nTrainImages 10000
-nTestImages 1000
+nTrainImages 2000
+nTestImages 200
 imageWidth 0
 imageHeight 0
 
@@ -18,10 +18,10 @@ Codebook
 generate TRUE
 standardize FALSE
 whitening FALSE
-rootNPartitions 5
+rootNPartitions 2
 method KMEANS
-nClusters 400
-nIterations 20
+nClusters 100
+nIterations 40
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
@@ -30,7 +30,7 @@ method CLEAN
 nBins 9
 cellSize 10
 cellStride 10
-patchSize 22
+patchSize 6
 padding None
 useColourPixel false
 interpolation INTERPOLATE_LINEAR
@@ -45,7 +45,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 200000
+nRandomPatches 20000
 
 SVM
 Kernel LINEAR

@@ -23,211 +23,97 @@ CSVMSettings::~CSVMSettings() {
 
 }
 
+//Some often used low level parsing private methods:
+void CSVMSettings::parseUInt(unsigned int& intVal, ifstream& stream, string setting, string error){
+  string s;
+  stream >> s;
+  if(s != setting){
+    cout << error;
+    exit(-1);
+  }
+  stream >> intVal;
+}
+
+void CSVMSettings::parseDouble(double& doubleVal, ifstream& stream, string setting, string error){
+  string s;
+  stream >> s;
+  if(s != setting){
+    cout << error;
+    exit(-1);
+  }
+  stream >> doubleVal;
+}
+
+void CSVMSettings::parseBool(bool& boolVal, ifstream& stream, string setting, string error){
+  string s;
+  stream >> s;
+  if(s != setting){
+    cout << error;
+    exit(-1);
+  }
+  stream >> s;
+  boolVal = (s == "TRUE" || s == "True" || s == "true" || s == "T" || s == "t" || s == "1" || s == "Y" || s == "y");
+}
+
+//high level parsing:
+
 void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
    string setting;
    string method;
    string value;
+   string error = "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
    
-   stream >> setting;
-   if (setting != "loadLastUsed") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> value;
-      convSVMSettings.loadLastUsed = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
-   }
-   
-   
-   stream >> setting;
-   if (setting != "learningRate") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.learningRate;
-
-   }
-
-   stream >> setting;
-   if (setting != "nIterations") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.nIter;
-   }
-
-   stream >> setting;
-   if (setting != "initWeight") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.initWeight;
-   }
-
-   stream >> setting;
-   if (setting != "CSVM_C") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> convSVMSettings.CSVM_C;
-   }
-
-   stream >> setting;
-   if (setting != "L2") {
-      cout << "csvm::csvm_settings:parseConvSVMSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> value;
-      convSVMSettings.L2 = (value == "TRUE" || value == "True" || value == "true" || value == "T" || value == "t" || value == "1" || value == "Y" || value == "y");
-   }
-
-
-
-
-
-
+   parseBool(convSVMSettings.loadLastUsed, stream, "loadLastUsed", error);
+   parseDouble(convSVMSettings.learningRate, stream, "learningRate", error);
+   parseUInt(convSVMSettings.nIter, stream, "nIterations", error);
+   parseDouble(convSVMSettings.initWeight, stream, "initWeight", error);
+   parseDouble(convSVMSettings.CSVM_C, stream, "CSVM_C", error);
+   parseBool(convSVMSettings.L2, stream, "L2", error);
 }
 
 void CSVMSettings::parseLinNetSettings(ifstream& stream) {
-
-
-   string setting;
-   string method;
-
-   stream >> setting;
-   if (setting != "nIterations") {
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> netSettings.nIter;
-
-   }
-
-   stream >> setting;
-   if (setting != "initWeight") {
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> netSettings.initWeight;
-
-   }
-   stream >> setting;
-   if (setting != "learningRate") {
-      cout << "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   else {
-      stream >> netSettings.learningRate;
-   }
-
+   string error = "csvm::csvm_settings:parseLinNetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+   
+   parseUInt(netSettings.nIter, stream, "nIterations", error);
+   parseDouble(netSettings.initWeight, stream, "initWeight", error);
+   parseDouble(netSettings.learningRate, stream, "learningRate", error);
 
 }
 
 void CSVMSettings::parseDatasetSettings(ifstream& stream) {
 
-
+   string error = "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
    string setting;
    string method;
+   
    stream >> setting;
    if (setting != "method") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+      cout << error;
       exit(-1);
    }
    stream >> method;
-
-   if (method == "CIFAR10") {
+   if (method == "CIFAR10")
       datasetSettings.type = DATASET_CIFAR10;
-      stream >> setting;
-      if (setting != "nTrainImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTrainImages;
-
-      stream >> setting;
-      if (setting != "nTestImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In CIFAR10 parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTestImages;
-
-   }
-   else if (method == "MNIST") {
+   else if (method == "MNIST") 
       datasetSettings.type = DATASET_MNIST;
-      stream >> setting;
-      if (setting != "nTrainImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In MNIST parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTrainImages;
-
-      stream >> setting;
-      if (setting != "nTestImages") {
-         cout << "csvm::csvm_settings:parseDatasetSettings(): In MNIST parsing: Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-      stream >> datasetSettings.nTestImages;
-   }
-   stream >> setting;
-   if (setting != "imageWidth") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   stream >> datasetSettings.imWidth;
    
-   stream >> setting;
-   if (setting != "imageHeight") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   }
-   stream >> datasetSettings.imHeight;
+   parseUInt(datasetSettings.nTrainImages, stream, "nTrainImages", error);
+   parseUInt(datasetSettings.nTestImages, stream, "nTestImages", error);
+   parseUInt(datasetSettings.imWidth, stream, "imageWidth", error);
+   parseUInt(datasetSettings.imHeight, stream, "imageHeight", error);
+
 }
 
 
 void CSVMSettings::parseCodebookSettings(ifstream& stream) {
-   string setting;
-   string method;
-   stream >> setting;
-   if (setting != "generate") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >>setting ;
-      codebookSettings.generate = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
-   }
+   string error = "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
+   string setting, method;
    
-   stream >> setting;
-   if (setting != "standardize") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >>setting ;
-      codebookSettings.standardize = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
-   }
-   
-   stream >> setting;
-   if (setting != "whitening") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >>setting ;
-      codebookSettings.whitening = (setting == "TRUE" || setting == "True" || setting == "true" || setting == "T" || setting == "t" || setting == "1" || setting == "Y" || setting == "y");
-   }
-   
-   stream >> setting;
-   if (setting != "rootNPartitions") {
-      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
-      exit(-1);
-   } else {
-      stream >> codebookSettings.rootNPartitions;
-   }
+   parseBool(codebookSettings.generate, stream, "generate", error);
+   parseBool(codebookSettings.standardize, stream, "standardize", error);
+   parseBool(codebookSettings.whitening, stream, "whitening", error);
+   parseUInt(codebookSettings.rootNPartitions, stream, "rootNPartitions", error);
+ 
    
    stream >> setting;
    if (setting != "method") {
@@ -237,142 +123,42 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
    stream >> method;
    if (method == "LVQ") {
       codebookSettings.method = LVQ_Clustering;
-
-      stream >> setting;
-      if (setting == "nClusters") {
-         stream >> codebookSettings.lvqSettings.nClusters;
-	 codebookSettings.numberVisualWords = codebookSettings.lvqSettings.nClusters; 
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "learningRate") {
-         stream >> codebookSettings.lvqSettings.alpha;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-
-
-
-   }
-
-   if (method == "KMEANS") {
+   } else if (method == "KMEANS") {
       codebookSettings.method = KMeans_Clustering;
-
-      stream >> setting;
-      if (setting == "nClusters") {
-         stream >> codebookSettings.numberVisualWords;
-         dcbSettings.nCentroids = codebookSettings.numberVisualWords;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "nIterations") {
-         stream >> codebookSettings.kmeansSettings.nIter;
-         dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "SimilarityFunction") {
-         stream >> method;
-         if (method == "RBF") {
-            codebookSettings.simFunction = CB_RBF;
-            dcbSettings.simFunction = DCB_RBF;
-         }
-         else if (method == "SOFT_ASSIGNMENT") {
-            codebookSettings.simFunction = SOFT_ASSIGNMENT;
-            dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
-         }
-         else if(method == "COSINE_SOFT_ASSIGNMENT"){
-            codebookSettings.simFunction = COSINE_SOFT_ASSIGNMENT;
-            dcbSettings.simFunction = DCB_COSINE_SOFT_ASSIGNMENT;
-         }
-         else
-            cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "similaritySigma") {
-         stream >> codebookSettings.similaritySigma;
-         dcbSettings.similaritySigma = codebookSettings.similaritySigma;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-   }
-
-   if (method == "AKMEANS") {
+   } else if (method == "AKMEANS") {
       codebookSettings.method = AKMeans_Clustering;
-
-      stream >> setting;
-      if (setting == "nClusters") {
-         stream >> codebookSettings.numberVisualWords;
-	 
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "nIterations") {
-         stream >> codebookSettings.akmeansSettings.nIter;
-
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "SimilarityFunction") {
-         stream >> method;
-         if (method == "RBF")
-            codebookSettings.simFunction = CB_RBF;
-         else if (method == "SOFT_ASSIGNMENT")
-            codebookSettings.simFunction = SOFT_ASSIGNMENT;
-         else
-            cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-      stream >> setting;
-      if (setting == "similaritySigma") {
-         stream >> codebookSettings.similaritySigma;
-      }
-      else {
-         cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
-         exit(-1);
-      }
-
-
-      
-
-
    }
+   
+   parseUInt(codebookSettings.numberVisualWords, stream, "nClusters", error);
+   parseUInt(codebookSettings.kmeansSettings.nIter, stream, "nIterations", error);
+   dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
+   
+   //parse SimilarityFunction enum
+   stream >> setting;
+   if (setting == "SimilarityFunction") {
+      stream >> method;
+      if (method == "RBF") {
+         codebookSettings.simFunction = CB_RBF;
+         dcbSettings.simFunction = DCB_RBF;
+      }
+      else if (method == "SOFT_ASSIGNMENT") {
+         codebookSettings.simFunction = SOFT_ASSIGNMENT;
+         dcbSettings.simFunction = DCB_SOFT_ASSIGNMENT;
+      }
+      else if(method == "COSINE_SOFT_ASSIGNMENT"){
+         codebookSettings.simFunction = COSINE_SOFT_ASSIGNMENT;
+         dcbSettings.simFunction = DCB_COSINE_SOFT_ASSIGNMENT;
+      }
+      else
+         cout << "Invalid codebook SimilarityFunction: Try RBF or SOFT_ASSIGNMENT\n";
+   }
+   else {
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+
+   parseDouble(codebookSettings.similaritySigma, stream, "similaritySigma", error);
+   dcbSettings.similaritySigma = codebookSettings.similaritySigma;
 
 }
 
@@ -701,52 +487,20 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
 }
 
 void CSVMSettings::parseImageScannerSettings(ifstream& stream) {
-   string setting;
-   string method;
-   stream >> setting;
-   if (setting == "patchHeight") {
-      stream >> scannerSettings.patchHeight;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "patchWidth") {
-      stream >> scannerSettings.patchWidth;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "scanStride") {
-      stream >> scannerSettings.stride;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "nRandomPatches") {
-      stream >> scannerSettings.nRandomPatches;
+      string error = "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout... Exitting...\n";
+      
+      parseUInt(scannerSettings.patchHeight, stream, "patchHeight", error);
+      parseUInt(scannerSettings.patchWidth, stream, "patchWidth", error);
+      parseUInt(scannerSettings.stride, stream, "scanStride", error);
+      parseUInt(scannerSettings.nRandomPatches, stream, "nRandomPatches", error);
       dcbSettings.nRandomPatches = scannerSettings.nRandomPatches;
-
-   }
-   else {
-      cout << "csvm::csvm_settings:parseImageScannerSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
 }
+
 
 void CSVMSettings::parseSVMSettings(ifstream& stream) {
    string setting;
    string method;
-
+   string error = "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout... Exitting...\n";
 
    stream >> setting;
    if (setting == "Kernel") {
@@ -764,86 +518,26 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       exit(-1);
    }
 
-   stream >> setting;
-   if (setting == "AlphaDataInit") {
-      stream >> svmSettings.alphaDataInit;
-
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-
-
-   stream >> setting;
-   if (setting == "nIterations") {
-      stream >> svmSettings.nIterations;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "learningRate") {
-      stream >> svmSettings.learningRate;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "SVM_C_Data") {
-      stream >> svmSettings.SVM_C_Data;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-
-   stream >> setting;
-   if (setting == "Cost") {
-      stream >> svmSettings.cost;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "D2") {
-      stream >> svmSettings.D2;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
-   stream >> setting;
-   if (setting == "sigmaClassicSimilarity") {
-      stream >> svmSettings.sigmaClassicSimilarity;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-
+   parseDouble(svmSettings.alphaDataInit, stream, "AlphaDataInit", error);
+   parseUInt(svmSettings.nIterations, stream, "nIterations", error);
+   parseDouble(svmSettings.learningRate, stream, "learningRate", error);
+   parseDouble(svmSettings.SVM_C_Data, stream, "SVM_C_Data", error);
+   parseDouble(svmSettings.cost, stream, "Cost", error);
+   parseDouble(svmSettings.D2, stream, "D2", error);
+   parseDouble(svmSettings.sigmaClassicSimilarity, stream, "sigmaClassicSimilarity", error);
 
 }
 
 void CSVMSettings::parseGeneralSettings(ifstream& stream) {
    string type, value;
-
+   string error = "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+   
    stream >> type;
    if (type != "Classifier") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
+      cout << error;
       exit(0);
    }
    stream >> value;
-
    if (value == "SVM")
       classifier = CL_SVM;
    else if (value == "CSVM")
@@ -860,7 +554,6 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
       exit(0);
    }
-
    stream >> value;
    if (value == "CODEBOOK") {
       codebook = CB_CODEBOOK;
@@ -872,32 +565,13 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       cout << "csvm::parseGeneralSettings: " << value << " is not a recognized codebook method. Exitting..\n";
       exit(0);
    }
+   
 
-   stream >> type;
-   if (type != "nClasses") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
-   stream >> netSettings.nClasses;
+   parseUInt(netSettings.nClasses, stream, "nClasses", error);
    convSVMSettings.nClasses = netSettings.nClasses;
    datasetSettings.nClasses = netSettings.nClasses;
-   
-   stream >> type;
-   if (type != "debugOut") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
-   stream >> value;
-   debugOut = (value == "TRUE");
-   
-   stream >> type;
-   if (type != "normalOut") {
-      cout << "csvm::CSVMSettings.readGeneralSettings: Error! invalid settingsfile layout. Exitting..\n";
-      exit(0);
-   }
-   stream >> value;
-   normalOut = (value == "TRUE");
-
+   parseBool(debugOut, stream, "debugOut", error);
+   parseBool(normalOut, stream, "normalOut", error);
 }
 
 void CSVMSettings::parseCleanDescrSettings(ifstream& stream){
