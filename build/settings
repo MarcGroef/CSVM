@@ -1,13 +1,8 @@
 
 Dataset
 method MNIST
-<<<<<<< HEAD
-nTrainImages 60000
-nTestImages 10000
-=======
 nTrainImages 10000
 nTestImages 1000
->>>>>>> 2df014fb92042cf0f05639bb3c5f3baaa3144217
 imageWidth 0
 imageHeight 0
 
@@ -26,11 +21,7 @@ whitening FALSE
 rootNPartitions 5
 method KMEANS
 nClusters 400
-<<<<<<< HEAD
-nIterations 50
-=======
 nIterations 20
->>>>>>> 2df014fb92042cf0f05639bb3c5f3baaa3144217
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
