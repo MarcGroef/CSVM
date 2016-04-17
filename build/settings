@@ -1,8 +1,8 @@
 
 Dataset
 method MNIST
-nTrainImages 10000
-nTestImages 1000
+nTrainImages 1000
+nTestImages 100
 imageWidth 0
 imageHeight 0
 
@@ -21,21 +21,21 @@ standardize FALSE
 whitening FALSE
 rootNPartitions 3
 method KMEANS
-nClusters 400
+nClusters 50
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 ImageScanner
-patchSize 16
+patchSize 6
 scanStride 1
-nRandomPatches 200000
+nRandomPatches 20000
 
 FeatureExtractor
-method [CLEAN,HOG,LBP,HOG]
+method [CLEAN,CLEAN]
 
 CLEAN
-standardize [NONE]
+standardize [NONE, NONE]
 
 HOG
 nBins [9,18]
@@ -76,7 +76,7 @@ learningRate 0.000005
 ConvSVM
 loadLastUsed FALSE
 learningRate 0.000002
-nIterations 10000
+nIterations 500
 initWeight 0.000002
 CSVM_C 2048
 L2 TRUE

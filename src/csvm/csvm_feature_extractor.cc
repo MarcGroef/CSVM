@@ -13,15 +13,12 @@ FeatureExtractor::FeatureExtractor(){
 Feature FeatureExtractor::extract(Patch p, unsigned int cbIdx){
 	//cout << "extracting something" << endl;
    //settings.featureType = CLEAN;
-
    if(cbIdx < nLBP)
       return lbp[cbIdx].getLBP(p);
    cbIdx -= nLBP;
-   
    if(cbIdx < nHOG)
       return hog[cbIdx].getHOG(p);
    cbIdx -= nHOG;
-   
    if(cbIdx < nClean)
       return clean[cbIdx].describe(p);
    
