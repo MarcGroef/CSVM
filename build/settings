@@ -35,25 +35,26 @@ FeatureExtractor
 method [CLEAN,HOG,LBP,HOG]
 
 CLEAN
-standardize NONE
+standardize [NONE]
 
 HOG
 nBins [9,18]
 cellSize [10 , 6]
 cellStride [10 , 10]
 padding [None , None]
+useColourPixel [true, true]
 interpolation [INTERPOLATE_LINEAR , INTERPOLATE_LINEAR]
 binmethod [CROSSCOLOUR , BYCOLOUR]
 postprocessing [PURE , PURE]
 debugLevel [0 , 0]
 
 LBP
-cellSize 6
-cellStride 6
-padding None
-useColourPixel true
-useUniformity true
-binmethod CROSSCOLOUR
+cellSize [6]
+cellStride [6]
+padding [None]
+useColourPixel [true]
+useUniformity [true]
+binmethod [CROSSCOLOUR]
 
 
 

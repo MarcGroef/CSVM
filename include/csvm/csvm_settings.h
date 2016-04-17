@@ -55,6 +55,16 @@ namespace csvm{
    //The settingsfile should contain all experiment parameters and relative directories of the datasets.
 
    class CSVMSettings{
+     void parseUInt(unsigned int& intVal, ifstream& stream, string setting, string error);
+     void parseDouble(double& doubleVal, ifstream& stream, string setting, string error);
+     void parseBool(bool& booVal, ifstream& stream, string setting, string error);
+     
+     vector<string> parseStringArray(ifstream& stream, string setting, string error);
+     vector<unsigned int> parseUIntArray(ifstream& stream, string setting, string error);
+     vector<int> parseIntArray(ifstream& stream, string setting, string error);
+     vector<double> parseDoubleArray(ifstream& stream, string setting, string error);
+     vector<bool> parseBoolArray(ifstream& stream, string setting, string error);
+     
      public:
       bool debugOut, normalOut;
       CLASSIFIER classifier;
