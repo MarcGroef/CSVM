@@ -73,7 +73,7 @@ union charDouble{
         // if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
          //for all csvms in ensemble
-	 for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
+          for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          
             
             double sumSlack = 0;
@@ -100,17 +100,17 @@ union charDouble{
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                   // partial derivatives to the weights
                   if(yData * out < 1){
-                     if (! settings.L2){
+                     if (not settings.L2){
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) -  yData * activations[dIdx][centrIdx]) ;
                         //++wrong;
                      } else {
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) - ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
                         //++wrong;
                      }
-                  } else {
+                  }/* else {
                      weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
                      //++right;
-                  }
+                  }*/
 
                }//centrIdx
                
@@ -119,7 +119,7 @@ union charDouble{
                   biases[svmIdx] += settings.learningRate * (yData - out);
 
                // calculating second term of objective function               
-               if (! settings.L2) 	sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out);
+               if (not settings.L2) 	sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out);
                else 			sumSlack += 1 - yData * out < 0 ? 0 : (1 -  yData * out) * (1 -  yData * out);
                   
                //############ Logging functions ################
@@ -130,7 +130,25 @@ union charDouble{
          
 
             }//dIdx
-            
+            for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx)
+              weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
+           
+            int tot_wrong = 0;    
+            double delta_biases = 0; 
+            biases[svmIdx] = 0.0;
+            for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+               
+              unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
+              double yData = (label == svmIdx ? 1.0 : -1.0);
+              double out = output(activations[dIdx], svmIdx);
+        
+              if(yData * out < 1){
+                delta_biases += (yData - out);
+                tot_wrong++;
+              }
+            }
+            if (tot_wrong > 0)
+              biases[svmIdx] = delta_biases / tot_wrong;
             //calculate objective function
 
             // calculating first term of objective function
