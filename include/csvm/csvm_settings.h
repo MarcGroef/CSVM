@@ -60,6 +60,7 @@ namespace csvm{
      void parseBool(bool& booVal, ifstream& stream, string setting, string error);
      public:
       bool debugOut, normalOut;
+      bool liveROut;
       CLASSIFIER classifier;
       CODEBOOK codebook;
       

@@ -79,9 +79,11 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    }
 
    ofstream statFile;
-   statFile.open( "CL_DIST.csv" );
-   system("Rscript ../genRplotsLive CL_DIST &> ./logs/errorLOG");
-   statFile << "Iteration,Distance" << endl;
+   if(settings.liveROut){
+    statFile.open( "CL_DIST.csv" );
+    system("Rscript ../genRplotsLive CL_DIST &> ./logs/errorLOG");
+    statFile << "Iteration,Distance" << endl;
+   }
 
    for(size_t itx = 0; /*deltaDist > 0*/ itx < settings.nIter; curCentroids *= -1, ++itx){
 //      if(settings.debugOut)         cout << "KMeans iteration " << itx << "/" << settings.nIter << endl;
@@ -135,11 +137,14 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
       deltaDist = (prevTotalDistance - totalDistance);
       deltaDist = deltaDist < 0 ? deltaDist * -1.0 : deltaDist;
 
-      statFile << itx << "," << totalDistance << endl;
+      if(settings.liveROut)
+        statFile << itx << "," << totalDistance << endl;
    }
 
-   statFile << "EOF" << endl;   
-   statFile.close();
+   if(settings.liveROut){
+     statFile << "EOF" << endl;   
+     statFile.close();
+   }
 	//tadaa, fresh made centroids
    return (*newCentroids);
 }

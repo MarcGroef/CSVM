@@ -25,6 +25,7 @@ namespace csvm{
       double alpha;
       unsigned int nIter;
       bool normalOut;
+      bool liveROut;
    };
   
  
@@ -35,6 +36,7 @@ namespace csvm{
       
    public:
       bool debugOut, normalOut;
+      
       void setSettings(KMeans_settings s);
       vector<Centroid> cluster(vector<Feature>& collection, unsigned int nClusters);
    };
