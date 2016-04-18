@@ -96,7 +96,7 @@ int main(int argc,char**argv){
       cout << "Testing on trainingsset:\n";
    for(size_t im = 0; im < 200 && im < nImages; ++im){
      
-      unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
+      unsigned int result = c.classifyFromActivation(im, false);
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
 
       if (result == answer){
@@ -165,7 +165,7 @@ int main(int argc,char**argv){
       unsigned int result;
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
       //cout << "\nAnswer: " << answer;
-      result = c.classifyFromActivation(im);
+      result = c.classifyFromActivation(im, true);
       //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
 
       //cout << "result: " << result << endl;

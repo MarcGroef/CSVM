@@ -131,11 +131,12 @@ void CSVMClassifier::train(){
    
    unsigned int nTrainImages = dataset.getTrainSize();
    unsigned int nTestImages = dataset.getTestSize();
-   vector < vector < double > > datasetActivations;
-   vector < vector < double > > validationActivations;
+   
    
    
    //get codebook activations for all train images
+   if(settings.normalOut)
+     cout << "Get training activations..\n";
    for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
       if(settings.codebook == CB_CODEBOOK){
         datasetActivations.push_back(getActivationsFromImage(dataset.getTrainImagePtr(dataIdx)));
@@ -211,18 +212,18 @@ unsigned int CSVMClassifier::classify(Image* im){
    return result;
 }
 
-unsigned int CSVMClassifier::classifyFromActivation(unsigned int testIdx){
+unsigned int CSVMClassifier::classifyFromActivation(unsigned int testIdx, bool isTestImage){
    unsigned int result = 0;
    
    switch(settings.classifier){
       case CL_SVM:
-         result = classifyClassicSVMs(dataset.getTestImagePtr(testIdx), false); //return value should be processed
+         result = classifyClassicSVMs(isTestImage ? dataset.getTestImagePtr(testIdx) : dataset.getTrainImagePtr(testIdx), false); //return value should be processed
          break;
       case CL_CSVM:
-         result = convSVM.classify(validationActivations[testIdx]);
+         result = convSVM.classify(isTestImage ? validationActivations[testIdx] : datasetActivations[testIdx]);
          break;
       case CL_LINNET:
-         result = linNetwork.classify(validationActivations[testIdx]);
+         result = linNetwork.classify(isTestImage ? validationActivations[testIdx] : datasetActivations[testIdx]);
          break;
    }
    return result;

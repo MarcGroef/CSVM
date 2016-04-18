@@ -1,10 +1,10 @@
 
 Dataset
 method CIFAR10
-nTrainImages 1000
-nTestImages 500
-imageWidth 48
-imageHeight 48
+nTrainImages 50000
+nTestImages 10000
+imageWidth 0
+imageHeight 0
 
 General
 Classifier CSVM
@@ -17,29 +17,29 @@ normalOut TRUE
 Codebook
 generate TRUE
 standardize TRUE
-whitening FALSE
-rootNPartitions 3
+whitening TRUE
+rootNPartitions 2
 method KMEANS
-nClusters 50
+nClusters 200
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 ImageScanner
-patchSize 14
+patchSize 6
 scanStride 1
-nRandomPatches 50000
+nRandomPatches 500000
 
 FeatureExtractor
-method [CLEAN, CLEAN]
+method [CLEAN]
 
 CLEAN
 standardize [NONE, NONE]
 
 HOG
 nBins [9,9]
-cellSize [6 , 6]
-cellStride [6 , 6]
+cellSize [4 , 4]
+cellStride [4 , 4]
 padding [None , None]
 useColourPixel [true, true]
 interpolation [INTERPOLATE_LINEAR , INTERPOLATE_LINEAR]
@@ -74,7 +74,7 @@ learningRate 0.000005
 ConvSVM
 loadLastUsed FALSE
 learningRate 0.000002
-nIterations 1000
+nIterations 5000
 initWeight 0.000002
 CSVM_C 2048
 L2 TRUE

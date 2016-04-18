@@ -47,7 +47,8 @@ namespace csvm{
       ConvSVM convSVM;
       
       vector< vector<double> > classicTrainActivations;
-      
+      vector < vector < double > > datasetActivations;
+      vector < vector < double > > validationActivations;
             
       vector<Feature> collectFeaturesFromImage(Image* im, unsigned int cbIdx);
       vector<double> getActivationsFromImage(Image* im);
@@ -82,7 +83,7 @@ namespace csvm{
 
       void train();
       unsigned int classify(Image* im);
-      unsigned int classifyFromActivation(unsigned int testIdx);
+      unsigned int classifyFromActivation(unsigned int testIdx, bool isTestImage);
    };
    
 }
