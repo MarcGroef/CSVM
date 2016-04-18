@@ -527,6 +527,8 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
    datasetSettings.nClasses = netSettings.nClasses;
    parseBool(debugOut, stream, "debugOut", error);
    parseBool(normalOut, stream, "normalOut", error);
+   parseBool(liveROut, stream, "liveROut", error);
+   codebookSettings.kmeansSettings.liveROut = liveROut;
 }
 
 /*void CSVMSettings::parseCleanDescrSettings(ifstream& stream){

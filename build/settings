@@ -12,7 +12,7 @@ Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
 normalOut TRUE
-
+liveROut FALSE
 
 Codebook
 generate TRUE

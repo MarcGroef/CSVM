@@ -67,6 +67,7 @@ namespace csvm{
      
      public:
       bool debugOut, normalOut;
+      bool liveROut;
       CLASSIFIER classifier;
       CODEBOOK codebook;
       

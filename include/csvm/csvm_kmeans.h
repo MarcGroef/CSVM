@@ -25,6 +25,7 @@ namespace csvm{
       double alpha;
       unsigned int nIter;
       bool normalOut;
+      bool liveROut;
    };
   
  
