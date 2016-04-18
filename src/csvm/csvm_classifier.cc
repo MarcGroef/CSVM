@@ -211,6 +211,22 @@ unsigned int CSVMClassifier::classify(Image* im){
    return result;
 }
 
+unsigned int CSVMClassifier::classifyFromActivation(unsigned int testIdx){
+   unsigned int result = 0;
+   
+   switch(settings.classifier){
+      case CL_SVM:
+         result = classifyClassicSVMs(dataset.getTestImagePtr(testIdx), false); //return value should be processed
+         break;
+      case CL_CSVM:
+         result = convSVM.classify(validationActivations[testIdx]);
+         break;
+      case CL_LINNET:
+         result = linNetwork.classify(validationActivations[testIdx]);
+         break;
+   }
+   return result;
+}
 
 
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
