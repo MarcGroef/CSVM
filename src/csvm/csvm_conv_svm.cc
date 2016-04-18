@@ -73,7 +73,7 @@ union charDouble{
         // if (debugOut) cout << "\n\nSVM " << svmIdx << ":\t\t\t(data written to " << fName << ")\n" << endl;
          //###############################################
          //for all csvms in ensemble
-	 for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
+          for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
          
             
             double sumSlack = 0;
@@ -107,10 +107,10 @@ union charDouble{
                         weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) - ( (1-out*yData) * yData * activations[dIdx][centrIdx] ) ) ;
                         //++wrong;
                      }
-                  } else {
+                  }/* else {
                      weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
                      //++right;
-                  }
+                  }*/
 
                }//centrIdx
                
@@ -130,7 +130,25 @@ union charDouble{
          
 
             }//dIdx
-            
+            for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx)
+              weights[svmIdx][centrIdx] -= settings.learningRate * ( (weights[svmIdx][centrIdx] / settings.CSVM_C) );
+           
+            int tot_wrong = 0;    
+            double delta_biases = 0; 
+            biases[svmIdx] = 0.0;
+            for(size_t dIdx = 0; dIdx < nData; ++dIdx){
+               
+              unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
+              double yData = (label == svmIdx ? 1.0 : -1.0);
+              double out = output(activations[dIdx], svmIdx);
+        
+              if(yData * out < 1){
+                delta_biases += (yData - out);
+                tot_wrong++;
+              }
+            }
+            if (tot_wrong > 0)
+              biases[svmIdx] = delta_biases / tot_wrong;
             //calculate objective function
 
             // calculating first term of objective function
