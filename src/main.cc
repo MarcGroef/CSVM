@@ -165,7 +165,7 @@ int main(int argc,char**argv){
       unsigned int result;
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
       //cout << "\nAnswer: " << answer;
-      result = c.classify(c.dataset.getTestImagePtr(im));
+      result = c.classifyFromActivation(im);
       //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
 
       //cout << "result: " << result << endl;
