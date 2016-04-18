@@ -56,6 +56,8 @@ namespace csvm{
       void initialize();
       void train(vector< vector<double> >& activations, unsigned int nIterations, CSVMDataset* ds);
       unsigned int classify(vector<double>& activations);
+      
+      
       double validate(vector< vector<double> >& validationActivations, CSVMDataset* dataset);
       void exportToFile(string fname);
       void importFromFile(string fname);

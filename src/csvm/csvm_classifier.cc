@@ -110,9 +110,6 @@ void CSVMClassifier::train(){
    
    unsigned int nTrainImages = dataset.getTrainSize();
    unsigned int nTestImages = dataset.getTestSize();
-   vector < vector < double > > datasetActivations;
-   vector < vector < double > > validationActivations;
-   
    
    //get codebook activations for all train images
    for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
@@ -186,6 +183,23 @@ unsigned int CSVMClassifier::classify(Image* im){
          break;
       case CL_LINNET:
          result = lnClassify(im);
+         break;
+   }
+   return result;
+}
+
+unsigned int CSVMClassifier::classifyFromActivation(unsigned int testIdx){
+   unsigned int result = 0;
+   
+   switch(settings.classifier){
+      case CL_SVM:
+         result = classifyClassicSVMs(dataset.getTestImagePtr(testIdx), false); //return value should be processed
+         break;
+      case CL_CSVM:
+         result = convSVM.classify(validationActivations[testIdx]);
+         break;
+      case CL_LINNET:
+         result = linNetwork.classify(validationActivations[testIdx]);
          break;
    }
    return result;
