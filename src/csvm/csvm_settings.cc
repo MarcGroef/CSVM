@@ -289,6 +289,7 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
       ++nLBP;
     }
   }
+  nCodebooks = nClean + nHOG + nLBP;
   featureSettings.hogSettings.resize(nHOG);
   featureSettings.lbpSettings.resize(nLBP);
   featureSettings.clSettings.resize(nClean);
@@ -521,7 +522,6 @@ void CSVMSettings::parseGeneralSettings(ifstream& stream) {
       exit(0);
    }
    
-   parseUInt(nCodebooks, stream, "nCodebooks", error);
    parseUInt(netSettings.nClasses, stream, "nClasses", error);
    convSVMSettings.nClasses = netSettings.nClasses;
    datasetSettings.nClasses = netSettings.nClasses;
@@ -571,13 +571,20 @@ void CSVMSettings::readSettingsFile(string dir) {
    parseFeatureExtractorSettings(file);
    //while(getline(file, line) && line != "CleanDescriptor");
    //parseCleanDescrSettings(file);
-   while (getline(file, line) && line != "CLEAN");
-   parseCleanSettings(file);
-   while (getline(file, line) && line != "HOG");
-   parseHogSettings(file);
-   while (getline(file, line) && line != "LBP");
-   parseLBPSettings(file);
-
+   if(nClean > 0){
+      while (getline(file, line) && line != "CLEAN");
+      parseCleanSettings(file);
+   }
+   
+   if(nHOG > 0){
+      while (getline(file, line) && line != "HOG");
+      parseHogSettings(file);
+   }
+   if(nLBP > 0){
+      while (getline(file, line) && line != "LBP");
+      parseLBPSettings(file);
+   }
+   
    while (getline(file, line) && line != "SVM");
    parseSVMSettings(file);
    while (getline(file, line) && line != "LinNet");

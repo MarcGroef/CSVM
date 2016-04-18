@@ -1,15 +1,14 @@
 
 Dataset
-method MNIST
+method CIFAR10
 nTrainImages 1000
-nTestImages 100
-imageWidth 0
-imageHeight 0
+nTestImages 500
+imageWidth 48
+imageHeight 48
 
 General
 Classifier CSVM
 Codebook CODEBOOK
-nCodebooks 2
 nClasses 10
 debugOut FALSE
 normalOut TRUE
@@ -17,7 +16,7 @@ normalOut TRUE
 
 Codebook
 generate TRUE
-standardize FALSE
+standardize TRUE
 whitening FALSE
 rootNPartitions 3
 method KMEANS
@@ -27,24 +26,24 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 ImageScanner
-patchSize 6
+patchSize 14
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 50000
 
 FeatureExtractor
-method [CLEAN,CLEAN]
+method [CLEAN, CLEAN]
 
 CLEAN
 standardize [NONE, NONE]
 
 HOG
-nBins [9,18]
-cellSize [10 , 6]
-cellStride [10 , 10]
+nBins [9,9]
+cellSize [6 , 6]
+cellStride [6 , 6]
 padding [None , None]
 useColourPixel [true, true]
 interpolation [INTERPOLATE_LINEAR , INTERPOLATE_LINEAR]
-binmethod [CROSSCOLOUR , BYCOLOUR]
+binmethod [BYCOLOUR , BYCOLOUR]
 postprocessing [PURE , PURE]
 debugLevel [0 , 0]
 
@@ -54,14 +53,13 @@ cellStride [6]
 padding [None]
 useColourPixel [true]
 useUniformity [true]
-binmethod [CROSSCOLOUR]
-
+binmethod [BYCOLOUR]
 
 
 SVM
 Kernel LINEAR
 AlphaDataInit 0.0000002
-nIterations 100
+nIterations 0
 learningRate 0.000002
 SVM_C_Data 512
 Cost 1
@@ -76,7 +74,7 @@ learningRate 0.000005
 ConvSVM
 loadLastUsed FALSE
 learningRate 0.000002
-nIterations 500
+nIterations 1000
 initWeight 0.000002
 CSVM_C 2048
 L2 TRUE
