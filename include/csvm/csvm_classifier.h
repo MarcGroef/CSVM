@@ -82,6 +82,7 @@ namespace csvm{
 
       void train();
       unsigned int classify(Image* im);
+      unsigned int classifyFromActivation(unsigned int testIdx);
    };
    
 }
