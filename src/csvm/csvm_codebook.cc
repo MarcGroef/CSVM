@@ -258,7 +258,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
 
 vector< double > Codebook::getQActivations(vector<Feature> features){
    
-    unsigned int nQuadrants = 4; //must be a square!
+    unsigned int nQuadrants = settings.rootNPartitions; //must be a square!
     
    vector< double> activations(settings.numberVisualWords * nQuadrants, 0.0);
    unsigned int dataDims = features[0].content.size();
