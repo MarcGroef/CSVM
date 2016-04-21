@@ -188,7 +188,7 @@ void CSVMClassifier::trainMLP(){
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
 	  //std::cout << pIdx << std::endl;
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() %  (int)(dataset.getTrainSize()*1-settings.mlpSettings.crossValidationSize)));
+      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() %  (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize))));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());      
    }
