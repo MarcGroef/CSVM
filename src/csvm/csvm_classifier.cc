@@ -166,26 +166,27 @@ void CSVMClassifier::trainMLP(){
 
 	//---------------start validation set--------------------
 	int crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-
-  vector<Patch> patches;
-  vector<Feature> validationSet;
+    int noPatchesPerImage = ((int)((imageHeight - patchHeight) / stride) + 1) * ((int)((imageWidth - patchWidth) / stride) + 1);
+	vector<Patch> patches;
+	vector<Feature> validationSet;
     
-  int noPatchesPerImage = ((int)((imageHeight - patchHeight) / stride) + 1) * ((int)((imageWidth - patchWidth) / stride) + 1) ;
-    
-  validationSet.reserve(noPatchesPerImage*crossvalidationSize);
+    //allocate memory for valdiation set
+	validationSet.reserve(noPatchesPerImage*crossvalidationSize);
   
+    //get the images that belong to the validation set from the trainset, 
+    //extract patches/features and store in validationset
 	for(int i = dataset.getTrainSize() - crossvalidationSize; i < dataset.getTrainSize();i++){
-		Image* im = dataset.getImagePtr(rand() % dataset.getTotalImages());
+		Image* im = dataset.getTrainImagePtr(i);
 		 
-    //extract patches
-    patches = imageScanner.scanImage(im);
+		//extract patches of that image
+		patches = imageScanner.scanImage(im);
       
-    //extract features from all patches
-    for(size_t patch = 0; patch < patches.size(); ++patch)
+		//extract features from all patches
+		for(size_t patch = 0; patch < patches.size(); ++patch)
 			validationSet.push_back(featExtr.extract(patches[patch]));
 	}
 	
-   std::cout << "Feature extraction training set..." << std::endl;
+   std::cout << "Random patches feature extraction..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
 	  //std::cout << pIdx << std::endl;
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));

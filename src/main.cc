@@ -92,7 +92,7 @@ int main(int argc,char**argv){
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-   for(size_t im = 0; im < 6000 && im < nImages; ++im){
+   for(size_t im = 0; im < nImages; ++im){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
@@ -114,10 +114,6 @@ int main(int argc,char**argv){
       cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
    if(normalOut)
       cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
- 
-	std::ofstream myfile;
-	myfile.open("scores.csv", std::ios_base::app);
-	myfile << ((double)nCorrect * 100)/(nCorrect + nFalse)<< ",";
    //****************************** Print ConfusionMatrix for TRAINSET *******************
 
    bool printConfusionMatrix = true;
@@ -224,9 +220,5 @@ int main(int argc,char**argv){
          cout << "\t" << fixed << precision << "";
       }
    }
-
-  
-  myfile << ((double)nCorrect*100)/(nCorrect + nFalse)<< std::endl;
-  myfile.close();
    return 0;
 }
