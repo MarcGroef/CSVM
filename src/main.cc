@@ -92,7 +92,7 @@ int main(int argc,char**argv){
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-   for(size_t im = 0; im < nImages; ++im){
+   for(size_t im = 0;im < nImages; ++im){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();

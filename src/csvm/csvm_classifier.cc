@@ -166,22 +166,21 @@ void CSVMClassifier::trainMLP(){
 
 	//---------------start validation set--------------------
 	int crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
+	int noPatchesPerImage = ((int)((imageHeight - patchHeight) / stride) + 1) * ((int)((imageWidth - patchWidth) / stride) + 1) ;
 
-  vector<Patch> patches;
-  vector<Feature> validationSet;
+     vector<Patch> patches;
+	 vector<Feature> validationSet;    
     
-  int noPatchesPerImage = ((int)((imageHeight - patchHeight) / stride) + 1) * ((int)((imageWidth - patchWidth) / stride) + 1) ;
-    
-  validationSet.reserve(noPatchesPerImage*crossvalidationSize);
+     validationSet.reserve(noPatchesPerImage*crossvalidationSize);
   
 	for(int i = dataset.getTrainSize() - crossvalidationSize; i < dataset.getTrainSize();i++){
-		Image* im = dataset.getImagePtr(rand() % dataset.getTotalImages());
+		Image* im = dataset.getTrainImagePtr(i);
 		 
-    //extract patches
-    patches = imageScanner.scanImage(im);
+		//extract patches
+		patches = imageScanner.scanImage(im);
       
-    //extract features from all patches
-    for(size_t patch = 0; patch < patches.size(); ++patch)
+		//extract features from all patches
+		for(size_t patch = 0; patch < patches.size(); ++patch)
 			validationSet.push_back(featExtr.extract(patches[patch]));
 	}
 	

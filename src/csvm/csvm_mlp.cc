@@ -34,6 +34,13 @@ void MLPerceptron::setSettings(MLPSettings s){
    cout << "settings set\n";
 }
 
+double good_exp(double y){
+	if(y < -10.0) return 0;
+	if(y > 10.0) return 9999999.0;
+	
+	return exp(y);
+}
+
 double MLPerceptron::fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
@@ -66,7 +73,13 @@ double MLPerceptron::errorFunction(){
 //------start FEEDFORWARD--------
 
 double MLPerceptron::activationFunction(double summedActivation){
-	return 1/(1+exp(-summedActivation));
+	//sigmoid:
+	//return 1/(1+exp(-summedActivation));
+	
+	//relu:
+	if(summedActivation > 0)
+		return summedActivation;
+	return 0;
 }
 
 void MLPerceptron::calculateActivationLayer(int bottomLayer){
@@ -77,11 +90,10 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 			summedActivation += activations[bottomLayer][j] * weights[bottomLayer][j][i];
 		
 		summedActivation += biasNodes[bottomLayer][i];
-                /* GROUP: CHANGED THIS, MARCO */
-                if ((bottomLayer+1) == settings.nLayers-1)
-		   activations[bottomLayer+1][i] = summedActivation;
-                else
-		  activations[bottomLayer+1][i] = activationFunction(summedActivation);
+		if ((bottomLayer+1) == settings.nLayers-1)
+			activations[bottomLayer+1][i] = summedActivation;
+        else
+			activations[bottomLayer+1][i] = activationFunction(summedActivation);
 		summedActivation = 0;
 	}	
 }
@@ -95,7 +107,13 @@ void MLPerceptron::feedforward(){
 
 //------start BACKPROPAGATION----
 double MLPerceptron::derivativeActivationFunction(double activationNode){
-	return (1 - activationNode)*activationNode;
+	//signmoid:
+	//return (1 - activationNode)*activationNode;
+	
+	//relu
+	if (activationNode > 0)
+		return 1.0;
+	return 0.0;
 }
 
 void MLPerceptron::calculateDeltas(int index){
@@ -144,7 +162,7 @@ void MLPerceptron::backpropgation(){
 void MLPerceptron::activationsToOutputProbabilities(){
 	double sumOfActivations = 0.0;
 	for(int i = 0; i< settings.nOutputUnits; i++){
-		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
+		activations[settings.nLayers -1][i] = good_exp(activations[settings.nLayers -1][i]);
 		sumOfActivations += activations[settings.nLayers -1][i];
 	}
 	for(int i = 0; i< settings.nOutputUnits; i++)
