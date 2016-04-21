@@ -152,7 +152,7 @@ unsigned int CSVMClassifier::getNoClasses(){
 
 
 void CSVMClassifier::trainMLP(){
-	unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
     unsigned int imageHeight = settings.datasetSettings.imHeight;
     unsigned int imageWidth = settings.datasetSettings.imWidth;
     unsigned int patchHeight = settings.scannerSettings.patchHeight;
@@ -165,7 +165,7 @@ void CSVMClassifier::trainMLP(){
 	vector<int> classes = vector<int>(10,1);
 
 	//---------------start validation set--------------------
-	int crossvalidationSize = dataset.getTrainSize() * 0.2;
+	int crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
 
   vector<Patch> patches;
   vector<Feature> validationSet;
@@ -189,7 +189,7 @@ void CSVMClassifier::trainMLP(){
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
 	  //std::cout << pIdx << std::endl;
       //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() %  (int)(dataset.getTrainSize()*0.8)));
+      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() %  (int)(dataset.getTrainSize()*1-settings.mlpSettings.crossValidationSize)));
       Feature newFeat = featExtr.extract(patch);
       pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());      
    }
@@ -310,9 +310,7 @@ void CSVMClassifier::trainConvSVMs(){
          */}
          
          patches.clear();
-         
-         //get cluster activations for the features
-         dataActivation = mlp.getActivations(dataFeatures); 
+          
          dataFeatures.clear();
       
          patches.clear();
@@ -369,8 +367,7 @@ unsigned int CSVMClassifier::classifyConvSVM(Image* image){
          dataFeatures.push_back(featExtr.extract(patches[patch]));
       
       patches.clear();
-      cout << "class: train mlp\n";
-      dataActivation = mlp.getActivations(dataFeatures);  
+      cout << "class: train mlp\n";  
    }
 
    return convSVM.classify(dataActivation);

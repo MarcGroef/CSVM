@@ -86,9 +86,34 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
-    stream >> type;
+   stream >> type;
+   if(type == "crossValidationInterval"){
+	stream >> mlpSettings.crossValidationInterval;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+
+   stream >> type;
+   if(type == "crossValidationSize"){
+	stream >> mlpSettings.crossValidationSize;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+}
+   stream >> type;
    if (type == "epochs") {
       stream >> mlpSettings.epochs;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+    stream >> type;
+   if (type == "stoppingCriterion") {
+      stream >> mlpSettings.stoppingCriterion;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";

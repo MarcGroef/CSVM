@@ -24,7 +24,10 @@ namespace csvm{
       double learningRate;
       string voting;
       string testing;
+      int crossValidationInterval;
+      double crossValidationSize;
       int epochs;
+      double stoppingCriterion;
    };
 
    class MLPerceptron{
@@ -36,15 +39,15 @@ namespace csvm{
       
    public:
      
+      vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures); 	
       void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int noPatchPerIm);
-      vector<double> getActivations(vector<Feature>& imageFeatures);
       void setSettings(MLPSettings s);
       double fRand(double fMin, double fMax);
       void randomizeWeights(std::vector<vector<double> >& array, int indexBottomLayer);
       double activationFunction(double summedActivation);
       void adjustWeights(int index);
-	  void calculateActivationLayer(int bottomLayer);
       void calculateError();
+      void calculateActivationLayer(int bottomLayer);
       void feedforward();
       void initializeVectors();
       double derivativeActivationFunction(double activationNode);
@@ -64,11 +67,10 @@ namespace csvm{
       
       void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
       void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
-      void rerun(vector<Feature>& randomFeatures);
-      bool errorOnValidationSet(vector<Feature>& validationSet);
+      bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
       void printingWeights();
 	  
-	  unsigned int classify(vector<Feature> imageFeatures);
+      unsigned int classify(vector<Feature> imageFeatures);
    };
       
 }
