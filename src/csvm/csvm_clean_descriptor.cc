@@ -25,9 +25,12 @@ Feature CleanDescriptor::describe(Patch p){
    
    Feature f(imSize,0);
    
+   f.labelId = p.getLabelId();
+   f.label = p.getLabel();
    
    f.content = vector<double>(imSize,0);
    
+      
    
    //Not the most sexy way to implement the standardization option, but well, here it goes..
    double mean = 0.0;
