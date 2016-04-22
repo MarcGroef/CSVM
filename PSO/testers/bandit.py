@@ -75,9 +75,10 @@ class BanditTester(ParameterTester):
                                         "max": 1000000}}
     config_file = \
 """
+
 Dataset
-method MNIST
-nTrainImages 60000
+method CIFAR10
+nTrainImages 50000
 nTestImages 10000
 imageWidth 0
 imageHeight 0
@@ -87,52 +88,75 @@ Classifier CSVM
 Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
-normalOut FALSE
+normalOut TRUE
+liveROut FALSE
 
 Codebook
 generate TRUE
+standardize TRUE
+whitening TRUE
+rootNPartitions 2
 method KMEANS
-nClusters 500
+nClusters 200
 nIterations 20
 SimilarityFunction SOFT_ASSIGNMENT
-similaritySigma 0.2
-
-
-FeatureExtractor
-method HOG
-cellSize 6
-cellStride 6
-padding Identity
-useColourPixel true
-weightRatio 0.5
+similaritySigma 0.05
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 2
-nRandomPatches 20000
+patchSize 6
+scanStride 1
+nRandomPatches 500000
+
+FeatureExtractor
+method [CLEAN]
+
+CLEAN
+standardize [NONE, NONE]
+
+HOG
+nBins [9,9]
+cellSize [4 , 4]
+cellStride [4 , 4]
+padding [None , None]
+useColourPixel [true, true]
+interpolation [INTERPOLATE_LINEAR , INTERPOLATE_LINEAR]
+binmethod [BYCOLOUR , BYCOLOUR]
+postprocessing [PURE , PURE]
+debugLevel [0 , 0]
+
+LBP
+cellSize [6]
+cellStride [6]
+padding [None]
+useColourPixel [true]
+useUniformity [true]
+binmethod [BYCOLOUR]
+
 
 SVM
 Kernel LINEAR
-AlphaDataInit 0.001
-nIterations 1000
-learningRate %(learningRate).7f
-SVM_C_Data %(SVM_C)d
+AlphaDataInit 0.0000002
+nIterations 0
+learningRate 0.000002
+SVM_C_Data 512
 Cost 1
 D2 1
-sigmaClassicSimilarity 0.002
+sigmaClassicSimilarity 500
 
 LinNet
-nIterations 1000
+nIterations 10
 initWeight 0.01
-learningRate %(learningRate).7f
+learningRate 0.000005
 
 ConvSVM
+loadLastUsed FALSE
 learningRate %(learningRate).7f
-nIterations 50000
-initWeight 0.002
-CSVM_C %(SVM_C).7f
+nIterations 5000
+initWeight 0.000002
+CSVM_C %(SVM_C)d
 L2 TRUE
+
+
 """
 
     def run_algorithm(self):
