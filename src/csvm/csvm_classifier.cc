@@ -150,28 +150,12 @@ unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
 }
 
-
-void CSVMClassifier::trainMLP(){
-    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-    unsigned int imageHeight = settings.datasetSettings.imHeight;
-    unsigned int imageWidth = settings.datasetSettings.imWidth;
-    unsigned int patchHeight = settings.scannerSettings.patchHeight;
-    unsigned int patchWidth = settings.scannerSettings.patchWidth;
-    unsigned int stride = settings.scannerSettings.stride;
-    
-	vector<Feature> pretrainDump;
-	vector<Feature> testData;
-  
-	vector<int> classes = vector<int>(10,1);
-
-	//---------------start validation set--------------------
+vector<Feature>& CSVMClassifier::createValidationSet(int noPatchesPerImage,vector<Feature>& validationSet){
 	int crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-	int noPatchesPerImage = ((int)((imageHeight - patchHeight) / stride) + 1) * ((int)((imageWidth - patchWidth) / stride) + 1) ;
-
-     vector<Patch> patches;
-	 vector<Feature> validationSet;    
-    
-     validationSet.reserve(noPatchesPerImage*crossvalidationSize);
+	
+	vector<Patch> patches;   
+  
+    validationSet.reserve(noPatchesPerImage*crossvalidationSize);
   
 	for(int i = dataset.getTrainSize() - crossvalidationSize; i < dataset.getTrainSize();i++){
 		Image* im = dataset.getTrainImagePtr(i);
@@ -183,16 +167,30 @@ void CSVMClassifier::trainMLP(){
 		for(size_t patch = 0; patch < patches.size(); ++patch)
 			validationSet.push_back(featExtr.extract(patches[patch]));
 	}
-	
-   std::cout << "Feature extraction training set..." << std::endl;
+	return validationSet;
+}
+
+vector<Feature>& CSVMClassifier::createRandomFeatureVector(vector<Feature>& trainingData){
+    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+    int sizeTrainingSet = (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize));
+    
+	vector<Feature> testData;
+  
+	std::cout << "Feature extraction training set..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-	  //std::cout << pIdx << std::endl;
-      //patches = imageScanner.getRandomPatches(dataset.getImagePtrFromClass(im, cl));
-      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() %  (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize))));
+      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
       Feature newFeat = featExtr.extract(patch);
-      pretrainDump.push_back(newFeat);//insert(pretrainDump[cl].end(),features.begin(),features.end());      
+      trainingData.push_back(newFeat);    
    }
-   mlp.train(pretrainDump,validationSet,noPatchesPerImage);
+	return trainingData;	
+}
+void CSVMClassifier::trainMLP(){
+    int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
+    
+    vector<Feature> trainingSet;
+    vector<Feature> validationSet;
+    
+   mlp.train(createRandomFeatureVector(trainingSet),createValidationSet(noPatchesPerImage,validationSet),noPatchesPerImage);
 }
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){

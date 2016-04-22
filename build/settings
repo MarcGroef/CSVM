@@ -43,7 +43,7 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 1000
+nRandomPatches 10000
 
 
 MLP
@@ -55,8 +55,8 @@ learningRate .01
 voting SUM
 testing CROSSVALIDATION
 crossValidationInterval 10
-crossValidationSize 0.2
-epochs 100
+crossValidationSize 0.1
+epochs 30
 stoppingCriterion 1
 
 SVM

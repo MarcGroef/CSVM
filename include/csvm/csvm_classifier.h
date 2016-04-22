@@ -56,6 +56,11 @@ namespace csvm{
       void trainClassicSVMs();
       unsigned int classifyClassicSVMs(Image* im, bool printResults);
       
+      void trainMLP();
+      vector<Feature>& createValidationSet(int noPatchesPerImage, vector<Feature>& validationSet);
+      vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingSet);
+	  unsigned int mlpClassify(Image* im);
+	  
    public:
       CSVMSettings settings;
       //public vars
@@ -65,8 +70,6 @@ namespace csvm{
       ~CSVMClassifier();
       void setSettings(string settingsFile);
       void constructCodebook();
-      void trainMLP();
-	  unsigned int mlpClassify(Image* im);
       void constructDeepCodebook();
       bool getGenerateCB();
       
