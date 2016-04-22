@@ -77,8 +77,8 @@ class BanditTester(ParameterTester):
 """
 Dataset
 method MNIST
-nTrainImages 60000
-nTestImages 10000
+nTrainImages 2000
+nTestImages 200
 imageWidth 0
 imageHeight 0
 
@@ -87,51 +87,63 @@ Classifier CSVM
 Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
-normalOut FALSE
+normalOut TRUE
+liveROut FALSE
 
 Codebook
 generate TRUE
+standardize TRUE
+whitening FALSE
+rootNPartitions 3
 method KMEANS
-nClusters 500
-nIterations 20
+nClusters 100
+nIterations 40
 SimilarityFunction SOFT_ASSIGNMENT
-similaritySigma 0.2
-
+similaritySigma 0.05
 
 FeatureExtractor
-method HOG
-cellSize 6
-cellStride 6
-padding Identity
-useColourPixel true
-weightRatio 0.5
+method CLEAN
+nBins 9
+cellSize 10
+cellStride 10
+patchSize 6
+padding None
+useColourPixel false
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing L2
+debugLevel 0
+
+CleanDescriptor
+standardize NONE
 
 ImageScanner
-patchHeight 12
-patchWidth 12
-scanStride 2
+patchHeight 6
+patchWidth 6
+scanStride 1
 nRandomPatches 20000
 
 SVM
 Kernel LINEAR
-AlphaDataInit 0.001
-nIterations 1000
-learningRate %(learningRate).7f
-SVM_C_Data %(SVM_C)d
+AlphaDataInit 0.0000002
+nIterations 2500
+learningRate 0.000002
+SVM_C_Data 512
 Cost 1
 D2 1
-sigmaClassicSimilarity 0.002
+sigmaClassicSimilarity 500
 
 LinNet
-nIterations 1000
+nIterations 10
 initWeight 0.01
-learningRate %(learningRate).7f
+learningRate 0.000005
 
 ConvSVM
+loadLastUsed FALSE
 learningRate %(learningRate).7f
-nIterations 50000
-initWeight 0.002
-CSVM_C %(SVM_C).7f
+nIterations 2000
+initWeight 0.000002
+CSVM_C %(SVM_C)d
 L2 TRUE
 """
 
