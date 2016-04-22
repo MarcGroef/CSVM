@@ -280,9 +280,10 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 	for(int i = 0; i<epochs;i++){
 
 		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
+		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
-//			std::cout << randomFeatures.at(j).size << std::endl;
+			//std::cout << "(mlp) randomFeatures.size(): " << randomFeatures.size() << std::endl;
 			setDesiredOutput(randomFeatures.at(j));
 			feedforward();
 			backpropgation();
@@ -301,6 +302,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 
 bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
 	int amountOfImValidationSet = validationSet.size()/noPatchesPerImage;
+	//should be nummerPatchesPerQuarder
 	int classifiedCorrect = 0;
 
 	for(int i = 0; i < amountOfImValidationSet;i++){
@@ -314,7 +316,6 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", ";
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
-		
 	return 0;
 }
 
@@ -324,11 +325,10 @@ void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
 	
 	layerSizes		 = vector<int>(settings.nLayers,0);
-		
-	layerSizes[0] = settings.nInputUnits;
+
+	layerSizes[0] = settings.nInputUnits; 
 	layerSizes[1] = settings.nHiddenUnits;
 	layerSizes[2] = settings.nOutputUnits;
-	
 	//returns max layer size
 	for(unsigned int i = 0; i < layerSizes.size();i++){
 		if(maxNumberOfNodes < layerSizes[i])
@@ -349,9 +349,8 @@ void MLPerceptron::initializeVectors(){
 
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int noPatchPerIm){
 	noPatchesPerImage = noPatchPerIm;
-	
 	initializeVectors();
-
+	
 	training(normalizeInput(randomFeatures),normalizeInput(validationSet));			
 }
 
@@ -359,6 +358,7 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
+		//std::cout << "Feature label: " << imageFeatures[i].getLabelId() << std::endl;
 		activations[0] = imageFeatures[i].content;
 		feedforward();
 		voting();

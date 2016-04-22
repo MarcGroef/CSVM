@@ -20,7 +20,7 @@ Patch::Patch(Image* source, int x, int y, int width, int height){
    this->source = source;
    //cout << "Patch from " << x << ", " << y << ", with = " << width << ", height = " << height << endl;
    analyze();
-   //this->square = calculateSquare();
+   this->square = calculateSquare();
 }
 
 //empty constructor
@@ -62,25 +62,27 @@ void Patch::setArea(int x,int y,int width,int height){
    this->height = height;
 }
 
-//int Patch::caluculateSquare(){
-//	middleImageX = source.getWidth/2;
-// 	middleImageY = source.getHeight/2;
+int Patch::calculateSquare(){
+	double middleImageX = source->getWidth()/2.0;
+ 	double middleImageY = source->getHeight()/2.0;
 
-//  middlePatchX = width/2;
-//	middlePatchY = height/2;
+	double middlePatchX = offsetX + width/2.0;
+	double middlePatchY = offsetY + height/2.0;
+		
 	//top-left
-//  if(middlePatchX < middleImageX && middlePatchY < middleImageY)
-//		return 0;
+	if(middlePatchX <= middleImageX && middlePatchY < middleImageY)
+		return 0;
 	//top-right
-// 	if(middlePatchX > middleImageX && middlePatchY < middleImageY)
-//		return 1;
+ 	if(middlePatchX > middleImageX && middlePatchY < middleImageY)
+		return 1;
 	//bottom-left
-//	if(middlePatchX < middleImageX && middlePatchY > middleImageY)
-//		return 2;
+	if(middlePatchX <= middleImageX && middlePatchY >= middleImageY)
+		return 2;
 	//bottom-right
-//	if(middlePatchX > middleImageX && middlePatchY > middleImageY)
-//		return 3;
-//}
+	if(middlePatchX > middleImageX && middlePatchY >= middleImageY)
+		return 3;
+	return -1;
+}
 
 //get pixel from image at location in patch
 
@@ -115,9 +117,10 @@ int Patch::getY(){
    return offsetY;
 }
 
-//int Patch::getSquare(){
-//   return square;
-//}
+//get which square patch is located in
+int Patch::getSquare(){
+   return square;
+}
 
 //check whether 2 patches are equal
 bool Patch::equals(Patch p){

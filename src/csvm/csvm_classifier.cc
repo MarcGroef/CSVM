@@ -12,14 +12,7 @@
 using namespace std;
 using namespace csvm;
 
-//vector<MLPerceptron> MLPs;
-
-//CSVMClassifier::initMLPs(){
-//	MLPs.reserve(settings.mlpSettings.nMLPs);
-//	for(int i = 0; i < settings.mlpSettings.nMLPs;i++){
-//		MLPs[i] = new MLPerceptron();
-//	}
-//}
+vector<MLPerceptron> MLPs;
 
 //initialize random
 CSVMClassifier::CSVMClassifier(){
@@ -104,9 +97,9 @@ void CSVMClassifier::train(){
          trainLinearNetwork();
 		case CL_MLP:
 			if(normalOut) cout << "Training MLP..\n";
-			//initMLPs();
-			//trainMutipleMLPs();
-			trainMLP();
+			initMLPs();
+			trainMutipleMLPs();
+			//trainMLP();
 			
          break;
       default:
@@ -163,7 +156,14 @@ unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
 }
 
-vector<Feature>& CSVMClassifier::createValidationSet(vector<Feature>& validationSet,String dataset){
+void CSVMClassifier::initMLPs(){
+	MLPs.reserve(settings.mlpSettings.nMLPs);
+	for(int i = 0; i < settings.mlpSettings.nMLPs;i++){
+		MLPs.push_back(mlp);
+	}
+}
+
+vector<Feature>& CSVMClassifier::createValidationSet(vector<Feature>& validationSet){
 	int crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
 	int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size();
 	
@@ -178,8 +178,11 @@ vector<Feature>& CSVMClassifier::createValidationSet(vector<Feature>& validation
 		patches = imageScanner.scanImage(im);
       
 		//extract features from all patches
-		for(size_t patch = 0; patch < patches.size(); ++patch)
-			validationSet.push_back(featExtr.extract(patches[patch]));
+		for(size_t patch = 0; patch < patches.size(); ++patch){
+			Feature newFeat = featExtr.extract(patches[patch]);
+			newFeat.setSquareId(patches[patch].getSquare());
+			validationSet.push_back(newFeat);
+		}
 	}
 	return validationSet;
 }
@@ -193,40 +196,71 @@ vector<Feature>& CSVMClassifier::createRandomFeatureVector(vector<Feature>& trai
 	std::cout << "Feature extraction training set..." << std::endl;
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
+      //std::cout << "(classifier) getSquare: " << patch.getSquare() << std::endl;
       Feature newFeat = featExtr.extract(patch);
+      newFeat.setSquareId(patch.getSquare());
       trainingData.push_back(newFeat);    
    }
 	return trainingData;	
 }
-//void CSVMClassifier::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& vaildationSet){
-//    int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
-    
-//    mlp.train(trainingSet,validationSet,noPatchesPerImage);
-//}
-void CSVMClassifier::trainMLP(){
+void CSVMClassifier::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
     int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
-    
-    vector<Feature> trainingSet;
-    vector<Feature> validationSet;
-    
-   mlp.train(createRandomFeatureVector(trainingSet),createValidationSet(noPatchesPerImage,validationSet),noPatchesPerImage);
+    mlp.train(trainingSet,validationSet,noPatchesPerImage);
 }
 
-//void CSVMClassifier::trainMutipleMLPs(){
-//	vector<MLPerceptron> MLPs;
-	
-//	MLPs.reserve(nMLPs);
-
-// 	vector<Feature> trainingSet;
-// 	vector<Feature> validationSet;
-
-// vector<vector<Feature>> splitTrain = splitUpTrainSet(createRandomFeatureVector(trainingSet));
-// vector<vector<Feature>> splitVal = splitUpValSet(createValidationSet(validationSet));
-
-//	for(int i=0;i<MLPs.size();;i++){ 		
-//		trainMLP(MLPs[i],splitTrain[i],splitVal[i]);
-//	}	
+//void CSVMClassifier::trainMLP(){
+//    int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
+    
+//    vector<Feature> trainingSet;
+//    vector<Feature> validationSet;
+    
+//   mlp.train(createRandomFeatureVector(trainingSet),createValidationSet(validationSet),noPatchesPerImage);
 //}
+
+void CSVMClassifier::trainMutipleMLPs(){
+	MLPs.reserve(MLPs.size());
+
+ 	vector<Feature> trainingSet;
+ 	vector<Feature> validationSet;
+
+	vector<vector<Feature> > splitTrain = splitUpTrainSet(createRandomFeatureVector(trainingSet));
+	vector<vector<Feature> > splitVal   = splitUpTrainSet(createValidationSet(validationSet));
+	
+	std::cout << "(classifier) splitTrain[0].size(): " << splitVal[0].size() << std::endl; 
+	std::cout << "(classifier) splitTrain[1].size(): " << splitVal[1].size() << std::endl;
+	std::cout << "(classifier) splitTrain[2].size(): " << splitVal[2].size() << std::endl;
+	std::cout << "(classifier) splitTrain[3].size(): " << splitVal[3].size() << std::endl; 
+
+	//vector<vector<Feature> > splitVal = splitUpValSet(createValidationSet(validationSet));
+
+	for(unsigned int i=0;i<MLPs.size();i++){ 		
+		trainMLP(MLPs[i],splitTrain[i],splitVal[i]);
+		std::cout << "(classifier) trained mlp[" << i << "]" << std::endl;
+    }	
+}
+
+vector<vector<Feature> > CSVMClassifier::splitUpTrainSet(vector<Feature> trainingSet){
+	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);
+	
+	std::cout << "(classifier) trainingSet.size: "<< trainingSet.size() << std::endl;
+		
+	for(unsigned int i = 0;i < trainingSet.size();i++){
+		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
+	}
+	return splitBySquares;
+}
+
+//vector<vector<Feature> > CSVMClassifier::splitUpValSet(vector<Feature> validationSet){
+//	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);;
+//	std::cout << "(classifier) validationSet.size: "<< validationSet.size() << std::endl;
+		
+//	for(unsigned int i = 0;i < trainingSet.size();i++){
+//		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
+//	}
+//	return splitBySquares;
+
+//}
+
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){
 	

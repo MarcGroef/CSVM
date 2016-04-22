@@ -36,6 +36,14 @@ unsigned int Feature::getLabelId(){
    return labelId;
 }
 // set get square
+void Feature::setSquareId(int id){
+ 	squareId = id;
+}
+
+//get square
+unsigned int Feature::getSquareId(){
+	return squareId;
+}
 
 //get squared distance
 
