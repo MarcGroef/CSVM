@@ -20,6 +20,7 @@ Patch::Patch(Image* source, int x, int y, int width, int height){
    this->source = source;
    //cout << "Patch from " << x << ", " << y << ", with = " << width << ", height = " << height << endl;
    analyze();
+   //this->square = calculateSquare();
 }
 
 //empty constructor
@@ -61,6 +62,26 @@ void Patch::setArea(int x,int y,int width,int height){
    this->height = height;
 }
 
+//int Patch::caluculateSquare(){
+//	middleImageX = source.getWidth/2;
+// 	middleImageY = source.getHeight/2;
+
+//  middlePatchX = width/2;
+//	middlePatchY = height/2;
+	//top-left
+//  if(middlePatchX < middleImageX && middlePatchY < middleImageY)
+//		return 0;
+	//top-right
+// 	if(middlePatchX > middleImageX && middlePatchY < middleImageY)
+//		return 1;
+	//bottom-left
+//	if(middlePatchX < middleImageX && middlePatchY > middleImageY)
+//		return 2;
+	//bottom-right
+//	if(middlePatchX > middleImageX && middlePatchY > middleImageY)
+//		return 3;
+//}
+
 //get pixel from image at location in patch
 
 unsigned char Patch::getPixel(unsigned int x, unsigned int y,int channel){
@@ -93,6 +114,10 @@ int Patch::getX(){
 int Patch::getY(){
    return offsetY;
 }
+
+//int Patch::getSquare(){
+//   return square;
+//}
 
 //check whether 2 patches are equal
 bool Patch::equals(Patch p){

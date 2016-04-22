@@ -302,14 +302,12 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
 	int amountOfImValidationSet = validationSet.size()/noPatchesPerImage;
 	int classifiedCorrect = 0;
-	int patchesPerIm = validationSet.size() / amountOfImValidationSet;
-
 
 	for(int i = 0; i < amountOfImValidationSet;i++){
-		vector<Feature>::const_iterator first = validationSet.begin() + (patchesPerIm *i);
-		vector<Feature>::const_iterator last = validationSet.begin() + (patchesPerIm *(i+1));	
+		vector<Feature>::const_iterator first = validationSet.begin() + (noPatchesPerImage *i);
+		vector<Feature>::const_iterator last = validationSet.begin() + (noPatchesPerImage *(i+1));	
 		
-		if(validationSet[i*patchesPerIm].getLabelId() == classify(vector<Feature>(first,last)))
+		if(validationSet[i*noPatchesPerImage].getLabelId() == classify(vector<Feature>(first,last)))
 			classifiedCorrect++;
 	}
 	  

@@ -57,7 +57,7 @@ testing CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.1
 epochs 30
-stoppingCriterion 1
+stoppingCriterion 0.9
 
 SVM
 Kernel LINEAR

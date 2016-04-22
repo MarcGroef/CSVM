@@ -12,6 +12,15 @@
 using namespace std;
 using namespace csvm;
 
+//vector<MLPerceptron> MLPs;
+
+//CSVMClassifier::initMLPs(){
+//	MLPs.reserve(settings.mlpSettings.nMLPs);
+//	for(int i = 0; i < settings.mlpSettings.nMLPs;i++){
+//		MLPs[i] = new MLPerceptron();
+//	}
+//}
+
 //initialize random
 CSVMClassifier::CSVMClassifier(){
    srand(time(NULL)); 
@@ -95,7 +104,10 @@ void CSVMClassifier::train(){
          trainLinearNetwork();
 		case CL_MLP:
 			if(normalOut) cout << "Training MLP..\n";
+			//initMLPs();
+			//trainMutipleMLPs();
 			trainMLP();
+			
          break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";
@@ -117,6 +129,7 @@ unsigned int CSVMClassifier::classify(Image* im){
          result = lnClassify(im);
          break;
 		case CL_MLP:
+			//result = mlpMultipleClassify(im);
 			result = mlpClassify(im);
 			break;
    }
@@ -150,8 +163,9 @@ unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
 }
 
-vector<Feature>& CSVMClassifier::createValidationSet(int noPatchesPerImage,vector<Feature>& validationSet){
+vector<Feature>& CSVMClassifier::createValidationSet(vector<Feature>& validationSet,String dataset){
 	int crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
+	int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size();
 	
 	vector<Patch> patches;   
   
@@ -184,6 +198,11 @@ vector<Feature>& CSVMClassifier::createRandomFeatureVector(vector<Feature>& trai
    }
 	return trainingData;	
 }
+//void CSVMClassifier::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& vaildationSet){
+//    int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
+    
+//    mlp.train(trainingSet,validationSet,noPatchesPerImage);
+//}
 void CSVMClassifier::trainMLP(){
     int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
     
@@ -193,23 +212,61 @@ void CSVMClassifier::trainMLP(){
    mlp.train(createRandomFeatureVector(trainingSet),createValidationSet(noPatchesPerImage,validationSet),noPatchesPerImage);
 }
 
+//void CSVMClassifier::trainMutipleMLPs(){
+//	vector<MLPerceptron> MLPs;
+	
+//	MLPs.reserve(nMLPs);
+
+// 	vector<Feature> trainingSet;
+// 	vector<Feature> validationSet;
+
+// vector<vector<Feature>> splitTrain = splitUpTrainSet(createRandomFeatureVector(trainingSet));
+// vector<vector<Feature>> splitVal = splitUpValSet(createValidationSet(validationSet));
+
+//	for(int i=0;i<MLPs.size();;i++){ 		
+//		trainMLP(MLPs[i],splitTrain[i],splitVal[i]);
+//	}	
+//}
+
 unsigned int CSVMClassifier::mlpClassify(Image* im){
 	
-	  vector<Patch> patches;
-      vector<Feature> dataFeatures;
+	vector<Patch> patches;
+	vector<Feature> dataFeatures;
       
-      //extract patches
-      patches = imageScanner.scanImage(im);
+	//extract patches
+    patches = imageScanner.scanImage(im);
 
-      //allocate for new features
-      dataFeatures.reserve(patches.size());
+    //allocate for new features
+    dataFeatures.reserve(patches.size());
       
-      //extract features from all patches
-      for(size_t patch = 0; patch < patches.size(); ++patch)
-         dataFeatures.push_back(featExtr.extract(patches[patch]));
+    //extract features from all patches
+    for(size_t patch = 0; patch < patches.size(); ++patch)
+		dataFeatures.push_back(featExtr.extract(patches[patch]));
 		
-		return mlp.classify(dataFeatures);
+	return mlp.classify(dataFeatures);
 }
+
+//unsigned int CSVMClassifier::mlpMultipleClassify(Image* im){
+//  vector<Patch> patches;
+//	vector<Feature> dataFeatures;
+//	vector<int> mostProbableClass = vector<int>(settings.mlpSettings.nOutputUnits,0);;      
+
+	//extract patches
+//  patches = imageScanner.scanImage(im);
+
+    //allocate for new features
+//  dataFeatures.reserve(patches.size());
+      
+    //extract features from all patches
+//  for(size_t patch = 0; patch < patches.size(); ++patch)
+//		dataFeatures.push_back(featExtr.extract(patches[patch]));
+		
+//  vector<vector<Feature>> testFeatures = splitTrainSet(dataFeatures);
+
+//  for(int i=0;i<MLPs.size();i++)
+//		mostProbableClass[MLPs[i].classify(testFeatures[i])] += 1;
+// 	return (unsigned int) *std::max_element(mostProbableClass.begin(), mostProbableClass.end());
+//}
 
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){

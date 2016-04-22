@@ -57,7 +57,7 @@ namespace csvm{
       unsigned int classifyClassicSVMs(Image* im, bool printResults);
       
       void trainMLP();
-      vector<Feature>& createValidationSet(int noPatchesPerImage, vector<Feature>& validationSet);
+      vector<Feature>& createValidationSet(vector<Feature>& validationSet);
       vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingSet);
 	  unsigned int mlpClassify(Image* im);
 	  

@@ -16,6 +16,7 @@ namespace csvm{
    class Patch{
       Image* source;
       int offsetX,offsetY;
+      //int square;
       unsigned int width,height;
       bool isSet;
       
