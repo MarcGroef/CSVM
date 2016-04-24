@@ -31,7 +31,7 @@ namespace csvm{
    
    class CSVMClassifier{
       
-      MLPerceptron mlp;
+      vector<MLPerceptron> mlps;
       Codebook codebook;
       DeepCodebook* deepCodebook;
       ImageScanner imageScanner;
@@ -58,13 +58,14 @@ namespace csvm{
       
       void initMLPs();
       void trainMutipleMLPs();
+      
       //void trainMLP();
       void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
       
       vector<Feature>& createValidationSet(vector<Feature>& validationSet);
       vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingSet);
 	  
-	  vector<vector<Feature> > splitUpTrainSet(vector<Feature> trainingSet);
+	  vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
 	  //vector<vector<Feature> > splitUpValSet(vector<Feature> validationSet);
 	  
 	  unsigned int mlpClassify(Image* im);

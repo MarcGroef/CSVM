@@ -87,8 +87,8 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       exit(-1);
    }
     stream >> type;
-   if (type == "testing") {
-      stream >> mlpSettings.testing;
+   if (type == "trainingType") {
+      stream >> mlpSettings.trainingType;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";

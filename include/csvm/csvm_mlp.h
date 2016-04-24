@@ -9,11 +9,6 @@
 using namespace std;
 
 namespace csvm{
- 
-  enum VotingType{
-    MAJORITY,
-    SUM,
-  };
    
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
@@ -24,7 +19,7 @@ namespace csvm{
       int nLayers;
       double learningRate;
       string voting;
-      string testing;
+      string trainingType;
       int crossValidationInterval;
       double crossValidationSize;
       int epochs;
@@ -35,42 +30,54 @@ namespace csvm{
       private:
       //class variables
       MLPSettings settings;
-      int noPatchesPerImage;
+    
+      int numPatchesPerSquare;
       
-      
-   public:
-     
-      vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures); 	
-      void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int noPatchPerIm);
-      void setSettings(MLPSettings s);
-      double fRand(double fMin, double fMax);
-      void randomizeWeights(std::vector<vector<double> >& array, int indexBottomLayer);
-      double activationFunction(double summedActivation);
-      void adjustWeights(int index);
-      void calculateError();
-      void calculateActivationLayer(int bottomLayer);
-      void feedforward();
-      void initializeVectors();
-      double derivativeActivationFunction(double activationNode);
-      double errorFunction();
-      void backpropgation();
-      void setDesiredOutput(Feature f);
-      void hiddenDelta(int index);
-      void outputDelta();
-      void calculateDeltas(int index);
-      
-      
-      void activationsToOutputProbabilities();
-      void voting();
-      void majorityVoting();
-      void sumVoting();
-      unsigned int mostVotedClass();
-      
-      void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
-      void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
-      bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
-      void printingWeights();
+      std::vector<int> layerSizes;
+
+	  std::vector<double> desiredOutput;
+	  std::vector<double> votingHistogram;
+
+	  std::vector<vector<double> > biasNodes;
+	  std::vector<vector<double> > activations;
+	  std::vector<vector<double> > deltas;
+
+	  std::vector<vector<vector<double> > > weights;
 	  
+	  //private methods
+	  
+	  //helpMethods:
+		void randomizeWeights(std::vector<vector<double> >& array, int indexBottomLayer);
+		void setDesiredOutput(Feature f);
+		double errorFunction();
+		void initializeVectors();
+		void checkingSettingsValidity(int actualInputSize);
+	  //feedforward:
+		double activationFunction(double summedActivation);
+		void calculateActivationLayer(int bottomLayer);
+		void feedforward();
+	  //backpropagation:
+		double derivativeActivationFunction(double activationNode);
+		void calculateDeltas(int index);
+        void outputDelta();
+        void hiddenDelta(int index);
+        void adjustWeights(int index);
+        void backpropgation();
+      //voting:
+	    void activationsToOutputProbabilities();
+		void voting();
+		void majorityVoting();
+		void sumVoting();
+		unsigned int mostVotedClass();
+	  //training:
+	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);	
+	    vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures); 	
+        void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
+	    
+   public:
+      void setSettings(MLPSettings s);
+      void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
       unsigned int classify(vector<Feature> imageFeatures);
    };
       

@@ -16,19 +16,7 @@ using namespace csvm;
  * In the class there is a mix between calling methods with parameters and without.
  * This could lead to confussion.
  */
-//-------start variables-------
-std::vector<int> layerSizes;
-
-std::vector<double> desiredOutput;
-std::vector<double> votingHistogram;
-
-std::vector<vector<double> > biasNodes;
-std::vector<vector<double> > activations;
-std::vector<vector<double> > deltas;
-
-std::vector<vector<vector<double> > > weights;	
-//-------end variables---------
-
+//-------start helpFunctions------
 void MLPerceptron::setSettings(MLPSettings s){
    this->settings = s;
    cout << "settings set\n";
@@ -41,7 +29,7 @@ double good_exp(double y){
 	return exp(y);
 }
 
-double MLPerceptron::fRand(double fMin, double fMax){
+double fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
@@ -68,8 +56,40 @@ double MLPerceptron::errorFunction(){
 	
 	return error;
 }
+void MLPerceptron::initializeVectors(){
+	int maxNumberOfNodes = 0;
+	
+	layerSizes		 = vector<int>(settings.nLayers,0);
+	
+	layerSizes[0] = settings.nInputUnits; 
+	layerSizes[1] = settings.nHiddenUnits;
+	layerSizes[2] = settings.nOutputUnits;
+	
+	//returns max layer size
+	for(unsigned int i = 0; i < layerSizes.size();i++){
+		if(maxNumberOfNodes < layerSizes[i])
+			maxNumberOfNodes = layerSizes[i];	
+	}
+	
+	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
 
+	activations		= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
+	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
+	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
+	
+	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 
+	for(int i = 0;i < settings.nLayers-1;i++)
+		randomizeWeights(weights[i],i);
+}
+void MLPerceptron::checkingSettingsValidity(int actualInputSize){
+	if(actualInputSize != layerSizes[0]){
+		std::cout << "nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << std::endl;
+		exit(-1);
+	}
+}
+
+//------end helpFunctions--------
 //------start FEEDFORWARD--------
 
 double MLPerceptron::activationFunction(double summedActivation){
@@ -87,7 +107,7 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 		
 	for(int i=0; i<layerSizes[bottomLayer+1];i++){
 		for(int j=0;j<layerSizes[bottomLayer];j++)
-			summedActivation += activations[bottomLayer][j] * weights[bottomLayer][j][i];
+			summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
 		
 		summedActivation += biasNodes[bottomLayer][i];
 		if ((bottomLayer+1) == settings.nLayers-1)
@@ -176,7 +196,8 @@ void MLPerceptron::voting(){
 		majorityVoting();
 	else if (settings.voting == "SUM")
 		sumVoting();
-	else	{std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl; exit(-1);}
+	else 
+		std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl; exit(-1);
 		
 }
 
@@ -211,33 +232,16 @@ unsigned int MLPerceptron::mostVotedClass(){
 	return mostVotedClass;
 }
 
-void MLPerceptron::printingWeights(){
-		std::cout << "input-hidden weights: " << std::endl;
-		for(int j = 0;j<settings.nInputUnits;j++){
-			for(int k = 0;k<settings.nHiddenUnits;k++){
-				std::cout << weights[0][j][k] << " ";
-				}
-			std::cout << std::endl;
-			}
-		std::cout << std::endl;
-			
-		std::cout << "hidden-output weights: " << std::endl;
-		for(int j = 0;j<settings.nHiddenUnits;j++){
-			for(int k = 0;k<settings.nOutputUnits;k++){
-				std::cout << weights[1][j][k] << " ";
-				}
-			std::cout << std::endl;
-			}
-		std::cout << std::endl;
-}
-
 //---------end VOTING-----------
 
-//---------start testing--------
+//---------start training--------
 void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
-	if(settings.testing == "CROSSVALIDATION"){
+	if(settings.trainingType == "CROSSVALIDATION")
 		crossvaldiation(randomFeatures,validationSet);
-	}else std::cout << "This testing type is unknown. Change to a known voting type in the settings file" << std::endl;		
+	else {
+		std::cout << "This training type is unknown. Change to a known voting type in the settings file" << std::endl;
+		exit(-1);
+	}		
 }
 
 vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& allInputFeatures){
@@ -301,15 +305,15 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 }
 
 bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
-	int amountOfImValidationSet = validationSet.size()/noPatchesPerImage;
+	int amountOfImValidationSet = validationSet.size()/numPatchesPerSquare;
 	//should be nummerPatchesPerQuarder
 	int classifiedCorrect = 0;
 
 	for(int i = 0; i < amountOfImValidationSet;i++){
-		vector<Feature>::const_iterator first = validationSet.begin() + (noPatchesPerImage *i);
-		vector<Feature>::const_iterator last = validationSet.begin() + (noPatchesPerImage *(i+1));	
+		vector<Feature>::const_iterator first = validationSet.begin() + (numPatchesPerSquare *i);
+		vector<Feature>::const_iterator last = validationSet.begin() + (numPatchesPerSquare *(i+1));	
 		
-		if(validationSet[i*noPatchesPerImage].getLabelId() == classify(vector<Feature>(first,last)))
+		if(validationSet[i*numPatchesPerSquare].getLabelId() == classify(vector<Feature>(first,last)))
 			classifiedCorrect++;
 	}
 	  
@@ -319,41 +323,20 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 	return 0;
 }
 
-
-//--------end testing-----------
-void MLPerceptron::initializeVectors(){
-	int maxNumberOfNodes = 0;
+void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
+	numPatchesPerSquare = numPatchSquare;
 	
-	layerSizes		 = vector<int>(settings.nLayers,0);
-
-	layerSizes[0] = settings.nInputUnits; 
-	layerSizes[1] = settings.nHiddenUnits;
-	layerSizes[2] = settings.nOutputUnits;
-	//returns max layer size
-	for(unsigned int i = 0; i < layerSizes.size();i++){
-		if(maxNumberOfNodes < layerSizes[i])
-			maxNumberOfNodes = layerSizes[i];	
-	}
-	
-	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
-
-	activations		= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
-	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
-	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
-	
-	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
-
-	for(int i = 0;i < settings.nLayers-1;i++)
-		randomizeWeights(weights[i],i);
-}
-
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int noPatchPerIm){
-	noPatchesPerImage = noPatchPerIm;
 	initializeVectors();
+	
+	checkingSettingsValidity(randomFeatures[0].size);
 	
 	training(normalizeInput(randomFeatures),normalizeInput(validationSet));			
 }
 
+//--------end training-----------
+
+//------start testing------------
+//classify recieves one image in features. It returns the class with the highest activation
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){				
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
 	
@@ -365,3 +348,4 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	}
 	return mostVotedClass();
 }
+//-------end testing--------
