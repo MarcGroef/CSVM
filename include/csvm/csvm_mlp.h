@@ -79,6 +79,7 @@ namespace csvm{
       void setSettings(MLPSettings s);
       void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
       unsigned int classify(vector<Feature> imageFeatures);
+      vector<double> classifyPooling(vector<Feature> imageFeatures);
    };
       
 }

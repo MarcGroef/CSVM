@@ -122,8 +122,8 @@ unsigned int CSVMClassifier::classify(Image* im){
          result = lnClassify(im);
          break;
 		case CL_MLP:
-			//result = mlpMultipleClassify(im);
-			result = mlpClassify(im);
+			result = mlpMultipleClassify(im);
+			//result = mlpClassify(im);
 			break;
    }
    return result;
@@ -247,31 +247,16 @@ void CSVMClassifier::trainMutipleMLPs(){
     }
     splitTrain.clear();
     splitVal.clear();
-    
-    exit(-1);	
 }
 
 vector<vector<Feature> > CSVMClassifier::splitUpDataBySquare(vector<Feature>& trainingSet){
 	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);
-	
-	std::cout << "(classifier) trainingSet.size: "<< trainingSet.size() << std::endl;
-		
+			
 	for(unsigned int i = 0;i < trainingSet.size();i++){
 		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
 	}
 	return splitBySquares;
 }
-
-//vector<vector<Feature> > CSVMClassifier::splitUpValSet(vector<Feature> validationSet){
-//	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);;
-//	std::cout << "(classifier) validationSet.size: "<< validationSet.size() << std::endl;
-		
-//	for(unsigned int i = 0;i < trainingSet.size();i++){
-//		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
-//	}
-//	return splitBySquares;
-
-//}
 
 
 unsigned int CSVMClassifier::mlpClassify(Image* im){
@@ -292,27 +277,44 @@ unsigned int CSVMClassifier::mlpClassify(Image* im){
 	return mlps[0].classify(dataFeatures);
 }
 
-//unsigned int CSVMClassifier::mlpMultipleClassify(Image* im){
-//  vector<Patch> patches;
-//	vector<Feature> dataFeatures;
-//	vector<int> mostProbableClass = vector<int>(settings.mlpSettings.nOutputUnits,0);;      
+unsigned int CSVMClassifier::mlpMultipleClassify(Image* im){
+  vector<Patch> patches;
+	vector<Feature> dataFeatures;
+	vector<double> votingHistogramAllSquares = vector<double>(settings.mlpSettings.nOutputUnits,0);      
 
 	//extract patches
-//  patches = imageScanner.scanImage(im);
+  patches = imageScanner.scanImage(im);
 
-    //allocate for new features
-//  dataFeatures.reserve(patches.size());
+  //allocate for new features
+  dataFeatures.reserve(patches.size());
       
-    //extract features from all patches
-//  for(size_t patch = 0; patch < patches.size(); ++patch)
-//		dataFeatures.push_back(featExtr.extract(patches[patch]));
+  //extract features from all patches
+  for(size_t patch = 0; patch < patches.size(); ++patch){
+		Feature newFeat = featExtr.extract(patches[patch]);
+		newFeat.setSquareId(patches[patch].getSquare());
+		dataFeatures.push_back(newFeat);
+	}
 		
-//  vector<vector<Feature>> testFeatures = splitTrainSet(dataFeatures);
-
-//  for(int i=0;i<MLPs.size();i++)
-//		mostProbableClass[MLPs[i].classify(testFeatures[i])] += 1;
-// 	return (unsigned int) *std::max_element(mostProbableClass.begin(), mostProbableClass.end());
-//}
+  vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures);
+	vector<double> oneSquare = vector<double>(settings.mlpSettings.nOutputUnits,0);      
+  
+  for(unsigned int i=0;i<mlps.size();i++){
+		oneSquare = mlps[i].classifyPooling(testFeatures[i]);
+		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++){
+			votingHistogramAllSquares[j] += oneSquare[j];
+		}
+	}
+	
+	unsigned int mostVotedClass=0;
+	double highestClassProb=0.0;
+	for(int i=0;i<settings.mlpSettings.nOutputUnits; i++){
+		if(votingHistogramAllSquares[i]>highestClassProb){
+			highestClassProb = votingHistogramAllSquares[i];
+			mostVotedClass = i;
+		}
+	}
+ 	return mostVotedClass;
+}
 
 //construct a codebook using the current dataset
 void CSVMClassifier::constructCodebook(){

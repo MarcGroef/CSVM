@@ -196,8 +196,9 @@ void MLPerceptron::voting(){
 		majorityVoting();
 	else if (settings.voting == "SUM")
 		sumVoting();
-	else 
+	else{ 
 		std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl; exit(-1);
+	}
 		
 }
 
@@ -347,5 +348,18 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 		voting();
 	}
 	return mostVotedClass();
+}
+
+vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){				
+	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
+	
+	for (unsigned int i = 0; i<imageFeatures.size();i++){
+		//std::cout << "Feature label: " << imageFeatures[i].getLabelId() << std::endl;
+		activations[0] = imageFeatures[i].content;
+		feedforward();
+		voting();
+	}
+
+	return votingHistogram;
 }
 //-------end testing--------

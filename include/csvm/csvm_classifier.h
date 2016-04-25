@@ -66,10 +66,9 @@ namespace csvm{
       vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingSet);
 	  
 	  vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-	  //vector<vector<Feature> > splitUpValSet(vector<Feature> validationSet);
-	  
+
 	  unsigned int mlpClassify(Image* im);
-	  //unsigned int mlpMultipleClassify(Image* im);
+	  unsigned int mlpMultipleClassify(Image* im);
 	  
    public:
       CSVMSettings settings;
