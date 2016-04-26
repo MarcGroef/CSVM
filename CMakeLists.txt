@@ -41,6 +41,7 @@ src/csvm/csvm_merge_descriptor.cc
 src/csvm/csvm_interpolator.cc
 src/csvm/csvm_whitening.cc
 src/csvm/csvm_mlp.cc
+src/csvm/mlp_controller.cc
 ##png library
 src/lodepng/lodepng.cc
 

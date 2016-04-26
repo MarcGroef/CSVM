@@ -77,7 +77,9 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.normalOut = settings.normalOut;
    
    //mlp.setSettings(settings.mlpSettings);
-   initMLPs();
+   MLPController* mC = new MLPController(&featExtr, &imageScanner, &settings, &dataset);
+   mlpController = *mC;
+   mlpController.initMLPs();
 }
 
 //Train the system
@@ -98,8 +100,8 @@ void CSVMClassifier::train(){
          trainLinearNetwork();
 		case CL_MLP:
 			if(normalOut) cout << "Training MLP..\n";
-			trainMutipleMLPs();
-			//trainMLP();
+			mlpController.trainMutipleMLPs();
+			//mlpController.trainMLP();
 			
          break;
       default:
@@ -122,8 +124,8 @@ unsigned int CSVMClassifier::classify(Image* im){
          result = lnClassify(im);
          break;
 		case CL_MLP:
-			result = mlpMultipleClassify(im);
-			//result = mlpClassify(im);
+			result = mlpController.mlpMultipleClassify(im);
+			//result = /*mlpController.*/mlpClassify(im);
 			break;
    }
    return result;
@@ -249,7 +251,7 @@ void CSVMClassifier::trainMutipleMLPs(){
     splitVal.clear();
 }
 
-vector<vector<Feature> > CSVMClassifier::splitUpDataBySquare(vector<Feature>& trainingSet){
+	vector<vector<Feature> > CSVMClassifier::splitUpDataBySquare(vector<Feature>& trainingSet){
 	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);
 			
 	for(unsigned int i = 0;i < trainingSet.size();i++){

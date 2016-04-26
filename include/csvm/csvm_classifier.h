@@ -25,6 +25,7 @@
 #include "csvm_deep_codebook.h"
 #include "csvm_conv_svm.h"
 #include "csvm_mlp.h"
+#include "mlp_controller.h"
 
 using namespace std;
 namespace csvm{
@@ -40,6 +41,8 @@ namespace csvm{
       vector< SVM > svms;
       LinNetwork linNetwork;
       ConvSVM convSVM;
+      
+      MLPController mlpController;
       
       vector< vector<double> > classicTrainActivations;
       
