@@ -12,8 +12,6 @@
 using namespace std;
 using namespace csvm;
 
-vector<MLPerceptron> MLPs;
-
 //initialize random
 CSVMClassifier::CSVMClassifier(){
    srand(time(NULL)); 
@@ -43,6 +41,11 @@ void CSVMClassifier::initSVMs(){
    
 }
 
+void CSVMClassifier::constructMLPs(){
+   mlpController = new MLPController(&featExtr,&imageScanner,&settings,&dataset);
+   mlpController->setSettings(settings.mlpSettings);	
+}
+
 //read settings file, and pass the settings to respective modules
 void CSVMClassifier::setSettings(string settingsFile){
    settings.readSettingsFile(settingsFile);
@@ -60,8 +63,6 @@ void CSVMClassifier::setSettings(string settingsFile){
    codebook.debugOut = settings.debugOut;
    codebook.normalOut = settings.normalOut;
    
-   
-   
    featExtr.setSettings(settings.featureSettings);
    featExtr.debugOut = settings.debugOut;
    featExtr.normalOut = settings.normalOut;
@@ -77,9 +78,9 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.normalOut = settings.normalOut;
    
    //mlp.setSettings(settings.mlpSettings);
-   MLPController* mC = new MLPController(&featExtr, &imageScanner, &settings, &dataset);
-   mlpController = *mC;
-   mlpController.initMLPs();
+   //MLPController* mC = new MLPController(&featExtr, &imageScanner, &settings, &dataset);
+   //mlpController = *mC;
+
 }
 
 //Train the system
@@ -98,11 +99,10 @@ void CSVMClassifier::train(){
       case CL_LINNET:
          if(normalOut) cout << "Training LinNet..\n";
          trainLinearNetwork();
+         break;
 		case CL_MLP:
-			if(normalOut) cout << "Training MLP..\n";
-			mlpController.trainMutipleMLPs();
-			//mlpController.trainMLP();
-			
+		if(normalOut) cout << "Training MLPs..\n";
+		mlpController->trainMutipleMLPs();			
          break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";
@@ -124,7 +124,7 @@ unsigned int CSVMClassifier::classify(Image* im){
          result = lnClassify(im);
          break;
 		case CL_MLP:
-			result = mlpController.mlpMultipleClassify(im);
+			result = mlpController->mlpMultipleClassify(im);
 			//result = /*mlpController.*/mlpClassify(im);
 			break;
    }
@@ -156,166 +156,6 @@ void CSVMClassifier::constructDeepCodebook(){
 //return number of classes
 unsigned int CSVMClassifier::getNoClasses(){
    return dataset.getNumberClasses();
-}
-
-void CSVMClassifier::initMLPs(){
-	mlps.reserve(settings.mlpSettings.nMLPs);
-	for(int i = 0; i < settings.mlpSettings.nMLPs;i++){
-		MLPerceptron mlp;
-		std::cout << "mlp["<<i<<"]:";
-		mlp.setSettings(settings.mlpSettings); 
-		mlps.push_back(mlp);
-	}
-}
-
-vector<Feature>& CSVMClassifier::createValidationSet(vector<Feature>& validationSet){
-	int amountOfImagesCrossVal = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-	int noPatchesPerSquare  = validationSet.size() / amountOfImagesCrossVal; //Needs a fix, is now 0
-	
-	vector<Patch> patches;   
-  
-    validationSet.reserve(noPatchesPerSquare*amountOfImagesCrossVal);
-  
-	for(int i = dataset.getTrainSize() - amountOfImagesCrossVal; i < dataset.getTrainSize();i++){
-		Image* im = dataset.getTrainImagePtr(i);
-		 
-		//extract patches
-		patches = imageScanner.scanImage(im);
-      
-		//extract features from all patches
-		for(size_t patch = 0; patch < patches.size(); ++patch){
-			Feature newFeat = featExtr.extract(patches[patch]);
-			newFeat.setSquareId(patches[patch].getSquare());
-			validationSet.push_back(newFeat);
-		}
-	}
-	return validationSet;
-}
-
-vector<Feature>& CSVMClassifier::createRandomFeatureVector(vector<Feature>& trainingData){
-    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-    int sizeTrainingSet = (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize));
-    
-	vector<Feature> testData;
-  
-	std::cout << "Feature extraction training set..." << std::endl;
-   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
-      //std::cout << "(classifier) getSquare: " << patch.getSquare() << std::endl;
-      Feature newFeat = featExtr.extract(patch);
-      newFeat.setSquareId(patch.getSquare());
-      trainingData.push_back(newFeat);    
-   }
-	return trainingData;	
-}
-void CSVMClassifier::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
-    double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-    int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
-    mlp.train(trainingSet,validationSet,noPatchesPerSquare);
-}
-
-//void CSVMClassifier::trainMLP(){
-//    int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
-    
-//    vector<Feature> trainingSet;
-//    vector<Feature> validationSet;
-    
-//   mlp.train(createRandomFeatureVector(trainingSet),createValidationSet(validationSet),noPatchesPerImage);
-//}
-
-void CSVMClassifier::trainMutipleMLPs(){
-	//int noPatchesPerImage = imageScanner.scanImage(dataset.getTrainImagePtr(0)).size(); 
-	//double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
- 	
- 	vector<Feature> trainingSet;
- 	vector<Feature> validationSet;
-
-	vector<vector<Feature> > splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
-	vector<vector<Feature> > splitVal   = splitUpDataBySquare(createValidationSet(validationSet));
-	
-	trainingSet.clear();
-	validationSet.clear();
-	
-	std::cout << "(classifier) numPatches top left: " << splitTrain[0].size()  << std::endl; 
-	std::cout << "(classifier) numPatches top right: " << splitTrain[1].size()  << std::endl;
-	std::cout << "(classifier) numPatches bottom left: " << splitTrain[2].size()  << std::endl;
-	std::cout << "(classifier) numPatches bottom right: " << splitTrain[3].size()  << std::endl; 
-
-	//vector<vector<Feature> > splitVal = splitUpValSet(createValidationSet(validationSet));
-	
-	for(unsigned int i=0;i<mlps.size();i++){ 		
-		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
-		std::cout << "(classifier) trained mlp["<<i<<"]" << std::endl;
-    }
-    splitTrain.clear();
-    splitVal.clear();
-}
-
-	vector<vector<Feature> > CSVMClassifier::splitUpDataBySquare(vector<Feature>& trainingSet){
-	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);
-			
-	for(unsigned int i = 0;i < trainingSet.size();i++){
-		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
-	}
-	return splitBySquares;
-}
-
-
-unsigned int CSVMClassifier::mlpClassify(Image* im){
-	
-	vector<Patch> patches;
-	vector<Feature> dataFeatures;
-      
-	//extract patches
-    patches = imageScanner.scanImage(im);
-
-    //allocate for new features
-    dataFeatures.reserve(patches.size());
-      
-    //extract features from all patches
-    for(size_t patch = 0; patch < patches.size(); ++patch)
-		dataFeatures.push_back(featExtr.extract(patches[patch]));
-		
-	return mlps[0].classify(dataFeatures);
-}
-
-unsigned int CSVMClassifier::mlpMultipleClassify(Image* im){
-  vector<Patch> patches;
-	vector<Feature> dataFeatures;
-	vector<double> votingHistogramAllSquares = vector<double>(settings.mlpSettings.nOutputUnits,0);      
-
-	//extract patches
-  patches = imageScanner.scanImage(im);
-
-  //allocate for new features
-  dataFeatures.reserve(patches.size());
-      
-  //extract features from all patches
-  for(size_t patch = 0; patch < patches.size(); ++patch){
-		Feature newFeat = featExtr.extract(patches[patch]);
-		newFeat.setSquareId(patches[patch].getSquare());
-		dataFeatures.push_back(newFeat);
-	}
-		
-  vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures);
-	vector<double> oneSquare = vector<double>(settings.mlpSettings.nOutputUnits,0);      
-  
-  for(unsigned int i=0;i<mlps.size();i++){
-		oneSquare = mlps[i].classifyPooling(testFeatures[i]);
-		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++){
-			votingHistogramAllSquares[j] += oneSquare[j];
-		}
-	}
-	
-	unsigned int mostVotedClass=0;
-	double highestClassProb=0.0;
-	for(int i=0;i<settings.mlpSettings.nOutputUnits; i++){
-		if(votingHistogramAllSquares[i]>highestClassProb){
-			highestClassProb = votingHistogramAllSquares[i];
-			mostVotedClass = i;
-		}
-	}
- 	return mostVotedClass;
 }
 
 //construct a codebook using the current dataset

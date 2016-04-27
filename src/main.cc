@@ -81,6 +81,7 @@ int main(int argc,char**argv){
 */
    if(normalOut)
       cout << "training classifier" << endl;
+   c.constructMLPs();
    c.train();
 
    //********************Testing phase on trainingset *****************************************

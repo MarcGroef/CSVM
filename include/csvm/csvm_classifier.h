@@ -25,7 +25,7 @@
 #include "csvm_deep_codebook.h"
 #include "csvm_conv_svm.h"
 #include "csvm_mlp.h"
-#include "mlp_controller.h"
+#include "csvm_mlp_controller.h"
 
 using namespace std;
 namespace csvm{
@@ -42,7 +42,7 @@ namespace csvm{
       LinNetwork linNetwork;
       ConvSVM convSVM;
       
-      MLPController mlpController;
+      MLPController* mlpController;
       
       vector< vector<double> > classicTrainActivations;
       
@@ -83,6 +83,7 @@ namespace csvm{
       void setSettings(string settingsFile);
       void constructCodebook();
       void constructDeepCodebook();
+      void constructMLPs();
       bool getGenerateCB();
       
       void exportCodebook(string filename);

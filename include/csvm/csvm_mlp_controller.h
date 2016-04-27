@@ -14,33 +14,37 @@
 
 using namespace std;
 namespace csvm{
+	
 	class MLPController{
-		
-		
-		
-		vector<MLPerceptron> mlps;
-		
+		private:
 		ImageScanner imageScanner;
 		FeatureExtractor featExtr;
 		
 		CSVMSettings settings;
 		CSVMDataset dataset;
+				
+		vector<vector<Feature> > splitTrain;
+		vector<vector<Feature> > splitVal;
+		vector<MLPerceptron> mlps;
 		
 		
-		public:
-		void initMLPs();
+		void createDataBySquares();
 		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
 		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
-		void trainMutipleMLPs();
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
 		unsigned int mlpClassify(Image* im);
-		unsigned int mlpMultipleClassify(Image* im);
+		void initMLPs();
+		
+		public:
 		
 		MLPController();
 		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds);
-
 		
+		void setSettings(MLPSettings s);
+
+		void trainMutipleMLPs();
+		unsigned int mlpMultipleClassify(Image* im);
 	};
 }
 #endif
