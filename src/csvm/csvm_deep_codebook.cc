@@ -196,9 +196,9 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
       nCentroids.push_back(tmpNCentroids);
       fmSize = plSize;
       plSize = fmSize / 2;
-      if(settings.architecture == DCB_BETA && dIdx == 1)
+      if((settings.architecture == DCB_BETA && dIdx == 1) || (settings.architecture == DCB_GAMMA && dIdx == 2))
          plSize = 2;
-      else if(settings.architecture == DCB_GAMMA && dIdx == 2)
+
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
       if(debugOut)

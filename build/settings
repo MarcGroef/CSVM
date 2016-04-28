@@ -22,7 +22,7 @@ rootNPartitions 3
 method KMEANS
 nClusters 100
 nIterations 40
-DeepArchitecture GAMMA
+DeepArchitecture ALPHA
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
