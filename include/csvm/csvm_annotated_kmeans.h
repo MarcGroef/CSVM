@@ -21,7 +21,7 @@ namespace csvm{
   struct AKMeans_settings{
     int nClusters;
     double alpha;
-	unsigned int nIter;
+	 unsigned int nIter;
   };
 
   enum ContributionFunction {

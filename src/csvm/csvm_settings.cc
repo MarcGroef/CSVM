@@ -133,6 +133,21 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
    parseUInt(codebookSettings.kmeansSettings.nIter, stream, "nIterations", error);
    dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
    
+   //parse deep architecture enum
+   stream >> setting;
+   if (setting == "DeepArchitecture") {
+      stream >> method;
+      if(method == "ALPHA")
+         dcbSettings.architecture = DCB_ALPHA;
+      else if(method == "BETA")
+         dcbSettings.architecture = DCB_BETA;
+      else if(method == "GAMMA")
+         dcbSettings.architecture = DCB_GAMMA;
+   }else {
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   
    //parse SimilarityFunction enum
    stream >> setting;
    if (setting == "SimilarityFunction") {

@@ -32,8 +32,15 @@ namespace csvm{
 	  DCB_COSINE_SOFT_ASSIGNMENT,
    };
    
+   enum Architecture{
+     DCB_ALPHA,
+     DCB_BETA,
+     DCB_GAMMA,
+   };
+   
    struct DCBSettings{
       ActFunction simFunction;
+      Architecture architecture;
       double similaritySigma;
       unsigned int nCentroids;
       unsigned int nRandomPatches;

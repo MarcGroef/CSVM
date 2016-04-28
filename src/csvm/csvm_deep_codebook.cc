@@ -178,7 +178,9 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    unsigned int depth = 1;
    unsigned int fmSize = 1 + ((imSize - patchSize) / 2 );
    unsigned int plSize = fmSize / 2;
-	//plSize = 2;    <-- if uncommented, it results in a regular BoW
+	if(settings.architecture == DCB_ALPHA)
+      plSize = 2;    // results in a regular BoW
+      
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
    if(debugOut)
@@ -189,17 +191,20 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
    nCentroids.push_back(tmpNCentroids);
    nRandomPatches.push_back(settings.nRandomPatches);
    
-   for(size_t dIdx = 0; plSize > 2; ++dIdx, ++depth ){
+   for(size_t dIdx = 1; plSize > 2; ++dIdx, ++depth ){
       //tmpNCentroids /= 2;
       nCentroids.push_back(tmpNCentroids);
       fmSize = plSize;
       plSize = fmSize / 2;
+      if(settings.architecture == DCB_BETA && dIdx == 1)
+         plSize = 2;
+      else if(settings.architecture == DCB_GAMMA && dIdx == 2)
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
       if(debugOut)
-         cout << "fmSize = " << fmSize << endl;
+         cout << "fmSize" << dIdx << " = " << fmSize << endl;
       if(debugOut)
-         cout << "plSize = " << plSize << endl;
+         cout << "plSize" << dIdx << " = " << plSize << endl;
       nRandomPatches.push_back(settings.nRandomPatches);
    }
    
