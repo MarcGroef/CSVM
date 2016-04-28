@@ -3,16 +3,16 @@ Dataset
 method MNIST
 nTrainImages 2000
 nTestImages 200
-imageWidth 0
-imageHeight 0
+imageWidth 32
+imageHeight 32
 
 General
 Classifier CSVM
 Codebook DEEPCODEBOOK
 nClasses 10
-debugOut TRUE
+debugOut FALSE
 normalOut TRUE
-liveROut FALSE
+liveROut TRUE
 
 Codebook
 generate TRUE
@@ -20,7 +20,7 @@ standardize TRUE
 whitening FALSE
 rootNPartitions 3
 method KMEANS
-nClusters 10
+nClusters 100
 nIterations 40
 DeepArchitecture ALPHA
 SimilarityFunction SOFT_ASSIGNMENT
@@ -46,7 +46,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 200
+nRandomPatches 20000
 
 SVM
 Kernel LINEAR

@@ -84,7 +84,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    codebook.debugOut = settings.debugOut;
    codebook.normalOut = settings.normalOut;
    settings.dcbSettings.debugOut = settings.debugOut;
-   
+   settings.dcbSettings.ROut = settings.liveROut;
    
    
    featExtr.setSettings(settings.featureSettings);

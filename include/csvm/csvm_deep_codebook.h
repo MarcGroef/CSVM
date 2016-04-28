@@ -46,6 +46,7 @@ namespace csvm{
       unsigned int nRandomPatches;
       unsigned int nIter;
       bool debugOut;
+      bool ROut;
    };
   
    
@@ -68,7 +69,7 @@ namespace csvm{
       ImageScanner* scanner;
       CSVMDataset* dataset;
       FeatureExtractor* featExtr;
-      
+      void standardize(vector<double>& x, double sigmaFix);
       vector<double> calcSimilarity(Feature& p, vector<Centroid>& c);
       vector<double> calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
       vector<double> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);

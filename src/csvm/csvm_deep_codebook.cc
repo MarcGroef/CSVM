@@ -26,13 +26,35 @@ void DeepCodebook::setSettings(DCBSettings& s){
    
    mSets.alpha = 0;
    mSets.nIter = settings.nIter;
-   mSets.liveROut = false;
+   mSets.liveROut = s.ROut;
    kmeans.setSettings(mSets);
 
    
    calculateSizes(dataset->getImagePtr(0)->getWidth(), scanner->settings.patchWidth, scanner->settings.stride);
 }
 
+void DeepCodebook::standardize(vector<double>& x, double sigmaFix){
+   unsigned int size = x.size();
+   double mean = 0;
+   
+   for(size_t idx = 0; idx != size; ++idx){
+      mean += x[idx];
+   }
+   mean /= size;
+   
+   double sigma = 0;
+   
+   for(size_t idx = 0; idx != size; ++idx)
+      sigma += (mean - x[idx]) * (mean - x[idx]);
+   
+   sigma /= size;
+   sigma = sqrt(sigma + sigmaFix);
+   
+   for(size_t idx = 0; idx != size; ++idx){
+      x[idx] = (x[idx] - mean) / sigma;
+   }
+   
+}
 
 //*********** PRIVATE ********************
 
@@ -168,6 +190,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          activations[word] = (activations[word] - mean) > 0.0 ? (activations[word] - mean) : 0.0;
       }
    }
+   standardize(activations, 0.01);
    return activations;
 }
 
