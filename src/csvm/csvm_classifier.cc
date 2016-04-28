@@ -26,6 +26,10 @@ bool CSVMClassifier::getGenerateCB(){
    return codebook.getGenerate();
 }
 
+bool CSVMClassifier::useDeepBoW(){
+   return settings.codebook == CB_DEEPCODEBOOK;
+}
+
 /**Some often used functionality:*/
 
 vector<Feature> CSVMClassifier::collectFeaturesFromImage(Image* im){
@@ -79,7 +83,7 @@ void CSVMClassifier::setSettings(string settingsFile){
    codebook.setSettings(settings.codebookSettings);
    codebook.debugOut = settings.debugOut;
    codebook.normalOut = settings.normalOut;
-
+   settings.dcbSettings.debugOut = settings.debugOut;
    
    
    
@@ -228,7 +232,7 @@ void CSVMClassifier::constructDeepCodebook(){
    deepCodebook->normalOut = settings.normalOut;
    deepCodebook->generateCentroids();
    
-   if(normalOut) cout << "Done constructing deep codebook\n";
+   if(settings.normalOut) cout << "Done constructing deep codebook\n";
 }
 
 

@@ -130,6 +130,7 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
    }
    
    parseUInt(codebookSettings.numberVisualWords, stream, "nClusters", error);
+   dcbSettings.nCentroids = codebookSettings.numberVisualWords;
    parseUInt(codebookSettings.kmeansSettings.nIter, stream, "nIterations", error);
    dcbSettings.nIter = codebookSettings.kmeansSettings.nIter;
    

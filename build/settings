@@ -10,7 +10,7 @@ General
 Classifier CSVM
 Codebook DEEPCODEBOOK
 nClasses 10
-debugOut FALSE
+debugOut TRUE
 normalOut TRUE
 liveROut FALSE
 
@@ -20,7 +20,7 @@ standardize TRUE
 whitening FALSE
 rootNPartitions 3
 method KMEANS
-nClusters 100
+nClusters 10
 nIterations 40
 DeepArchitecture ALPHA
 SimilarityFunction SOFT_ASSIGNMENT
@@ -46,7 +46,7 @@ ImageScanner
 patchHeight 6
 patchWidth 6
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 200
 
 SVM
 Kernel LINEAR

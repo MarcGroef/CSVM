@@ -64,18 +64,22 @@ int main(int argc,char**argv){
    c.dataset.loadDataset("../datasets/");
 
    
-  
-   if (c.getGenerateCB()){
+   if(!c.useDeepBoW()){
+      if (c.getGenerateCB()){
+         if (normalOut)
+            cout << "constructing codebook" << endl;
+         c.constructCodebook();
+      } else {
+         if (normalOut)
+            cout << "importing codebook" << endl;
+         c.importCodebook("LAST_USED.bin");
+      }
+      c.exportCodebook("LAST_USED.bin");
+   }else{
       if (normalOut)
-         cout << "constructing codebook" << endl;
-      c.constructCodebook();
-   } else {
-      if (normalOut)
-         cout << "importing codebook" << endl;
-      c.importCodebook("LAST_USED.bin");
+            cout << "constructing codebook" << endl;
+         c.constructCodebook();
    }
-   c.exportCodebook("LAST_USED.bin");
-
 
    if(normalOut)
       cout << "initializing SVMs" << endl;

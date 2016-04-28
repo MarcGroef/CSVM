@@ -45,6 +45,7 @@ namespace csvm{
       unsigned int nCentroids;
       unsigned int nRandomPatches;
       unsigned int nIter;
+      bool debugOut;
    };
   
    

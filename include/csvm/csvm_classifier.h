@@ -74,7 +74,7 @@ namespace csvm{
       void initSVMs();
       unsigned int getNoClasses();
       bool useOutput();
-
+      bool useDeepBoW();
       void train();
       unsigned int classify(Image* im);
       unsigned int classifyFromActivation(unsigned int testIdx);

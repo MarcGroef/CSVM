@@ -26,7 +26,7 @@ void DeepCodebook::setSettings(DCBSettings& s){
    
    mSets.alpha = 0;
    mSets.nIter = settings.nIter;
-   
+   mSets.liveROut = false;
    kmeans.setSettings(mSets);
 
    
@@ -183,9 +183,9 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
       
    fmSizes.push_back(fmSize);
    plSizes.push_back(plSize);
-   if(debugOut)
+   if(settings.debugOut)
       cout << "fmSize0 = " << fmSize << endl;
-   if(debugOut)
+   if(settings.debugOut)
       cout << "plSize0 = " << plSize << endl;
    unsigned int tmpNCentroids = settings.nCentroids;
    nCentroids.push_back(tmpNCentroids);
@@ -201,9 +201,9 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
 
       fmSizes.push_back(fmSize);
       plSizes.push_back(plSize);
-      if(debugOut)
+      if(settings.debugOut)
          cout << "fmSize" << dIdx << " = " << fmSize << endl;
-      if(debugOut)
+      if(settings.debugOut)
          cout << "plSize" << dIdx << " = " << plSize << endl;
       nRandomPatches.push_back(settings.nRandomPatches);
    }
@@ -258,18 +258,19 @@ void DeepCodebook::generateCentroids(){
       unsigned int totalImages = dataset->getTotalImages();
       
       if(depthIdx == 0){
-         if(debugOut)
+         if(settings.debugOut)
             cout << "Collecting patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages))));
          }
-         if(debugOut)
+         if(settings.debugOut)
             cout << "Clustering at 0th layer..\n";
+         cout << "Clustering " << randomPatches.size() << " patches with " << nCentroids[depthIdx] << " centroids" << endl;
          layerStack[depthIdx] = kmeans.cluster(randomPatches, nCentroids[depthIdx]);
          
       }else{
          unsigned int scanWidth = plSizes[depthIdx - 1];
-         if(debugOut)
+         if(settings.debugOut)
             cout << "Collecting next-level patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
