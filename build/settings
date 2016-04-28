@@ -1,6 +1,6 @@
 
 Dataset
-method MNIST
+method CIFAR10
 nTrainImages 2000
 nTestImages 200
 imageWidth 32
@@ -65,7 +65,7 @@ learningRate 0.000005
 
 ConvSVM
 loadLastUsed FALSE
-learningRate 0.000002
+learningRate 0.0000002
 nIterations 2000
 initWeight 0.000002
 CSVM_C 2048

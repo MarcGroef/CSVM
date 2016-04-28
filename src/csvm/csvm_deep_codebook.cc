@@ -66,7 +66,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    
    vector<double> activations(nCentroids, 0);
    vector<double> distances(nCentroids, 0);
-   
+   standardize(p.content,0.01);
    
    
    //Radial base function (Gaussian sheep)
