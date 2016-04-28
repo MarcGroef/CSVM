@@ -25,9 +25,9 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
-cellSize 6
-cellStride 6
-patchSize 12
+cellSize 5
+cellStride 5
+patchSize 15
 padding Identity
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
@@ -40,8 +40,8 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 12
-patchWidth 12
+patchHeight 15
+patchWidth 15
 scanStride 1
 nRandomPatches 15000
 
@@ -49,7 +49,7 @@ nRandomPatches 15000
 MLP
 nMLPs 4
 nHiddenUnits 400
-nInputUnits 36
+nInputUnits 81
 nOutputUnits 10
 nLayers 3
 learningRate .01
