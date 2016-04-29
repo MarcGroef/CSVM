@@ -27,8 +27,8 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    string type, setting;
    
     stream >> setting;
-   if (setting == "nMLPs") {
-      stream >> mlpSettings.nMLPs;
+   if (setting == "nSplitsForPooling") {
+      stream >> mlpSettings.nSplitsForPooling;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";

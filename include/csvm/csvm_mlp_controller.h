@@ -29,6 +29,7 @@ namespace csvm{
 		
 		
 		void createDataBySquares();
+		int calculateSquareOfPatch(Patch patch);
 		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
 		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
