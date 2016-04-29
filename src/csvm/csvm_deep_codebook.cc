@@ -56,6 +56,20 @@ void DeepCodebook::standardize(vector<double>& x, double sigmaFix){
    
 }
 
+vector<double> DeepCodebook::normalize(vector<double>& x){
+  size_t size = x.size();
+  double sum = 0;
+  vector<double> normalized(size, 0);
+  
+  for(size_t idx = 0; idx != size; ++idx){
+    sum += x[idx];
+  }
+  for(size_t idx = 0; idx != size && sum != 0; ++idx){
+    normalized[idx] = x[idx] / sum;
+  }
+  return normalized;
+}
+
 //*********** PRIVATE ********************
 
 //Calculate activations of centroids given a feature
@@ -66,7 +80,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    
    vector<double> activations(nCentroids, 0);
    vector<double> distances(nCentroids, 0);
-   standardize(p.content,0.01);
+   //standardize(p.content,10);
    
    
    //Radial base function (Gaussian sheep)
@@ -119,22 +133,23 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
 
    }else if(settings.simFunction == DCB_COSINE_SOFT_ASSIGNMENT){
 		//With cosine distances
+      vector<double> normP = normalize(p.content);
       
 		
       double mean = 0.0;
       double xx = 0;
       for(size_t dim = 0; dim < nDims; ++dim){
-         xx += p.content[dim] * p.content[dim];
+         xx += normP[dim] * normP[dim];
       }
       
       for(unsigned int word = 0; word < nCentroids; ++word){
          double cc = 0.0;
          double xc = 0.0;
-         
+         vector<double> normC = normalize(c[word].content);
          for(size_t dim = 0; dim < nDims; ++dim){
             
-            cc += c[word].content[dim] * c[word].content[dim];
-            xc += c[word].content[dim] * p.content[dim];
+            cc += normC[dim] * normC[dim];
+            xc += normC[dim] * normP[dim];
             
          }
          
@@ -190,16 +205,17 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          activations[word] = (activations[word] - mean) > 0.0 ? (activations[word] - mean) : 0.0;
       }
    }
-   standardize(activations, 0.01);
+   //standardize(activations, 0.01);
    return activations;
 }
 
 
 //calculate the architecture sizes and number of layers
 void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, unsigned int stride){
-   
+   cout << "Imsize = " << imSize << endl;
    unsigned int depth = 1;
-   unsigned int fmSize = 1 + ((imSize - patchSize) / 2 );
+  // unsigned int fmSize = 1 + ((imSize - patchSize) / 2 );
+   unsigned int fmSize = ((imSize - patchSize) / stride);
    unsigned int plSize = fmSize / 2;
 	if(settings.architecture == DCB_ALPHA)
       plSize = 2;    // results in a regular BoW
@@ -263,10 +279,12 @@ vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, u
    //cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
    if(depth == 0){//first layer, thus use image-patch extraction
       Feature f = featExtr->extract(scanner->getPatchAt(im, x, y));
+      //standardize(f.content,10);
       return calcSimilarity(f, layerStack[depth]);
    }else{//recursive step
       vector<double> pm = calculatePoolMapAt(im, depth - 1, x, y);
       Feature f(pm);
+      standardize(f.content,10);
       return calcSimilarity(f, layerStack[depth]);
    }
 }
@@ -284,7 +302,9 @@ void DeepCodebook::generateCentroids(){
          if(settings.debugOut)
             cout << "Collecting patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
-            randomPatches.push_back(featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages))));
+            Feature f = featExtr->extract(scanner->getRandomPatch(dataset->getImagePtr(rand() % totalImages)));
+            standardize(f.content,10);
+            randomPatches.push_back(f);
          }
          if(settings.debugOut)
             cout << "Clustering at 0th layer..\n";
@@ -298,8 +318,9 @@ void DeepCodebook::generateCentroids(){
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
             vector<double> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);
-            
-            randomPatches.push_back(Feature(conv));
+            Feature f(conv);
+            standardize(f.content,10);
+            randomPatches.push_back(f);
          }
          layerStack[depthIdx] = kmeans.cluster(randomPatches, nCentroids[depthIdx]);
          
@@ -308,36 +329,17 @@ void DeepCodebook::generateCentroids(){
 }
 
 
-//normalize, be centering and stddev units
-void standardize(vector<double>& vec){
-   double mean = 0;
-   double stddev = 0;
-   
-   unsigned int size = vec.size();
-   for(size_t idx = 0; idx < size; ++idx){
-      mean += vec[idx];
-   }
-   mean /= size;
-   for(size_t idx = 0; idx < size; ++idx){
-      stddev += (vec[idx] - mean) * (vec[idx] - mean);
-   }
-   stddev = sqrt(stddev + 0.001);
-   stddev /= size;
-   for(size_t idx = 0; idx < size; ++idx){
-      vec[idx] = (vec[idx] - mean) / stddev;
-   }
-}
-
 vector<double> DeepCodebook::getActivations(Image* im){
    vector<double> activations;
    unsigned int plSize = plSizes[nLayers - 1];
    for(size_t pmX = 0; pmX < plSize; ++pmX){
       for(size_t pmY = 0; pmY < plSize; ++pmY){
          vector<double> pmAct = calculatePoolMapAt(im, nLayers - 1, pmX, pmY);
-         //standardize(pmAct);
+         //standardize(pmAct,0.01);
          activations.insert(activations.begin(), pmAct.begin(), pmAct.end());
       }
    }
+   standardize(activations, 0.01);
    return activations;
 }
 

@@ -1,14 +1,14 @@
 
 Dataset
-method CIFAR10
-nTrainImages 2000
+method MNIST
+nTrainImages 10000
 nTestImages 200
-imageWidth 32
-imageHeight 32
+imageWidth 36
+imageHeight 36
 
 General
 Classifier CSVM
-Codebook DEEPCODEBOOK
+Codebook CODEBOOK
 nClasses 10
 debugOut FALSE
 normalOut TRUE
@@ -18,20 +18,20 @@ Codebook
 generate TRUE
 standardize TRUE
 whitening FALSE
-rootNPartitions 3
+rootNPartitions 2
 method KMEANS
-nClusters 100
+nClusters 200
 nIterations 40
-DeepArchitecture ALPHA
+DeepArchitecture GAMMA
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
 method CLEAN
 nBins 9
-cellSize 10
-cellStride 10
-patchSize 6
+cellSize 5
+cellStride 5
+patchSize 12
 padding None
 useColourPixel false
 interpolation INTERPOLATE_LINEAR
@@ -43,10 +43,10 @@ CleanDescriptor
 standardize NONE
 
 ImageScanner
-patchHeight 6
-patchWidth 6
+patchHeight 12
+patchWidth 12
 scanStride 1
-nRandomPatches 20000
+nRandomPatches 100000
 
 SVM
 Kernel LINEAR
@@ -68,6 +68,6 @@ loadLastUsed FALSE
 learningRate 0.0000002
 nIterations 2000
 initWeight 0.000002
-CSVM_C 2048
+CSVM_C 200
 L2 TRUE
 

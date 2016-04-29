@@ -70,6 +70,7 @@ namespace csvm{
       CSVMDataset* dataset;
       FeatureExtractor* featExtr;
       void standardize(vector<double>& x, double sigmaFix);
+      vector<double> normalize(vector<double>& x);
       vector<double> calcSimilarity(Feature& p, vector<Centroid>& c);
       vector<double> calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
       vector<double> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
