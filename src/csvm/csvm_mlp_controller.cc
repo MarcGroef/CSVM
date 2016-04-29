@@ -19,8 +19,8 @@ MLPController::MLPController(){
 }
 
 void MLPController::setSettings(MLPSettings s){
-	mlps.reserve(s.nMLPs);
-	for(int i = 0; i < s.nMLPs;i++){
+	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
+	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 		MLPerceptron mlp;
 		std::cout << "mlp["<<i<<"]:";
 		mlp.setSettings(s); 
@@ -29,8 +29,8 @@ void MLPController::setSettings(MLPSettings s){
 } 
  
 void MLPController::initMLPs(){
-	//mlps.reserve(settings.mlpSettings.nMLPs);
-	//for(int i = 0; i < settings.mlpSettings.nMLPs;i++){
+	//mlps.reserve(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
+	//for(int i = 0; i < (settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);i++){
 	//	MLPerceptron mlp;
 	//	std::cout << "mlp["<<i<<"]:";
 	//	mlp.setSettings(settings.mlpSettings); 
@@ -50,6 +50,18 @@ void MLPController::createDataBySquares(){
 	validationSet.clear();
 }
 
+int MLPController::calculateSquareOfPatch(Patch patch){
+	int splits = settings.mlpSettings.nSplitsForPooling;
+	
+	int middlePatchX = patch.getX() + patch.getWidth() / 2;
+	int middlePatchY = patch.getY() + patch.getHeight() / 2;
+	
+	int imWidth  = settings.datasetSettings.imWidth;
+	int imHeight = settings.datasetSettings.imHeight;
+	
+	int square = middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
+	return square;
+}
 
 vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationSet){
 	int amountOfImagesCrossVal = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
@@ -68,7 +80,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 		//extract features from all patches
 		for(size_t patch = 0; patch < patches.size(); ++patch){
 			Feature newFeat = featExtr.extract(patches[patch]);
-			newFeat.setSquareId(patches[patch].getSquare());
+			newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
 			validationSet.push_back(newFeat);
 		}
 	}
@@ -86,7 +98,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
       //std::cout << "(mlp controller) getSquare: " << patch.getSquare() << std::endl;
       Feature newFeat = featExtr.extract(patch);
-      newFeat.setSquareId(patch.getSquare());
+      newFeat.setSquareId(calculateSquareOfPatch(patch));
       trainingData.push_back(newFeat);    
    }
 	return trainingData;	
@@ -108,7 +120,7 @@ void MLPController::trainMutipleMLPs(){
 }
 
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& trainingSet){
-	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nMLPs);
+	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
 			
 	for(unsigned int i = 0;i < trainingSet.size();i++){
 		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
@@ -149,7 +161,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
   //extract features from all patches
   for(size_t patch = 0; patch < patches.size(); ++patch){
 		Feature newFeat = featExtr.extract(patches[patch]);
-		newFeat.setSquareId(patches[patch].getSquare());
+		newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
 		dataFeatures.push_back(newFeat);
 	}
 		

@@ -12,7 +12,7 @@ namespace csvm{
    
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
-      int nMLPs;
+      int nSplitsForPooling;     // if this is 2 -> we have 2x2 pools and therefore 4 MLPs
       int nOutputUnits;
       int nHiddenUnits;
       int nInputUnits;
