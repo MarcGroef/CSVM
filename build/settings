@@ -1,5 +1,5 @@
 Dataset
-method CIFAR10
+method MNIST
 nTrainImages 100
 nTestImages 10
 imageWidth 36
@@ -43,11 +43,11 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 1
-nRandomPatches 15000
+nRandomPatches 19000
 
 
 MLP
-nSplitsForPooling 3
+nSplitsForPooling 1
 nHiddenUnits 400
 nInputUnits 36
 nOutputUnits 10
@@ -56,7 +56,7 @@ learningRate .01
 voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
-crossValidationSize 0.1
+crossValidationSize 0.2
 epochs 100
 stoppingCriterion 0.9
 

@@ -249,7 +249,7 @@ vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& allInputFeatures)
 	double minValue = allInputFeatures[0].content[0];
 	double maxValue = allInputFeatures[0].content[0];
 
-	//compute min and max of the all the inputs	
+	//compute min and max of all the inputs	
 	for(unsigned int i = 0; i < allInputFeatures.size();i++){
 		double possibleMaxValue = *std::max_element(allInputFeatures[i].content.begin(), allInputFeatures[i].content.end());
 		double possibleMinValue = *std::min_element(allInputFeatures[i].content.begin(), allInputFeatures[i].content.end()); 
@@ -285,6 +285,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 	for(int i = 0; i<epochs;i++){
 
 		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
+		//std::random_shuffle(validationSet.begin(), validationSet.end()); //This is a test!
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
@@ -300,6 +301,8 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			if(isErrorOnValidationSetLowEnough(validationSet))
 				break;	
 			std::cout << averageError/(double)randomFeatures.size() << std::endl;
+			std::cout << "size randomFeatures: " <<  randomFeatures.size() << std::endl;
+			std::cout << "size validationset: " <<  validationSet.size() << std::endl;
 		}
 		averageError = 0;
 	}

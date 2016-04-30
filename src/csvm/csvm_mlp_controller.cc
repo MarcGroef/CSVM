@@ -90,6 +90,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& trainingData){
     unsigned int nPatches = settings.scannerSettings.nRandomPatches;
     int sizeTrainingSet = (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize));
+    std::cout << "sizeTrainingSet " << sizeTrainingSet << std::endl;
     
 	vector<Feature> testData;
   
