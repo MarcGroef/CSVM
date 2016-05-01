@@ -1,0 +1,3 @@
+#!/bin/bash
+cd ../../../../..
+./CSVM settings > experimentsettings/cifar10/alpha/max/results1 &

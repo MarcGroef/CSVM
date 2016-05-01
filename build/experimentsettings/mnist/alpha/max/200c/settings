@@ -1,0 +1,74 @@
+
+Dataset
+method MNIST
+nTrainImages 60000
+nTestImages 10000
+imageWidth 36
+imageHeight 36
+
+General
+Classifier CSVM
+Codebook DEEPCODEBOOK
+nClasses 10
+debugOut FALSE
+normalOut TRUE
+liveROut FALSE
+
+Codebook
+generate TRUE
+standardize TRUE
+whitening FALSE
+rootNPartitions 2
+method KMEANS
+nClusters 200
+nIterations 50
+DeepArchitecture ALPHA
+DeepPoolingMethod MAX
+SimilarityFunction SOFT_ASSIGNMENT
+similaritySigma 0.05
+
+FeatureExtractor
+method CLEAN
+nBins 9
+cellSize 5
+cellStride 5
+patchSize 12
+padding None
+useColourPixel false
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing L2
+debugLevel 0
+
+CleanDescriptor
+standardize NONE
+
+ImageScanner
+patchHeight 12
+patchWidth 12
+scanStride 1
+nRandomPatches 200000
+
+SVM
+Kernel LINEAR
+AlphaDataInit 0.0000002
+nIterations 2500
+learningRate 0.000002
+SVM_C_Data 512
+Cost 1
+D2 1
+sigmaClassicSimilarity 500
+
+LinNet
+nIterations 10
+initWeight 0.01
+learningRate 0.000005
+
+ConvSVM
+loadLastUsed FALSE
+learningRate 0.00002
+nIterations 500
+initWeight 0.000
+CSVM_C 60
+L2 TRUE
+
