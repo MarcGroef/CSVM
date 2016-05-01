@@ -32,6 +32,11 @@ namespace csvm{
 	  DCB_COSINE_SOFT_ASSIGNMENT,
    };
    
+   enum PoolingMethod{
+     DCB_SUM,
+     DCB_MAX,
+   };
+   
    enum Architecture{
      DCB_ALPHA,
      DCB_BETA,
@@ -41,6 +46,7 @@ namespace csvm{
    struct DCBSettings{
       ActFunction simFunction;
       Architecture architecture;
+      PoolingMethod poolmethod;
       double similaritySigma;
       unsigned int nCentroids;
       unsigned int nRandomPatches;

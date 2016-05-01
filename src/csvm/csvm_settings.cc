@@ -149,6 +149,18 @@ void CSVMSettings::parseCodebookSettings(ifstream& stream) {
       exit(-1);
    }
    
+   stream >> setting;
+   if (setting == "DeepPoolingMethod") {
+      stream >> method;
+      if(method == "SUM")
+         dcbSettings.poolmethod = DCB_MAX;
+      else if(method == "MAX")
+         dcbSettings.poolmethod = DCB_SUM;
+   }else {
+      cout << "csvm::csvm_settings:parseCodebookData(): Error! Invalid settingsfile layout. Exitting...\n";
+      exit(-1);
+   }
+   
    //parse SimilarityFunction enum
    stream >> setting;
    if (setting == "SimilarityFunction") {

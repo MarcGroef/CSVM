@@ -1,18 +1,18 @@
 
 Dataset
-method MNIST
-nTrainImages 10000
-nTestImages 200
+method CIFAR10
+nTrainImages 50000
+nTestImages 10000
 imageWidth 36
 imageHeight 36
 
 General
 Classifier CSVM
-Codebook CODEBOOK
+Codebook DEEPCODEBOOK
 nClasses 10
 debugOut FALSE
 normalOut TRUE
-liveROut TRUE
+liveROut FALSE
 
 Codebook
 generate TRUE
@@ -20,9 +20,10 @@ standardize TRUE
 whitening FALSE
 rootNPartitions 2
 method KMEANS
-nClusters 200
-nIterations 40
+nClusters 600
+nIterations 50
 DeepArchitecture GAMMA
+DeepPoolingMethod MAX
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
@@ -33,7 +34,7 @@ cellSize 5
 cellStride 5
 patchSize 12
 padding None
-useColourPixel false
+useColourPixel true
 interpolation INTERPOLATE_LINEAR
 binmethod CROSSCOLOUR
 postprocessing L2
@@ -46,7 +47,7 @@ ImageScanner
 patchHeight 12
 patchWidth 12
 scanStride 1
-nRandomPatches 100000
+nRandomPatches 50000
 
 SVM
 Kernel LINEAR
@@ -65,9 +66,9 @@ learningRate 0.000005
 
 ConvSVM
 loadLastUsed FALSE
-learningRate 0.0000002
-nIterations 2000
-initWeight 0.000002
-CSVM_C 200
+learningRate 0.00002
+nIterations 500
+initWeight 0.000
+CSVM_C 60
 L2 TRUE
 

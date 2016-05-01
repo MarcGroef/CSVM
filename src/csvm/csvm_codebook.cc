@@ -256,6 +256,24 @@ vector< double > Codebook::getActivations(vector<Feature> features){
    return activations;
 }
 
+void standardizeFromTo(vector<double>& vec, unsigned int beginIdx, unsigned int endIdx, double sigmaFix){
+  double mean = 0;
+  unsigned int N = endIdx - beginIdx;
+  
+  for(size_t idx = beginIdx; idx != endIdx; ++idx){
+    mean += vec[idx];
+  }
+  mean /= N;
+  double stddev = 0;
+  for(size_t idx = beginIdx; idx != endIdx; ++idx){
+    stddev += (vec[idx] - mean) * (vec[idx] - mean);
+  }
+  stddev /= N;
+  stddev = sqrt(stddev + sigmaFix);
+  for(size_t idx = beginIdx; idx != endIdx; ++idx){
+    vec[idx] = (vec[idx] - mean) / stddev;
+  }
+}
 vector< double > Codebook::getQActivations(vector<Feature> features){
    
     unsigned int nQuadrants = settings.rootNPartitions * settings.rootNPartitions; //must be a square!
@@ -335,6 +353,10 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
       }
 
    }
+   //standardizeFromTo(activations,0,settings.numberVisualWords,0.01);
+   //standardizeFromTo(activations,settings.numberVisualWords,2 * settings.numberVisualWords ,0.01);
+   //standardizeFromTo(activations,2 * settings.numberVisualWords,3 * settings.numberVisualWords ,0.01);
+   //standardizeFromTo(activations,3 * settings.numberVisualWords,4 * settings.numberVisualWords ,0.01);
    standardize(activations, 0.01);
    return activations;
 }

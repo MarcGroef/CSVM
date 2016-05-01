@@ -261,15 +261,27 @@ vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, u
    unsigned int scanStride = fmSizes[depth] / plSizes[depth];
    unsigned int scanWidth = fmSizes[depth] % plSizes[depth] == 0 ? scanStride : scanStride + 1;
    
-  
+   bool firstIsPassed = false;
+   
    vector<double> sum(nCentroids[depth], 0);
    for(size_t cvX = x * scanStride; cvX < (x + 1) * scanWidth; ++cvX){
       for(size_t cvY = y * scanStride; cvY < (y + 1) * scanWidth; ++cvY){
+        vector<double> cvVals = calculateConvMapAt(im, depth, cvX, cvY);
          
-         vector<double> cvVals = calculateConvMapAt(im, depth, cvX, cvY);
-         for(size_t centrIdx = 0; centrIdx < nCentroids[depth]; ++centrIdx){
-            sum[centrIdx] += cvVals[centrIdx];
+         if(settings.poolmethod == DCB_SUM){
+            for(size_t centrIdx = 0; centrIdx < nCentroids[depth]; ++centrIdx){
+                sum[centrIdx] += cvVals[centrIdx];
+            }
+         }else if(settings.poolmethod == DCB_MAX){
+            for(size_t centrIdx = 0; centrIdx < nCentroids[depth]; ++centrIdx){
+                if(!firstIsPassed || cvVals[centrIdx] > sum[centrIdx]){  //here 'sum' is used to store the max-values.
+                  sum[centrIdx] = cvVals[centrIdx];
+                }
+                firstIsPassed = true;
+            }
+              
          }
+         
       }
    }
    return sum;
@@ -279,7 +291,7 @@ vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, u
    //cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
    if(depth == 0){//first layer, thus use image-patch extraction
       Feature f = featExtr->extract(scanner->getPatchAt(im, x, y));
-      //standardize(f.content,10);
+      standardize(f.content,10);
       return calcSimilarity(f, layerStack[depth]);
    }else{//recursive step
       vector<double> pm = calculatePoolMapAt(im, depth - 1, x, y);
