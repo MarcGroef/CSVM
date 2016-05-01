@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ../../../..
+cd ../../..
 ./CSVM experimentsettings/cifar10/gamma/max/400c/settings > experimentsettings/cifar10/gamma/max/400c/results1 &
 ./CSVM experimentsettings/cifar10/gamma/max/400c/settings > experimentsettings/cifar10/gamma/max/400c/results2 &
 ./CSVM experimentsettings/cifar10/gamma/max/400c/settings > experimentsettings/cifar10/gamma/max/400c/results3 &

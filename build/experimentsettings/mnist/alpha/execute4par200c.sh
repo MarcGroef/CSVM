@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ../../../..
+cd ../../..
 ./CSVM experimentsettings/mnist/alpha/max/200c/settings > experimentsettings/mnist/alpha/max/200c/results1 &
 ./CSVM experimentsettings/mnist/alpha/max/200c/settings > experimentsettings/mnist/alpha/max/200c/results2 &
 ./CSVM experimentsettings/mnist/alpha/max/200c/settings > experimentsettings/mnist/alpha/max/200c/results3 &
