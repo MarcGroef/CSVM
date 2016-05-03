@@ -53,11 +53,16 @@ void MLPController::createDataBySquares(){
 int MLPController::calculateSquareOfPatch(Patch patch){
 	int splits = settings.mlpSettings.nSplitsForPooling;
 	
-	int middlePatchX = patch.getX() + patch.getWidth() / 2;
-	int middlePatchY = patch.getY() + patch.getHeight() / 2;
-	
 	int imWidth  = settings.datasetSettings.imWidth;
 	int imHeight = settings.datasetSettings.imHeight;
+	
+	if (imWidth/splits < patch.getWidth() || imHeight/splits < patch.getHeight()){
+		std::cout << "(mlp_controller) ERROR: Patch size is too large for the pools. Please change either the patch size and/or the 'nSplitsForPoolig' in the settings file." << std::endl;
+		exit (-1);
+	}
+	
+	int middlePatchX = patch.getX() + patch.getWidth() / 2;
+	int middlePatchY = patch.getY() + patch.getHeight() / 2;
 	
 	int square = middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
 	return square;
@@ -65,11 +70,12 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 
 vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationSet){
 	int amountOfImagesCrossVal = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-	int noPatchesPerSquare  = validationSet.size() / amountOfImagesCrossVal; //Needs a fix, is now 0
+	//int noPatchesPerSquare  = validationSet.size() / amountOfImagesCrossVal; //Needs a fix, is now 0
 	
+	//std::cout << "noPatchesPerSquare: " << noPatchesPerSquare << "   " << "validationSet.size(): " << validationSet.size() << std::endl;
 	vector<Patch> patches;   
   
-    validationSet.reserve(noPatchesPerSquare*amountOfImagesCrossVal);
+  //validationSet.reserve(noPatchesPerSquare*amountOfImagesCrossVal);
   
 	for(int i = dataset.getTrainSize() - amountOfImagesCrossVal; i < dataset.getTrainSize();i++){
 		Image* im = dataset.getTrainImagePtr(i);
@@ -100,7 +106,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
       //std::cout << "(mlp controller) getSquare: " << patch.getSquare() << std::endl;
       Feature newFeat = featExtr.extract(patch);
       newFeat.setSquareId(calculateSquareOfPatch(patch));
-      trainingData.push_back(newFeat);    
+      trainingData.push_back(newFeat);   
    }
 	return trainingData;	
 }

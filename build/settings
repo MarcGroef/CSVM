@@ -1,5 +1,5 @@
 Dataset
-method MNIST
+method CIFAR10
 nTrainImages 100
 nTestImages 10
 imageWidth 36
@@ -27,7 +27,7 @@ method HOG
 nBins 9
 cellSize 6
 cellStride 6
-patchSize 12
+patchSize 24
 padding Identity
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
@@ -40,16 +40,16 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 12
-patchWidth 12
+patchHeight 24
+patchWidth 24
 scanStride 1
 nRandomPatches 19000
 
 
 MLP
-nSplitsForPooling 1
+nSplitsForPooling 3
 nHiddenUnits 400
-nInputUnits 36
+nInputUnits 81
 nOutputUnits 10
 nLayers 3
 learningRate .01
