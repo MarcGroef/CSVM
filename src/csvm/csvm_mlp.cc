@@ -285,11 +285,9 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 	for(int i = 0; i<epochs;i++){
 
 		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
-		//std::random_shuffle(validationSet.begin(), validationSet.end()); //This is a test!
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
-			//std::cout << "(mlp) randomFeatures.size(): " << randomFeatures.size() << std::endl;
 			setDesiredOutput(randomFeatures.at(j));
 			feedforward();
 			backpropgation();
@@ -301,8 +299,6 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			if(isErrorOnValidationSetLowEnough(validationSet))
 				break;	
 			std::cout << averageError/(double)randomFeatures.size() << std::endl;
-			std::cout << "size randomFeatures: " <<  randomFeatures.size() << std::endl;
-			std::cout << "size validationset: " <<  validationSet.size() << std::endl;
 		}
 		averageError = 0;
 	}
