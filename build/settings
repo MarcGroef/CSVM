@@ -1,5 +1,5 @@
 Dataset
-method CIFAR10
+method MNIST
 nTrainImages 100
 nTestImages 10
 imageWidth 36
@@ -47,9 +47,9 @@ nRandomPatches 19000
 
 
 MLP
-nSplitsForPooling 3
+nSplitsForPooling 1
 nHiddenUnits 400
-nInputUnits 81
+nInputUnits 144
 nOutputUnits 10
 nLayers 3
 learningRate .01
@@ -58,7 +58,7 @@ trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.2
 epochs 100
-stoppingCriterion 0.9
+stoppingCriterion 0.99
 
 SVM
 Kernel LINEAR
