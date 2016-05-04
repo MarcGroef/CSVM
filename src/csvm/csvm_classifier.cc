@@ -125,7 +125,6 @@ unsigned int CSVMClassifier::classify(Image* im){
          break;
 		case CL_MLP:
 		result = mlpController->mlpMultipleClassify(im);
-		//result = /*mlpController.*/mlpClassify(im);
 		break;
    }
    return result;

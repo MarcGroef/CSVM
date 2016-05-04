@@ -19,7 +19,6 @@ using namespace csvm;
 //-------start helpFunctions------
 void MLPerceptron::setSettings(MLPSettings s){
    this->settings = s;
-   cout << "settings set\n";
 }
 
 double good_exp(double y){
@@ -246,13 +245,13 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
 }
 
 void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
-	minValue = allInputFeatures[0].content[0];
-	maxValue = allInputFeatures[0].content[0];
+	minValue = inputFeatures[0].content[0];
+	maxValue = inputFeatures[0].content[0];
 
-	//compute min and max of the all the inputs	
-	for(unsigned int i = 0; i < allInputFeatures.size();i++){
-		double possibleMaxValue = *std::max_element(allInputFeatures[i].content.begin(), allInputFeatures[i].content.end());
-		double possibleMinValue = *std::min_element(allInputFeatures[i].content.begin(), allInputFeatures[i].content.end()); 
+	//compute min and max of all the inputs	
+	for(unsigned int i = 0; i < inputFeatures.size();i++){
+		double possibleMaxValue = *std::max_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end());
+		double possibleMinValue = *std::min_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end()); 
 		
 		if(possibleMaxValue > maxValue)
 			maxValue = possibleMaxValue;
@@ -263,11 +262,7 @@ void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
 }
 
 vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& inputFeatures){
-	
 	if (maxValue - minValue != 0){
-		std::cout << "maxValue: " << maxValue << std::endl;
-		std::cout << "minValue: " << minValue << std::endl;
-		
 		//normalize all the inputs
 		for(unsigned int i = 0; i < inputFeatures.size();i++){
 			for(int j = 0; j < inputFeatures[i].size;j++)
@@ -286,7 +281,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 	double averageError = 0;
 	int epochs = settings.epochs;
 	std::cout << "epochs: " << epochs << std::endl;
-	std::cout << "epoch,validationError, averageError" << std::endl;
+	std::cout << "epoch, \tvalidationError(image), \taverageError" << std::endl;
 	
 	for(int i = 0; i<epochs;i++){
 
@@ -294,7 +289,6 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
-			//std::cout << "(mlp) randomFeatures.size(): " << randomFeatures.size() << std::endl;
 			setDesiredOutput(randomFeatures.at(j));
 			feedforward();
 			backpropgation();
@@ -302,7 +296,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		}
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
-			std::cout << i << ", ";
+			std::cout << i << ", \t";
 			if(isErrorOnValidationSetLowEnough(validationSet))
 				break;	
 			std::cout << averageError/(double)randomFeatures.size() << std::endl;
@@ -323,8 +317,20 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 		if(validationSet[i*numPatchesPerSquare].getLabelId() == classify(vector<Feature>(first,last)))
 			classifiedCorrect++;
 	}
+	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", \t\t\t\t";
+	 
+	 
+	/*double averageValidationError = 0;
+	
+	for(unsigned int i = 0; i< validationSet.size(); i++){
+		activations[0] = validationSet.at(i).content;
+		feedforward();
+		averageValidationError += errorFunction();
+	} 
+	std::cout << averageValidationError/(double)validationSet.size() << ", \t\t\t";
+	 */
 	  
-	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", ";
+	
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
 	return 0;
@@ -336,6 +342,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	initializeVectors();
 	
 	checkingSettingsValidity(randomFeatures[0].size);
+	
 	setMinAndMaxValueNorm(randomFeatures);
 	
 	training(normalizeInput(randomFeatures),normalizeInput(validationSet));			
@@ -345,7 +352,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 
 //------start testing------------
 //classify recieves one image in features. It returns the class with the highest activation
-unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){				
+unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){	
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
@@ -357,8 +364,10 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	return mostVotedClass();
 }
 
-vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){				
+vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){			
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
+	
+	normalizeInput(imageFeatures);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		//std::cout << "Feature label: " << imageFeatures[i].getLabelId() << std::endl;

@@ -34,7 +34,6 @@ namespace csvm{
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
 		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-		unsigned int mlpClassify(Image* im);
 		void initMLPs();
 		
 		public:

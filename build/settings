@@ -25,14 +25,14 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
-cellSize 5
-cellStride 5
-patchSize 15
+cellSize 6
+cellStride 6
+patchSize 24
 padding Identity
-useColourPixel true
+useColourPixel false
 interpolation INTERPOLATE_LINEAR
-binmethod CROSSCOLOUR
-postprocessing clipping
+binmethod CROSSCOLOURl
+postprocessing L2
 debugLevel 0
 
 CleanDescriptor
@@ -40,25 +40,25 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 15
-patchWidth 15
+patchHeight 24
+patchWidth 24
 scanStride 1
-nRandomPatches 5000
+nRandomPatches 19000
 
 
 MLP
 nSplitsForPooling 2
 nHiddenUnits 400
-nInputUnits 81
+nInputUnits 144
 nOutputUnits 10
 nLayers 3
 learningRate .01
 voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
-crossValidationSize 0.1
+crossValidationSize 0.2
 epochs 100
-stoppingCriterion 0.9
+stoppingCriterion 0.99
 
 SVM
 Kernel LINEAR

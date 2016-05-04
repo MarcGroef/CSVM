@@ -1,5 +1,9 @@
 Dataset
+<<<<<<< HEAD
 method CIFAR10
+=======
+method MNIST
+>>>>>>> 4f6d2ff97452876fcfa6b2fdc95d1a41edbb0115
 nTrainImages 100
 nTestImages 10
 imageWidth 36
@@ -25,9 +29,15 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
+<<<<<<< HEAD
 cellSize 5
 cellStride 5
 patchSize 15
+=======
+cellSize 6
+cellStride 6
+patchSize 12
+>>>>>>> 4f6d2ff97452876fcfa6b2fdc95d1a41edbb0115
 padding Identity
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
@@ -40,6 +50,7 @@ standardize NONE
 
 
 ImageScanner
+<<<<<<< HEAD
 patchHeight 15
 patchWidth 15
 scanStride 1
@@ -50,14 +61,31 @@ MLP
 nSplitsForPooling 2
 nHiddenUnits 400
 nInputUnits 81
+=======
+patchHeight 12
+patchWidth 12
+scanStride 1
+nRandomPatches 19000
+
+
+MLP
+nSplitsForPooling 1
+nHiddenUnits 400
+nInputUnits 36
+>>>>>>> 4f6d2ff97452876fcfa6b2fdc95d1a41edbb0115
 nOutputUnits 10
 nLayers 3
 learningRate .01
 voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
+<<<<<<< HEAD
 crossValidationSize 0.1
 epochs 1000
+=======
+crossValidationSize 0.2
+epochs 100
+>>>>>>> 4f6d2ff97452876fcfa6b2fdc95d1a41edbb0115
 stoppingCriterion 0.9
 
 SVM
