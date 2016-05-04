@@ -132,6 +132,7 @@ unsigned int CSVMClassifier::classify(Image* im){
 }
 
 
+
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)
 void CSVMClassifier::exportCodebook(string filename){
    codebook.exportCodebook(filename);

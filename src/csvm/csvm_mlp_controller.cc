@@ -93,8 +93,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
     
 	vector<Feature> testData;
   
-	std::cout << "Feature extraction training set..." << std::endl;
-   for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
+	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
       //std::cout << "(mlp controller) getSquare: " << patch.getSquare() << std::endl;
       Feature newFeat = featExtr.extract(patch);

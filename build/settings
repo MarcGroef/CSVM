@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 100
-nTestImages 10
+nTrainImages 1000
+nTestImages 100
 imageWidth 36
 imageHeight 36
 
@@ -32,7 +32,7 @@ padding Identity
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
 binmethod CROSSCOLOUR
-postprocessing L2
+postprocessing clipping
 debugLevel 0
 
 CleanDescriptor
@@ -43,11 +43,11 @@ ImageScanner
 patchHeight 15
 patchWidth 15
 scanStride 1
-nRandomPatches 15000
+nRandomPatches 5000
 
 
 MLP
-nSplitsForPooling 3
+nSplitsForPooling 2
 nHiddenUnits 400
 nInputUnits 81
 nOutputUnits 10

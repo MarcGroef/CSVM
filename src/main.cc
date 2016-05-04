@@ -91,8 +91,16 @@ int main(int argc,char**argv){
    unsigned int nClasses = c.getNoClasses();
    
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
+   
+   //vector <Image*> testImages;
+   //testImages.reserve(nImages);
+   
    if(normalOut)
       cout << "Testing on trainingsset:\n";
+	//for(size_t im = 0;im < nImages; ++im){
+	//	testImages.push_back(c.dataset.getTrainImagePtr(im));
+	//}      
+    //c.mlpClassify(testImages);  
    for(size_t im = 0;im < nImages; ++im){
      
       unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));

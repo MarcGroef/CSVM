@@ -240,14 +240,14 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
 	if(settings.trainingType == "CROSSVALIDATION")
 		crossvaldiation(randomFeatures,validationSet);
 	else {
-		std::cout << "This training type is unknown. Change to a known voting type in the settings file" << std::endl;
+		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
 		exit(-1);
 	}		
 }
 
-vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& allInputFeatures){
-	double minValue = allInputFeatures[0].content[0];
-	double maxValue = allInputFeatures[0].content[0];
+void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
+	minValue = allInputFeatures[0].content[0];
+	maxValue = allInputFeatures[0].content[0];
 
 	//compute min and max of the all the inputs	
 	for(unsigned int i = 0; i < allInputFeatures.size();i++){
@@ -260,20 +260,26 @@ vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& allInputFeatures)
 		if(possibleMinValue < minValue)
 			minValue = possibleMinValue;
 	}
+}
 
+vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& inputFeatures){
+	
 	if (maxValue - minValue != 0){
+		std::cout << "maxValue: " << maxValue << std::endl;
+		std::cout << "minValue: " << minValue << std::endl;
+		
 		//normalize all the inputs
-		for(unsigned int i = 0; i < allInputFeatures.size();i++){
-			for(int j = 0; j < allInputFeatures[i].size;j++)
-				allInputFeatures[i].content[j] = (allInputFeatures[i].content[j] - minValue)/(maxValue - minValue);
+		for(unsigned int i = 0; i < inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
 		}
 	}else{
-		for(unsigned int i = 0; i<allInputFeatures.size();i++){
-			for(int j = 0; j < allInputFeatures[i].size;j++)
-				allInputFeatures[i].content[j] = 0;
+		for(unsigned int i = 0; i<inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = 0;
 		}
 	}
-	return allInputFeatures;		
+	return inputFeatures;		
 }
 
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
@@ -330,6 +336,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	initializeVectors();
 	
 	checkingSettingsValidity(randomFeatures[0].size);
+	setMinAndMaxValueNorm(randomFeatures);
 	
 	training(normalizeInput(randomFeatures),normalizeInput(validationSet));			
 }
