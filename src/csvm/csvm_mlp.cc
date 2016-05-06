@@ -262,6 +262,8 @@ void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
 }
 
 vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& inputFeatures){
+	if (maxValue == 1.0 && minValue == 0.0)
+		return inputFeatures;
 	if (maxValue - minValue != 0){
 		//normalize all the inputs
 		for(unsigned int i = 0; i < inputFeatures.size();i++){
