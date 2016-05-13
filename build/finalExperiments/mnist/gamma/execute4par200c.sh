@@ -1,31 +1,31 @@
 #!/bin/bash
 cd ../../..
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results1 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results2 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results3 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results4 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results1 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results2 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results3 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results4 &
 wait
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results5 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results6 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results7 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results8 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results5 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results6 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results7 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results8 &
 wait
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results9 &
-./CSVM experimentsettings/mnist/gamma/max/200c/settings > experimentsettings/mnist/gamma/max/200c/results10 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results9 &
+./CSVM finalExperiments/mnist/gamma/max/200c/settings > finalExperiments/mnist/gamma/max/200c/results10 &
 
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results1 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results2 &
-
-wait
-
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results3 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results4 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results5 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results6 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results1 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results2 &
 
 wait
 
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results7 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results8 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results9 &
-./CSVM experimentsettings/mnist/gamma/sum/200c/settings > experimentsettings/mnist/gamma/sum/200c/results10 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results3 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results4 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results5 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results6 &
+
+wait
+
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results7 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results8 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results9 &
+./CSVM finalExperiments/mnist/gamma/sum/200c/settings > finalExperiments/mnist/gamma/sum/200c/results10 &
