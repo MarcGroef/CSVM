@@ -1,8 +1,8 @@
 
 Dataset
 method CIFAR10
-nTrainImages 50000
-nTestImages 10000
+nTrainImages 1000
+nTestImages 1000
 imageWidth 36
 imageHeight 36
 
@@ -22,8 +22,8 @@ rootNPartitions 2
 method KMEANS
 nClusters 600
 nIterations 50
-DeepArchitecture GAMMA
-DeepPoolingMethod MAX
+DeepArchitecture ALPHA
+DeepPoolingMethod SUM
 SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
