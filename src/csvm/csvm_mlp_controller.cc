@@ -1,7 +1,8 @@
 #include <csvm/csvm_mlp_controller.h>
  
 /* This class will control the multiple MLPs for mlp pooling
- * 
+ * TODO: The normalization now happens inside of this class, because it is not really part of an mlp.
+ * 		  It still needs testing if it actually works.
  */
  
  using namespace std;
@@ -28,11 +29,41 @@ void MLPController::setSettings(MLPSettings s){
 	}
 } 
  
+void MLPController::setMinAndMaxValueNorm(Feature inputFeature){
+	double possibleMaxValue = *std::max_element(inputFeature.content.begin(), inputFeature.content.end());
+	double possibleMinValue = *std::min_element(inputFeature.content.begin(), inputFeature.content.end()); 
+		
+	if(possibleMaxValue > maxValue)
+		maxValue = possibleMaxValue;
+			
+	if(possibleMinValue < minValue)
+		minValue = possibleMinValue;
+}
+
+vector<Feature>& MLPController::normalized(vector<Feature>& inputFeatures){
+	if (maxValue - minValue != 0){
+		//normalize all the inputs
+		for(unsigned int i = 0; i < inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
+		}
+	}else{
+		for(unsigned int i = 0; i<inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = 0;
+		}
+	}
+	return inputFeatures;		
+} 
+ 
 void MLPController::initMLPs(){
 	createDataBySquares();
 }
 
 void MLPController::createDataBySquares(){
+	//trainingSet and validationSet are created so call by reference is possible.
+	//since both are large vector's call by reference is faster than call by value
+	
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
 
@@ -80,7 +111,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 			validationSet.push_back(newFeat);
 		}
 	}
-	return validationSet;
+	return normalized(validationSet);
 }
 
 vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& trainingData){
@@ -89,19 +120,21 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
     int sizeTrainingSet = (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize));
     
 	vector<Feature> testData;
-	std::cout << "creating random feature vector... "<< std::endl;
 	
-	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-	  //std::cout << "\r" << round((100/(double) nPatches)*(double) pIdx) << "% done";
-	  
+	minValue = 10000;
+	maxValue = 0;
+
+	std::cout << "cre1ating random feature vector... "<< std::endl;
+	
+	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){	  
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
-      //std::cout << "(mlp controller) getSquare: " << patch.getSquare() << std::endl;
       Feature newFeat = featExtr.extract(patch);
       newFeat.setSquareId(calculateSquareOfPatch(patch));
+      
+      setMinAndMaxValueNorm(newFeat);
       trainingData.push_back(newFeat);   
    }
-   std::cout << std::endl;
-	return trainingData;	
+	return normalized(trainingData);	
 }
 void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
     double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
@@ -129,27 +162,28 @@ vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& tra
 }
 
 unsigned int MLPController::mlpMultipleClassify(Image* im){
-  vector<Patch> patches;
+	vector<Patch> patches;
 	vector<Feature> dataFeatures;
 	vector<double> votingHistogramAllSquares = vector<double>(settings.mlpSettings.nOutputUnits,0);      
 
 	//extract patches
-  patches = imageScanner.scanImage(im);
+	patches = imageScanner.scanImage(im);
 
-  //allocate for new features
-  dataFeatures.reserve(patches.size());
+	//allocate for new features
+	dataFeatures.reserve(patches.size());
       
-  //extract features from all patches
-  for(size_t patch = 0; patch < patches.size(); ++patch){
+	//extract features from all patches
+	for(size_t patch = 0; patch < patches.size(); ++patch){
 		Feature newFeat = featExtr.extract(patches[patch]);
 		newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
 		dataFeatures.push_back(newFeat);
 	}
 		
-	vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures);
+	vector<vector<Feature> > testFeatures = splitUpDataBySquare(normalized(dataFeatures));
+	
 	vector<double> oneSquare = vector<double>(settings.mlpSettings.nOutputUnits,0);      
   
-  for(unsigned int i=0;i<mlps.size();i++){
+	for(unsigned int i=0;i<mlps.size();i++){
 		oneSquare = mlps[i].classifyPooling(testFeatures[i]);
 		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++)
 			votingHistogramAllSquares[j] += oneSquare[j];

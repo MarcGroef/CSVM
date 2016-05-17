@@ -22,11 +22,17 @@ namespace csvm{
 		
 		CSVMSettings settings;
 		CSVMDataset dataset;
+		
+		double minValue;
+		double maxValue;
 				
 		vector<vector<Feature> > splitTrain;
 		vector<vector<Feature> > splitVal;
 		vector<MLPerceptron> mlps;
 		
+		vector<Feature>& normalized(vector<Feature>& inputFeatures);
+		void setMinAndMaxValueNorm(Feature inputFeature);
+
 		
 		void createDataBySquares();
 		int calculateSquareOfPatch(Patch patch);

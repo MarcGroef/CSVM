@@ -35,9 +35,6 @@ namespace csvm{
     
       int numPatchesPerSquare;
       
-      double minValue;
-      double maxValue;
-      
       std::vector<int> layerSizes;
 
 	  std::vector<double> desiredOutput;
@@ -77,10 +74,8 @@ namespace csvm{
 		unsigned int mostVotedClass();
 	  //training:
 	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);	
-	    vector<Feature>& normalizeInput(vector<Feature>& inputFeatures); 	
         void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
-		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures);
 	    
    public:
       void setSettings(MLPSettings s);
