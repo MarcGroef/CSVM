@@ -62,8 +62,8 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 	int imWidth  = settings.datasetSettings.imWidth;
 	int imHeight = settings.datasetSettings.imHeight;
 	
-	int middlePatchX = patch.getX() + patch.getWidth() / 2;
-	int middlePatchY = patch.getY() + patch.getHeight() / 2;
+	int middlePatchX = patch.getX() + patch.getWidth()/2;
+	int middlePatchY = patch.getY() + patch.getHeight()/2;
 	
 	int square = middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
 	return square;
@@ -134,6 +134,15 @@ void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vec
     mlp.train(trainingSet,validationSet,noPatchesPerSquare);
 }
 
+vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& featureSet){
+	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
+			
+	for(unsigned int i = 0;i < featureSet.size();i++){
+		splitBySquares[featureSet[i].getSquareId()].push_back(featureSet[i]);	
+	}
+	return splitBySquares;
+}
+
 void MLPController::trainMutipleMLPs(){
 	initMLPs(); //change to create data for mlp
 	
@@ -144,16 +153,6 @@ void MLPController::trainMutipleMLPs(){
     splitTrain.clear();
     splitVal.clear();
 }
-
-vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& featureSet){
-	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
-			
-	for(unsigned int i = 0;i < featureSet.size();i++){
-		splitBySquares[featureSet[i].getSquareId()].push_back(featureSet[i]);	
-	}
-	return splitBySquares;
-}
-
 unsigned int MLPController::mlpMultipleClassify(Image* im){
 	vector<Patch> patches;
 	vector<Feature> dataFeatures;

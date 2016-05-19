@@ -285,18 +285,6 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 			classifiedCorrect++;
 	}
 	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", \t\t\t\t";
-	 
-	 
-	/*double averageValidationError = 0;
-	
-	for(unsigned int i = 0; i< validationSet.size(); i++){
-		activations[0] = validationSet.at(i).content;
-		feedforward();
-		averageValidationError += errorFunction();
-	} 
-	std::cout << averageValidationError/(double)validationSet.size() << ", \t\t\t";
-	 */
-	  
 	
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
@@ -310,9 +298,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	
 	checkingSettingsValidity(randomFeatures[0].size);
 	
-	//setMinAndMaxValueNorm(randomFeatures);
-	
-	//training(normalizeInput(randomFeatures),normalizeInput(validationSet));
 	training(randomFeatures,validationSet);			
 			
 }
