@@ -27,17 +27,28 @@ void MLPController::setSettings(MLPSettings s){
 	
 	//reserve global vectors
 	numPatchesPerSquare.reserve(nMLPs);
-	mlps.reserve(s.stackSize); //Stacksize??????
+	mlps.reserve(s.stackSize); 
 	
 	mlps = vector<vector<MLPerceptron> >(nMLPs);
-	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
+
 	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 		MLPerceptron mlp;
 		mlp.setSettings(s); 
 		mlps.push_back(mlp);
 	}
+	
+	//settings second parameter	
+	MLPerceptron mlp;
+	s.nInputUnits = nHiddenBottomLevel * 4;
+	//std::cout << "s.nInputUnits: " << s.nInputUnits << std::endl;
+	s.nHiddenUnits = nHiddenBottomLevel * 5;//find parameter
+	mlp.setSettings(s);
+	mlps[1].push_back(mlp);
+	
 } 
 //----------------End initialize MLP's----------------------------------
+ 
+//----------------Start training/validation set-------------------------
  
 void MLPController::setMinAndMaxValueNorm(Feature inputFeature){
 	double possibleMaxValue = *std::max_element(inputFeature.content.begin(), inputFeature.content.end());
@@ -246,6 +257,8 @@ void MLPController::createDataBySquares(){
 	trainingSet.clear();
 	validationSet.clear();
 }
+
+//----------------End training/validation set---------------------------
 
 //----------------start training MLP's----------------------------------
 void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
