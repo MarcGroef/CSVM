@@ -264,7 +264,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	}
 	
 	
-	vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures);
+	vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures); //normalize
 	
 	setInputFirstLevel(testFeatures);
 	
