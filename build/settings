@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 1000
-nTestImages 100
+nTrainImages 20
+nTestImages 5
 imageWidth 36
 imageHeight 36
 
@@ -47,7 +47,7 @@ nRandomPatches 19000
 
 
 MLP
-nSplitsForPooling 2
+nSplitsForPooling 1
 nHiddenUnits 400
 nInputUnits 144
 nOutputUnits 10
@@ -57,7 +57,7 @@ voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.2
-epochs 100
+epochs 20
 stoppingCriterion 0.99
 
 SVM

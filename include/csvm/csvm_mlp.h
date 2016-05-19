@@ -18,6 +18,7 @@ namespace csvm{
       int nHiddenUnits;
       int nInputUnits;
       int nLayers;
+      bool isWeightingMLP;
       
       double learningRate;
       string voting;
@@ -35,20 +36,22 @@ namespace csvm{
     
       int numPatchesPerSquare;
       
-      double minValue;
-      double maxValue;
+
       
       std::vector<int> layerSizes;
 
-	  std::vector<double> desiredOutput;
-	  std::vector<double> votingHistogram;
-	  std::vector<double> maxHiddenActivation;
+			//storage for probabilities of the right class when not isWeightingMLP and source of the desiered outputs if isWeihtingMLP
+			std::vector<double> desiredOutputsForWeighting; 
+			
+			std::vector<double> desiredOutput;
+			std::vector<double> votingHistogram;
+			std::vector<double> maxHiddenActivation;
 
-	  std::vector<vector<double> > biasNodes;
-	  std::vector<vector<double> > activations;
-	  std::vector<vector<double> > deltas;
+			std::vector<vector<double> > biasNodes;
+			std::vector<vector<double> > activations;
+			std::vector<vector<double> > deltas;
 
-	  std::vector<vector<vector<double> > > weights;
+			std::vector<vector<vector<double> > > weights;
 	  
 	  //private methods
 	  
@@ -69,24 +72,27 @@ namespace csvm{
         void hiddenDelta(int index);
         void adjustWeights(int index);
         void backpropgation();
-      //voting:
-	    void activationsToOutputProbabilities();
+		//voting:
+	  void activationsToOutputProbabilities();
 		void voting();
 		void majorityVoting();
 		void sumVoting();
 		unsigned int mostVotedClass();
 	  //training:
-	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);	
-	    vector<Feature>& normalizeInput(vector<Feature>& inputFeatures); 	
-        void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+	  void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);	
+	  
+	  void weightTraining(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 	
+    void crossvalidation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
-		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures);
+
 	    
    public:
       void setSettings(MLPSettings s);
       void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+      vector<double> runFeatureThroughMLP(Feature imageFeature);
       unsigned int classify(vector<Feature> imageFeatures);
-      vector<double> classifyPooling(vector<Feature> imageFeatures);
+      void setDesiredOutputsForWeighting(vector<double> dofw);
+      vector<double> getDesiredOutputsForWeighting();
    };
       
 }

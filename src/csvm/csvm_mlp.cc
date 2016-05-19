@@ -88,6 +88,14 @@ void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 	}
 }
 
+void MLPerceptron::setDesiredOutputsForWeighting(vector<double> dofw){
+	desiredOutputsForWeighting = dofw;
+}
+
+vector<double> MLPerceptron::getDesiredOutputsForWeighting(){
+	return desiredOutputsForWeighting;
+}
+
 //------end helpFunctions--------
 //------start FEEDFORWARD--------
 
@@ -176,6 +184,132 @@ void MLPerceptron::backpropgation(){
 		adjustWeights(i);
 }
 //--------end BACKPROPAGATION----
+
+//---------start training--------
+void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
+	if(settings.trainingType == "CROSSVALIDATION")
+		if(settings.isWeightingMLP)
+			weightTraining(randomFeatures,validationSet);
+		else
+			crossvalidation(randomFeatures,validationSet);
+	else {
+		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
+		exit(-1);
+	}		
+}
+
+
+
+
+
+//------------CHANGE THIS----------------
+void MLPerceptron::weightTraining(vector<Feature>& randomFeatures,vector<Feature>& validationSet){   
+	double averageError = 0;
+	int epochs = settings.epochs;
+	std::cout << "epochs: " << epochs << std::endl;
+	std::cout << "epoch, \tvalidationError(image), \taverageError" << std::endl;
+	
+	for(int i = 0; i<epochs;i++){
+
+		//std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
+		
+		for(unsigned int j = 0;j<randomFeatures.size();j++){
+			activations[0] = randomFeatures.at(j).content;
+			desiredOutput = vector<double>(1,desiredOutputsForWeighting[j]);
+			feedforward();
+			backpropgation();
+			averageError += errorFunction();
+		}
+		
+		//after x amount of iterations it should check on the validation set
+		if(i % settings.crossValidationInterval == 0){
+			std::cout << i << ", \t";
+			if(isErrorOnValidationSetLowEnough(validationSet))
+				break;	
+			std::cout << averageError/(double)randomFeatures.size() << std::endl;
+		}
+		averageError = 0;
+	}
+}
+
+
+void MLPerceptron::crossvalidation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
+	double averageError = 0;
+	int epochs = settings.epochs;
+	std::cout << "epochs: " << epochs << std::endl;
+	std::cout << "epoch, \tvalidationError(image), \taverageError" << std::endl;
+	
+	for(int i = 0; i<epochs;i++){
+
+		//std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
+		
+		for(unsigned int j = 0;j<randomFeatures.size();j++){
+			activations[0] = randomFeatures.at(j).content;
+			setDesiredOutput(randomFeatures.at(j));
+			feedforward();
+			backpropgation();
+			averageError += errorFunction();
+		}
+		
+		//after x amount of iterations it should check on the validation set
+		if(i % settings.crossValidationInterval == 0){
+			std::cout << i << ", \t";
+			if(isErrorOnValidationSetLowEnough(validationSet))
+				break;	
+			std::cout << averageError/(double)randomFeatures.size() << std::endl;
+		}
+		averageError = 0;
+	}
+	// putting the probability of the right class of a patch in the desired outputs for the weightingMLPs
+	for(unsigned int j = 0;j<randomFeatures.size();j++){
+		activations[0] = randomFeatures.at(j).content;
+		feedforward();
+		desiredOutputsForWeighting.push_back(activations[settings.nLayers -1][randomFeatures[j].getLabelId()]);
+	}
+}
+
+bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
+	int amountOfImValidationSet = validationSet.size()/numPatchesPerSquare;
+	//should be nummerPatchesPerQuarder
+	int classifiedCorrect = 0;
+
+	for(int i = 0; i < amountOfImValidationSet;i++){
+		vector<Feature>::const_iterator first = validationSet.begin() + (numPatchesPerSquare *i);
+		vector<Feature>::const_iterator last = validationSet.begin() + (numPatchesPerSquare *(i+1));	
+		
+		if(validationSet[i*numPatchesPerSquare].getLabelId() == classify(vector<Feature>(first,last)))
+			classifiedCorrect++;
+	}
+	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", \t\t\t\t";
+	 
+	 
+	/*double averageValidationError = 0;
+	
+	for(unsigned int i = 0; i< validationSet.size(); i++){
+		activations[0] = validationSet.at(i).content;
+		feedforward();
+		averageValidationError += errorFunction();
+	} 
+	std::cout << averageValidationError/(double)validationSet.size() << ", \t\t\t";
+	 */
+	  
+	
+	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
+		return 1;
+	return 0;
+}
+
+void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
+	numPatchesPerSquare = numPatchSquare;
+	
+	initializeVectors();
+	
+	checkingSettingsValidity(randomFeatures[0].size);
+	
+	training(randomFeatures,validationSet);			
+}
+
+//--------end training-----------
 //---------start VOTING----------
 
 void MLPerceptron::activationsToOutputProbabilities(){
@@ -233,125 +367,6 @@ unsigned int MLPerceptron::mostVotedClass(){
 }
 
 //---------end VOTING-----------
-
-//---------start training--------
-void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
-	if(settings.trainingType == "CROSSVALIDATION")
-		crossvaldiation(randomFeatures,validationSet);
-	else {
-		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
-		exit(-1);
-	}		
-}
-
-void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
-	minValue = inputFeatures[0].content[0];
-	maxValue = inputFeatures[0].content[0];
-
-	//compute min and max of all the inputs	
-	for(unsigned int i = 0; i < inputFeatures.size();i++){
-		double possibleMaxValue = *std::max_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end());
-		double possibleMinValue = *std::min_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end()); 
-		
-		if(possibleMaxValue > maxValue)
-			maxValue = possibleMaxValue;
-			
-		if(possibleMinValue < minValue)
-			minValue = possibleMinValue;
-	}
-}
-
-vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& inputFeatures){
-	if (maxValue == 1.0 && minValue == 0.0)
-		return inputFeatures;
-	if (maxValue - minValue != 0){
-		//normalize all the inputs
-		for(unsigned int i = 0; i < inputFeatures.size();i++){
-			for(int j = 0; j < inputFeatures[i].size;j++)
-				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
-		}
-	}else{
-		for(unsigned int i = 0; i<inputFeatures.size();i++){
-			for(int j = 0; j < inputFeatures[i].size;j++)
-				inputFeatures[i].content[j] = 0;
-		}
-	}
-	return inputFeatures;		
-}
-
-void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
-	double averageError = 0;
-	int epochs = settings.epochs;
-	std::cout << "epochs: " << epochs << std::endl;
-	std::cout << "epoch, \tvalidationError(image), \taverageError" << std::endl;
-	
-	for(int i = 0; i<epochs;i++){
-
-		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
-		
-		for(unsigned int j = 0;j<randomFeatures.size();j++){
-			activations[0] = randomFeatures.at(j).content;
-			setDesiredOutput(randomFeatures.at(j));
-			feedforward();
-			backpropgation();
-			averageError += errorFunction();
-		}
-		//after x amount of iterations it should check on the validation set
-		if(i % settings.crossValidationInterval == 0){
-			std::cout << i << ", \t";
-			if(isErrorOnValidationSetLowEnough(validationSet))
-				break;	
-			std::cout << averageError/(double)randomFeatures.size() << std::endl;
-		}
-		averageError = 0;
-	}
-}
-
-bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
-	int amountOfImValidationSet = validationSet.size()/numPatchesPerSquare;
-	//should be nummerPatchesPerQuarder
-	int classifiedCorrect = 0;
-
-	for(int i = 0; i < amountOfImValidationSet;i++){
-		vector<Feature>::const_iterator first = validationSet.begin() + (numPatchesPerSquare *i);
-		vector<Feature>::const_iterator last = validationSet.begin() + (numPatchesPerSquare *(i+1));	
-		
-		if(validationSet[i*numPatchesPerSquare].getLabelId() == classify(vector<Feature>(first,last)))
-			classifiedCorrect++;
-	}
-	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", \t\t\t\t";
-	 
-	 
-	/*double averageValidationError = 0;
-	
-	for(unsigned int i = 0; i< validationSet.size(); i++){
-		activations[0] = validationSet.at(i).content;
-		feedforward();
-		averageValidationError += errorFunction();
-	} 
-	std::cout << averageValidationError/(double)validationSet.size() << ", \t\t\t";
-	 */
-	  
-	
-	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
-		return 1;
-	return 0;
-}
-
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
-	numPatchesPerSquare = numPatchSquare;
-	
-	initializeVectors();
-	
-	checkingSettingsValidity(randomFeatures[0].size);
-	
-	setMinAndMaxValueNorm(randomFeatures);
-	
-	training(normalizeInput(randomFeatures),normalizeInput(validationSet));			
-}
-
-//--------end training-----------
-
 //------start testing------------
 //classify recieves one image in features. It returns the class with the highest activation
 unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){	
@@ -366,18 +381,12 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	return mostVotedClass();
 }
 
-vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){			
-	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
+//runFeatureThroughMLP recieves one patch in features. It returns the output of the MLP (e.g. 10 outputs for 10 classes)
+vector<double> MLPerceptron::runFeatureThroughMLP(Feature imageFeature){			
 	
-	normalizeInput(imageFeatures);
-	
-	for (unsigned int i = 0; i<imageFeatures.size();i++){
-		//std::cout << "Feature label: " << imageFeatures[i].getLabelId() << std::endl;
-		activations[0] = imageFeatures[i].content;
-		feedforward();
-		voting();
-	}
+	activations[0] = imageFeature.content;
+	feedforward();
 
-	return votingHistogram;
+	return activations[settings.nLayers - 1];
 }
 //-------end testing--------

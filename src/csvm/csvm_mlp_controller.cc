@@ -1,5 +1,8 @@
 #include <csvm/csvm_mlp_controller.h>
- 
+#include <math.h>
+//~ #include <iostream>
+//~ #include <fstream>
+
 /* This class will control the multiple MLPs for mlp pooling
  * 
  */
@@ -18,13 +21,30 @@ MLPController::MLPController(){
 	std::cout<<"lekker"<<std::endl;	
 }
 
+double MLPController::good_exp(double y){
+	if(y < -10.0) return 0;
+	if(y > 10.0) return 9999999.0;
+	
+	return exp(y);
+}
+
 void MLPController::setSettings(MLPSettings s){
 	std::cout << "set settings..." << std::endl;
 	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
+	weightingMLPs.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
+	outputMLP = vector<double>(s.nOutputUnits,0.0);
 	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 		MLPerceptron mlp;
+		s.isWeightingMLP = false;
 		mlp.setSettings(s); 
 		mlps.push_back(mlp);
+	}
+	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
+		MLPerceptron mlp;
+		s.isWeightingMLP = true;
+		s.nOutputUnits = 1;
+		mlp.setSettings(s); 
+		weightingMLPs.push_back(mlp);
 	}
 } 
  
@@ -111,12 +131,19 @@ void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vec
 
 void MLPController::trainMutipleMLPs(){
 	initMLPs();
-	for(unsigned int i=0;i<mlps.size();i++){ 		
+	for(unsigned int i=0;i<mlps.size();i++){ 	
+		setMinAndMaxValueNorm(splitTrain[i]);
+		splitTrain[i] = normalizeInput(splitTrain[i]);
+		splitVal[i] = normalizeInput(splitVal[i]);	
+		
+		std::cout << "(classifier) training mlp["<<i<<"]..." << std::endl;
 		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
-		std::cout << "(classifier) trained mlp["<<i<<"]" << std::endl;
-    }
-    splitTrain.clear();
-    splitVal.clear();
+		weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting());
+		std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
+		trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
+  }
+  splitTrain.clear();
+  splitVal.clear();
 }
 
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& trainingSet){
@@ -126,6 +153,121 @@ vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& tra
 		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
 	}
 	return splitBySquares;
+}
+
+vector<Feature>& MLPController::normalizeInput(vector<Feature>& inputFeatures){
+	if (maxValue == 1.0 && minValue == 0.0)
+		return inputFeatures;
+	if (maxValue - minValue != 0){
+		//normalize all the inputs
+		for(unsigned int i = 0; i < inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
+		}
+	}else{
+		for(unsigned int i = 0; i<inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = 0;
+		}
+	}
+	return inputFeatures;		
+}
+
+void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
+	minValue = inputFeatures[0].content[0];
+	maxValue = inputFeatures[0].content[0];
+
+	//compute min and max of all the inputs	
+	for(unsigned int i = 0; i < inputFeatures.size();i++){
+		double possibleMaxValue = *std::max_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end());
+		double possibleMinValue = *std::min_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end()); 
+		
+		if(possibleMaxValue > maxValue)
+			maxValue = possibleMaxValue;
+			
+		if(possibleMinValue < minValue)
+			minValue = possibleMinValue;
+	}
+}
+
+
+//----NEEDS TO BE CHANGED-----
+
+void MLPController::activationsToOutputProbabilities(){
+	double sumOfActivations = 0.0;
+	for(int i = 0; i< settings.mlpSettings.nOutputUnits; i++){
+		outputMLP[i] = good_exp(outputMLP[i]);
+		sumOfActivations += outputMLP[i];
+	}
+	for(int i = 0; i< settings.mlpSettings.nOutputUnits; i++)
+		outputMLP[i] /= sumOfActivations;
+}
+
+
+vector<double> MLPController::voting(vector<double> votingHistogram){
+	activationsToOutputProbabilities();
+	if(settings.mlpSettings.voting == "MAJORITY")
+		return majorityVoting(votingHistogram);
+	else if (settings.mlpSettings.voting == "SUM")
+		return sumVoting(votingHistogram);
+	else{ 
+		std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl; exit(-1);
+	}
+		
+}
+
+vector<double> MLPController::majorityVoting(vector<double> votingHistogram){       // get rid of votingHistogram[]
+	int indexHighestAct = 0;
+	double highestActivationClass = 0;
+	
+	for (int i=0; i<settings.mlpSettings.nOutputUnits;i++){
+		if(outputMLP[i]>highestActivationClass){
+			highestActivationClass = outputMLP[i];
+			indexHighestAct = i;
+		}	
+	}
+	votingHistogram[indexHighestAct] += 1;
+	return votingHistogram;
+}
+
+vector<double> MLPController::sumVoting(vector<double> votingHistogram){
+	for (int i=0; i<settings.mlpSettings.nOutputUnits;i++)
+			votingHistogram[i] += outputMLP[i];	
+	return votingHistogram;
+}
+
+unsigned int MLPController::mostVotedClass(vector<double> votingHistogram){
+	unsigned int mostVotedClass = 0;
+	double voteCounter = 0;
+	
+	for (int i = 0; i < settings.mlpSettings.nOutputUnits; i++){
+		if (votingHistogram[i] > voteCounter){   //what happens if two classes have the same amount of votes? the later is chos(higher label)
+			voteCounter = votingHistogram[i];
+			mostVotedClass = i;
+		}
+	}
+	return mostVotedClass;
+}
+//returns the summed output for one square
+vector<double> MLPController::classifyImageSquare(MLPerceptron firstMLP, MLPerceptron weightingMLP, vector<Feature> features){
+	vector<double> summedOutput (settings.mlpSettings.nOutputUnits,0.0);
+	vector<double> weight (1,0.0);
+	
+	//ofstream myfile;
+	//myfile.open("weightsVSoutputprobabilities.txt");
+	//myfile << "weights \t outputprobbilities" << std::endl;
+	
+	for(unsigned int i=0;i<features.size();i++){
+		outputMLP = firstMLP.runFeatureThroughMLP(features[i]);
+		weight = weightingMLP.runFeatureThroughMLP(features[i]);
+		//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
+		for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
+			outputMLP[j] *= weight[0];					//weighing the outputs
+		}
+		summedOutput = voting(summedOutput);
+	}
+	//myfile.close();
+	return summedOutput;
 }
 
 unsigned int MLPController::mlpMultipleClassify(Image* im){
@@ -150,18 +292,14 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	vector<double> oneSquare = vector<double>(settings.mlpSettings.nOutputUnits,0);      
   
   for(unsigned int i=0;i<mlps.size();i++){
-		oneSquare = mlps[i].classifyPooling(testFeatures[i]);
+		testFeatures[i] = normalizeInput(testFeatures[i]);
+		oneSquare = classifyImageSquare(mlps[i],weightingMLPs[i],testFeatures[i]);
+		
 		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++)
 			votingHistogramAllSquares[j] += oneSquare[j];
 	}
 	
-	unsigned int mostVotedClass=0;
-	double highestClassProb=0.0;
-	for(int i=0;i<settings.mlpSettings.nOutputUnits; i++){
-		if(votingHistogramAllSquares[i]>highestClassProb){
-			highestClassProb = votingHistogramAllSquares[i];
-			mostVotedClass = i;
-		}
-	}
- 	return mostVotedClass;
+
+ 	return mostVotedClass(votingHistogramAllSquares);
 }
+//-----/NEEDS TO BE CHANGED-----
