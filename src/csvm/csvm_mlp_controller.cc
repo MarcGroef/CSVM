@@ -15,8 +15,21 @@ MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSet
 	dataset = *ds;
 }
 
+//----------------Start initialize MLP's--------------------------------
 void MLPController::setSettings(MLPSettings s){
 	std::cout << "set settings..." << std::endl;
+	
+	
+	//Initialize global variables
+	nMLPs = pow(s.nSplitsForPooling,2);
+	validationSize = dataset.getTrainSize()*s.crossValidationSize;
+	trainSize = dataset.getTrainSize() - validationSize;
+	
+	//reserve global vectors
+	numPatchesPerSquare.reserve(nMLPs);
+	mlps.reserve(s.stackSize); //Stacksize??????
+	
+	mlps = vector<vector<MLPerceptron> >(nMLPs);
 	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
 	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 		MLPerceptron mlp;
@@ -24,6 +37,7 @@ void MLPController::setSettings(MLPSettings s){
 		mlps.push_back(mlp);
 	}
 } 
+//----------------End initialize MLP's----------------------------------
  
 void MLPController::setMinAndMaxValueNorm(Feature inputFeature){
 	double possibleMaxValue = *std::max_element(inputFeature.content.begin(), inputFeature.content.end());
@@ -67,6 +81,25 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 	
 	int square = middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
 	return square;
+}
+
+ 
+vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& validationSet,int start,int end){
+	vector<Patch> patches;   
+	for(int i = start; i < end;i++){	
+		Image* im = dataset.getTrainImagePtr(i);
+		 
+		//extract patches
+		patches = imageScanner.scanImage(im);
+      
+		//extract features from all patches
+		for(size_t patch = 0; patch < patches.size(); ++patch){
+			Feature newFeat = featExtr.extract(patches[patch]);
+			newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
+			validationSet.push_back(newFeat);
+		}
+	}
+	return validationSet;
 }
 
 vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationSet){
@@ -115,7 +148,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 }
 
 vector<Feature>& MLPController:: createOutputProbabilitiesVector(vector<Feature>& trainingSet){
-	unsigned int nOutputProbabilities = settings.nSplitsForPooling*nSplitsForPooling*nOutputUnits;
+	unsigned int nOutputProbabilities = settings.mlpSettings.nOutputUnits;
 	
 	for(int i = 0; i < trainSize; i++){
 		
@@ -129,71 +162,44 @@ vector<Feature>& MLPController:: createOutputProbabilitiesVector(vector<Feature>
 			//vector<double>::const_iterator start = input.begin() + (nHiddenBottomLevel*j);
 			//vector<double>::const_iterator end = input.begin() + (nHiddenBottomLevel*(j+1));
 			
-			vector<double> inputTemp = vector<double>(nHiddenBottomLevel*nMLPs,-10.0);
+			vector<double> inputTemp = vector<double>(nOutputProbabilities*nMLPs,-10.0);
 			
-			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
+			mlps[0][j].returnOutputActivations(vector<Feature>(first,last),inputTemp);
 			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
 		}
 		Feature newFeat = new Feature(input);	
 		newFeat.setLabelId(trainingSet[0][i*numPatchesPerSquare[0]].getLabelId());
 		
-		inputTrainFirstLevel.push_back(newFeat);
+		inputTrainSecondMLP.push_back(newFeat);
 	}
-	
-	
-	
-}
-
-void MLPController::setInputFirstLevel(vector<vector<Feature> >& trainingSet, vector<vector<Feature> >& validationSet){
-	//Vectors used in this function are accessed globaly
-	//TODO:reserve for the inputTrainNeeds to be done outside of this function.
-	int nHiddenBottomLevel = settings.mlpSettings.nHiddenUnits;
-	for(int i = 0; i < trainSize;i++){			
-		
-		vector<double> input;
-		input.reserve(nHiddenBottomLevel*nMLPs);
-	
-		for(int j=0;j<nMLPs;j++){			
-			vector<Feature>::const_iterator first = trainingSet[j].begin()+(numPatchesPerSquare[j]*i);
-			vector<Feature>::const_iterator last = trainingSet[j].begin()+(numPatchesPerSquare[j]*(i+1));
-
-			vector<double> inputTemp = vector<double>(nHiddenBottomLevel,-10.0);
-			
-			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
-			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
-		}
-		Feature newFeat = new Feature(input);	
-		newFeat.setLabelId(trainingSet[0][i*numPatchesPerSquare[0]].getLabelId());
-		
-		inputTrainFirstLevel.push_back(newFeat);
-	}
-	std::cout << "inputTrainFirstLevel: " << inputTrainFirstLevel.size() << std::endl;
+	std::cout << "inputTrainSecondMLP: " << inputTrainSecondMLP.size() << std::endl;
 	
 	for(int i = 0; i < validationSize;i++){			
 		vector<double> input;
-		input.reserve(nHiddenBottomLevel*nMLPs);
+		input.reserve(nOutputProbabilities*nMLPs);
 		
 		for(int j=0;j<nMLPs;j++){			
 			vector<Feature>::const_iterator first = validationSet[j].begin()+(numPatchesPerSquare[j]*i);
 			vector<Feature>::const_iterator last = validationSet[j].begin()+(numPatchesPerSquare[j]*(i+1));
 
-			vector<double> inputTemp = vector<double>(nHiddenBottomLevel,-10.0);
+			vector<double> inputTemp = vector<double>(nOutputProbabilities,-10.0);
 			
-			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
+			mlps[0][j].returnOutputActionvation(vector<Feature>(first,last),inputTemp);
 			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
 		}
 		
 		Feature newFeat = new Feature(input);	
 		newFeat.setLabelId(validationSet[0][i*numPatchesPerSquare[0]].getLabelId());
 		
-		inputValFirstLevel.push_back(newFeat);
+		inputValSecondMLP.push_back(newFeat);
 	}
-	std::cout << "inputValFirstLevel: " << inputValFirstLevel.size() << std::endl;
+	std::cout << "inputValSecondMLP: " << inputValSecondMLP.size() << std::endl;
 }
+
 		
-void MLPController::createDataFirstLevel(){
-  	inputTrainFirstLevel.reserve(settings.mlpSettings.nHiddenUnits*nMLPs);
-  	inputValFirstLevel.reserve(settings.mlpSettings.nHiddenUnits*nMLPs);
+void MLPController::createDataSecondtMLP(){
+  	inputTrainSecondMLP.reserve(settings.mlpSettings.nOutputUnits*nMLPs);
+  	inputValSecondMLP.reserve(settings.mlpSettings.nOutputUnits*nMLPs);
 
   	vector<Feature> trainingSet;
 	vector<Feature> validationSet;
@@ -213,6 +219,17 @@ void MLPController::createDataFirstLevel(){
 	splitVal.clear();	
 }
 
+void MLPController::createDataFirstMLP(){
+	vector<Feature> trainingSet;
+ 	vector<Feature> validationSet;
+	
+	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
+	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
+	
+	trainingSet.clear();
+	validationSet.clear();
+}
+
 
 
 
@@ -230,6 +247,7 @@ void MLPController::createDataBySquares(){
 	validationSet.clear();
 }
 
+//----------------start training MLP's----------------------------------
 void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
     double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
     int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
@@ -246,6 +264,8 @@ void MLPController::trainMutipleMLPs(){
     splitTrain.clear();
     splitVal.clear();
 }
+
+//---------------end training MLP's-------------------------------------
 
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& featureSet){
 	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);

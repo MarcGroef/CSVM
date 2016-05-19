@@ -345,4 +345,21 @@ vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){
 
 	return votingHistogram;
 }
+
+void MLPerceptron::returnOutputActionvation(vector<Feature> imageFeatures,vector<double>& maxOutputActivation){
+	for (unsigned int i = 0; i<imageFeatures.size();i++){
+		activations[0] = imageFeatures[i].content;
+		feedforward();
+		setMaxActivation(maxOutputActivation,activations[2]);	
+	}
+}
+
+void MLPerceptron::setMaxActivation(vector<double>& maxOutputActivation,vector<double> currentActivation){
+	for(unsigned int i=0;i<currentActivation.size();i++){
+		if(maxOutputActivation[i] < currentActivation[i])
+			maxOutputActivation[i] = currentActivation[i];
+	}
+}
+
+
 //-------end testing--------
