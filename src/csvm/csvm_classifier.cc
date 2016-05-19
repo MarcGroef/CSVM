@@ -43,7 +43,8 @@ void CSVMClassifier::initSVMs(){
 
 void CSVMClassifier::constructMLPs(){
    mlpController = new MLPController(&featExtr,&imageScanner,&settings,&dataset);
-   mlpController->setSettings(settings.mlpSettings);	
+   mlpController->setSettings(settings.mlpSettings);
+   std::cout << "mlpController setings set" << std::endl;	
 }
 
 //read settings file, and pass the settings to respective modules
@@ -76,10 +77,6 @@ void CSVMClassifier::setSettings(string settingsFile){
    convSVM.setSettings(settings.convSVMSettings);
    convSVM.debugOut = settings.debugOut;
    convSVM.normalOut = settings.normalOut;
-   
-   //mlp.setSettings(settings.mlpSettings);
-   //MLPController* mC = new MLPController(&featExtr, &imageScanner, &settings, &dataset);
-   //mlpController = *mC;
 
 }
 
@@ -102,7 +99,7 @@ void CSVMClassifier::train(){
          break;
 		case CL_MLP:
 		if(normalOut) cout << "Training MLPs..\n";
-		mlpController->trainMutipleMLPs();			
+		mlpController->trainMutipleMLPs();
          break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";
@@ -123,13 +120,13 @@ unsigned int CSVMClassifier::classify(Image* im){
       case CL_LINNET:
          result = lnClassify(im);
          break;
-		case CL_MLP:
+	   case CL_MLP:
 		result = mlpController->mlpMultipleClassify(im);
+		//mlpController->StackClassification(im);
 		break;
    }
    return result;
 }
-
 
 
 //export the current codebook to file (Only works for the normal codebook, not yet for the deep bow)

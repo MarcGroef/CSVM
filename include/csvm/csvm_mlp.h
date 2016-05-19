@@ -13,12 +13,11 @@ namespace csvm{
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
       int stackSize;
-      int nSplitsForPooling;     // if this is 2 -> we have 2x2 pools and therefore 4 MLPs
+      int nSplitsForPooling;
       int nOutputUnits;
       int nHiddenUnits;
       int nInputUnits;
       int nLayers;
-      
       double learningRate;
       string voting;
       string trainingType;
@@ -34,13 +33,15 @@ namespace csvm{
       MLPSettings settings;
     
       int numPatchesPerSquare;
+      double minValue;
+      double maxValue;
       
       std::vector<int> layerSizes;
 
 	  std::vector<double> desiredOutput;
 	  std::vector<double> votingHistogram;
 	  std::vector<double> maxHiddenActivation;
-
+	  
 	  std::vector<vector<double> > biasNodes;
 	  std::vector<vector<double> > activations;
 	  std::vector<vector<double> > deltas;
@@ -55,6 +56,8 @@ namespace csvm{
 		double errorFunction();
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
+	    void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
+
 	  //feedforward:
 		double activationFunction(double summedActivation);
 		void calculateActivationLayer(int bottomLayer);
@@ -73,15 +76,24 @@ namespace csvm{
 		void sumVoting();
 		unsigned int mostVotedClass();
 	  //training:
-	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);	
+	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+	    void setMinAndMaxValueNorm(vector<Feature>& inputFeatures);	
+	    vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures); 	
         void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
-	    
-   public:
+	  
+	  
+	  public:
       void setSettings(MLPSettings s);
       void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+      
       unsigned int classify(vector<Feature> imageFeatures);
       vector<double> classifyPooling(vector<Feature> imageFeatures);
+	  void classifyImage(vector<Feature>& imageFeatures);
+	  void returnHiddenActivation(vector<Feature> imageFeatures,vector<double>& maxHiddenActivation);
+
+      //getters
+      vector<double> getMaxActivation();
    };
       
 }

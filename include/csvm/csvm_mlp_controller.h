@@ -11,36 +11,50 @@
 #include "csvm_feature.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_mlp.h"
+#include "csvm_mlp_stacked.h"
 
 using namespace std;
 namespace csvm{
 	
 	class MLPController{
 		private:
+		int nMLPs;
+		int validationSize;
+		int trainSize;
+		vector<int> numPatchesPerSquare;
+		
 		ImageScanner imageScanner;
 		FeatureExtractor featExtr;
 		
 		CSVMSettings settings;
 		CSVMDataset dataset;
-		
-		double minValue;
-		double maxValue;
 				
 		vector<vector<Feature> > splitTrain;
 		vector<vector<Feature> > splitVal;
-		vector<MLPerceptron> mlps;
 		
-		vector<Feature>& normalized(vector<Feature>& inputFeatures);
-		void setMinAndMaxValueNorm(Feature inputFeature);
-
+		vector<Feature> inputTrainFirstLevel;
+		vector<Feature> inputValFirstLevel;
 		
-		void createDataBySquares();
-		int calculateSquareOfPatch(Patch patch);
-		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
+		vector<vector<MLPerceptron> > mlps;
+		
+		void createDataBottomLevel();
+		void createDataFirstLevel();
+		
+		
+		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
-		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-		void initMLPs();
+		void setInputFirstLevel(vector<vector<Feature> >& trainingSet);
+		
+		void setInputFirstLevel(vector<vector<Feature> >& trainingSet, vector<vector<Feature> >& validationSet);
+		//void setInputFirstLevel(MLPerceptron& mlp,vector<Feature>& testingSet);
+
+
+		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+		
+		unsigned int mlpClassify(Image* im);
+		int calculateSquareOfPatch(Patch patch);
+
 		
 		public:
 		

@@ -59,19 +59,7 @@ namespace csvm{
       void trainClassicSVMs();
       unsigned int classifyClassicSVMs(Image* im, bool printResults);
       
-      void initMLPs();
-      void trainMutipleMLPs();
       
-      //void trainMLP();
-      void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
-      
-      vector<Feature>& createValidationSet(vector<Feature>& validationSet);
-      vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingSet);
-	  
-	  vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-
-	  unsigned int mlpClassify(Image* im);
-	  unsigned int mlpMultipleClassify(Image* im);
 	  
    public:
       CSVMSettings settings;
