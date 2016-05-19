@@ -74,6 +74,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 
 	vector<Patch> patches;   
     
+	std::cout << "create validation feature vector... "<< std::endl;
 	for(int i = dataset.getTrainSize() - amountOfImagesCrossVal; i < dataset.getTrainSize();i++){
 		Image* im = dataset.getTrainImagePtr(i);
 		 
@@ -81,7 +82,6 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 		patches = imageScanner.scanImage(im);
       
 		//extract features from all patches
-		std::cout << "create validation feature vector... "<< std::endl;
 		for(size_t patch = 0; patch < patches.size(); ++patch){
 			Feature newFeat = featExtr.extract(patches[patch]);
 			newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
