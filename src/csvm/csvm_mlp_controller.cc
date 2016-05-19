@@ -43,7 +43,7 @@ void MLPController::setSettings(MLPSettings s){
 	//settings second parameter	
 	MLPerceptron mlp;
 	s.nInputUnits = nHiddenBottomLevel * 4;
-	std::cout << "s.nInputUnits: " << s.nInputUnits << std::endl;
+	//std::cout << "s.nInputUnits: " << s.nInputUnits << std::endl;
 	s.nHiddenUnits = nHiddenBottomLevel * 5;//find parameter
 	mlp.setSettings(s);
 	mlps[1].push_back(mlp);
@@ -59,18 +59,15 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 	int imWidth  = settings.datasetSettings.imWidth;
 	int imHeight = settings.datasetSettings.imHeight;
 	
-	int square = middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
-	return square;
+	return middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
 }
 
 void MLPController::createDataBottomLevel(){
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
-
-	int amountOfImagesCrossVal = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
 	
 	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
-	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,dataset.getTrainSize() - amountOfImagesCrossVal,dataset.getTrainSize()));
+	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
 	
 	trainingSet.clear();
 	validationSet.clear();
@@ -96,12 +93,12 @@ vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& valida
 
 vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& trainingData){
     unsigned int nPatches = settings.scannerSettings.nRandomPatches;
-    int sizeTrainingSet = (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize));
-    
+   
 	vector<Feature> testData;
 	std::cout << "create random feature vector of size: " << nPatches << std::endl;
+	
    for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
+      Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % trainSize));
       Feature newFeat = featExtr.extract(patch);
       newFeat.setSquareId(calculateSquareOfPatch(patch));
       trainingData.push_back(newFeat);    
