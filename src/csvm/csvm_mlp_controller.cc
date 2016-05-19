@@ -114,6 +114,108 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	return normalized(trainingData);	
 }
 
+vector<Feature>& MLPController:: createOutputProbabilitiesVector(vector<Feature>& trainingSet){
+	unsigned int nOutputProbabilities = settings.nSplitsForPooling*nSplitsForPooling*nOutputUnits;
+	
+	for(int i = 0; i < trainSize; i++){
+		
+		vector<double> input;
+		input.reserve(nOutputProbabilities*nMLPs);
+		
+		for(int j=0; j<nMLPs; j++){
+			vector<Feature>::const_iterator first = trainingSet[j].begin()+(numPatchesPerSquare[j]*i);
+			vector<Feature>::const_iterator last = trainingSet[j].begin()+(numPatchesPerSquare[j]*(i+1));
+	
+			//vector<double>::const_iterator start = input.begin() + (nHiddenBottomLevel*j);
+			//vector<double>::const_iterator end = input.begin() + (nHiddenBottomLevel*(j+1));
+			
+			vector<double> inputTemp = vector<double>(nHiddenBottomLevel*nMLPs,-10.0);
+			
+			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
+			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
+		}
+		Feature newFeat = new Feature(input);	
+		newFeat.setLabelId(trainingSet[0][i*numPatchesPerSquare[0]].getLabelId());
+		
+		inputTrainFirstLevel.push_back(newFeat);
+	}
+	
+	
+	
+}
+
+void MLPController::setInputFirstLevel(vector<vector<Feature> >& trainingSet, vector<vector<Feature> >& validationSet){
+	//Vectors used in this function are accessed globaly
+	//TODO:reserve for the inputTrainNeeds to be done outside of this function.
+	int nHiddenBottomLevel = settings.mlpSettings.nHiddenUnits;
+	for(int i = 0; i < trainSize;i++){			
+		
+		vector<double> input;
+		input.reserve(nHiddenBottomLevel*nMLPs);
+	
+		for(int j=0;j<nMLPs;j++){			
+			vector<Feature>::const_iterator first = trainingSet[j].begin()+(numPatchesPerSquare[j]*i);
+			vector<Feature>::const_iterator last = trainingSet[j].begin()+(numPatchesPerSquare[j]*(i+1));
+
+			vector<double> inputTemp = vector<double>(nHiddenBottomLevel,-10.0);
+			
+			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
+			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
+		}
+		Feature newFeat = new Feature(input);	
+		newFeat.setLabelId(trainingSet[0][i*numPatchesPerSquare[0]].getLabelId());
+		
+		inputTrainFirstLevel.push_back(newFeat);
+	}
+	std::cout << "inputTrainFirstLevel: " << inputTrainFirstLevel.size() << std::endl;
+	
+	for(int i = 0; i < validationSize;i++){			
+		vector<double> input;
+		input.reserve(nHiddenBottomLevel*nMLPs);
+		
+		for(int j=0;j<nMLPs;j++){			
+			vector<Feature>::const_iterator first = validationSet[j].begin()+(numPatchesPerSquare[j]*i);
+			vector<Feature>::const_iterator last = validationSet[j].begin()+(numPatchesPerSquare[j]*(i+1));
+
+			vector<double> inputTemp = vector<double>(nHiddenBottomLevel,-10.0);
+			
+			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
+			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
+		}
+		
+		Feature newFeat = new Feature(input);	
+		newFeat.setLabelId(validationSet[0][i*numPatchesPerSquare[0]].getLabelId());
+		
+		inputValFirstLevel.push_back(newFeat);
+	}
+	std::cout << "inputValFirstLevel: " << inputValFirstLevel.size() << std::endl;
+}
+		
+void MLPController::createDataFirstLevel(){
+  	inputTrainFirstLevel.reserve(settings.mlpSettings.nHiddenUnits*nMLPs);
+  	inputValFirstLevel.reserve(settings.mlpSettings.nHiddenUnits*nMLPs);
+
+  	vector<Feature> trainingSet;
+	vector<Feature> validationSet;
+	
+	splitTrain = splitUpDataBySquare(createCompletePictureSet(trainingSet,0,trainSize));
+	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
+	
+	for(int i=0;i<nMLPs;i++){
+		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
+		std::cout<< "numPatchersPerSquare[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
+	}
+	trainingSet.clear();
+	
+	setInputFirstLevel(splitTrain,splitVal);
+	
+	splitTrain.clear();
+	splitVal.clear();	
+}
+
+
+
+
 void MLPController::createDataBySquares(){
 	//trainingSet and validationSet are created so call by reference is possible.
 	//since both are large vector's call by reference is faster than call by value
