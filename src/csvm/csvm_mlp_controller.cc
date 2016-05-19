@@ -120,6 +120,8 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
       newFeat.setSquareId(calculateSquareOfPatch(patch));
       trainingData.push_back(newFeat);   
    }
+   setMinAndMaxValueNorm(trainingData);
+   traingData = normalizeInput(trainingData);
    std::cout << std::endl;
 	return trainingData;	
 }
@@ -132,10 +134,6 @@ void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vec
 void MLPController::trainMutipleMLPs(){
 	initMLPs();
 	for(unsigned int i=0;i<mlps.size();i++){ 	
-		setMinAndMaxValueNorm(splitTrain[i]);
-		splitTrain[i] = normalizeInput(splitTrain[i]);
-		splitVal[i] = normalizeInput(splitVal[i]);	
-		
 		std::cout << "(classifier) training mlp["<<i<<"]..." << std::endl;
 		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
 		weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting());
