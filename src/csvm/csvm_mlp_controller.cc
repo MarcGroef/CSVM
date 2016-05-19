@@ -121,7 +121,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
       trainingData.push_back(newFeat);   
    }
    setMinAndMaxValueNorm(trainingData);
-   traingData = normalizeInput(trainingData);
+   trainingData = normalizeInput(trainingData);
    std::cout << std::endl;
 	return trainingData;	
 }
@@ -188,8 +188,6 @@ void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
 	}
 }
 
-
-//----NEEDS TO BE CHANGED-----
 
 void MLPController::activationsToOutputProbabilities(){
 	double sumOfActivations = 0.0;
@@ -300,4 +298,4 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 
  	return mostVotedClass(votingHistogramAllSquares);
 }
-//-----/NEEDS TO BE CHANGED-----
+
