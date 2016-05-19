@@ -39,7 +39,7 @@ namespace csvm{
 		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
 		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
-		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
+		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& featureSet);
 		void initMLPs();
 		
 		public:

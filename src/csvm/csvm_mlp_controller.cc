@@ -15,10 +15,6 @@ MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSet
 	dataset = *ds;
 }
 
-MLPController::MLPController(){
-	std::cout<<"lekker"<<std::endl;	
-}
-
 void MLPController::setSettings(MLPSettings s){
 	std::cout << "set settings..." << std::endl;
 	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
@@ -60,31 +56,11 @@ void MLPController::initMLPs(){
 	createDataBySquares();
 }
 
-void MLPController::createDataBySquares(){
-	//trainingSet and validationSet are created so call by reference is possible.
-	//since both are large vector's call by reference is faster than call by value
-	
-	vector<Feature> trainingSet;
- 	vector<Feature> validationSet;
-
-	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
-	splitVal   = splitUpDataBySquare(createValidationSet(validationSet));
-	
-	trainingSet.clear();
-	validationSet.clear();
-}
-
 int MLPController::calculateSquareOfPatch(Patch patch){
 	int splits = settings.mlpSettings.nSplitsForPooling;
 	
 	int imWidth  = settings.datasetSettings.imWidth;
 	int imHeight = settings.datasetSettings.imHeight;
-	
-/*	if (imWidth/splits < patch.getWidth() || imHeight/splits < patch.getHeight()){
-		std::cout << "(mlp_controller) ERROR: Patch size is too large for the pools. Please change either the patch size and/or the 'nSplitsForPoolig' in the settings file." << std::endl;
-		exit (-1);
-	}
-*/
 	
 	int middlePatchX = patch.getX() + patch.getWidth() / 2;
 	int middlePatchY = patch.getY() + patch.getHeight() / 2;
@@ -105,6 +81,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 		patches = imageScanner.scanImage(im);
       
 		//extract features from all patches
+		std::cout << "create validation feature vector... "<< std::endl;
 		for(size_t patch = 0; patch < patches.size(); ++patch){
 			Feature newFeat = featExtr.extract(patches[patch]);
 			newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
@@ -124,7 +101,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	minValue = 10000;
 	maxValue = 0;
 
-	std::cout << "cre1ating random feature vector... "<< std::endl;
+	std::cout << "create random feature vector... "<< std::endl;
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){	  
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
@@ -136,6 +113,21 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
    }
 	return normalized(trainingData);	
 }
+
+void MLPController::createDataBySquares(){
+	//trainingSet and validationSet are created so call by reference is possible.
+	//since both are large vector's call by reference is faster than call by value
+	
+	vector<Feature> trainingSet;
+ 	vector<Feature> validationSet;
+
+	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
+	splitVal   = splitUpDataBySquare(createValidationSet(validationSet));
+	
+	trainingSet.clear();
+	validationSet.clear();
+}
+
 void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
     double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
     int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
@@ -143,20 +135,21 @@ void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vec
 }
 
 void MLPController::trainMutipleMLPs(){
-	initMLPs();
+	initMLPs(); //change to create data for mlp
+	
 	for(unsigned int i=0;i<mlps.size();i++){ 		
 		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
-		std::cout << "(classifier) trained mlp["<<i<<"]" << std::endl;
+		std::cout << "trained mlp["<<i<<"]\n\n";
     }
     splitTrain.clear();
     splitVal.clear();
 }
 
-vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& trainingSet){
+vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& featureSet){
 	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
 			
-	for(unsigned int i = 0;i < trainingSet.size();i++){
-		splitBySquares[trainingSet[i].getSquareId()].push_back(trainingSet[i]);	
+	for(unsigned int i = 0;i < featureSet.size();i++){
+		splitBySquares[featureSet[i].getSquareId()].push_back(featureSet[i]);	
 	}
 	return splitBySquares;
 }
@@ -191,6 +184,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	
 	unsigned int mostVotedClass=0;
 	double highestClassProb=0.0;
+	
 	for(int i=0;i<settings.mlpSettings.nOutputUnits; i++){
 		if(votingHistogramAllSquares[i]>highestClassProb){
 			highestClassProb = votingHistogramAllSquares[i];
