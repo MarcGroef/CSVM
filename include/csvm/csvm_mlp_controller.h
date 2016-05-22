@@ -19,8 +19,13 @@ namespace csvm{
 	class MLPController{
 		private:
 		int nMLPs;
+		int nHiddenBottomLevel;
 		int validationSize;
 		int trainSize;
+		
+		vector<double> minValues;
+		vector<double> maxValues;
+		
 		vector<int> numPatchesPerSquare;
 		
 		ImageScanner imageScanner;
@@ -28,34 +33,31 @@ namespace csvm{
 		
 		CSVMSettings settings;
 		CSVMDataset dataset;
-				
-		vector<vector<Feature> > splitTrain;
-		vector<vector<Feature> > splitVal;
-		
-		vector<Feature> inputTrainFirstLevel;
-		vector<Feature> inputValFirstLevel;
 		
 		vector<vector<MLPerceptron> > mlps;
 		
-		void createDataBottomLevel();
-		void createDataFirstLevel();
+		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures,int index);	
+	    vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures,int index);
 		
+		void createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal);
+		void createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel);
 		
 		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
-		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-		void setInputFirstLevel(vector<vector<Feature> >& trainingSet);
 		
-		void setInputFirstLevel(vector<vector<Feature> >& trainingSet, vector<vector<Feature> >& validationSet);
-		//void setInputFirstLevel(MLPerceptron& mlp,vector<Feature>& testingSet);
-
-
+		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
+		
+		void setInputTestingDataFirstLevel(vector<vector<Feature> >& testFeaturesBySquare, vector<Feature>& testDataFirstLevel);
+		
+		void setFirstLevelTrainData(vector<vector<Feature> >& splitTrain,vector<Feature>& inputTrainFirstLevel);
+		void setFirstLevelValData(vector<vector<Feature> >& splitVal,vector<Feature>& inputValFirstLevel);
+				
 		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
 		
 		unsigned int mlpClassify(Image* im);
+		
 		int calculateSquareOfPatch(Patch patch);
 
-		
 		public:
 		
 		MLPController();
