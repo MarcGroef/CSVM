@@ -57,8 +57,12 @@ double MLPerceptron::errorFunction(){
 }
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
+	if (settings.nLayers == 0){ 
+		std::cout << "There is something wrong with the way the settings are set. layerSizes is equal to 0. This should never be the case. " << std::endl;
+		exit(-1);
+	}
 	
-	layerSizes		 = vector<int>(settings.nLayers,0);
+	layerSizes	= vector<int>(settings.nLayers,0);
 	
 	layerSizes[0] = settings.nInputUnits; 
 	layerSizes[1] = settings.nHiddenUnits;
@@ -244,6 +248,40 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
 	}		
 }
 
+
+void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
+	minValue = inputFeatures[0].content[0];
+	maxValue = inputFeatures[0].content[0];
+
+	//compute min and max of all the inputs	
+	for(unsigned int i = 0; i < inputFeatures.size();i++){
+		double possibleMaxValue = *std::max_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end());
+		double possibleMinValue = *std::min_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end()); 
+		
+		if(possibleMaxValue > maxValue)
+			maxValue = possibleMaxValue;
+			
+		if(possibleMinValue < minValue)
+			minValue = possibleMinValue;
+	}
+}
+
+vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& inputFeatures){
+	if (maxValue - minValue != 0){
+		//normalize all the inputs
+		for(unsigned int i = 0; i < inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
+		}
+	}else{
+		for(unsigned int i = 0; i<inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = 0;
+		}
+	}
+	return inputFeatures;		
+}
+
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	double averageError = 0;
 	int epochs = settings.epochs;
@@ -286,24 +324,25 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 	}
 	std::cout << 1.0-(double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", \t\t\t\t";
 	 
-	 
-	/*double averageValidationError = 0;
-	
-	for(unsigned int i = 0; i< validationSet.size(); i++){
-		activations[0] = validationSet.at(i).content;
-		feedforward();
-		averageValidationError += errorFunction();
-	} 
-	std::cout << averageValidationError/(double)validationSet.size() << ", \t\t\t";
-	 */
-	  
-	
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
 	return 0;
 }
 
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
+void MLPerceptron::trainFirstLayerMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
+	numPatchesPerSquare = numPatchSquare;
+	
+	initializeVectors();
+	
+	checkingSettingsValidity(randomFeatures[0].size);
+	
+	setMinAndMaxValueNorm(randomFeatures);
+	
+	training(normalizeInput(randomFeatures),validationSet);			
+			
+}
+
+void MLPerceptron::trainSecondLayerMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
 	numPatchesPerSquare = numPatchSquare;
 	
 	initializeVectors();
@@ -312,7 +351,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	
 	//setMinAndMaxValueNorm(randomFeatures);
 	
-	//training(normalizeInput(randomFeatures),normalizeInput(validationSet));
 	training(randomFeatures,validationSet);			
 			
 }
@@ -320,33 +358,30 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 //--------end training-----------
 
 //------start testing------------
-//classify recieves one image in features. It returns the class with the highest activation
-unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){	
+void MLPerceptron::classifyImage(vector<Feature>& imageFeatures){
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
+	
+	normalizeInput(imageFeatures);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward();
 		voting();
 	}
+}
+
+//classify recieves one image in features. It returns the class with the highest activation
+unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
+	classifyImage(imageFeatures);		
 	return mostVotedClass();
 }
 
-vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){			
-	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
-	
-	//normalizeInput(imageFeatures);
-	
-	for (unsigned int i = 0; i<imageFeatures.size();i++){
-		activations[0] = imageFeatures[i].content;
-		feedforward();
-		voting();
-	}
-
+vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){				
+	classifyImage(imageFeatures);
 	return votingHistogram;
 }
 
-void MLPerceptron::returnOutputActionvation(vector<Feature> imageFeatures,vector<double>& maxOutputActivation){
+void MLPerceptron::returnOutputActivation(vector<Feature> imageFeatures,vector<double>& maxOutputActivation){
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward();

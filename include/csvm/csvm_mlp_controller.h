@@ -12,39 +12,51 @@
 #include "csvm_feature_extractor.h"
 #include "csvm_mlp.h"
 
+
 using namespace std;
 namespace csvm{
 	
 	class MLPController{
 		private:
+		int nMLPs;
+		int validationSize;
+		int trainSize;
+		vector<int> numPatchesPerSquare;
+		
 		ImageScanner imageScanner;
 		FeatureExtractor featExtr;
 		
 		CSVMSettings settings;
 		CSVMDataset dataset;
-		
-		double minValue;
-		double maxValue;
 				
 		vector<vector<Feature> > splitTrain;
 		vector<vector<Feature> > splitVal;
-		vector<MLPerceptron> mlps;
 		
-		vector<Feature>& normalized(vector<Feature>& inputFeatures);
-		void setMinAndMaxValueNorm(Feature inputFeature);
-
+		vector<Feature> inputTrainSecondLayerMLP;
+		vector<Feature> inputValSecondLayerMLP;
 		
-		void createDataBySquares();
-		int calculateSquareOfPatch(Patch patch);
-		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
+		vector<vector<MLPerceptron> > mlps;
+		
+		void createDataFirstLayerMLP();
+		void createDataSecondLayerMLP();
+	
+		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
-		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
-		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& featureSet);
-		void initMLPs();
+		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
+		
+		
+		void createOutputProbabilitiesVectorTest(vector<vector<Feature> >& testSet);
+		void createOutputProbabilitiesVectorTrain(vector<vector<Feature> >& trainingSet, vector<vector<Feature> >& validationSet);
+		
+		unsigned int mlpClassify(Image* im);
+		int calculateSquareOfPatch(Patch patch);
+		
+		void trainFirstLayerMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+		void trainSecondLayerMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+	    
 		
 		public:
 		
-		MLPController();
 		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds);
 		
 		void setSettings(MLPSettings s);
