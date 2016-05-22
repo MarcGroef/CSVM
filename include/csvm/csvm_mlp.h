@@ -25,6 +25,8 @@ namespace csvm{
       double crossValidationSize;
       int epochs;
       double stoppingCriterion;
+      int nHiddenUnitsFirstLayer;
+      int scanStrideFirstLayer;
    };
 
    class MLPerceptron{

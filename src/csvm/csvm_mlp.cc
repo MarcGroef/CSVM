@@ -276,7 +276,6 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 
 bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
 	int amountOfImValidationSet = validationSet.size()/numPatchesPerSquare;
-	//should be nummerPatchesPerQuarder
 	int classifiedCorrect = 0;
 
 	for(int i = 0; i < amountOfImValidationSet;i++){

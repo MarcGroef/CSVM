@@ -46,13 +46,10 @@ namespace csvm{
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
 		
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-		
-		void setInputTestingDataFirstLevel(vector<vector<Feature> >& testFeaturesBySquare, vector<Feature>& testDataFirstLevel);
-		
-		void setFirstLevelTrainData(vector<vector<Feature> >& splitTrain,vector<Feature>& inputTrainFirstLevel);
-		void setFirstLevelValData(vector<vector<Feature> >& splitVal,vector<Feature>& inputValFirstLevel);
 				
-		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+		void setFirstLevelData(vector<vector<Feature> >& splitDataBottom,vector<Feature>& dataFirstLevel, int sizeData);
+		
+		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet, int numPatchesPerSquare);
 		
 		unsigned int mlpClassify(Image* im);
 		
@@ -60,7 +57,6 @@ namespace csvm{
 
 		public:
 		
-		MLPController();
 		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds);
 		
 		void setSettings(MLPSettings s);
