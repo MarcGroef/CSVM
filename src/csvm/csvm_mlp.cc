@@ -120,7 +120,6 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 	}	
 }
 
-
 void MLPerceptron::feedforward(){
 	for(int i=0;i<settings.nLayers-1;i++)
 		calculateActivationLayer(i);
@@ -262,6 +261,16 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward();
 			backpropgation();
 			averageError += errorFunction();
+			for(int k=0;k<settings.nInputUnits;k++){
+				std::cout << activations[0][k] << ", ";	
+			}
+			std::cout << std::endl;
+		
+			for(int k=0;k<settings.nHiddenUnits;k++){
+				std::cout << activations[1][k] << ", ";	
+			}
+			std::cout << std::endl;
+		
 		}
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
@@ -271,6 +280,10 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			std::cout << averageError/(double)randomFeatures.size() << std::endl;
 		}
 		averageError = 0;
+	}
+	
+	for(int i=0;i<10;i++){
+		std::cout << activations[2][i] << std::endl;
 	}
 }
 
@@ -295,6 +308,11 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
 	numPatchesPerSquare = numPatchSquare;
 
+	std::cout << "inputUnits: "<< settings.nInputUnits << std::endl;
+	std::cout << "hiddenUnits: "<< settings.nHiddenUnits << std::endl;
+	std::cout << "outputUnits: "<< settings.nOutputUnits << std::endl;
+
+
 	initializeVectors();
 	
 	checkingSettingsValidity(randomFeatures[0].size);
@@ -305,7 +323,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 //------start testing------------
 void MLPerceptron::classifyImage(vector<Feature>& imageFeatures){
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
-	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward();
