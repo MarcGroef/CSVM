@@ -48,6 +48,7 @@ nRandomPatches 19000
 
 MLP
 nSplitsForPooling 2
+nHiddenSecondLayerMLP 100
 nHiddenUnits 400
 nInputUnits 144
 nOutputUnits 10

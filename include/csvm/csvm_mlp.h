@@ -13,7 +13,7 @@ namespace csvm{
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
       //int nLayersOfMLPs;
-      //int nHiddenSecondLayerMLP;
+      int nHiddenSecondLayerMLP;
       int nSplitsForPooling;     // if this is 2 -> we have 2x2 pools and therefore 4 MLPs
       int nOutputUnits;
       int nHiddenUnits;
@@ -34,9 +34,7 @@ namespace csvm{
       MLPSettings settings;
     
       int numPatchesPerSquare;
-      double minValue;
-      double maxValue;
-      
+     
       std::vector<int> layerSizes;
 
 	  std::vector<double> desiredOutput;
@@ -76,9 +74,7 @@ namespace csvm{
 		void sumVoting();
 		unsigned int mostVotedClass();
 	  //training:
-	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);	
-	    void setMinAndMaxValueNorm(vector<Feature>& inputFeatures);
-	    vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures);
+	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
 	void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
 	    bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
 	    

@@ -41,7 +41,7 @@ void MLPController::setSettings(MLPSettings s){
 	MLPerceptron mlp;
 	s.nInputUnits = s.nOutputUnits * nMLPs;
 	//std::cout << "s.nInputUnits: " << s.nInputUnits << std::endl;
-	//s.nHiddenUnits = s.nHiddenSecondLayerMLP;//find parameter
+	s.nHiddenUnits = s.nHiddenSecondLayerMLP;//find parameter
 	mlp.setSettings(s);
 	mlps[1].push_back(mlp);
 	
@@ -70,6 +70,10 @@ void MLPController::createDataFirstLayerMLP(){
 	
 	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
 	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
+	
+	for(int i=0;i<nMLPs;i++){
+		setMinAndMaxValueNorm(splitTrain[i]);
+	}
 	
 	trainingSet.clear();
 	validationSet.clear();
@@ -211,6 +215,38 @@ void MLPController:: createOutputProbabilitiesVectorTest(vector<vector<Feature> 
 	inputTrainSecondLayerMLP.push_back(newFeat);
 }
  
+ void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
+	minValue = inputFeatures[0].content[0];
+	maxValue = inputFeatures[0].content[0];
+
+	//compute min and max of all the inputs	
+	for(unsigned int i = 0; i < inputFeatures.size();i++){
+		double possibleMaxValue = *std::max_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end());
+		double possibleMinValue = *std::min_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end()); 
+		
+		if(possibleMaxValue > maxValue)
+			maxValue = possibleMaxValue;
+			
+		if(possibleMinValue < minValue)
+			minValue = possibleMinValue;
+	}
+}
+
+vector<Feature>& MLPController::normalizeInput(vector<Feature>& inputFeatures){
+	if (maxValue - minValue != 0){
+		//normalize all the inputs
+		for(unsigned int i = 0; i < inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
+		}
+	}else{
+		for(unsigned int i = 0; i<inputFeatures.size();i++){
+			for(int j = 0; j < inputFeatures[i].size;j++)
+				inputFeatures[i].content[j] = 0;
+		}
+	}
+	return inputFeatures;		
+}
 //----------------End training/validation set---------------------------
 
 //----------------start training MLP's----------------------------------
@@ -228,6 +264,11 @@ void MLPController::trainSecondLayerMLP(MLPerceptron& mlp,vector<Feature>& train
 
 void MLPController::trainMutipleMLPs(){
     createDataFirstLayerMLP();
+	
+	for(int i=0;i<nMLPs;i++){
+		normalizeInput(splitTrain[i]);
+		normalizeInput(splitVal[i]);
+	}
 	
     for(int i=0;i<nMLPs;i++){ 		
 		trainFirstLayerMLP(mlps[0][i],splitTrain[i],splitVal[i]);
@@ -269,6 +310,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	}
 	
 	vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures);
+	
 	createOutputProbabilitiesVectorTest(testFeatures);    
 	 
 	int answer = mlps[1][0].classify(inputTrainSecondLayerMLP);

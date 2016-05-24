@@ -21,6 +21,9 @@ namespace csvm{
 		int nMLPs;
 		int validationSize;
 		int trainSize;
+		double minValue;
+		double maxValue;
+      
 		vector<int> numPatchesPerSquare;
 		
 		ImageScanner imageScanner;
@@ -44,6 +47,8 @@ namespace csvm{
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
 		
+		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures);	
+		vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures);
 		
 		void createOutputProbabilitiesVectorTest(vector<vector<Feature> >& testSet);
 		void createOutputProbabilitiesVectorTrain(vector<vector<Feature> >& trainingSet, vector<vector<Feature> >& validationSet);

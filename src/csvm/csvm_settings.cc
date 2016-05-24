@@ -36,6 +36,15 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
    
    stream >> setting;
+   if (setting == "nHiddenSecondLayerMLP") {
+      stream >> mlpSettings.nHiddenSecondLayerMLP;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   stream >> setting;
    if (setting == "nHiddenUnits") {
       stream >> mlpSettings.nHiddenUnits;
    }
@@ -43,16 +52,6 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
-   
-   /*stream >> setting;
-   if (setting == "nHiddenSecondLayerMLP") {
-      stream >> mlpSettings.nHiddenSecondLayerMLP;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }*/
-   
    
    stream >> setting;
    if (setting == "nInputUnits") {
