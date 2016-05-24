@@ -320,7 +320,6 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	std::cout << "hiddenUnits: "<< settings.nHiddenUnits << std::endl;
 	std::cout << "outputUnits: "<< settings.nOutputUnits << std::endl;
 
-
 	initializeVectors();
 	
 	checkingSettingsValidity(randomFeatures[0].size);

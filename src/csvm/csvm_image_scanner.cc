@@ -18,7 +18,6 @@ ImageScanner::ImageScanner(){
    srand(time(NULL));
 }
 
-
 //set settings (done by classifier)
 void ImageScanner::setSettings(ImageScannerSettings set){
   settings = set;
@@ -72,4 +71,9 @@ Patch ImageScanner::getRandomPatch(Image* image){
    
   
    return Patch(image,(rand() % scanWidth), (rand() % scanHeight),settings.patchWidth,settings.patchHeight);
+}
+
+void ImageScanner::setScannerStride(unsigned int stride){
+	settings.stride = stride;
+	std::cout << "The stride of the Image scanner is increased to " << stride << std::endl;
 }

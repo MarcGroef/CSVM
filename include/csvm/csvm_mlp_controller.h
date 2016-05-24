@@ -54,6 +54,9 @@ namespace csvm{
 		unsigned int mlpClassify(Image* im);
 		
 		int calculateSquareOfPatch(Patch patch);
+		
+		void exportFeatureSet(string filename, vector<Feature>& featureSet);
+		void importFeatureSet(string filename);
 
 		public:
 		

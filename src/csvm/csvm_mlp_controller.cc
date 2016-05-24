@@ -101,6 +101,11 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 }
 //-------------------end: init MLP's--------------------------
 //-------------------start: data creation methods-------------
+/* 
+ * First parameter is the feature vector that needs to be filled with complete pictures. All the features of one pictures will behind each other.
+ * Second parameter is the start in the training set
+ * Third parameter is the end in the trainigset
+ * */
 vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& validationSet,int start,int end){
 	vector<Patch> patches;   
 	for(int i = start; i < end;i++){	
@@ -161,6 +166,9 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 		newFeat.setSquareId(calculateSquareOfPatch(patch));
 		trainingData.push_back(newFeat);    
 	}
+	exportFeatureSet("test_trainingdata_featureset",trainingData);
+	importFeatureSet("test_trainingdata_featureset");
+	exit(-1);
 	return trainingData;	
 }
 //--------------------end: bottom level---------------------------
@@ -196,17 +204,26 @@ void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,
 		dataFirstLevel.push_back(newFeat);
 	}
 }
-/* In the first level the mlp training is now based on complete images. 
- * This is different from the bottom level where it is based on random patches */
+/* 
+ * In the first level the mlp training is now based on complete images. 
+ * This is different from the bottom level where it is based on random patches 
+ * */
 void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel){
   	vector<Feature> trainingSet;
 	vector<Feature> validationSet;
 	
-	//increasing the stride has to happens somewhere here to decrease the number of pictures in the training set
+	//increasing the stride to decrease the size of the complete picture set
+	imageScanner.setScannerStride(settings.mlpSettings.scanStrideFirstLayer);
 	
 	vector<vector<Feature> > splitTrain = splitUpDataBySquare(createCompletePictureSet(trainingSet,0,trainSize));
 	vector<vector<Feature> > splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
-
+	
+	//set new number of patches per square
+	for(int i=0;i<nMLPs;i++){
+		numPatchesPerSquare[i] = splitVal[i].size()/validationSize;
+		std::cout<< "numPatchersPerSquare with stride increase[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
+	}
+	
 	trainingSet.clear();
 	validationSet.clear();
 	
@@ -225,6 +242,11 @@ void MLPController::trainMutipleMLPs(){
 	vector<vector<Feature> > splitTrain;
 	vector<vector<Feature> > splitVal;
 	
+	//TODO: 
+	/*
+	 * try to export splitTrain and splitVal for different kinds of patchs size and randomfeature sizes.
+	 * This could really help in speeding up the training phase from the mlp.
+	 * */
 	createDataBottomLevel(splitTrain,splitVal);
 	
 	for(int i=0;i<nMLPs;i++){
@@ -234,7 +256,7 @@ void MLPController::trainMutipleMLPs(){
 	
 	for(int i=0;i<nMLPs;i++){ 		
 		mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
-		std::cout << "mlp["<<i<<"] from level 0 finished training" << std::endl << std::endl;
+		//std::cout << "mlp["<<i<<"] from level 0 finished training" << std::endl << std::endl;
     }
     
     std::cout << "create training data for first level... " << std::endl;
@@ -265,6 +287,16 @@ void MLPController::trainMutipleMLPs(){
 }
 //--------------end: training MLP's-----------------------------
 //-------------start: MLP classification------------------------
+union charDouble{
+   char chars[8];
+   double doubleVal;
+};
+
+union charInt{
+   char chars[4];
+   unsigned int intVal;
+};
+
 unsigned int MLPController::mlpMultipleClassify(Image* im){
 	int numOfImages = 1;
 	
@@ -294,9 +326,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	std::cout << std::endl;
 	*/
 	normalizeInput(testDataFirstLevel,1); 
-	
-	vector<double> votingHisto = mlps[1][0].classifyPooling(testDataFirstLevel);
-	
+		
 	//for(int i=0;i<10;i++){
 	//	std::cout << votingHisto[i] << std::endl;
 	//}
@@ -308,3 +338,83 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	return answer;
 }
 //---------------------end:MLP classification------------------------
+//---------------------start:import/export---------------------------
+void MLPController::exportFeatureSet(string filename, vector<Feature>& featureSet){
+   /* Featureset file conventions:
+    * 
+    * first,  Dataset			: 0, CIFAR10 1,MNIST   (1 byte)
+    * second, Amount of features: 0-10.000.000         (4 bytes)
+    * third,  PatchWidth		: 0-36                 (1 byte)
+    * fourth, PatchHeigth		: 0-36                 (1 byte)  
+    * fifth,  FeatSize			: 0-10.000             (1 byte)
+    * sixth,  FeatExtractor		: 0,HOG 1,CLEAN        (1 byte)  
+    * 
+    * Now each lines consists all the double values in the feature
+    *  
+    *  No seperator characters are used
+   */
+   
+   charInt fancyInt;
+   charDouble fancyDouble;
+   
+   //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
+   //unsigned int wordSize = bow[0].content.size();
+   ofstream file(filename.c_str(),  ios::binary);
+   /*
+   //write dataset used
+	stringstream ss;
+	ss << settings.datasetSettings.type;
+	fancyInt.intVal = (ss.str() == "CIFAR10" ? 0 : 1); //is this correct?
+	file.write(fancyInt.chars, 4);
+	ss.clear();
+   */
+   //write amount of features
+   fancyInt.intVal = settings.scannerSettings.nRandomPatches;
+   file.write(fancyInt.chars, 1);
+   /*
+   //write patchWidth
+   fancyInt.intVal = settings.scannerSettings.patchWidth;
+   file.write(fancyInt.chars, 1);
+   
+   //write patchWidth
+   fancyInt.intVal = settings.scannerSettings.patchHeight;
+   file.write(fancyInt.chars, 1);
+   
+   //write FeatSize
+   fancyInt.intVal = settings.mlpSettings.nInputUnits;
+   file.write(fancyInt.chars, 1);   
+   
+   //write FeatExtractor method
+   ss << settings.featureSettings.featureType;
+   fancyInt.intVal = (ss.str() == "HOG" ? 0 : 1);
+   file.write(fancyInt.chars, 1); 
+   */
+   /*
+	for(unsigned int i=0;i<settings.scannerSettings.nRandomPatches;i++){
+		for(int j=0;j<settings.mlpSettings.nInputUnits;j++){
+			fancyDouble.doubleVal = featureSet[i].content[j];
+			file.write(fancyDouble.chars, 8);
+		}
+	}
+   */
+   file.close();
+}
+
+void MLPController::importFeatureSet(string filename){
+   charInt fancyInt;
+   charDouble fancyDouble;
+   unsigned int typesize;
+   unsigned int featDims;
+   
+   ifstream file(filename.c_str(), ios::binary);
+   
+   file.read(fancyInt.chars,1);
+   std::cout << fancyInt.intVal << std::endl;
+   
+   //std::cout << file.read(fancyInt.chars,4) << std::endl;
+   //std::cout << file.read(fancyInt.chars,1) << std::endl;
+   //std::cout << file.read(fancyInt.chars,1) << std::endl;
+   
+   file.close();
+}
+//---------------------end:import/export-----------------------------
