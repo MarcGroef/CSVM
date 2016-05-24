@@ -261,17 +261,29 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward();
 			backpropgation();
 			averageError += errorFunction();
+			/*std::cout << "information input units: " << std::endl;
+			
 			for(int k=0;k<settings.nInputUnits;k++){
 				std::cout << activations[0][k] << ", ";	
 			}
 			std::cout << std::endl;
 		
+			std::cout << "information hidden units: " << std::endl;
+
 			for(int k=0;k<settings.nHiddenUnits;k++){
 				std::cout << activations[1][k] << ", ";	
 			}
 			std::cout << std::endl;
-		
+
+			std::cout << "information output units: " << std::endl;
+
+			for(int k=0;k<settings.nOutputUnits;k++){
+				std::cout << activations[2][k] << ", ";	
+			}
+			std::cout << std::endl;	
+			*/	
 		}
+		
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
 			std::cout << i << ", ";
@@ -280,10 +292,6 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			std::cout << averageError/(double)randomFeatures.size() << std::endl;
 		}
 		averageError = 0;
-	}
-	
-	for(int i=0;i<10;i++){
-		std::cout << activations[2][i] << std::endl;
 	}
 }
 

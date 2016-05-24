@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 100
-nTestImages 10
+nTrainImages 3000
+nTestImages 100
 imageWidth 36
 imageHeight 36
 
@@ -43,13 +43,13 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 100
+nRandomPatches 100000
 
 
 MLP
 stackSize 2
 nSplitsForPooling 2
-nHiddenUnits 100
+nHiddenUnits 300
 nInputUnits 144
 nOutputUnits 10
 nLayers 3
@@ -58,7 +58,7 @@ voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.1
-epochs 10
+epochs 100
 stoppingCriterion 0.9
 nHiddenUnitsFirstLayer 400
 scanStrideFirstLayer 4

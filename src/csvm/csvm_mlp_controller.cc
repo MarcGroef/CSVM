@@ -47,6 +47,12 @@ void MLPController::setSettings(MLPSettings s){
 	s.nHiddenUnits = s.nHiddenUnitsFirstLayer;//find parameter
 	mlp.setSettings(s);
 	mlps[1].push_back(mlp);
+	/*
+	for(int i = 0; i < 4;i++){
+		std::cout << "memory location of mlp["<<i<<"]: " << &mlps[0][i] << std::endl;
+	}
+	std::cout << "memory location of first level mlp: " << &mlps[1][0] << std::endl;
+	exit(-1);*/
 }
 
 void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures, int index){
@@ -159,8 +165,14 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 }
 //--------------------end: bottom level---------------------------
 //--------------------start: first level--------------------------
+
+double Rand(double fMin, double fMax){
+    double f = (double)rand() / RAND_MAX;
+    return fMin + f * (fMax - fMin);
+}
+
 void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,vector<Feature>& dataFirstLevel, int sizeData){
-		for(int i = 0; i < sizeData;i++){			
+	for(int i = 0; i < sizeData;i++){			
 		vector<double> input;
 		input.reserve(nHiddenBottomLevel*nMLPs);
 		
@@ -173,7 +185,11 @@ void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,
 			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
 			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
 		}
-		
+		/*
+		for(unsigned int j =0;j<input.size();j++)
+			if(input[j] == 0)
+				input[j] = 0.1;
+		*/
 		Feature newFeat = new Feature(input);	
 		newFeat.setLabelId(splitDataBottom[0][i*numPatchesPerSquare[0]].getLabelId());
 		
@@ -264,20 +280,19 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	//extract features from all patches
 	for(size_t patch = 0; patch < patches.size(); ++patch){
 		Feature newFeat = featExtr.extract(patches[patch]);
-		newFeat.setSquareId(patches[patch].getSquare());
+		newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
 		dataFeatures.push_back(newFeat);
 	}
 	
-	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(normalizeInput(dataFeatures,0)); //split test features by square
-	
+	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(normalizeInput(dataFeatures,0)); //split test features by square	
 	vector<Feature> testDataFirstLevel; //empty feature vector that will be filled with first level features
 	setFirstLevelData(testFeaturesBySquare,testDataFirstLevel,numOfImages);
-	
-	//for(int i=0;i<testDataFirstLevel[0].size;i++){
-	//	std::cout << testDataFirstLevel[0].content[i] << ", "; 
-	//}
-	//std::cout << std::endl;
-	
+	/*
+	for(int i=0;i<testDataFirstLevel[0].size;i++){
+		std::cout << testDataFirstLevel[0].content[i] << ", "; 
+	}
+	std::cout << std::endl;
+	*/
 	normalizeInput(testDataFirstLevel,1); 
 	
 	vector<double> votingHisto = mlps[1][0].classifyPooling(testDataFirstLevel);
