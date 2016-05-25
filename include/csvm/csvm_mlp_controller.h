@@ -42,6 +42,10 @@ namespace csvm{
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& featureSet);
 		void initMLPs();
 		
+		void importFeatureSet(string filename, vector<Feature>& featureVector);
+		void exportFeatureSet(string filename, vector<Feature>& featureVector);
+		
+		
 		public:
 		
 		MLPController();
