@@ -25,8 +25,8 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
-cellSize 2
-cellStride 2
+cellSize 6
+cellStride 6
 patchSize 24
 padding Identity
 useColourPixel false
@@ -40,8 +40,8 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 10
-patchWidth 10
+patchHeight 24
+patchWidth 24
 scanStride 1
 nRandomPatches 50000
 
@@ -49,16 +49,19 @@ nRandomPatches 50000
 MLP
 nSplitsForPooling 2
 nHiddenUnits 400
-nInputUnits 225
+nInputUnits 144
 nOutputUnits 10
 nLayers 3
 learningRate .01
 voting SUM
-trainingType VALIDATION
+trainingType CROSSVALIDATION
 crossValidationInterval 10
-crossValidationSize 0.2
-epochs 100
+crossValidationSize 0.1
+epochs 50
 stoppingCriterion 0.99
+readInData 0
+randomFeatName CIFAR10
+validationName CIDAR10
 
 SVM
 Kernel LINEAR

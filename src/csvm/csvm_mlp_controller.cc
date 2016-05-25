@@ -18,6 +18,9 @@ MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSet
 void MLPController::setSettings(MLPSettings s){
 	std::cout << "set settings..." << std::endl;
 	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
+	trainSize = dataset.getTrainSize();
+	validationSize = trainSize * settings.mlpSettings.crossValidationSize;
+
 	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 		MLPerceptron mlp;
 		mlp.setSettings(s); 
@@ -38,7 +41,6 @@ void MLPController::setMinAndMaxValueNorm(Feature inputFeature){
 
 vector<Feature>& MLPController::normalized(vector<Feature>& inputFeatures){
 	if (maxValue - minValue != 0){
-		//normalize all the inputs
 		for(unsigned int i = 0; i < inputFeatures.size();i++){
 			for(int j = 0; j < inputFeatures[i].size;j++)
 				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
@@ -101,7 +103,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	minValue = 10000;
 	maxValue = 0;
 
-	std::cout << "create random feature vector... "<< std::endl;
+	std::cout << "create random feature vector of size " << nPatches << std::endl;
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){	  
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % sizeTrainingSet));
@@ -121,18 +123,33 @@ void MLPController::createDataBySquares(){
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
 
-	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
-	splitVal   = splitUpDataBySquare(createValidationSet(validationSet));
+	if(settings.mlpSettings.readInData){
+		importFeatureSet(settings.mlpSettings.randomFeatName,trainingSet);
+		importFeatureSet(settings.mlpSettings.validationName,validationSet);
+	} else {
+		trainingSet = createRandomFeatureVector(trainingSet);
+		validationSet = createValidationSet(validationSet);
+		}
+
+	splitTrain = splitUpDataBySquare(trainingSet);
+	splitVal   = splitUpDataBySquare(validationSet);
 	
+	for(unsigned int i=0;i<mlps.size();i++){
+		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
+	}
+	std::cout << "lekker"<< std::endl;
+	exportFeatureSet("RandomFeat_CIFAR10_50.000_24x24",trainingSet);
+	exportFeatureSet("Validation_CIFAR10_50.000_24x24",validationSet);
+
 	trainingSet.clear();
 	validationSet.clear();
 }
 
-void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
+/*void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
     double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
     int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
     mlp.train(trainingSet,validationSet,noPatchesPerSquare);
-}
+}*/
 
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& featureSet){
 	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
@@ -147,7 +164,7 @@ void MLPController::trainMutipleMLPs(){
 	initMLPs(); //change to create data for mlp
 	
 	for(unsigned int i=0;i<mlps.size();i++){ 		
-		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
+		mlps[i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
 		std::cout << "trained mlp["<<i<<"]\n\n";
     }
     splitTrain.clear();
@@ -273,8 +290,8 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 	}
    file.write(fancyInt.chars, 4); 
    
-	for(unsigned int i=0;i<settings.scannerSettings.nRandomPatches;i++){
-		for(int j=0;j<settings.mlpSettings.nInputUnits;j++){
+	for(unsigned int i=0;i<featureVector.size();i++){
+		for(int j=0;j<featureVector[i].size;j++){
 			fancyDouble.doubleVal = featureVector[i].content[j];
 			file.write(fancyDouble.chars, 8);
 		}

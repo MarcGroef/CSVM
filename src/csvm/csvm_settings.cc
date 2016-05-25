@@ -127,6 +127,33 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
+   
+    stream >> type;
+   if (type == "readInData") {
+      stream >> mlpSettings.readInData;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+       stream >> type;
+   if (type == "randomFeatName") {
+      stream >> mlpSettings.randomFeatName;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+       stream >> type;
+   if (type == "validationName") {
+      stream >> mlpSettings.validationName;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
 }
 
 void CSVMSettings::parseConvSVMSettings(ifstream& stream) {

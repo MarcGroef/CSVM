@@ -25,6 +25,10 @@ namespace csvm{
 		
 		double minValue;
 		double maxValue;
+		
+		int trainSize;
+		int validationSize;
+		vector<int> numPatchesPerSquare;
 				
 		vector<vector<Feature> > splitTrain;
 		vector<vector<Feature> > splitVal;
