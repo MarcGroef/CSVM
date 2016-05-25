@@ -316,10 +316,6 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
 	numPatchesPerSquare = numPatchSquare;
 
-	std::cout << "inputUnits: "<< settings.nInputUnits << std::endl;
-	std::cout << "hiddenUnits: "<< settings.nHiddenUnits << std::endl;
-	std::cout << "outputUnits: "<< settings.nOutputUnits << std::endl;
-
 	initializeVectors();
 	
 	checkingSettingsValidity(randomFeatures[0].size);

@@ -138,9 +138,12 @@ vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& tra
 void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal){
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
-	
+
 	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
 	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
+	
+	exportFeatureSet("test_randomFeat_featureset",trainingSet);
+	exportFeatureSet("test_validationSet_featureset",validationSet);
 	
 	for(int i=0;i<nMLPs;i++){
 		setMinAndMaxValueNorm(splitTrain[i],0);
@@ -166,9 +169,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 		newFeat.setSquareId(calculateSquareOfPatch(patch));
 		trainingData.push_back(newFeat);    
 	}
-	exportFeatureSet("test_trainingdata_featureset",trainingData);
-	importFeatureSet("test_trainingdata_featureset");
-	exit(-1);
+	
 	return trainingData;	
 }
 //--------------------end: bottom level---------------------------
@@ -193,11 +194,6 @@ void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,
 			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
 			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
 		}
-		/*
-		for(unsigned int j =0;j<input.size();j++)
-			if(input[j] == 0)
-				input[j] = 0.1;
-		*/
 		Feature newFeat = new Feature(input);	
 		newFeat.setLabelId(splitDataBottom[0][i*numPatchesPerSquare[0]].getLabelId());
 		
@@ -287,16 +283,6 @@ void MLPController::trainMutipleMLPs(){
 }
 //--------------end: training MLP's-----------------------------
 //-------------start: MLP classification------------------------
-union charDouble{
-   char chars[8];
-   double doubleVal;
-};
-
-union charInt{
-   char chars[4];
-   unsigned int intVal;
-};
-
 unsigned int MLPController::mlpMultipleClassify(Image* im){
 	int numOfImages = 1;
 	
@@ -339,17 +325,30 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 }
 //---------------------end:MLP classification------------------------
 //---------------------start:import/export---------------------------
-void MLPController::exportFeatureSet(string filename, vector<Feature>& featureSet){
+union charDouble{
+   char chars[8];
+   double doubleVal;
+};
+
+union charInt{
+   char chars[4];
+   unsigned int intVal;
+};
+
+void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
    /* Featureset file conventions:
     * 
-    * first,  Dataset			: 0, CIFAR10 1,MNIST   (1 byte)
-    * second, Amount of features: 0-10.000.000         (4 bytes)
-    * third,  PatchWidth		: 0-36                 (1 byte)
-    * fourth, PatchHeigth		: 0-36                 (1 byte)  
-    * fifth,  FeatSize			: 0-10.000             (1 byte)
-    * sixth,  FeatExtractor		: 0,HOG 1,CLEAN        (1 byte)  
+    * first,  Dataset			: 0, CIFAR10 1,MNIST   			(4 bytes)
+    * second, Amount of features: 0-10.000.000         			(4 bytes)
+    * third,  PatchWidth		: 0-36                 			(4 bytes)
+    * fourth, PatchHeigth		: 0-36                 			(4 bytes)  
+    * fifth,  FeatSize			: 0-10.000             		   	(4 bytes)
+    * sixth,  FeatExtractor		: 0,LBP 1,CLEAN 2,HOG 3,MERGE   (4 byte)  
     * 
-    * Now each lines consists all the double values in the feature
+    * from now one it will look like this:
+    * 	all double values from the feature
+    * 	labelId of the feature
+    * 	pool it came from
     *  
     *  No seperator characters are used
    */
@@ -360,61 +359,174 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureSe
    //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
    //unsigned int wordSize = bow[0].content.size();
    ofstream file(filename.c_str(),  ios::binary);
-   /*
+   
    //write dataset used
-	stringstream ss;
-	ss << settings.datasetSettings.type;
-	fancyInt.intVal = (ss.str() == "CIFAR10" ? 0 : 1); //is this correct?
-	file.write(fancyInt.chars, 4);
-	ss.clear();
-   */
+	switch(settings.datasetSettings.type){
+      case DATASET_CIFAR10:
+         fancyInt.intVal=0;
+         break;
+      case DATASET_MNIST:
+		 fancyInt.intVal=1;
+         break;   
+	}
+   file.write(fancyInt.chars, 4);
+ 
    //write amount of features
    fancyInt.intVal = settings.scannerSettings.nRandomPatches;
-   file.write(fancyInt.chars, 1);
-   /*
+   file.write(fancyInt.chars, 4);
+   
    //write patchWidth
    fancyInt.intVal = settings.scannerSettings.patchWidth;
-   file.write(fancyInt.chars, 1);
+   file.write(fancyInt.chars, 4);
    
    //write patchWidth
    fancyInt.intVal = settings.scannerSettings.patchHeight;
-   file.write(fancyInt.chars, 1);
+   file.write(fancyInt.chars, 4);
    
    //write FeatSize
    fancyInt.intVal = settings.mlpSettings.nInputUnits;
-   file.write(fancyInt.chars, 1);   
+   file.write(fancyInt.chars, 4);   
    
    //write FeatExtractor method
-   ss << settings.featureSettings.featureType;
-   fancyInt.intVal = (ss.str() == "HOG" ? 0 : 1);
-   file.write(fancyInt.chars, 1); 
-   */
-   /*
+   	switch(settings.featureSettings.featureType){
+      case LBP:
+         fancyInt.intVal=0;
+         break;
+      case CLEAN:
+		 fancyInt.intVal=1;
+         break;
+      case HOG:
+		 fancyInt.intVal=2;
+         break;
+      case MERGE:
+		 fancyInt.intVal=3;
+         break;
+	}
+   file.write(fancyInt.chars, 4); 
+   
 	for(unsigned int i=0;i<settings.scannerSettings.nRandomPatches;i++){
 		for(int j=0;j<settings.mlpSettings.nInputUnits;j++){
-			fancyDouble.doubleVal = featureSet[i].content[j];
+			fancyDouble.doubleVal = featureVector[i].content[j];
 			file.write(fancyDouble.chars, 8);
 		}
+		//write label of the feat
+		fancyInt.intVal = featureVector[i].getLabelId();
+		//std::cout << "labels written to the file: " << featureVector[i].getLabelId() << std::endl
+		file.write(fancyInt.chars, 4);
+		
+		//write pool it came from
+		fancyInt.intVal = featureVector[i].getSquareId(); //does this always exists??
+		file.write(fancyInt.chars, 4);		
 	}
-   */
    file.close();
 }
 
-void MLPController::importFeatureSet(string filename){
-   charInt fancyInt;
-   charDouble fancyDouble;
-   unsigned int typesize;
-   unsigned int featDims;
+void MLPController::importFeatureSet(string filename, vector<Feature>& featureVector){
+	charInt fancyInt;
+	charDouble fancyDouble;
+  
+	//unsigned int typesize;
+	//unsigned int featDims;
+	
+	ifstream file(filename.c_str(), ios::binary);
    
-   ifstream file(filename.c_str(), ios::binary);
+	file.read(fancyInt.chars,4);
+	unsigned int datasetNum = fancyInt.intVal; //some check that his num is smaller than 2
+	CSVMDatasetType readInDatasetType;
    
-   file.read(fancyInt.chars,1);
-   std::cout << fancyInt.intVal << std::endl;
+   	switch(datasetNum){
+      case 0:
+         readInDatasetType = DATASET_CIFAR10;
+         break;
+      case 1:
+		 readInDatasetType = DATASET_MNIST;
+		 break;
+	   default:
+		readInDatasetType = DATASET_CIFAR10;
+		std::cout << "The read in dataset is unknown, by default it is set to CIFAR10" << std::endl;
+
+	}
    
-   //std::cout << file.read(fancyInt.chars,4) << std::endl;
-   //std::cout << file.read(fancyInt.chars,1) << std::endl;
-   //std::cout << file.read(fancyInt.chars,1) << std::endl;
-   
+	if(readInDatasetType != dataset.getType()){
+		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset.getType() << ", please change this" << std::endl;
+		exit(-1);
+	}
+	
+	file.read(fancyInt.chars,4);
+	unsigned int readInNRandomPatches = fancyInt.intVal;
+	if(settings.scannerSettings.nRandomPatches != readInNRandomPatches){
+		std::cout << "The nRandomPatches that is read in is " << readInNRandomPatches << " in the settings file it is " << settings.scannerSettings.nRandomPatches << ", please change this" << std::endl;
+		exit(-1);
+	}
+  
+	file.read(fancyInt.chars,4);
+	unsigned int readInPatchWidth = fancyInt.intVal;
+	if(settings.scannerSettings.patchWidth != readInPatchWidth){
+		std::cout << "The patchWidth that is read in is " << readInPatchWidth << " in the settings file it is " << settings.scannerSettings.patchWidth << ", please change this" << std::endl;
+		exit(-1);
+	}
+  
+	file.read(fancyInt.chars,4);
+	unsigned int readInPatchHeigth = fancyInt.intVal;
+	if(settings.scannerSettings.patchHeight != readInPatchHeigth){
+		std::cout << "The patchHeigth that is read in is " << readInPatchHeigth << " in the settings file it is " << settings.scannerSettings.patchHeight << ", please change this" << std::endl;
+		exit(-1);
+	}
+
+	file.read(fancyInt.chars,4);
+	int readInFeatSize = fancyInt.intVal;
+	if(settings.mlpSettings.nInputUnits != readInFeatSize){
+		std::cout << "The feature size that is read in is " << readInFeatSize << " in the settings file it is " << settings.mlpSettings.nInputUnits << ", please change this" << std::endl;
+		exit(-1);
+	}
+	file.read(fancyInt.chars,4);
+	unsigned int FeatExtNum = fancyInt.intVal; //Somecheck that this is a num smaller than 4.
+	FeatureType readInFeatExt;
+	
+	switch(FeatExtNum){
+      case 0:
+         readInFeatExt=LBP;
+         break;
+      case 1:
+		 readInFeatExt=CLEAN;
+         break;
+      case 2:
+		 readInFeatExt=HOG;
+         break;
+      case 3:
+		 readInFeatExt=MERGE;
+	  default:
+		 readInFeatExt=HOG;
+		 std::cout << "The read in feature extractor is unknown, by default it is set to HOG" << std::endl;
+	}
+	
+	if(settings.featureSettings.featureType != readInFeatExt){
+		std::cout << "The Feature extractor that is read in is " << readInFeatExt << " in the settings file it is" << settings.featureSettings.featureType << ", please change this" << std::endl;
+		exit(-1);		
+	}
+  
+	for(unsigned int i=0;i<readInNRandomPatches;i++){
+		vector<double> contentFeat;
+		contentFeat.reserve(readInFeatExt);
+		
+		for(int j=0;j<readInFeatSize;j++){
+			file.read(fancyDouble.chars, 8);
+			contentFeat.push_back(fancyDouble.doubleVal);
+		}
+		//std::cout << std::endl;
+		Feature feat = new Feature(contentFeat);
+		
+		//read label id
+		file.read(fancyInt.chars, 4);
+		feat.setLabelId(fancyInt.intVal);
+		
+		//read square id
+		file.read(fancyInt.chars, 4);
+		feat.setSquareId(fancyInt.intVal);
+		
+		featureVector.push_back(feat);
+	}
+	
    file.close();
 }
 //---------------------end:import/export-----------------------------

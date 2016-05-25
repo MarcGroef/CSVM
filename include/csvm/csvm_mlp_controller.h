@@ -55,8 +55,8 @@ namespace csvm{
 		
 		int calculateSquareOfPatch(Patch patch);
 		
-		void exportFeatureSet(string filename, vector<Feature>& featureSet);
-		void importFeatureSet(string filename);
+		void exportFeatureSet(string filename, vector<Feature>& featureVector);
+		void importFeatureSet(string filename, vector<Feature>& featureVector);
 
 		public:
 		

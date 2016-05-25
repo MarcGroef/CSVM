@@ -62,6 +62,7 @@ epochs 20
 stoppingCriterion 0.9
 nHiddenUnitsFirstLayer 400
 scanStrideFirstLayer 3
+loadRandomFeat LEKKER
 
 SVM
 Kernel LINEAR

@@ -27,6 +27,7 @@ namespace csvm{
       double stoppingCriterion;
       int nHiddenUnitsFirstLayer;
       int scanStrideFirstLayer;
+      string loadRandomFeat;
    };
 
    class MLPerceptron{
