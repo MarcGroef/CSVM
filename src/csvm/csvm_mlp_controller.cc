@@ -404,8 +404,8 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 	}
    file.write(fancyInt.chars, 4); 
    
-	for(unsigned int i=0;i<settings.scannerSettings.nRandomPatches;i++){
-		for(int j=0;j<settings.mlpSettings.nInputUnits;j++){
+	for(unsigned int i=0;i<featureVector.size();i++){
+		for(int j=0;j<featureVector[i].size;j++){
 			fancyDouble.doubleVal = featureVector[i].content[j];
 			file.write(fancyDouble.chars, 8);
 		}
