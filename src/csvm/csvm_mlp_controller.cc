@@ -129,6 +129,9 @@ void MLPController::createDataBySquares(){
 	} else {
 		trainingSet = createRandomFeatureVector(trainingSet);
 		validationSet = createValidationSet(validationSet);
+		
+		exportFeatureSet("RandomFeat_CIFAR10_50.000_24x24",trainingSet);
+		exportFeatureSet("Validation_CIFAR10_50.000_24x24",validationSet);
 		}
 
 	splitTrain = splitUpDataBySquare(trainingSet);
@@ -137,9 +140,6 @@ void MLPController::createDataBySquares(){
 	for(unsigned int i=0;i<mlps.size();i++){
 		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
 	}
-	std::cout << "lekker"<< std::endl;
-	exportFeatureSet("RandomFeat_CIFAR10_50.000_24x24",trainingSet);
-	exportFeatureSet("Validation_CIFAR10_50.000_24x24",validationSet);
 
 	trainingSet.clear();
 	validationSet.clear();
@@ -258,7 +258,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    file.write(fancyInt.chars, 4);
  
    //write amount of features
-   fancyInt.intVal = settings.scannerSettings.nRandomPatches;
+   fancyInt.intVal = settings.scannerSettings.nRandomPatches;   
    file.write(fancyInt.chars, 4);
    
    //write patchWidth

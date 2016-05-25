@@ -43,7 +43,7 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 50000
+nRandomPatches 500
 
 
 MLP
@@ -59,9 +59,9 @@ crossValidationInterval 10
 crossValidationSize 0.1
 epochs 50
 stoppingCriterion 0.99
-readInData 0
-randomFeatName CIFAR10
-validationName CIDAR10
+readInData 1
+randomFeatName CIFAR10_50.000_24x24
+validationName CIFAR10_50.000_24x24
 
 SVM
 Kernel LINEAR
