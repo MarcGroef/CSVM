@@ -105,12 +105,12 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
 
    stream >> type;
    if(type == "crossValidationSize"){
-	stream >> mlpSettings.crossValidationSize;
+			stream >> mlpSettings.crossValidationSize;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
-}
+	 }
    stream >> type;
    if (type == "epochs") {
       stream >> mlpSettings.epochs;
@@ -119,7 +119,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
-    stream >> type;
+   stream >> type;
    if (type == "stoppingCriterion") {
       stream >> mlpSettings.stoppingCriterion;
    }
@@ -127,6 +127,21 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
+   stream >> type;
+   if (type == "useWeightingMLPs") {
+      stream >> setting;
+      if (setting == "true" || setting == "True" || setting == "TRUE" || setting == "t" || setting == "T")
+				mlpSettings.useWeightingMLPs = true;
+			else{
+				if (setting == "false" || setting == "False" || setting == "FALSE" || setting == "f" || setting == "F")
+					mlpSettings.useWeightingMLPs = false;
+			}
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+
 }
 
 void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
@@ -841,11 +856,11 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       else if (method == "LINEAR")
          svmSettings.kernelType = LINEAR;
       else
-         cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+         cout << "csvm::csvm_settings:parseSVMSettings(): 1Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
 
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 2Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -855,7 +870,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
 
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 3Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -866,7 +881,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       stream >> svmSettings.nIterations;
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 4Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -875,7 +890,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       stream >> svmSettings.learningRate;
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 5Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -884,7 +899,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       stream >> svmSettings.SVM_C_Data;
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 6Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -894,7 +909,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       stream >> svmSettings.cost;
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 7Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -903,7 +918,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       stream >> svmSettings.D2;
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 8Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -912,7 +927,7 @@ void CSVMSettings::parseSVMSettings(ifstream& stream) {
       stream >> svmSettings.sigmaClassicSimilarity;
    }
    else {
-      cout << "csvm::csvm_settings:parseSVMSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseSVMSettings(): 9Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
 

@@ -18,6 +18,7 @@ namespace csvm{
       int nHiddenUnits;
       int nInputUnits;
       int nLayers;
+      bool useWeightingMLPs;
       bool isWeightingMLP;
       
       double learningRate;

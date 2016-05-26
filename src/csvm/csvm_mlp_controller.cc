@@ -39,12 +39,14 @@ void MLPController::setSettings(MLPSettings s){
 		mlp.setSettings(s); 
 		mlps.push_back(mlp);
 	}
-	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
-		MLPerceptron mlp;
-		s.isWeightingMLP = true;
-		s.nOutputUnits = 1;
-		mlp.setSettings(s); 
-		weightingMLPs.push_back(mlp);
+	if(settings.mlpSettings.useWeightingMLPs){
+		for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
+			MLPerceptron mlp;
+			s.isWeightingMLP = true;
+			s.nOutputUnits = 1;
+			mlp.setSettings(s); 
+			weightingMLPs.push_back(mlp);
+		}
 	}
 } 
  
@@ -136,9 +138,11 @@ void MLPController::trainMutipleMLPs(){
 	for(unsigned int i=0;i<mlps.size();i++){ 	
 		std::cout << "(classifier) training mlp["<<i<<"]..." << std::endl;
 		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
-		weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting());
-		std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
-		trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
+		if(settings.mlpSettings.useWeightingMLPs){
+			weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting());
+			std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
+			trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
+		}
   }
   splitTrain.clear();
   splitVal.clear();
@@ -212,7 +216,7 @@ vector<double> MLPController::voting(vector<double> votingHistogram){
 		
 }
 
-vector<double> MLPController::majorityVoting(vector<double> votingHistogram){       // get rid of votingHistogram[]
+vector<double> MLPController::majorityVoting(vector<double> votingHistogram){ 
 	int indexHighestAct = 0;
 	double highestActivationClass = 0;
 	
@@ -255,11 +259,14 @@ vector<double> MLPController::classifyImageSquare(MLPerceptron firstMLP, MLPerce
 	
 	for(unsigned int i=0;i<features.size();i++){
 		outputMLP = firstMLP.runFeatureThroughMLP(features[i]);
-		weight = weightingMLP.runFeatureThroughMLP(features[i]);
-		//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
-		for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
-			outputMLP[j] *= weight[0];					//weighing the outputs
+		if(settings.mlpSettings.useWeightingMLPs){
+			weight = weightingMLP.runFeatureThroughMLP(features[i]);
+			//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
+			for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
+				outputMLP[j] *= weight[0];					//weighing the outputs
+			}
 		}
+		//outputMLP is global and used in the voting functions
 		summedOutput = voting(summedOutput);
 	}
 	//myfile.close();
