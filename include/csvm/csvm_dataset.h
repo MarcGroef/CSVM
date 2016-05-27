@@ -55,6 +55,10 @@ namespace csvm{
       Image* getImagePtr(int index);
       Image* getTrainImagePtr(int trainIdx);
       Image* getTestImagePtr(int testIdx);
+      void setTrainImages(vector<unsigned int> listOfImageNums);
+      void setTestImages(vector<unsigned int> listOfImageNums);
+      vector<unsigned int> getTrainImageNums();
+      vector<unsigned int> getTestImageNums();
       int getTrainSize();
       int getTestSize();
       unsigned int getTotalImages();

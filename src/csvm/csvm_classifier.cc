@@ -80,7 +80,6 @@ void CSVMClassifier::setSettings(string settingsFile){
    //mlp.setSettings(settings.mlpSettings);
    //MLPController* mC = new MLPController(&featExtr, &imageScanner, &settings, &dataset);
    //mlpController = *mC;
-
 }
 
 //Train the system
@@ -102,7 +101,7 @@ void CSVMClassifier::train(){
          break;
 		case CL_MLP:
 		if(normalOut) cout << "Training MLPs..\n";
-		mlpController->trainMutipleMLPs();			
+		mlpController->trainMutipleMLPs();		
          break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";

@@ -18,8 +18,10 @@ MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSet
 void MLPController::setSettings(MLPSettings s){
 	std::cout << "set settings..." << std::endl;
 	mlps.reserve(s.nSplitsForPooling * s.nSplitsForPooling);
-	trainSize = dataset.getTrainSize();
-	validationSize = trainSize * settings.mlpSettings.crossValidationSize;
+	
+	validationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
+	trainSize = dataset.getTrainSize() - validationSize;
+	amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
 
 	for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 		MLPerceptron mlp;
@@ -82,7 +84,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 		 
 		//extract patches
 		patches = imageScanner.scanImage(im);
-      
+		//std::cout << patches.size() << std::endl;
 		//extract features from all patches
 		for(size_t patch = 0; patch < patches.size(); ++patch){
 			Feature newFeat = featExtr.extract(patches[patch]);
@@ -99,9 +101,6 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
     int sizeTrainingSet = (int)(dataset.getTrainSize()*(1-settings.mlpSettings.crossValidationSize));
     
 	vector<Feature> testData;
-	
-	minValue = 10000;
-	maxValue = 0;
 
 	std::cout << "create random feature vector of size " << nPatches << std::endl;
 	
@@ -122,18 +121,27 @@ void MLPController::createDataBySquares(){
 	
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
+	
+	minValue = 1000;
+	maxValue = 0;
 
 	if(settings.mlpSettings.readInData){
 		importFeatureSet(settings.mlpSettings.randomFeatName,trainingSet);
 		importFeatureSet(settings.mlpSettings.validationName,validationSet);
-	} else {
+	} 
+	else {
 		trainingSet = createRandomFeatureVector(trainingSet);
 		validationSet = createValidationSet(validationSet);
 		
 		exportFeatureSet("RandomFeat_CIFAR10_50.000_24x24",trainingSet);
 		exportFeatureSet("Validation_CIFAR10_50.000_24x24",validationSet);
-		}
-
+	}
+	
+	/*vector<unsigned int> temp = dataset.getTrainImageNums();
+	std::cout << dataset.getImagePtr(0) << std::endl;
+	exit(-1);
+	*/
+	
 	splitTrain = splitUpDataBySquare(trainingSet);
 	splitVal   = splitUpDataBySquare(validationSet);
 	
@@ -145,12 +153,6 @@ void MLPController::createDataBySquares(){
 	validationSet.clear();
 }
 
-/*void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
-    double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-    int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
-    mlp.train(trainingSet,validationSet,noPatchesPerSquare);
-}*/
-
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& featureSet){
 	vector<vector<Feature> > splitBySquares = vector<vector<Feature> >(settings.mlpSettings.nSplitsForPooling * settings.mlpSettings.nSplitsForPooling);
 			
@@ -161,7 +163,7 @@ vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& fea
 }
 
 void MLPController::trainMutipleMLPs(){
-	initMLPs(); //change to create data for mlp
+	initMLPs();
 	
 	for(unsigned int i=0;i<mlps.size();i++){ 		
 		mlps[i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
@@ -222,6 +224,8 @@ union charInt{
 };
 
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
+	//TODO: Also export training and testing images pointers. Otherwise it goes wrong in the testing phase, because now you have no idea on which images you trained and on which you did not.
+ 
    /* Featureset file conventions:
     * 
     * first,  Dataset			: 0, CIFAR10 1,MNIST   			(4 bytes)
@@ -229,7 +233,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
     * third,  PatchWidth		: 0-36                 			(4 bytes)
     * fourth, PatchHeigth		: 0-36                 			(4 bytes)  
     * fifth,  FeatSize			: 0-10.000             		   	(4 bytes)
-    * sixth,  FeatExtractor		: 0,LBP 1,CLEAN 2,HOG 3,MERGE   (4 byte)  
+    * sixth,  FeatExtractor		: 0,LBP 1,CLEAN 2,HOG 3,MERGE   (4 bytes)  
     * 
     * from now one it will look like this:
     * 	all double values from the feature
@@ -241,9 +245,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    
    charInt fancyInt;
    charDouble fancyDouble;
-   
-   //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
-   //unsigned int wordSize = bow[0].content.size();
+ 
    ofstream file(filename.c_str(),  ios::binary);
    
    //write dataset used
@@ -289,7 +291,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
          break;
 	}
    file.write(fancyInt.chars, 4); 
-   
+
 	for(unsigned int i=0;i<featureVector.size();i++){
 		for(int j=0;j<featureVector[i].size;j++){
 			fancyDouble.doubleVal = featureVector[i].content[j];
@@ -303,6 +305,28 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 		//write pool it came from
 		fancyInt.intVal = featureVector[i].getSquareId(); //does this always exists??
 		file.write(fancyInt.chars, 4);		
+	}		
+	if(featureVector.size() == settings.scannerSettings.nRandomPatches){
+		//write min value
+		fancyDouble.doubleVal = minValue; 
+		file.write(fancyDouble.chars, 8);
+		//std::cout << "min value in write: " << fancyDouble.doubleVal << std::endl;
+		//write max value
+		fancyDouble.doubleVal = maxValue;
+		file.write(fancyDouble.chars, 8);
+		//std::cout << "min value in write: " << fancyDouble.doubleVal << std::endl;
+
+		vector<unsigned int> trainImages = dataset.getTrainImageNums();
+		for(int i=0;i<dataset.getTrainSize();i++){
+			fancyInt.intVal = trainImages[i];
+			//std::cout << trainImages[i] << std::endl;
+			file.write(fancyInt.chars,4);
+		}
+		vector<unsigned int> testImages = dataset.getTestImageNums();
+		for(int i=0;i<dataset.getTestSize();i++){
+			fancyInt.intVal = testImages[i];
+			file.write(fancyInt.chars,4);
+		}
 	}
    file.close();
 }
@@ -390,8 +414,16 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		std::cout << "The Feature extractor that is read in is " << readInFeatExt << " in the settings file it is" << settings.featureSettings.featureType << ", please change this" << std::endl;
 		exit(-1);		
 	}
-  
-	for(unsigned int i=0;i<readInNRandomPatches;i++){
+	int sizeOfFeatureVector;
+	
+	if(filename.find("RandomFeat") == 0){
+		sizeOfFeatureVector = readInNRandomPatches;
+	}
+	else {
+		sizeOfFeatureVector = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;
+	}
+
+	for(int i=0;i<sizeOfFeatureVector;i++){
 		vector<double> contentFeat;
 		contentFeat.reserve(readInFeatExt);
 		
@@ -399,7 +431,6 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 			file.read(fancyDouble.chars, 8);
 			contentFeat.push_back(fancyDouble.doubleVal);
 		}
-		//std::cout << std::endl;
 		Feature feat = new Feature(contentFeat);
 		
 		//read label id
@@ -413,6 +444,33 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		featureVector.push_back(feat);
 	}
 	
+	//Check if the train/test images that are read in are the same as in the settings file
+	//This only needs to happen with the training set.. not the validation set
+	
+	if(!(file.peek() == std::ifstream::traits_type::eof())){
+		//read min value
+		file.read(fancyDouble.chars, 8);
+		minValue = fancyDouble.doubleVal;
+	
+		//read max value
+		file.read(fancyDouble.chars, 8);
+		maxValue = fancyDouble.doubleVal;
+		
+		vector<unsigned int> readInTrainImages;
+		for(int i=0;i<dataset.getTrainSize();i++){
+			file.read(fancyInt.chars,4);
+			//std::cout << "imageNum["<<i<<"]: " << fancyInt.intVal << std::endl;
+			readInTrainImages.push_back(fancyInt.intVal);
+		}
+		dataset.setTrainImages(readInTrainImages);
+		
+		vector<unsigned int> readInTestImages;
+		for(int i=0;i<dataset.getTestSize();i++){
+			file.read(fancyInt.chars,4);
+			readInTestImages.push_back(fancyInt.intVal);
+		}
+		dataset.setTestImages(readInTestImages);
+	}
    file.close();
 }
 //---------------------end:import/export-----------------------------

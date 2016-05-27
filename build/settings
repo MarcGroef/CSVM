@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 1000
-nTestImages 1000
+nTrainImages 500
+nTestImages 100
 imageWidth 36
 imageHeight 36
 
@@ -43,7 +43,7 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 500
+nRandomPatches 10000
 
 
 MLP
@@ -60,8 +60,8 @@ crossValidationSize 0.1
 epochs 50
 stoppingCriterion 0.99
 readInData 1
-randomFeatName CIFAR10_50.000_24x24
-validationName CIFAR10_50.000_24x24
+randomFeatName RandomFeat_CIFAR10_50.000_24x24
+validationName Validation_CIFAR10_50.000_24x24
 
 SVM
 Kernel LINEAR

@@ -28,6 +28,8 @@ namespace csvm{
 		
 		int trainSize;
 		int validationSize;
+		int amountOfPatchesImage;
+		
 		vector<int> numPatchesPerSquare;
 				
 		vector<vector<Feature> > splitTrain;

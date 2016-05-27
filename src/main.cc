@@ -58,7 +58,6 @@ int main(int argc,char**argv){
    normalOut = c.useOutput();
    
    c.dataset.loadDataset("../datasets/");
-
    
    /* BoW import export. Not needed for MLP
    if (c.getGenerateCB()){
@@ -101,6 +100,7 @@ int main(int argc,char**argv){
       unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
       //std::cout << "result: " << result << "answer: " << answer << std::endl;
 	  
+	  //std::cout << c.dataset.getTrainImagePtr(im) << std::endl;
 	  
       if (result == answer){
          ++nCorrect;
