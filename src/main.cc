@@ -82,7 +82,7 @@ int main(int argc,char**argv){
       cout << "training classifier" << endl;
    c.constructMLPs();
    c.train();
-
+	
    //********************Testing phase on trainingset *****************************************
    unsigned int nCorrect = 0;
    unsigned int nFalse = 0;

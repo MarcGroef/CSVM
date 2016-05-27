@@ -59,6 +59,8 @@ namespace csvm{
       void setTestImages(vector<unsigned int> listOfImageNums);
       vector<unsigned int> getTrainImageNums();
       vector<unsigned int> getTestImageNums();
+      unsigned int getTrainImageIdx(int trainIdx);
+
       int getTrainSize();
       int getTestSize();
       unsigned int getTotalImages();

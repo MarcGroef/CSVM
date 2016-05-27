@@ -118,6 +118,10 @@ Image* CSVMDataset::getTrainImagePtr(int trainIdx){
    return getImagePtr(trainImagesIdx[trainIdx]);
 }
 
+unsigned int CSVMDataset::getTrainImageIdx(int trainIdx){
+   return trainImagesIdx[trainIdx];
+}
+
 //get image based on the shuffled test-indices
 Image* CSVMDataset::getTestImagePtr(int testIdx){
    return getImagePtr(testImagesIdx[testIdx]);
@@ -134,8 +138,9 @@ vector<unsigned int> CSVMDataset::getTestImageNums(){
 
 void CSVMDataset::setTrainImages(vector<unsigned int> listOfImageNums){
 	if(trainImagesIdx.size() == listOfImageNums.size()){
-		for(size_t i = 0;i<listOfImageNums.size();i++)
+		for(size_t i = 0;i<listOfImageNums.size();i++){
 			trainImagesIdx[i] = listOfImageNums[i];
+		}
 	}
 	else{ 
 		std::cout << "train size of the read in file is different from the train size in the settings file" << std::endl;

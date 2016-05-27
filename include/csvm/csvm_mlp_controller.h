@@ -21,7 +21,7 @@ namespace csvm{
 		FeatureExtractor featExtr;
 		
 		CSVMSettings settings;
-		CSVMDataset dataset;
+		CSVMDataset* dataset;
 		
 		double minValue;
 		double maxValue;

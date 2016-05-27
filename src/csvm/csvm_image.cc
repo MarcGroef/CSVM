@@ -381,6 +381,3 @@ namespace csvm{
       return newImage;
    }
 }
-
-
-
