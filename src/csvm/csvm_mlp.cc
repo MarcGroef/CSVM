@@ -22,7 +22,7 @@ void MLPerceptron::setSettings(MLPSettings s){
 }
 
 double good_exp(double y){
-	if(y < -10.0) return 0;
+	if(y < -0.0) return 0;
 	if(y > 10.0) return 9999999.0;
 	
 	return exp(y);
@@ -152,8 +152,9 @@ void MLPerceptron::calculateDeltas(int index){
 
 void MLPerceptron::outputDelta(){
 	//ouputDelta without the signmoid, because softmax is used.
-	for(int i = 0; i < layerSizes[settings.nLayers-1];i++)
+	for(int i = 0; i < layerSizes[settings.nLayers-1];i++){
 		deltas[settings.nLayers-1][i] = desiredOutput[i] - activations[settings.nLayers-1][i];
+	}
 }
 	
 void MLPerceptron::hiddenDelta(int index){
@@ -188,13 +189,15 @@ void MLPerceptron::activationsToOutputProbabilities(){
 		activations[settings.nLayers -1][i] = good_exp(activations[settings.nLayers -1][i]);
 		sumOfActivations += activations[settings.nLayers -1][i];
 	}
-	for(int i = 0; i< settings.nOutputUnits; i++)
+
+	for(int i = 0; i< settings.nOutputUnits; i++){
 		activations[settings.nLayers -1][i] /= sumOfActivations;
+	}
 }
 
 
 void MLPerceptron::voting(){
-	activationsToOutputProbabilities();
+	activationsToOutputProbabilities();	
 	if(settings.voting == "MAJORITY")
 		majorityVoting();
 	else if (settings.voting == "SUM")
@@ -248,40 +251,6 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
 	}		
 }
 
-//~ 
-//~ void MLPerceptron::setMinAndMaxValueNorm(vector<Feature>& inputFeatures){
-	//~ minValue = inputFeatures[0].content[0];
-	//~ maxValue = inputFeatures[0].content[0];
-//~ 
-	//~ //compute min and max of all the inputs	
-	//~ for(unsigned int i = 0; i < inputFeatures.size();i++){
-		//~ double possibleMaxValue = *std::max_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end());
-		//~ double possibleMinValue = *std::min_element(inputFeatures[i].content.begin(), inputFeatures[i].content.end()); 
-		//~ 
-		//~ if(possibleMaxValue > maxValue)
-			//~ maxValue = possibleMaxValue;
-			//~ 
-		//~ if(possibleMinValue < minValue)
-			//~ minValue = possibleMinValue;
-	//~ }
-//~ }
-//~ 
-//~ vector<Feature>& MLPerceptron::normalizeInput(vector<Feature>& inputFeatures){
-	//~ if (maxValue - minValue != 0){
-		//~ //normalize all the inputs
-		//~ for(unsigned int i = 0; i < inputFeatures.size();i++){
-			//~ for(int j = 0; j < inputFeatures[i].size;j++)
-				//~ inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValue)/(maxValue - minValue);
-		//~ }
-	//~ }else{
-		//~ for(unsigned int i = 0; i<inputFeatures.size();i++){
-			//~ for(int j = 0; j < inputFeatures[i].size;j++)
-				//~ inputFeatures[i].content[j] = 0;
-		//~ }
-	//~ }
-	//~ return inputFeatures;		
-//~ }
-
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet){
 	double averageError = 0;
 	int epochs = settings.epochs;
@@ -329,39 +298,24 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 	return 0;
 }
 
-void MLPerceptron::trainFirstLayerMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
+void MLPerceptron::trainMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
 	numPatchesPerSquare = numPatchSquare;
 	
 	initializeVectors();
 	
 	checkingSettingsValidity(randomFeatures[0].size);
 	
-	//~ setMinAndMaxValueNorm(randomFeatures);
-	//~ 
 	training(randomFeatures,validationSet);			
-			
+		
 }
 
-void MLPerceptron::trainSecondLayerMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){
-	numPatchesPerSquare = numPatchSquare;
-	
-	initializeVectors();
-	
-	checkingSettingsValidity(randomFeatures[0].size);
-	
-	//setMinAndMaxValueNorm(randomFeatures);
-	
-	training(randomFeatures,validationSet);			
-			
-}
+
 
 //--------end training-----------
 
 //------start testing------------
 void MLPerceptron::classifyImage(vector<Feature>& imageFeatures){
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
-	
-	//normalizeInput(imageFeatures);
 	
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
@@ -385,6 +339,7 @@ void MLPerceptron::returnOutputActivation(vector<Feature> imageFeatures,vector<d
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward();
+		activationsToOutputProbabilities();
 		setMaxActivation(maxOutputActivation,activations[2]);	
 	}
 }

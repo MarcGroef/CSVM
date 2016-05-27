@@ -56,8 +56,8 @@ namespace csvm{
 		unsigned int mlpClassify(Image* im);
 		int calculateSquareOfPatch(Patch patch);
 		
-		void trainFirstLayerMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
-		void trainSecondLayerMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+
 	    
 		
 		public:

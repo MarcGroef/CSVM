@@ -68,7 +68,6 @@ namespace csvm{
         void adjustWeights(int index);
         void backpropgation();
       //voting:
-	    void activationsToOutputProbabilities();
 		void voting();
 		void majorityVoting();
 		void sumVoting();
@@ -80,8 +79,9 @@ namespace csvm{
 	    
    public:
       void setSettings(MLPSettings s);
-      void trainFirstLayerMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
-      void trainSecondLayerMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+      void trainMLP(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+		
+	  void activationsToOutputProbabilities();
       
       unsigned int classify(vector<Feature> imageFeatures);
       vector<double> classifyPooling(vector<Feature> imageFeatures);

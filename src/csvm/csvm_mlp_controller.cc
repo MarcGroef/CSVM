@@ -139,9 +139,10 @@ void MLPController::createOutputProbabilitiesVectorTrain(vector<vector<Feature> 
 			
 			vector<double> inputTemp = vector<double>(nOutputProbabilities,-10.0);
 			
-			mlps[0][j].returnOutputActivation(vector<Feature>(first,last),inputTemp);
-		
+			mlps[0][j].returnOutputActivation(vector<Feature>(first,last),inputTemp);	
+				
 			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
+			
 		}
 		Feature newFeat = new Feature(input);	
 		newFeat.setLabelId(trainingSet[0][i*numPatchesPerSquare[0]].getLabelId());
@@ -162,6 +163,7 @@ void MLPController::createOutputProbabilitiesVectorTrain(vector<vector<Feature> 
 			
 			mlps[0][j].returnOutputActivation(vector<Feature>(first,last),inputTemp);
 			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
+			
 		}
 		
 		Feature newFeat = new Feature(input);	
@@ -250,17 +252,13 @@ vector<Feature>& MLPController::normalizeInput(vector<Feature>& inputFeatures){
 //----------------End training/validation set---------------------------
 
 //----------------start training MLP's----------------------------------
-void MLPController::trainFirstLayerMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
+void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
     double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
     int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
-    mlp.trainFirstLayerMLP(trainingSet,validationSet,noPatchesPerSquare);
+    mlp.trainMLP(trainingSet,validationSet,noPatchesPerSquare);
 }
 
-void MLPController::trainSecondLayerMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
-    double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-    int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
-    mlp.trainSecondLayerMLP(trainingSet,validationSet,noPatchesPerSquare);
-}
+
 
 void MLPController::trainMutipleMLPs(){
     createDataFirstLayerMLP();
@@ -271,7 +269,7 @@ void MLPController::trainMutipleMLPs(){
 	}
 	
     for(int i=0;i<nMLPs;i++){ 		
-		trainFirstLayerMLP(mlps[0][i],splitTrain[i],splitVal[i]);
+		trainMLP(mlps[0][i],splitTrain[i],splitVal[i]);
 		std::cout << "mlp["<<i<<"] from first layer MLP finished training" << std::endl;
     }
     splitTrain.clear();
@@ -280,7 +278,10 @@ void MLPController::trainMutipleMLPs(){
     std::cout << "create input data for second layer MLP... " << std::endl;
     createDataSecondLayerMLP();
     
-    trainSecondLayerMLP(mlps[1][0],inputTrainSecondLayerMLP,inputValSecondLayerMLP);
+    //normalizeInput(inputTrainSecondLayerMLP);
+	//normalizeInput(inputValSecondLayerMLP);
+    
+    trainMLP(mlps[1][0],inputTrainSecondLayerMLP,inputValSecondLayerMLP);
     std::cout << "mlp[0] from second layer MLP finished training" << std::endl;
 	
     inputTrainSecondLayerMLP.clear();

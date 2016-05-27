@@ -1,7 +1,7 @@
 Dataset
-method CIFAR10
-nTrainImages 1000
-nTestImages 100
+method MNIST
+nTrainImages 100
+nTestImages 10
 imageWidth 36
 imageHeight 36
 
@@ -43,12 +43,12 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 19000
+nRandomPatches 2000
 
 
 MLP
 nSplitsForPooling 2
-nHiddenSecondLayerMLP 100
+nHiddenSecondLayerMLP 60
 nHiddenUnits 400
 nInputUnits 144
 nOutputUnits 10
