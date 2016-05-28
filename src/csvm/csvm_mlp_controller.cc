@@ -146,7 +146,7 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	} 
 	else {
 		trainingSet = createRandomFeatureVector(trainingSet);
-		validationSet = createValidationSet(validationSet);
+		validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
 	}
 	
 	splitTrain = splitUpDataBySquare(trainingSet);
@@ -265,7 +265,12 @@ void MLPController::trainMutipleMLPs(){
 	
 	for(int i=0;i<nMLPs;i++){ 		
 		mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
-		//std::cout << "mlp["<<i<<"] from level 0 finished training" << std::endl << std::endl;
+		std::cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << std::endl << std::endl;
+    }
+    
+	for(int i=0;i<nMLPs;i++){ 		
+		mlps[0][i].train(splitVal[i],splitTrain[i],numPatchesPerSquare[i]);
+		std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
     }
     
     std::cout << "create training data for first level... " << std::endl;

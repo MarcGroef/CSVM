@@ -123,6 +123,37 @@ Image* CSVMDataset::getTestImagePtr(int testIdx){
    return getImagePtr(testImagesIdx[testIdx]);
 }
 
+vector<unsigned int> CSVMDataset::getTrainImageNums(){
+	return trainImagesIdx;
+}
+
+vector<unsigned int> CSVMDataset::getTestImageNums(){
+	return testImagesIdx;
+}
+
+void CSVMDataset::setTrainImages(vector<unsigned int> listOfImageNums){
+	if(trainImagesIdx.size() == listOfImageNums.size()){
+		for(size_t i = 0;i<listOfImageNums.size();i++){
+			trainImagesIdx[i] = listOfImageNums[i];
+		}
+	}
+	else{ 
+		std::cout << "train size of the read in file is different from the train size in the settings file" << std::endl;
+		exit(-1);
+	}
+}
+
+void CSVMDataset::setTestImages(vector<unsigned int> listOfImageNums){
+	if(testImagesIdx.size() == listOfImageNums.size()){
+		for(size_t i = 0;i<listOfImageNums.size();i++)
+			testImagesIdx[i] = listOfImageNums[i];
+	}
+	else{ 
+		std::cout << "test size of the read in file is different from the test size in the settings file" << std::endl;
+		exit(-1);
+	}		
+}
+
 
 int CSVMDataset::getTrainSize(){
    return settings.nTrainImages;
