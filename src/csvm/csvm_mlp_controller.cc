@@ -11,7 +11,7 @@ MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSet
 	featExtr = *fe;
 	imageScanner = *imScan;
 	settings = *se;
-	dataset = *ds;
+	dataset = ds;
 }
 //--------------start: init MLP's-------------------
 void MLPController::setSettings(MLPSettings s){
@@ -21,8 +21,9 @@ void MLPController::setSettings(MLPSettings s){
 	
 	//init global variables	
 	nMLPs = pow(s.nSplitsForPooling,2);
-	validationSize = dataset.getTrainSize()*s.crossValidationSize;
-	trainSize = dataset.getTrainSize() - validationSize;
+	validationSize = dataset->getTrainSize()*s.crossValidationSize;
+	trainSize = dataset->getTrainSize() - validationSize;
+	amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
 
 	for(int i=0;i<2;i++){
 		minValues.push_back(1000);
@@ -109,7 +110,7 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& validationSet,int start,int end){
 	vector<Patch> patches;   
 	for(int i = start; i < end;i++){	
-		Image* im = dataset.getTrainImagePtr(i);
+		Image* im = dataset->getTrainImagePtr(i);
 		 
 		//extract patches
 		patches = imageScanner.scanImage(im);
@@ -139,18 +140,30 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
 
-	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
-	splitVal   = splitUpDataBySquare(createCompletePictureSet(validationSet,trainSize,trainSize+validationSize));
+	if(settings.mlpSettings.readInData){
+		importFeatureSet(settings.mlpSettings.readRandomFeatName,trainingSet);
+		importFeatureSet(settings.mlpSettings.readValidationName,validationSet);
+	} 
+	else {
+		trainingSet = createRandomFeatureVector(trainingSet);
+		validationSet = createValidationSet(validationSet);
+	}
 	
-	exportFeatureSet("test_randomFeat_featureset",trainingSet);
-	exportFeatureSet("test_validationSet_featureset",validationSet);
+	splitTrain = splitUpDataBySquare(trainingSet);
+	splitVal   = splitUpDataBySquare(validationSet);
 	
 	for(int i=0;i<nMLPs;i++){
 		setMinAndMaxValueNorm(splitTrain[i],0);
 	}
+	
 	for(int i=0;i<nMLPs;i++){
 		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
 		std::cout<< "numPatchersPerSquare[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
+	}
+
+	if(settings.mlpSettings.saveData){
+		exportFeatureSet(settings.mlpSettings.saveRandomFeatName,trainingSet);
+		exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
 	}
 	
 	trainingSet.clear();
@@ -164,7 +177,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	std::cout << "create random feature vector of size: " << nPatches << std::endl;
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-		Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % trainSize));
+		Patch patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSize));
 		Feature newFeat = featExtr.extract(patch);
 		newFeat.setSquareId(calculateSquareOfPatch(patch));
 		trainingData.push_back(newFeat);    
@@ -336,6 +349,8 @@ union charInt{
 };
 
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
+	//TODO: Also export training and testing images pointers. Otherwise it goes wrong in the testing phase, because now you have no idea on which images you trained and on which you did not.
+ 
    /* Featureset file conventions:
     * 
     * first,  Dataset			: 0, CIFAR10 1,MNIST   			(4 bytes)
@@ -343,7 +358,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
     * third,  PatchWidth		: 0-36                 			(4 bytes)
     * fourth, PatchHeigth		: 0-36                 			(4 bytes)  
     * fifth,  FeatSize			: 0-10.000             		   	(4 bytes)
-    * sixth,  FeatExtractor		: 0,LBP 1,CLEAN 2,HOG 3,MERGE   (4 byte)  
+    * sixth,  FeatExtractor		: 0,LBP 1,CLEAN 2,HOG 3,MERGE   (4 bytes)  
     * 
     * from now one it will look like this:
     * 	all double values from the feature
@@ -355,9 +370,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    
    charInt fancyInt;
    charDouble fancyDouble;
-   
-   //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
-   //unsigned int wordSize = bow[0].content.size();
+ 
    ofstream file(filename.c_str(),  ios::binary);
    
    //write dataset used
@@ -372,7 +385,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    file.write(fancyInt.chars, 4);
  
    //write amount of features
-   fancyInt.intVal = settings.scannerSettings.nRandomPatches;
+   fancyInt.intVal = settings.scannerSettings.nRandomPatches;   
    file.write(fancyInt.chars, 4);
    
    //write patchWidth
@@ -403,7 +416,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
          break;
 	}
    file.write(fancyInt.chars, 4); 
-   
+
 	for(unsigned int i=0;i<featureVector.size();i++){
 		for(int j=0;j<featureVector[i].size;j++){
 			fancyDouble.doubleVal = featureVector[i].content[j];
@@ -417,6 +430,28 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 		//write pool it came from
 		fancyInt.intVal = featureVector[i].getSquareId(); //does this always exists??
 		file.write(fancyInt.chars, 4);		
+	}		
+	if(featureVector.size() == settings.scannerSettings.nRandomPatches){
+		//write min value from bottom level
+		fancyDouble.doubleVal = minValues[0]; 
+		file.write(fancyDouble.chars, 8);
+		//std::cout << "min value in write: " << fancyDouble.doubleVal << std::endl;
+		//write max value
+		fancyDouble.doubleVal = maxValues[0];
+		file.write(fancyDouble.chars, 8);
+		//std::cout << "min value in write: " << fancyDouble.doubleVal << std::endl;
+
+		vector<unsigned int> trainImages = dataset->getTrainImageNums();
+		for(int i=0;i<dataset->getTrainSize();i++){
+			fancyInt.intVal = trainImages[i];
+			//std::cout << trainImages[i] << std::endl;
+			file.write(fancyInt.chars,4);
+		}
+		vector<unsigned int> testImages = dataset->getTestImageNums();
+		for(int i=0;i<dataset->getTestSize();i++){
+			fancyInt.intVal = testImages[i];
+			file.write(fancyInt.chars,4);
+		}
 	}
    file.close();
 }
@@ -447,8 +482,8 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 
 	}
    
-	if(readInDatasetType != dataset.getType()){
-		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset.getType() << ", please change this" << std::endl;
+	if(readInDatasetType != dataset->getType()){
+		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << std::endl;
 		exit(-1);
 	}
 	
@@ -504,8 +539,16 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		std::cout << "The Feature extractor that is read in is " << readInFeatExt << " in the settings file it is" << settings.featureSettings.featureType << ", please change this" << std::endl;
 		exit(-1);		
 	}
-  
-	for(unsigned int i=0;i<readInNRandomPatches;i++){
+	int sizeOfFeatureVector;
+	
+	if(filename.find("RandomFeat") == 0){
+		sizeOfFeatureVector = readInNRandomPatches;
+	}
+	else {
+		sizeOfFeatureVector = dataset->getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;
+	}
+
+	for(int i=0;i<sizeOfFeatureVector;i++){
 		vector<double> contentFeat;
 		contentFeat.reserve(readInFeatExt);
 		
@@ -513,7 +556,6 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 			file.read(fancyDouble.chars, 8);
 			contentFeat.push_back(fancyDouble.doubleVal);
 		}
-		//std::cout << std::endl;
 		Feature feat = new Feature(contentFeat);
 		
 		//read label id
@@ -527,6 +569,33 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		featureVector.push_back(feat);
 	}
 	
+	//Check if the train/test images that are read in are the same as in the settings file
+	//This only needs to happen with the training set.. not the validation set
+	
+	if(!(file.peek() == std::ifstream::traits_type::eof())){
+		//read min value
+		file.read(fancyDouble.chars, 8);
+		minValues[0] = fancyDouble.doubleVal;
+	
+		//read max value
+		file.read(fancyDouble.chars, 8);
+		maxValues[0] = fancyDouble.doubleVal;
+		
+		vector<unsigned int> readInTrainImages;
+		for(int i=0;i<dataset->getTrainSize();i++){
+			file.read(fancyInt.chars,4);
+			//std::cout << "imageNum["<<i<<"]: " << fancyInt.intVal << std::endl;
+			readInTrainImages.push_back(fancyInt.intVal);
+		}
+		dataset->setTrainImages(readInTrainImages);
+		
+		vector<unsigned int> readInTestImages;
+		for(int i=0;i<dataset->getTestSize();i++){
+			file.read(fancyInt.chars,4);
+			readInTestImages.push_back(fancyInt.intVal);
+		}
+		dataset->setTestImages(readInTestImages);
+	}
    file.close();
 }
 //---------------------end:import/export-----------------------------

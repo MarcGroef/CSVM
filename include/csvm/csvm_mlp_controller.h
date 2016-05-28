@@ -22,6 +22,7 @@ namespace csvm{
 		int nHiddenBottomLevel;
 		int validationSize;
 		int trainSize;
+		int amountOfPatchesImage;
 		
 		vector<double> minValues;
 		vector<double> maxValues;
@@ -32,7 +33,7 @@ namespace csvm{
 		FeatureExtractor featExtr;
 		
 		CSVMSettings settings;
-		CSVMDataset dataset;
+		CSVMDataset* dataset;
 		
 		vector<vector<MLPerceptron> > mlps;
 		

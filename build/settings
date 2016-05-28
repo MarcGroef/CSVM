@@ -62,7 +62,13 @@ epochs 20
 stoppingCriterion 0.9
 nHiddenUnitsFirstLayer 400
 scanStrideFirstLayer 3
-loadRandomFeat LEKKER
+saveData 1
+saveRandomFeatName RandomFeat_CIFAR10_50.000_24x24
+saveValidationName Validation_CIFAR10_50.000_24x24
+readInData 0
+readRandomFeatName RandomFeat_CIFAR10_50.000_24x24
+readValidationName Validation_CIFAR10_50.000_24x24
+
 
 SVM
 Kernel LINEAR
