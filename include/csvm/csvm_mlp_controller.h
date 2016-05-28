@@ -44,7 +44,6 @@ namespace csvm{
 		int calculateSquareOfPatch(Patch patch);
 		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
-		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& featureSet);
 		void initMLPs();
 		

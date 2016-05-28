@@ -127,21 +127,17 @@ void MLPController::createDataBySquares(){
 	maxValue = 0;
 
 	if(settings.mlpSettings.readInData){
-		importFeatureSet(settings.mlpSettings.randomFeatName,trainingSet);
-		importFeatureSet(settings.mlpSettings.validationName,validationSet);
+		importFeatureSet(settings.mlpSettings.readRandomFeatName,trainingSet);
+		importFeatureSet(settings.mlpSettings.readValidationName,validationSet);
 	} 
 	else {
 		trainingSet = createRandomFeatureVector(trainingSet);
 		validationSet = createValidationSet(validationSet);
-		
-		exportFeatureSet("RandomFeat_CIFAR10_50.000_24x24",trainingSet);
-		exportFeatureSet("Validation_CIFAR10_50.000_24x24",validationSet);
+		if(settings.mlpSettings.saveData){
+			exportFeatureSet(settings.mlpSettings.saveRandomFeatName,trainingSet);
+			exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
+		}
 	}
-	
-	/*vector<unsigned int> temp = dataset->getTrainImageNums();
-	std::cout << dataset->getImagePtr(0) << std::endl;
-	exit(-1);
-	*/
 	
 	splitTrain = splitUpDataBySquare(trainingSet);
 	splitVal   = splitUpDataBySquare(validationSet);

@@ -59,9 +59,12 @@ crossValidationInterval 10
 crossValidationSize 0.1
 epochs 50
 stoppingCriterion 0.99
-readInData 1
-randomFeatName RandomFeat_CIFAR10_50.000_24x24
-validationName Validation_CIFAR10_50.000_24x24
+saveData 1
+saveRandomFeatName RandomFeat_CIFAR10_50.000_24x24
+saveValidationName Validation_CIFAR10_50.000_24x24
+readInData 0
+readRandomFeatName RandomFeat_CIFAR10_50.000_24x24
+readValidationName Validation_CIFAR10_50.000_24x24
 
 SVM
 Kernel LINEAR
