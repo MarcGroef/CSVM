@@ -56,8 +56,8 @@ trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.2
 epochs 20
-stoppingCriterion 0.99
-useWeightingMLPs true
+stoppingCriterion 1.0
+useWeightingMLPs false
 
 SVM
 Kernel LINEAR

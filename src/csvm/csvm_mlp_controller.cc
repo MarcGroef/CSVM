@@ -249,9 +249,14 @@ unsigned int MLPController::mostVotedClass(vector<double> votingHistogram){
 	return mostVotedClass;
 }
 //returns the summed output for one square
-vector<double> MLPController::classifyImageSquare(MLPerceptron firstMLP, MLPerceptron weightingMLP, vector<Feature> features){
+vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Feature> features){
 	vector<double> summedOutput (settings.mlpSettings.nOutputUnits,0.0);
 	vector<double> weight (1,0.0);
+	MLPerceptron firstMLP = mlps[indexOfMLPs];
+	MLPerceptron weightingMLP;
+	if(settings.mlpSettings.useWeightingMLPs){
+		weightingMLP = weightingMLPs[indexOfMLPs];
+	}
 	
 	//ofstream myfile;
 	//myfile.open("weightsVSoutputprobabilities.txt");
@@ -262,7 +267,7 @@ vector<double> MLPController::classifyImageSquare(MLPerceptron firstMLP, MLPerce
 		if(settings.mlpSettings.useWeightingMLPs)
 			weight = weightingMLP.runFeatureThroughMLP(features[i]);
 		else 
-			weight[0] =1;
+			weight[0] =1.0;
 			//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
 		for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
 			outputMLP[j] *= weight[0];					//weighing the outputs
@@ -298,7 +303,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
   
   for(unsigned int i=0;i<mlps.size();i++){
 		testFeatures[i] = normalizeInput(testFeatures[i]);
-		oneSquare = classifyImageSquare(mlps[i],weightingMLPs[i],testFeatures[i]);
+		oneSquare = classifyImageSquare(i,testFeatures[i]);
 		
 		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++)
 			votingHistogramAllSquares[j] += oneSquare[j];

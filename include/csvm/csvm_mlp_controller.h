@@ -50,7 +50,7 @@ namespace csvm{
 		vector<double> majorityVoting(vector<double> votingHistogram);
 		vector<double> sumVoting(vector<double> votingHistogram);
 		unsigned int mostVotedClass(vector<double> votingHistogram);
-		vector<double> classifyImageSquare(MLPerceptron firstMLP, MLPerceptron weightingMLP, vector<Feature> features);
+		vector<double> classifyImageSquare(int indexOfMLPs, vector<Feature> features);
 		
 		public:
 		
