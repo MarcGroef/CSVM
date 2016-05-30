@@ -28,6 +28,12 @@ namespace csvm{
       double crossValidationSize;
       int epochs;
       double stoppingCriterion;
+      int saveData;
+      string saveRandomFeatName;
+      string saveValidationName;
+      int readInData;
+      string readRandomFeatName;
+      string readValidationName;
    };
 
    class MLPerceptron{

@@ -52,6 +52,9 @@ namespace csvm{
 		unsigned int mostVotedClass(vector<double> votingHistogram);
 		vector<double> classifyImageSquare(int indexOfMLPs, vector<Feature> features);
 		
+		void importFeatureSet(string filename, vector<Feature>& featureVector);
+		void exportFeatureSet(string filename, vector<Feature>& featureVector);
+		
 		public:
 		
 		MLPController();
