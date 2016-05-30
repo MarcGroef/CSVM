@@ -259,13 +259,15 @@ vector<double> MLPController::classifyImageSquare(MLPerceptron firstMLP, MLPerce
 	
 	for(unsigned int i=0;i<features.size();i++){
 		outputMLP = firstMLP.runFeatureThroughMLP(features[i]);
-		if(settings.mlpSettings.useWeightingMLPs){
+		if(settings.mlpSettings.useWeightingMLPs)
 			weight = weightingMLP.runFeatureThroughMLP(features[i]);
+		else 
+			weight[0] =1;
 			//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
-			for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
-				outputMLP[j] *= weight[0];					//weighing the outputs
-			}
+		for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
+			outputMLP[j] *= weight[0];					//weighing the outputs
 		}
+		
 		//outputMLP is global and used in the voting functions
 		summedOutput = voting(summedOutput);
 	}
