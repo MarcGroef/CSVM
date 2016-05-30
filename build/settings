@@ -57,12 +57,12 @@ voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.1
-epochs 50
+epochs 200
 stoppingCriterion 0.99
-saveData 1
+saveData 0
 saveRandomFeatName RandomFeat_CIFAR10_50.000_24x24
 saveValidationName Validation_CIFAR10_50.000_24x24
-readInData 0
+readInData 1
 readRandomFeatName RandomFeat_CIFAR10_50.000_24x24
 readValidationName Validation_CIFAR10_50.000_24x24
 

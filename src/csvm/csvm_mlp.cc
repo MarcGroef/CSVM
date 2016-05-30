@@ -264,9 +264,9 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
 			std::cout << i << ", \t";
-			if(isErrorOnValidationSetLowEnough(validationSet))
+			if(isErrorOnValidationSetLowEnough(validationSet)) 
 				break;	
-			std::cout << averageError/(double)randomFeatures.size() << std::endl;
+			std::cout << (averageError/(double)randomFeatures.size())*100 << std::endl;
 		}
 		averageError = 0;
 	}

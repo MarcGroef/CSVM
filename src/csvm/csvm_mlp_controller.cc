@@ -1,4 +1,5 @@
 #include <csvm/csvm_mlp_controller.h>
+#include <sys/stat.h>
  
 /* This class will control the multiple MLPs for mlp pooling
  * TODO: The normalization now happens inside of this class, because it is not really part of an mlp.
@@ -220,6 +221,16 @@ union charInt{
    unsigned int intVal;
 };
 
+bool fileExists(const std::string& filename)
+{
+    struct stat buf;
+    if (stat(filename.c_str(), &buf) != -1)
+    {
+        return true;
+    }
+    return false;
+}
+
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
 	//TODO: Also export training and testing images pointers. Otherwise it goes wrong in the testing phase, because now you have no idea on which images you trained and on which you did not.
  
@@ -334,8 +345,11 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
   
 	//unsigned int typesize;
 	//unsigned int featDims;
-	
 	ifstream file(filename.c_str(), ios::binary);
+	if(!fileExists(filename.c_str())){
+		std::cout << "The filename: " << filename.c_str() << "cannot be found, please change this in the setting file" << std::endl;
+		exit(-1);		
+	}
    
 	file.read(fancyInt.chars,4);
 	unsigned int datasetNum = fancyInt.intVal; //some check that his num is smaller than 2
