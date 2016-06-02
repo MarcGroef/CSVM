@@ -226,7 +226,7 @@ void MLPerceptron::weightTraining(vector<Feature>& randomFeatures,vector<Feature
 			std::cout << i << ", \t";
 			if(isErrorOnValidationSetLowEnough(validationSet))
 				break;	
-			std::cout << averageError/(double)randomFeatures.size() << std::endl;
+			std::cout << averageError/(double)randomFeatures.size()*100 << std::endl;
 		}
 		averageError = 0;
 	}
