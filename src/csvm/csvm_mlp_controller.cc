@@ -418,14 +418,14 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 		file.write(fancyDouble.chars, 8);
 		//std::cout << "min value in write: " << fancyDouble.doubleVal << std::endl;
 
-		vector<unsigned int> trainImages = dataset->getTrainImageNums();
-		for(int i=0;i<dataset->getTrainSize();i++){
+		vector<unsigned int> trainImages = dataset.getTrainImageNums();
+		for(int i=0;i<dataset.getTrainSize();i++){
 			fancyInt.intVal = trainImages[i];
 			//std::cout << trainImages[i] << std::endl;
 			file.write(fancyInt.chars,4);
 		}
-		vector<unsigned int> testImages = dataset->getTestImageNums();
-		for(int i=0;i<dataset->getTestSize();i++){
+		vector<unsigned int> testImages = dataset.getTestImageNums();
+		for(int i=0;i<dataset.getTestSize();i++){
 			fancyInt.intVal = testImages[i];
 			file.write(fancyInt.chars,4);
 		}
@@ -459,8 +459,8 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 
 	}
    
-	if(readInDatasetType != dataset->getType()){
-		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << std::endl;
+	if(readInDatasetType != dataset.getType()){
+		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset.getType() << ", please change this" << std::endl;
 		exit(-1);
 	}
 	
@@ -522,7 +522,7 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		sizeOfFeatureVector = readInNRandomPatches;
 	}
 	else {
-		sizeOfFeatureVector = dataset->getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;
+		sizeOfFeatureVector = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;
 	}
 
 	for(int i=0;i<sizeOfFeatureVector;i++){
@@ -559,19 +559,19 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		maxValue = fancyDouble.doubleVal;
 		
 		vector<unsigned int> readInTrainImages;
-		for(int i=0;i<dataset->getTrainSize();i++){
+		for(int i=0;i<dataset.getTrainSize();i++){
 			file.read(fancyInt.chars,4);
 			//std::cout << "imageNum["<<i<<"]: " << fancyInt.intVal << std::endl;
 			readInTrainImages.push_back(fancyInt.intVal);
 		}
-		dataset->setTrainImages(readInTrainImages);
+		dataset.setTrainImages(readInTrainImages);
 		
 		vector<unsigned int> readInTestImages;
-		for(int i=0;i<dataset->getTestSize();i++){
+		for(int i=0;i<dataset.getTestSize();i++){
 			file.read(fancyInt.chars,4);
 			readInTestImages.push_back(fancyInt.intVal);
 		}
-		dataset->setTestImages(readInTestImages);
+		dataset.setTestImages(readInTestImages);
 	}
    file.close();
 }
