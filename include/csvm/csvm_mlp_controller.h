@@ -28,6 +28,7 @@ namespace csvm{
 		vector<MLPerceptron> mlps;
 		vector<MLPerceptron> weightingMLPs;
 		vector<double> outputMLP;
+		int amountOfPatchesImage;
 		
 		double minValue;
     double maxValue;

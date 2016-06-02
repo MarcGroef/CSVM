@@ -49,6 +49,7 @@ void MLPController::setSettings(MLPSettings s){
 			weightingMLPs.push_back(mlp);
 		}
 	}
+	amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
 } 
  
 void MLPController::initMLPs(){
