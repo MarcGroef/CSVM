@@ -199,10 +199,6 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
 }
 
 
-
-
-
-//------------CHANGE THIS----------------
 void MLPerceptron::weightTraining(vector<Feature>& randomFeatures,vector<Feature>& validationSet){   
 	double averageError = 0;
 	int epochs = settings.epochs;
@@ -215,8 +211,10 @@ void MLPerceptron::weightTraining(vector<Feature>& randomFeatures,vector<Feature
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
-			desiredOutput = vector<double>(1,desiredOutputsForWeighting[j]);
+			desiredOutput[0] = desiredOutputsForWeighting[j];
+			//cout << "desiered:\t" << desiredOutput[0];
 			feedforward();
+			//cout << "\toutputed:\t" << activations[settings.nLayers - 1][1] << "\n";
 			backpropgation();
 			averageError += errorFunction();
 		}
@@ -247,6 +245,7 @@ void MLPerceptron::crossvalidation(vector<Feature>& randomFeatures,vector<Featur
 			activations[0] = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
 			feedforward();
+			activationsToOutputProbabilities();
 			backpropgation();
 			averageError += errorFunction();
 		}
@@ -264,6 +263,7 @@ void MLPerceptron::crossvalidation(vector<Feature>& randomFeatures,vector<Featur
 	for(unsigned int j = 0;j<randomFeatures.size();j++){
 		activations[0] = randomFeatures.at(j).content;
 		feedforward();
+		activationsToOutputProbabilities();
 		desiredOutputsForWeighting.push_back(activations[settings.nLayers -1][randomFeatures[j].getLabelId()]);
 	}
 }
@@ -312,6 +312,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 //--------end training-----------
 //---------start VOTING----------
 
+//softmax function
 void MLPerceptron::activationsToOutputProbabilities(){
 	double sumOfActivations = 0.0;
 	for(int i = 0; i< settings.nOutputUnits; i++){
@@ -386,7 +387,7 @@ vector<double> MLPerceptron::runFeatureThroughMLP(Feature imageFeature){
 	
 	activations[0] = imageFeature.content;
 	feedforward();
-
+	
 	return activations[settings.nLayers - 1];
 }
 //-------end testing--------

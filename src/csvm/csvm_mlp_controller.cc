@@ -44,7 +44,19 @@ void MLPController::setSettings(MLPSettings s){
 		for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 			MLPerceptron mlp;
 			s.isWeightingMLP = true;
-			s.nOutputUnits = 1;
+			s.nOutputUnits 				= s.weightingOutputUnits;
+			s.nInputUnits  				= s.weightingInputUnits;
+			s.nHiddenUnits				= s.weightingHiddenUnits;
+			s.nLayers					= s.weightingLayers;
+      
+			s.learningRate				= s.weightingLearningRate;
+			s.voting					= s.weightingVoting;
+			s.trainingType				= s.weightingTrainingType;
+			s.crossValidationInterval 	= s.weightingCrossValidationInterval;
+			s.crossValidationSize		= s.weightingCrossValidationSize;
+			s.epochs					= s.weightingEpochs;
+			s.stoppingCriterion			= s.weightingStoppingCriterion;
+			
 			mlp.setSettings(s); 
 			weightingMLPs.push_back(mlp);
 		}
@@ -144,10 +156,34 @@ void MLPController::trainMutipleMLPs(){
 			weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting());
 			std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
 			trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
+			cout << "\nHistogram of output probabilities: \n";
+			printHistogram(mlps[i].getDesiredOutputsForWeighting(), 20);
 		}
   }
   splitTrain.clear();
   splitVal.clear();
+}
+
+void MLPController::printHistogram(vector<double> data, int bins){
+	vector<int> histogram (bins,0);
+	double max = 0.0;
+	
+	
+	for(unsigned int i=0; i<data.size() ; i++){
+		histogram[(int)(data[i]*bins/2)] ++;
+		if(data[i] > max)
+			max = data[i];
+	}
+	for(int i=0; i<bins; i++)
+		cout << histogram[i] << "\t|";
+	std::cout << endl;
+	for(int i=0; i<bins; i++)
+		cout << "--------";
+	cout << "-" << endl;
+	for(float i=0; i<bins; i++)
+		std::cout << setprecision (3) << fixed << (i+1)/(bins/2) << "\t|";
+	cout << "\n";
+	cout << "max value: "  << max << endl;
 }
 
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& trainingSet){
@@ -271,6 +307,7 @@ vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Featur
 		else 
 			weight[0] =1.0;
 			//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
+		allWeights.push_back(weight[0]);
 		for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
 			outputMLP[j] *= weight[0];					//weighing the outputs
 		}
@@ -278,6 +315,7 @@ vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Featur
 		//outputMLP is global and used in the voting functions
 		summedOutput = voting(summedOutput);
 	}
+	
 	//myfile.close();
 	return summedOutput;
 }
@@ -310,8 +348,11 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++)
 			votingHistogramAllSquares[j] += oneSquare[j];
 	}
-	
-
+	counter ++;
+	if(counter%settings.datasetSettings.nTestImages == 0){
+		cout << "\nHistogram weights\n";
+		printHistogram(allWeights, 20);
+	}
  	return mostVotedClass(votingHistogramAllSquares);
 }
 

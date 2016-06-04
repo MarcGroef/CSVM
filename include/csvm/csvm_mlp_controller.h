@@ -33,6 +33,10 @@ namespace csvm{
 		double minValue;
     double maxValue;
 		
+		//testing variables:
+		vector<double> allWeights;
+		unsigned int counter;
+		
 		
 		void createDataBySquares();
 		int calculateSquareOfPatch(Patch patch);
@@ -55,6 +59,8 @@ namespace csvm{
 		
 		void importFeatureSet(string filename, vector<Feature>& featureVector);
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);
+		
+		void printHistogram(vector<double> data, int bins);
 		
 		public:
 		

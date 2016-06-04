@@ -18,9 +18,7 @@ namespace csvm{
       int nHiddenUnits;
       int nInputUnits;
       int nLayers;
-      bool useWeightingMLPs;
-      bool isWeightingMLP;
-      
+ 
       double learningRate;
       string voting;
       string trainingType;
@@ -28,6 +26,23 @@ namespace csvm{
       double crossValidationSize;
       int epochs;
       double stoppingCriterion;
+      
+      bool useWeightingMLPs;
+      bool isWeightingMLP;
+      
+      int weightingOutputUnits;
+      int weightingHiddenUnits;
+      int weightingInputUnits;
+      int weightingLayers;
+      
+      double weightingLearningRate;
+      string weightingVoting;
+      string weightingTrainingType;
+      int weightingCrossValidationInterval;
+      double weightingCrossValidationSize;
+      int weightingEpochs;
+      double weightingStoppingCriterion;
+      
       int saveData;
       string saveRandomFeatName;
       string saveValidationName;

@@ -1,7 +1,7 @@
 Dataset
-method MNIST
-nTrainImages 20
-nTestImages 5
+method CIFAR10
+nTrainImages 200
+nTestImages 50
 imageWidth 36
 imageHeight 36
 
@@ -42,7 +42,7 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 1900
+nRandomPatches 2000
 
 MLP
 nSplitsForPooling 1
@@ -55,9 +55,26 @@ voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.2
-epochs 20
+epochs 100
 stoppingCriterion 1.0
-useWeightingMLPs false
+useWeightingMLPs T
+weightingHiddenUnits 400
+weightingInputUnits 144
+weightingOutputUnits 10
+weightingLayers 3
+weightingLearningRate .01
+weightingVoting SUM
+weightingTrainingType CROSSVALIDATION
+weightingCrossValidationInterval 10
+weightingCrossValidationSize 0.2
+weightingEpochs 100
+weightingStoppingCriterion 1.0
+saveData 0
+saveRandomFeatName RandomFeat_CIFAR10_50.000_24x24
+saveValidationName Validation_CIFAR10_50.000_24x24
+readInData 0
+readRandomFeatName RandomFeat_CIFAR10_50.000_24x24
+readValidationName Validation_CIFAR10_50.000_24x24
 
 SVM
 Kernel LINEAR
