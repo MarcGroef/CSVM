@@ -150,25 +150,6 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
-   
-   stream >> setting;
-   if (setting == "weightingInputUnits") {
-      stream >> mlpSettings.weightingInputUnits;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-   
-   stream >> setting;
-   if (setting == "weightingOutputUnits") {
-      stream >> mlpSettings.weightingOutputUnits;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-   
     stream >> setting;
    if (setting == "weightingLayers") {
       stream >> mlpSettings.weightingLayers;
@@ -188,14 +169,6 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
     stream >> type;
    if (type == "weightingVoting") {
       stream >> mlpSettings.weightingVoting;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-   }
-    stream >> type;
-   if (type == "weightingTrainingType") {
-      stream >> mlpSettings.weightingTrainingType;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";

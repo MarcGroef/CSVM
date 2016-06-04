@@ -44,14 +44,12 @@ void MLPController::setSettings(MLPSettings s){
 		for(int i = 0; i < (s.nSplitsForPooling * s.nSplitsForPooling);i++){
 			MLPerceptron mlp;
 			s.isWeightingMLP = true;
-			s.nOutputUnits 				= s.weightingOutputUnits;
-			s.nInputUnits  				= s.weightingInputUnits;
+			s.nOutputUnits 				= 1;
 			s.nHiddenUnits				= s.weightingHiddenUnits;
 			s.nLayers					= s.weightingLayers;
       
 			s.learningRate				= s.weightingLearningRate;
 			s.voting					= s.weightingVoting;
-			s.trainingType				= s.weightingTrainingType;
 			s.crossValidationInterval 	= s.weightingCrossValidationInterval;
 			s.crossValidationSize		= s.weightingCrossValidationSize;
 			s.epochs					= s.weightingEpochs;

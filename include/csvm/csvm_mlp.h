@@ -30,14 +30,11 @@ namespace csvm{
       bool useWeightingMLPs;
       bool isWeightingMLP;
       
-      int weightingOutputUnits;
       int weightingHiddenUnits;
-      int weightingInputUnits;
       int weightingLayers;
       
       double weightingLearningRate;
       string weightingVoting;
-      string weightingTrainingType;
       int weightingCrossValidationInterval;
       double weightingCrossValidationSize;
       int weightingEpochs;
