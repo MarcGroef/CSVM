@@ -59,6 +59,8 @@ epochs 100
 stoppingCriterion 1.0
 useWeightingMLPs T
 trainWeightsOn VALIDATIONSET
+changeWeightsRange T
+minimumOfRange 0.3
 weightingHiddenUnits 400
 weightingLayers 3
 weightingLearningRate .003

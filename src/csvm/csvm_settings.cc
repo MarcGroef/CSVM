@@ -150,6 +150,28 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       exit(-1);
    }
    
+   stream >> type;
+   if (type == "changeWeightsRange") {
+      stream >> setting;
+      if (setting == "true" || setting == "True" || setting == "TRUE" || setting == "t" || setting == "T")
+				mlpSettings.changeWeightsRange = true;
+			else{
+				if (setting == "false" || setting == "False" || setting == "FALSE" || setting == "f" || setting == "F")
+					mlpSettings.changeWeightsRange = false;
+			}
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   stream >> setting;
+   if (setting == "minimumOfRange") {
+      stream >> mlpSettings.minWeightRange;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
    stream >> setting;
    if (setting == "weightingHiddenUnits") {
       stream >> mlpSettings.weightingHiddenUnits;

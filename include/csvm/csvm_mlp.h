@@ -30,6 +30,8 @@ namespace csvm{
       bool useWeightingMLPs;
       bool isWeightingMLP;
       string trainWeightsOn;
+      bool changeWeightsRange;
+      double minWeightRange;
       
       int weightingHiddenUnits;
       int weightingLayers;

@@ -61,6 +61,7 @@ namespace csvm{
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);
 		
 		void printHistogram(vector<double> data, int bins);
+		vector<double> changeRange(vector<double> data, double newMin, double newMax);
 		
 		public:
 		

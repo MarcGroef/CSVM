@@ -160,37 +160,73 @@ void MLPController::trainMutipleMLPs(){
 			if (settings.mlpSettings.trainWeightsOn == "VALIDATIONSET"){
 				vector<Feature> newTrainSet = splitVal[i];
 				std::random_shuffle(newTrainSet.begin(), newTrainSet.end());
-				weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting(newTrainSet));
+				
+				if(settings.mlpSettings.changeWeightsRange)
+					weightingMLPs[i].setDesiredOutputsForWeighting(
+						changeRange(mlps[i].getDesiredOutputsForWeighting(newTrainSet),
+						settings.mlpSettings.minWeightRange,1.0));
+				else
+					weightingMLPs[i].setDesiredOutputsForWeighting(
+						mlps[i].getDesiredOutputsForWeighting(newTrainSet));
 				std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
 				trainMLP(weightingMLPs[i],newTrainSet,splitVal[i]);
+				
 				cout << "\nHistogram of output probabilities: \n";
 				printHistogram(mlps[i].getDesiredOutputsForWeighting(newTrainSet), 20);
+				
 				if(!newTrainSet.empty())
 					newTrainSet.clear();
 			}else if (settings.mlpSettings.trainWeightsOn == "TRAINSET"){
-				weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]));
+				if(settings.mlpSettings.changeWeightsRange)
+					weightingMLPs[i].setDesiredOutputsForWeighting(
+						changeRange(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]),
+						settings.mlpSettings.minWeightRange,1.0));
+				else
+					weightingMLPs[i].setDesiredOutputsForWeighting(
+						mlps[i].getDesiredOutputsForWeighting(splitTrain[i]));
 				trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
 				cout << "\nHistogram of output probabilities: \n";
 				printHistogram(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]), 20);
 			}
 			
 		}
-  }
-  if(!splitTrain.empty())
+	}
+	if(!splitTrain.empty())
 		splitTrain.clear();
 	if(!splitVal.empty())
 		splitVal.clear();
 }
 
+vector<double> MLPController::changeRange(vector<double> data, double newMin, double newMax){
+	double max = 0.0;
+	double min = 2.0;
+	
+	for(unsigned int i=0; i<data.size(); i++){
+		if(data[i] > max)
+			max = data[i];
+		if(data[i] < min)
+			min = data[i];
+	}
+	
+	for(unsigned int i=0; i<data.size(); i++){
+		data[i] = (data[i] - min) * ((newMax-newMin)/(max-min)) + newMin;
+	}
+	
+	return data;
+}
+
+
 void MLPController::printHistogram(vector<double> data, int bins){
 	vector<int> histogram (bins,0);
 	double max = 0.0;
+	double min = 2.0;
 	
-	
-	for(unsigned int i=0; i<data.size() ; i++){
+	for(unsigned int i=0; i<data.size(); i++){
 		histogram[(int)(data[i]*bins/2)] ++;
 		if(data[i] > max)
 			max = data[i];
+		if(data[i] < min)
+			min = data[i];
 	}
 	for(int i=0; i<bins; i++)
 		cout << histogram[i] << "\t|";
@@ -201,7 +237,8 @@ void MLPController::printHistogram(vector<double> data, int bins){
 	for(float i=0; i<bins; i++)
 		std::cout << setprecision (3) << fixed << (i+1)/(bins/2) << "\t|";
 	cout << "\n";
-	cout << "max value: "  << max << endl;
+	cout << "min value: " << min << endl;
+	cout << "max value: " << max << endl;
 }
 
 vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& trainingSet){
