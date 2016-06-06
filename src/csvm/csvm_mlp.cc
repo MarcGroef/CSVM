@@ -92,7 +92,16 @@ void MLPerceptron::setDesiredOutputsForWeighting(vector<double> dofw){
 	desiredOutputsForWeighting = dofw;
 }
 
-vector<double> MLPerceptron::getDesiredOutputsForWeighting(){
+vector<double> MLPerceptron::getDesiredOutputsForWeighting(vector<Feature> featuresForWeightTraining){
+	// putting the probability of the right class of a patch in the desired outputs for the weightingMLPs
+	if(!desiredOutputsForWeighting.empty())
+		desiredOutputsForWeighting.clear();
+	for(unsigned int j = 0;j<featuresForWeightTraining.size();j++){
+		activations[0] = featuresForWeightTraining.at(j).content;
+		feedforward();
+		activationsToOutputProbabilities();
+		desiredOutputsForWeighting.push_back(activations[settings.nLayers -1][featuresForWeightTraining[j].getLabelId()]);
+	}
 	return desiredOutputsForWeighting;
 }
 
@@ -259,13 +268,7 @@ void MLPerceptron::crossvalidation(vector<Feature>& randomFeatures,vector<Featur
 		}
 		averageError = 0;
 	}
-	// putting the probability of the right class of a patch in the desired outputs for the weightingMLPs
-	for(unsigned int j = 0;j<randomFeatures.size();j++){
-		activations[0] = randomFeatures.at(j).content;
-		feedforward();
-		activationsToOutputProbabilities();
-		desiredOutputsForWeighting.push_back(activations[settings.nLayers -1][randomFeatures[j].getLabelId()]);
-	}
+
 }
 
 bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){

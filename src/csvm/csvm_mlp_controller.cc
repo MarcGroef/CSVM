@@ -51,7 +51,6 @@ void MLPController::setSettings(MLPSettings s){
 			s.learningRate				= s.weightingLearningRate;
 			s.voting					= s.weightingVoting;
 			s.crossValidationInterval 	= s.weightingCrossValidationInterval;
-			s.crossValidationSize		= s.weightingCrossValidationSize;
 			s.epochs					= s.weightingEpochs;
 			s.stoppingCriterion			= s.weightingStoppingCriterion;
 			
@@ -73,8 +72,10 @@ void MLPController::createDataBySquares(){
 	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
 	splitVal   = splitUpDataBySquare(createValidationSet(validationSet));
 	
-	trainingSet.clear();
-	validationSet.clear();
+	if(!trainingSet.empty())
+		trainingSet.clear();
+	if(!validationSet.empty())
+		validationSet.clear();
 }
 
 int MLPController::calculateSquareOfPatch(Patch patch){
@@ -146,20 +147,39 @@ void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vec
 }
 
 void MLPController::trainMutipleMLPs(){
+	
+	if (settings.mlpSettings.trainWeightsOn != "VALIDATIONSET" && settings.mlpSettings.trainWeightsOn != "TRAINSET"){
+		cout << "It seems like you defined the training set or the weights wrong. Please check the settings file. The inouts are either 'VALIDATIONSET' or .TRAINSET'.   \n... Exitting...\n";
+		exit(-1);
+	}
 	initMLPs();
 	for(unsigned int i=0;i<mlps.size();i++){ 	
 		std::cout << "(classifier) training mlp["<<i<<"]..." << std::endl;
 		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
 		if(settings.mlpSettings.useWeightingMLPs){
-			weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting());
-			std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
-			trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
-			cout << "\nHistogram of output probabilities: \n";
-			printHistogram(mlps[i].getDesiredOutputsForWeighting(), 20);
+			if (settings.mlpSettings.trainWeightsOn == "VALIDATIONSET"){
+				vector<Feature> newTrainSet = splitVal[i];
+				std::random_shuffle(newTrainSet.begin(), newTrainSet.end());
+				weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting(newTrainSet));
+				std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
+				trainMLP(weightingMLPs[i],newTrainSet,splitVal[i]);
+				cout << "\nHistogram of output probabilities: \n";
+				printHistogram(mlps[i].getDesiredOutputsForWeighting(newTrainSet), 20);
+				if(!newTrainSet.empty())
+					newTrainSet.clear();
+			}else if (settings.mlpSettings.trainWeightsOn == "TRAINSET"){
+				weightingMLPs[i].setDesiredOutputsForWeighting(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]));
+				trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
+				cout << "\nHistogram of output probabilities: \n";
+				printHistogram(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]), 20);
+			}
+			
 		}
   }
-  splitTrain.clear();
-  splitVal.clear();
+  if(!splitTrain.empty())
+		splitTrain.clear();
+	if(!splitVal.empty())
+		splitVal.clear();
 }
 
 void MLPController::printHistogram(vector<double> data, int bins){

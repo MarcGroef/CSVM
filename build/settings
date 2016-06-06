@@ -42,7 +42,7 @@ ImageScanner
 patchHeight 24
 patchWidth 24
 scanStride 1
-nRandomPatches 2000
+nRandomPatches 20000
 
 MLP
 nSplitsForPooling 1
@@ -58,13 +58,13 @@ crossValidationSize 0.2
 epochs 100
 stoppingCriterion 1.0
 useWeightingMLPs T
+trainWeightsOn VALIDATIONSET
 weightingHiddenUnits 400
 weightingLayers 3
-weightingLearningRate .03
+weightingLearningRate .003
 weightingVoting SUM
 weightingCrossValidationInterval 50
-weightingCrossValidationSize 0.01
-weightingEpochs 500
+weightingEpochs 1000
 weightingStoppingCriterion 1.0
 saveData 0
 saveRandomFeatName RandomFeat_CIFAR10_50.000_24x24

@@ -141,6 +141,14 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
+   stream >> setting;
+   if (setting == "trainWeightsOn") {
+      stream >> mlpSettings.trainWeightsOn;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
    
    stream >> setting;
    if (setting == "weightingHiddenUnits") {
@@ -183,14 +191,6 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       exit(-1);
    }
 
-   stream >> type;
-   if(type == "weightingCrossValidationSize"){
-			stream >> mlpSettings.weightingCrossValidationSize;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
-      exit(-1);
-	 }
    stream >> type;
    if (type == "weightingEpochs") {
       stream >> mlpSettings.weightingEpochs;

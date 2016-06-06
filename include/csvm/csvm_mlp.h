@@ -29,6 +29,7 @@ namespace csvm{
       
       bool useWeightingMLPs;
       bool isWeightingMLP;
+      string trainWeightsOn;
       
       int weightingHiddenUnits;
       int weightingLayers;
@@ -36,7 +37,6 @@ namespace csvm{
       double weightingLearningRate;
       string weightingVoting;
       int weightingCrossValidationInterval;
-      double weightingCrossValidationSize;
       int weightingEpochs;
       double weightingStoppingCriterion;
       
@@ -111,7 +111,7 @@ namespace csvm{
       vector<double> runFeatureThroughMLP(Feature imageFeature);
       unsigned int classify(vector<Feature> imageFeatures);
       void setDesiredOutputsForWeighting(vector<double> dofw);
-      vector<double> getDesiredOutputsForWeighting();
+      vector<double> getDesiredOutputsForWeighting(vector<Feature> featuresForWeightTraining);
    };
       
 }
