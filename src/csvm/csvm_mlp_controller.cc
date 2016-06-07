@@ -253,8 +253,7 @@ void MLPController::trainMutipleMLPs(){
 	
 	//TODO: 
 	/*
-	 * try to export splitTrain and splitVal for different kinds of patchs size and randomfeature sizes.
-	 * This could really help in speeding up the training phase from the mlp.
+	wierd bug were the training error ins to -nan
 	 * */
 	createDataBottomLevel(splitTrain,splitVal);
 	
@@ -262,17 +261,28 @@ void MLPController::trainMutipleMLPs(){
 		normalizeInput(splitTrain[i],0);
 		normalizeInput(splitVal[i],0);
 	}
+	/*
+	for(int i=0;i<4;i++){
+		std::cout << splitTrain[i].size() << std::endl;
+		std::cout << splitVal[i].size() << std::endl;
+	}
+	
+	for(int i=0;i<splitTrain[0][0].size;i++){
+		std::cout << splitTrain[0][0].content[i] << std::endl;
+	}*/
 	
 	for(int i=0;i<nMLPs;i++){ 		
 		mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
 		std::cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << std::endl << std::endl;
     }
     
+    
+    /*
 	for(int i=0;i<nMLPs;i++){ 		
 		mlps[0][i].train(splitVal[i],splitTrain[i],numPatchesPerSquare[i]);
 		std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
     }
-    
+    */
     std::cout << "create training data for first level... " << std::endl;
     
     vector<Feature> inputTrainFirstLevel;
@@ -354,9 +364,7 @@ union charInt{
 };
 
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
-	//TODO: Also export training and testing images pointers. Otherwise it goes wrong in the testing phase, because now you have no idea on which images you trained and on which you did not.
- 
-   /* Featureset file conventions:
+	/* Featureset file conventions:
     * 
     * first,  Dataset			: 0, CIFAR10 1,MNIST   			(4 bytes)
     * second, Amount of features: 0-10.000.000         			(4 bytes)

@@ -110,8 +110,9 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 	for(int i=0; i<layerSizes[bottomLayer+1];i++){
 		for(int j=0;j<layerSizes[bottomLayer];j++)
 			summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
-		
+		//std::cout << "biasNodes[bottomLayer][i]: " << biasNodes[bottomLayer][i];
 		summedActivation += biasNodes[bottomLayer][i];
+		std::cout << "summedActivation: " << summedActivation << std::endl;
 		if ((bottomLayer+1) == settings.nLayers-1)
 			activations[bottomLayer+1][i] = summedActivation;
         else
@@ -261,7 +262,17 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward();
 			backpropgation();
 			averageError += errorFunction();
-			/*std::cout << "information input units: " << std::endl;
+			
+			/*std::cout << "information weights bottom to first layer" << std::endl;
+			for(int k=0;k<weights[0].size();k++){
+				for(int l=0;l<weights[0][l].size();l++){
+					std::cout << weights[0][k][l] << ",";
+				}
+				std::cout << std::endl;
+			}*/
+			
+			
+			std::cout << "information input units: " << std::endl;
 			
 			for(int k=0;k<settings.nInputUnits;k++){
 				std::cout << activations[0][k] << ", ";	
@@ -281,7 +292,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 				std::cout << activations[2][k] << ", ";	
 			}
 			std::cout << std::endl;	
-			*/	
+			if(j == 2) exit(-1);
 		}
 		
 		//after x amount of iterations it should check on the validation set
