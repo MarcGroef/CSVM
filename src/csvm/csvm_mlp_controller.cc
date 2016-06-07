@@ -46,12 +46,12 @@ void MLPController::setSettings(MLPSettings s){
 			s.isWeightingMLP = true;
 			s.nOutputUnits 				= 1;
 			s.nHiddenUnits				= s.weightingHiddenUnits;
-			s.nLayers					= s.weightingLayers;
+			s.nLayers							= s.weightingLayers;
       
 			s.learningRate				= s.weightingLearningRate;
-			s.voting					= s.weightingVoting;
+			s.voting							= s.weightingVoting;
 			s.crossValidationInterval 	= s.weightingCrossValidationInterval;
-			s.epochs					= s.weightingEpochs;
+			s.epochs								= s.weightingEpochs;
 			s.stoppingCriterion			= s.weightingStoppingCriterion;
 			
 			mlp.setSettings(s); 
@@ -115,6 +115,7 @@ vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationS
 			validationSet.push_back(newFeat);
 		}
 	}
+	validationSet = normalizeInput(validationSet);
 	return validationSet;
 }
 
@@ -161,32 +162,41 @@ void MLPController::trainMutipleMLPs(){
 				vector<Feature> newTrainSet = splitVal[i];
 				std::random_shuffle(newTrainSet.begin(), newTrainSet.end());
 				
-				if(settings.mlpSettings.changeWeightsRange)
+				if(settings.mlpSettings.changeWeightsRange){
 					weightingMLPs[i].setDesiredOutputsForWeighting(
 						changeRange(mlps[i].getDesiredOutputsForWeighting(newTrainSet),
 						settings.mlpSettings.minWeightRange,1.0));
-				else
+					cout << "\nHistogram of output probabilities: \n";
+					printHistogram(changeRange(mlps[i].getDesiredOutputsForWeighting(newTrainSet),
+						settings.mlpSettings.minWeightRange,1.0), 20);
+				}else{
 					weightingMLPs[i].setDesiredOutputsForWeighting(
 						mlps[i].getDesiredOutputsForWeighting(newTrainSet));
+					cout << "\nHistogram of output probabilities: \n";
+					printHistogram(mlps[i].getDesiredOutputsForWeighting(newTrainSet), 20);
+				}
+				
 				std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
 				trainMLP(weightingMLPs[i],newTrainSet,splitVal[i]);
-				
-				cout << "\nHistogram of output probabilities: \n";
-				printHistogram(mlps[i].getDesiredOutputsForWeighting(newTrainSet), 20);
 				
 				if(!newTrainSet.empty())
 					newTrainSet.clear();
 			}else if (settings.mlpSettings.trainWeightsOn == "TRAINSET"){
-				if(settings.mlpSettings.changeWeightsRange)
+				if(settings.mlpSettings.changeWeightsRange){
 					weightingMLPs[i].setDesiredOutputsForWeighting(
 						changeRange(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]),
 						settings.mlpSettings.minWeightRange,1.0));
-				else
+					cout << "\nHistogram of output probabilities: \n";
+					printHistogram(changeRange(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]),
+						settings.mlpSettings.minWeightRange,1.0), 20);
+				}else{
 					weightingMLPs[i].setDesiredOutputsForWeighting(
 						mlps[i].getDesiredOutputsForWeighting(splitTrain[i]));
+					cout << "\nHistogram of output probabilities: \n";
+					printHistogram(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]), 20);
+				}
 				trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
-				cout << "\nHistogram of output probabilities: \n";
-				printHistogram(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]), 20);
+				
 			}
 			
 		}
@@ -222,7 +232,7 @@ void MLPController::printHistogram(vector<double> data, int bins){
 	double min = 2.0;
 	
 	for(unsigned int i=0; i<data.size(); i++){
-		histogram[(int)(data[i]*bins/2)] ++;
+		histogram[(int)((data[i]-0.0000001)*bins/2)] ++;
 		if(data[i] > max)
 			max = data[i];
 		if(data[i] < min)
@@ -235,9 +245,9 @@ void MLPController::printHistogram(vector<double> data, int bins){
 		cout << "--------";
 	cout << "-" << endl;
 	for(float i=0; i<bins; i++)
-		std::cout << setprecision (3) << fixed << (i+1)/(bins/2) << "\t|";
+		std::cout << setprecision(3) << (i+1)/(bins/2) << "\t|";
 	cout << "\n";
-	cout << "min value: " << min << endl;
+	cout << setprecision(6) << "min value: " << min << endl;
 	cout << "max value: " << max << endl;
 }
 
@@ -393,11 +403,11 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		dataFeatures.push_back(newFeat);
 	}
 		
-	vector<vector<Feature> > testFeatures = splitUpDataBySquare(dataFeatures);
+	
+	vector<vector<Feature> > testFeatures = splitUpDataBySquare(normalizeInput(dataFeatures));
 	vector<double> oneSquare = vector<double>(settings.mlpSettings.nOutputUnits,0);      
   
   for(unsigned int i=0;i<mlps.size();i++){
-		testFeatures[i] = normalizeInput(testFeatures[i]);
 		oneSquare = classifyImageSquare(i,testFeatures[i]);
 		
 		for(int j =0;j<settings.mlpSettings.nOutputUnits;j++)

@@ -221,12 +221,17 @@ void MLPerceptron::weightTraining(vector<Feature>& randomFeatures,vector<Feature
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
 			desiredOutput[0] = desiredOutputsForWeighting[j];
-			//cout << "desiered:\t" << desiredOutput[0];
 			feedforward();
-			//cout << "\toutputed:\t" << activations[settings.nLayers - 1][1] << "\n";
 			backpropgation();
 			averageError += errorFunction();
+			/*if( (i+1) == epochs){
+				cout << "desiered:\t" << desiredOutput[0] << endl;
+				cout << "outputed:\t" << activations[settings.nLayers - 1][0] << endl;
+				cout << "\tdifference:\t" << desiredOutput[0] - activations[settings.nLayers - 1][0] << endl;
+			}*/
 		}
+		
+		
 		
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
