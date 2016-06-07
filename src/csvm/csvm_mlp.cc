@@ -96,12 +96,12 @@ void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 
 double MLPerceptron::activationFunction(double summedActivation){
 	//sigmoid:
-	//return 1/(1+exp(-summedActivation));
+	return 1/(1+good_exp(-summedActivation));
 	
 	//relu:
-	if(summedActivation > 0)
-		return summedActivation;
-	return 0;
+	//if(summedActivation > 0)
+	//	return summedActivation;
+	//return 0;
 }
 
 void MLPerceptron::calculateActivationLayer(int bottomLayer){
@@ -110,9 +110,7 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 	for(int i=0; i<layerSizes[bottomLayer+1];i++){
 		for(int j=0;j<layerSizes[bottomLayer];j++)
 			summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
-		//std::cout << "biasNodes[bottomLayer][i]: " << biasNodes[bottomLayer][i];
 		summedActivation += biasNodes[bottomLayer][i];
-		std::cout << "summedActivation: " << summedActivation << std::endl;
 		if ((bottomLayer+1) == settings.nLayers-1)
 			activations[bottomLayer+1][i] = summedActivation;
         else
@@ -126,16 +124,15 @@ void MLPerceptron::feedforward(){
 		calculateActivationLayer(i);
 }
 //--------end FEEDFORWARD--------
-
 //------start BACKPROPAGATION----
 double MLPerceptron::derivativeActivationFunction(double activationNode){
 	//signmoid:
-	//return (1 - activationNode)*activationNode;
+	return (1 - activationNode)*activationNode;
 	
 	//relu
-	if (activationNode > 0)
-		return 1.0;
-	return 0.0;
+	//if (activationNode > 0)
+	//	return 1.0;
+	//return 0.0;
 }
 
 void MLPerceptron::calculateDeltas(int index){
@@ -271,7 +268,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 				std::cout << std::endl;
 			}*/
 			
-			
+			/*
 			std::cout << "information input units: " << std::endl;
 			
 			for(int k=0;k<settings.nInputUnits;k++){
@@ -292,7 +289,8 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 				std::cout << activations[2][k] << ", ";	
 			}
 			std::cout << std::endl;	
-			if(j == 2) exit(-1);
+			if(j == 200) exit(-1);
+			*/
 		}
 		
 		//after x amount of iterations it should check on the validation set

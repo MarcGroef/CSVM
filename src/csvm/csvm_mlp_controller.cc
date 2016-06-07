@@ -78,7 +78,7 @@ vector<Feature>& MLPController::normalizeInput(vector<Feature>& inputFeatures, i
 		//normalize all the inputs
 		for(unsigned int i = 0; i < inputFeatures.size();i++){
 			for(int j = 0; j < inputFeatures[i].size;j++)
-				inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValues[index])/(maxValues[index] - minValues[index]);
+			  inputFeatures[i].content[j] = (inputFeatures[i].content[j] - minValues[index])/(maxValues[index] - minValues[index]);			
 		}
 	}else{
 		for(unsigned int i = 0; i<inputFeatures.size();i++){
@@ -149,12 +149,13 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 		validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
 	}
 	
+	setMinAndMaxValueNorm(trainingSet,0);
+	
+	normalizeInput(trainingSet,0);
+	normalizeInput(validationSet,0);
+	
 	splitTrain = splitUpDataBySquare(trainingSet);
 	splitVal   = splitUpDataBySquare(validationSet);
-	
-	for(int i=0;i<nMLPs;i++){
-		setMinAndMaxValueNorm(splitTrain[i],0);
-	}
 	
 	for(int i=0;i<nMLPs;i++){
 		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
@@ -245,6 +246,9 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	setFirstLevelData(splitVal,inputValFirstLevel,validationSize); 	//set validation set
     
 	setMinAndMaxValueNorm(inputTrainFirstLevel,1);    //set min and max value for first level normalization
+	
+	normalizeInput(inputTrainFirstLevel,1);
+	normalizeInput(inputValFirstLevel,1);
 }
 //-----------start: training MLP's-------------------------
 void MLPController::trainMutipleMLPs(){
@@ -253,14 +257,14 @@ void MLPController::trainMutipleMLPs(){
 	
 	//TODO: 
 	/*
-	wierd bug were the training error ins to -nan
-	 * */
+	  Wierd bug were the training error ins to -nan
+	*/
 	createDataBottomLevel(splitTrain,splitVal);
 	
-	for(int i=0;i<nMLPs;i++){
+	/*for(int i=0;i<nMLPs;i++){
 		normalizeInput(splitTrain[i],0);
 		normalizeInput(splitVal[i],0);
-	}
+	}*/
 	/*
 	for(int i=0;i<4;i++){
 		std::cout << splitTrain[i].size() << std::endl;
@@ -286,15 +290,12 @@ void MLPController::trainMutipleMLPs(){
     std::cout << "create training data for first level... " << std::endl;
     
     vector<Feature> inputTrainFirstLevel;
-	vector<Feature> inputValFirstLevel;
+    vector<Feature> inputValFirstLevel;
     
     createDataFirstLevel(inputTrainFirstLevel,inputValFirstLevel);
     
     //std::cout << "min value first level: " << minValues[1] << std::endl;
     //std::cout << "max value first level: " << maxValues[1] << std::endl;
-    
-    normalizeInput(inputTrainFirstLevel,1);
-    normalizeInput(inputValFirstLevel,1);
     
     /*for(unsigned int i = 0; i < inputTrainFirstLevel.size();i++){
 		std::cout << "feature ["<<i<<"]: " << inputTrainFirstLevel[i].getLabelId() << std::endl;
