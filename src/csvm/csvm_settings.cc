@@ -129,6 +129,16 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       exit(-1);
    }
    
+     stream >> type;
+   if (type == "epochsSecondLayerMLP") {
+      stream >> mlpSettings.epochsSecondLayerMLP;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   
     stream >> type;
    if (type == "stoppingCriterion") {
       stream >> mlpSettings.stoppingCriterion;

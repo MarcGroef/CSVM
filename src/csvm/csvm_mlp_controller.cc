@@ -40,8 +40,8 @@ void MLPController::setSettings(MLPSettings s){
 	//settings second parameter	
 	MLPerceptron mlp;
 	s.nInputUnits = s.nOutputUnits * nMLPs;
-	//std::cout << "s.nInputUnits: " << s.nInputUnits << std::endl;
 	s.nHiddenUnits = s.nHiddenSecondLayerMLP;//find parameter
+	s.epochs = s.epochsSecondLayerMLP;
 	mlp.setSettings(s);
 	mlps[1].push_back(mlp);
 	
@@ -74,7 +74,7 @@ void MLPController::createDataFirstLayerMLP(){
 	for(int i=0;i<nMLPs;i++){
 		setMinAndMaxValueNorm(splitTrain[i]);
 	}
-	
+
 	trainingSet.clear();
 	validationSet.clear();
 }
@@ -107,9 +107,9 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
       Patch patch = imageScanner.getRandomPatch(dataset.getTrainImagePtr(rand() % trainSize));
       Feature newFeat = featExtr.extract(patch);
       newFeat.setSquareId(calculateSquareOfPatch(patch));
-      //setMinAndMaxValueNorm(newFeat);??????????????????????
       trainingData.push_back(newFeat);   
    }
+         
 	return trainingData;	
 }
 

@@ -47,7 +47,7 @@ nRandomPatches 2000
 
 
 MLP
-nSplitsForPooling 2
+nSplitsForPooling 3
 nHiddenSecondLayerMLP 60
 nHiddenUnits 400
 nInputUnits 144
@@ -59,6 +59,7 @@ trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.2
 epochs 100
+epochsSecondLayerMLP 300
 stoppingCriterion 0.99
 
 SVM

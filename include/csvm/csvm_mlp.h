@@ -19,6 +19,7 @@ namespace csvm{
       int nHiddenUnits;
       int nInputUnits;
       int nLayers;
+      int epochsSecondLayerMLP;
       double learningRate;
       string voting;
       string trainingType;
