@@ -231,6 +231,8 @@ void MLPerceptron::weightTraining(vector<Feature>& randomFeatures,vector<Feature
 			}*/
 		}
 		
+		settings.learningRate *= 0.99;
+		
 		
 		
 		//after x amount of iterations it should check on the validation set
@@ -263,6 +265,8 @@ void MLPerceptron::crossvalidation(vector<Feature>& randomFeatures,vector<Featur
 			backpropgation();
 			averageError += errorFunction();
 		}
+		
+		settings.learningRate *= 0.99;
 		
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
