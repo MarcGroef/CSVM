@@ -147,12 +147,12 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	else {
 		trainingSet = createRandomFeatureVector(trainingSet);
 		validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
+	
+		setMinAndMaxValueNorm(trainingSet,0);
+	
+		normalizeInput(trainingSet,0);
+		normalizeInput(validationSet,0);
 	}
-	
-	setMinAndMaxValueNorm(trainingSet,0);
-	
-	normalizeInput(trainingSet,0);
-	normalizeInput(validationSet,0);
 	
 	splitTrain = splitUpDataBySquare(trainingSet);
 	splitVal   = splitUpDataBySquare(validationSet);

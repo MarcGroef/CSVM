@@ -301,6 +301,9 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			std::cout << averageError/(double)randomFeatures.size() << std::endl;
 		}
 		averageError = 0;
+		
+		settings.learningRate *= 0.98;
+		
 	}
 }
 
