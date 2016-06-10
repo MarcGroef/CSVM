@@ -1,9 +1,9 @@
 Dataset
 method CIFAR10
-nTrainImages 50000
-nTestImages 10000
-imageWidth 21
-imageHeight 21
+nTrainImages 100
+nTestImages 10
+imageWidth 38
+imageHeight 38
 
 General
 Classifier MLP
@@ -23,12 +23,12 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method CLEAN
+method HOG
 nBins 9
-cellSize 10
-cellStride 10
-patchSize 10
-padding Identity
+cellSize 6
+cellStride 6
+patchSize 26
+padding None
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
 binmethod CROSSCOLOUR
@@ -40,17 +40,17 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 9
-patchWidth 9
+patchHeight 26
+patchWidth 26
 scanStride 1
-nRandomPatches 1000000
+nRandomPatches 1000
 
 
 MLP
 stackSize 2
 nSplitsForPooling 2
-nHiddenUnits 200
-nInputUnits 243
+nHiddenUnits 300
+nInputUnits 144
 nOutputUnits 10
 nLayers 3
 learningRate .01
@@ -61,7 +61,7 @@ crossValidationSize 0.1
 epochs 100
 stoppingCriterion 0.999
 nHiddenUnitsFirstLayer 300
-scanStrideFirstLayer 2
+scanStrideFirstLayer 1
 saveData 0
 saveRandomFeatName RandomFeat_CIFAR10_5000_24x24
 saveValidationName Validation_CIFAR10_5000_24x24

@@ -96,12 +96,12 @@ void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 
 double MLPerceptron::activationFunction(double summedActivation){
 	//sigmoid:
-	return 1/(1+good_exp(-summedActivation));
+	//return 1/(1+good_exp(-summedActivation));
 	
 	//relu:
-	//if(summedActivation > 0)
-	//	return summedActivation;
-	//return 0;
+	if(summedActivation > 0)
+		return summedActivation;
+	return 0.0;
 }
 
 void MLPerceptron::calculateActivationLayer(int bottomLayer){
@@ -127,12 +127,12 @@ void MLPerceptron::feedforward(){
 //------start BACKPROPAGATION----
 double MLPerceptron::derivativeActivationFunction(double activationNode){
 	//signmoid:
-	return (1 - activationNode)*activationNode;
+	//return (1 - activationNode)*activationNode;
 	
 	//relu
-	//if (activationNode > 0)
-	//	return 1.0;
-	//return 0.0;
+	if (activationNode > 0)
+		return 1.0;
+	return 0.0;
 }
 
 void MLPerceptron::calculateDeltas(int index){
@@ -259,16 +259,16 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward();
 			backpropgation();
 			averageError += errorFunction();
-			
-			/*std::cout << "information weights bottom to first layer" << std::endl;
+			/*
+			std::cout << "information weights bottom to first layer" << std::endl;
 			for(int k=0;k<weights[0].size();k++){
 				for(int l=0;l<weights[0][l].size();l++){
 					std::cout << weights[0][k][l] << ",";
 				}
 				std::cout << std::endl;
-			}*/
-			
-			/*
+			}
+			*/
+		/*	
 			std::cout << "information input units: " << std::endl;
 			
 			for(int k=0;k<settings.nInputUnits;k++){
@@ -288,13 +288,38 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			for(int k=0;k<settings.nOutputUnits;k++){
 				std::cout << activations[2][k] << ", ";	
 			}
-			std::cout << std::endl;	
-			if(j == 200) exit(-1);
-			*/
+			std::cout << std::endl << endl;	
+			if(j == 10) exit(-1);
+		*/
 		}
 		
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
+		  int counter = 0;
+		  	std::cout << "information input units: " << std::endl;
+			
+			for(int k=0;k<settings.nInputUnits;k++){
+				std::cout << activations[0][k] << ", ";	
+			}
+			std::cout << std::endl;
+		
+			std::cout << "information hidden units: " << std::endl;
+
+			for(int k=0;k<settings.nHiddenUnits;k++){
+				if (activations[1][k] == 0.0) counter++;
+				std::cout << activations[1][k] << ", ";	
+			}
+			std::cout << std::endl;
+
+			std::cout << "information output units: " << std::endl;
+
+			for(int k=0;k<settings.nOutputUnits;k++){
+				std::cout << activations[2][k] << ", ";	
+			}
+			std::cout << std::endl << endl;	
+			
+			std::cout << "amount of zero's: " << counter << std::endl << endl;
+			
 			std::cout << i << ", ";
 			if(isErrorOnValidationSetLowEnough(validationSet))
 				break;	

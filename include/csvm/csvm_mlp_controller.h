@@ -38,7 +38,8 @@ namespace csvm{
 		vector<vector<MLPerceptron> > mlps;
 		
 		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures,int index);	
-	    vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures,int index);
+		vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures,int index);
+		void changeRange(vector<Feature>& data, double newMin, double newMax);
 		
 		void createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal);
 		void createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel);

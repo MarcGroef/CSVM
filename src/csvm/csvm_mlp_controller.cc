@@ -100,6 +100,26 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 	
 	return middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
 }
+
+void MLPController::changeRange(vector<Feature>& data, double newMin, double newMax){
+	double max = 0.0;
+	double min = 2.0;
+	
+	for(unsigned int i=0; i<data.size(); i++){
+	  for(int j=0; j< data[i].size;j++){
+		if(data[i].content[j] > max)
+			max = data[i].content[j];
+		if(data[i].content[j] < min)
+			min = data[i].content[j];
+	  }
+	}
+	
+	for(unsigned int i=0;i<data.size();i++){
+	  for(int j=0; j<data[i].size; j++){
+		  data[i].content[j] = (data[i].content[j] - min) * ((newMax-newMin)/(max-min)) + newMin;
+	  }
+	}
+}
 //-------------------end: init MLP's--------------------------
 //-------------------start: data creation methods-------------
 /* 
@@ -147,24 +167,45 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	else {
 		trainingSet = createRandomFeatureVector(trainingSet);
 		validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
-	
+		/*
+		for(int i=0;i<trainingSet.size();i++){
+		  for(int j=0;j<trainingSet[i].size;j++){
+		  std::cout << trainingSet[i].content[j] << ", ";
+		  } 
+		    cout << endl << endl;
+		 }
+		  exit(-1);*/
+	 
+		
 		setMinAndMaxValueNorm(trainingSet,0);
-	
+
 		normalizeInput(trainingSet,0);
 		normalizeInput(validationSet,0);
 	}
 	
+	if(settings.mlpSettings.saveData){
+		exportFeatureSet(settings.mlpSettings.saveRandomFeatName,trainingSet);
+		exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
+	}
+	
+	//Change the range of the data from 0,1 to -1,1
+	//changeRange(trainingSet,-0.1,0.1);
+	//changeRange(validationSet,-0.1,0.1);
+  /*
+	for(int i=0;i<trainingSet.size();i++){
+	  for(int j=0;j<trainingSet[i].size;j++){
+	    std::cout << trainingSet[i].content[j] << ", ";
+	  } 
+	  cout << endl << endl;
+	}
+	 exit(-1);
+  */	 
 	splitTrain = splitUpDataBySquare(trainingSet);
 	splitVal   = splitUpDataBySquare(validationSet);
 	
 	for(int i=0;i<nMLPs;i++){
 		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
 		std::cout<< "numPatchersPerSquare[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
-	}
-
-	if(settings.mlpSettings.saveData){
-		exportFeatureSet(settings.mlpSettings.saveRandomFeatName,trainingSet);
-		exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
 	}
 	
 	trainingSet.clear();
@@ -249,6 +290,10 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	
 	normalizeInput(inputTrainFirstLevel,1);
 	normalizeInput(inputValFirstLevel,1);
+	
+	//Change the range of the data from 0,1 to -1,1
+	changeRange(inputTrainFirstLevel,-1.0,1.0);
+	changeRange(inputValFirstLevel,-1.0,1.0);
 }
 //-----------start: training MLP's-------------------------
 void MLPController::trainMutipleMLPs(){
