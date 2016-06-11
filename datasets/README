@@ -2,10 +2,12 @@ Place datasets in this folder. That way the directories given to the program can
 
 Datasets needed:
 CIFAR10 (binary):	http://www.cs.toronto.edu/~kriz/cifar.html
+MNIST (binary)		http://yann.lecun.com/exdb/mnist/
 
 Extract the downloaded .tar file into this folder, such that the files are:
 
 CSVM/datasets/cifar-10-batch-bin/<file>.<ext>
+CSVM/dataset/mnist/<filename>.idx[1/3]_ubyte
 
 Do NOT add datasets to the repository!
 
