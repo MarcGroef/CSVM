@@ -111,9 +111,9 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 		for(int j=0;j<layerSizes[bottomLayer];j++)
 			summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
 		summedActivation += biasNodes[bottomLayer][i];
-		if ((bottomLayer+1) == settings.nLayers-1)
-			activations[bottomLayer+1][i] = summedActivation;
-        else
+		//if ((bottomLayer+1) == settings.nLayers-1)
+		//	activations[bottomLayer+1][i] = summedActivation;
+		//else
 			activations[bottomLayer+1][i] = activationFunction(summedActivation);
 		summedActivation = 0;
 	}	
@@ -216,7 +216,7 @@ void MLPerceptron::majorityVoting(){
 
 void MLPerceptron::sumVoting(){
 	for (int i=0; i<settings.nOutputUnits;i++)
-			votingHistogram[i] += activations[settings.nLayers-1][i];	
+	      votingHistogram[i] += activations[settings.nLayers-1][i];	
 }
 
 unsigned int MLPerceptron::mostVotedClass(){
@@ -249,8 +249,9 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 	std::cout << "epochs: " << epochs << std::endl;
 	std::cout << "epoch,validationError, averageError" << std::endl;
 	
+	
 	for(int i = 0; i<epochs;i++){
-
+	  	vector<vector<int> > deadHiddenUnits = vector<vector<int> >(randomFeatures.size(),std::vector<int>(settings.nHiddenUnits,0));
 		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
@@ -259,6 +260,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward();
 			backpropgation();
 			averageError += errorFunction();
+			
 			/*
 			std::cout << "information weights bottom to first layer" << std::endl;
 			for(int k=0;k<weights[0].size();k++){
@@ -291,11 +293,14 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			std::cout << std::endl << endl;	
 			if(j == 10) exit(-1);
 		*/
+		for(int k=0;k<settings.nHiddenUnits;k++)
+			if (activations[1][k] != 0) 
+				deadHiddenUnits[j][k] = 1;
 		}
-		
+				
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0){
-		  int counter = 0;
+		  /*int counter = 0;
 		  	std::cout << "information input units: " << std::endl;
 			
 			for(int k=0;k<settings.nInputUnits;k++){
@@ -304,11 +309,13 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			std::cout << std::endl;
 		
 			std::cout << "information hidden units: " << std::endl;
-
-			for(int k=0;k<settings.nHiddenUnits;k++){
-				if (activations[1][k] == 0.0) counter++;
+			
+			
+			 for(int k=0;k<settings.nHiddenUnits;k++){
+				//if (activations[1][k] == 0.0) counter++; //counter amount of zero's
 				std::cout << activations[1][k] << ", ";	
 			}
+			
 			std::cout << std::endl;
 
 			std::cout << "information output units: " << std::endl;
@@ -316,9 +323,32 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			for(int k=0;k<settings.nOutputUnits;k++){
 				std::cout << activations[2][k] << ", ";	
 			}
-			std::cout << std::endl << endl;	
-			
-			std::cout << "amount of zero's: " << counter << std::endl << endl;
+			std::cout << std::endl << endl; */
+			/*if(i != 0)
+				for(int k=0; k<settings.nHiddenUnits;k++){
+					int count=0;
+					for(int l=i*0.6; l<i;l++){
+						if (deadHiddenUnits[l][k] == 0) count++;
+					}
+					if(count == i-i*0.6) counter++;
+				}
+			*/
+			/*
+			for(int k=0; k<settings.nHiddenUnits;k++){
+			   int count=0;
+			   for(int l=0; l<randomFeatures.size();l++){
+			      if (deadHiddenUnits[l][k] == 0) count++;
+			    }
+			    if(count == randomFeatures.size()) counter++;
+			  }*/
+			/*
+			std::cout << "information bias nodes input to hidden" << std::endl;
+			for(int k=0;k<settings.nHiddenUnits;k++){
+				std::cout << biasNodes[0][k] << ", ";
+			}
+			cout << std::endl;
+			*/
+			//std::cout << "amount of dead hidden units: " << counter << std::endl << endl;
 			
 			std::cout << i << ", ";
 			if(isErrorOnValidationSetLowEnough(validationSet))
@@ -327,7 +357,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		}
 		averageError = 0;
 		
-		settings.learningRate *= 0.98;
+		settings.learningRate *= 0.95;
 		
 	}
 }

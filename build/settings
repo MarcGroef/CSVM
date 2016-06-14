@@ -1,7 +1,7 @@
 Dataset
 method CIFAR10
-nTrainImages 100
-nTestImages 10
+nTrainImages 200
+nTestImages 100
 imageWidth 38
 imageHeight 38
 
@@ -23,11 +23,11 @@ SimilarityFunction SOFT_ASSIGNMENT
 similaritySigma 0.05
 
 FeatureExtractor
-method HOG
+method CLEAN
 nBins 9
 cellSize 6
 cellStride 6
-patchSize 26
+patchSize 10
 padding None
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
@@ -40,17 +40,17 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 26
-patchWidth 26
+patchHeight 10
+patchWidth 10
 scanStride 1
-nRandomPatches 1000
+nRandomPatches 4000
 
 
 MLP
 stackSize 2
 nSplitsForPooling 2
-nHiddenUnits 300
-nInputUnits 144
+nHiddenUnits 500
+nInputUnits 300
 nOutputUnits 10
 nLayers 3
 learningRate .01
@@ -58,7 +58,7 @@ voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.1
-epochs 100
+epochs 50
 stoppingCriterion 0.999
 nHiddenUnitsFirstLayer 300
 scanStrideFirstLayer 1
