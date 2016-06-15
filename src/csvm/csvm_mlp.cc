@@ -102,6 +102,11 @@ double MLPerceptron::activationFunction(double summedActivation){
 	if(summedActivation > 0)
 		return summedActivation;
 	return 0.0;
+  
+	//leaky-relu:
+	//if(summedActivation > 0)
+	//	return summedActivation;
+	//return 0.01*summedActivation;
 }
 
 void MLPerceptron::calculateActivationLayer(int bottomLayer){
@@ -133,6 +138,11 @@ double MLPerceptron::derivativeActivationFunction(double activationNode){
 	if (activationNode > 0)
 		return 1.0;
 	return 0.0;
+	
+	//leaky-relu
+	//if (activationNode > 0)
+	//	return 1.0;
+	//return 0.01;
 }
 
 void MLPerceptron::calculateDeltas(int index){
@@ -292,14 +302,14 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			}
 			std::cout << std::endl << endl;	
 			if(j == 10) exit(-1);
-		*/
+		*//*
 		for(int k=0;k<settings.nHiddenUnits;k++)
 			if (activations[1][k] != 0) 
-				deadHiddenUnits[j][k] = 1;
+				deadHiddenUnits[j][k] = 1;*/
 		}
 				
 		//after x amount of iterations it should check on the validation set
-		if(i % settings.crossValidationInterval == 0){
+		if(i % settings.crossValidationInterval == 0 or i == epochs-1){
 		  /*int counter = 0;
 		  	std::cout << "information input units: " << std::endl;
 			

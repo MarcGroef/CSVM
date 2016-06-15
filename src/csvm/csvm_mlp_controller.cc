@@ -22,7 +22,12 @@ void MLPController::setSettings(MLPSettings s){
 	//init global variables	
 	nMLPs = pow(s.nSplitsForPooling,2);
 	validationSize = dataset->getTrainSize()*s.crossValidationSize;
+	
 	trainSize = dataset->getTrainSize() - validationSize;
+	
+	trainSizeBottomLevel = trainSize/2; //0-trainSize/2
+	trainSizeFirstLevel = trainSize/2;  //trainSize/2 - trainSize
+	
 	amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
 
 	for(int i=0;i<2;i++){
@@ -34,14 +39,13 @@ void MLPController::setSettings(MLPSettings s){
 	numPatchesPerSquare.reserve(nMLPs);
 	mlps.reserve(s.stackSize);
 	
-	mlps = vector<vector<MLPerceptron> >(nMLPs);
+	mlps = vector<vector<MLPerceptron> >(s.stackSize);
 	
 	for(int j = 0; j < nMLPs;j++){
 		MLPerceptron mlp;
 		mlp.setSettings(s);
 		mlps[0].push_back(mlp);
 	}
-	
 	//settings second parameter	
 	MLPerceptron mlp;
 	s.nInputUnits = nHiddenBottomLevel * nMLPs;
@@ -167,6 +171,7 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	else {
 		trainingSet = createRandomFeatureVector(trainingSet);
 		validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
+		
 		/*
 		for(int i=0;i<trainingSet.size();i++){
 		  for(int j=0;j<trainingSet[i].size;j++){
@@ -174,7 +179,8 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 		  } 
 		    cout << endl << endl;
 		 }
-		  exit(-1);*/
+		  exit(-1);
+		  */
 	 
 		
 		setMinAndMaxValueNorm(trainingSet,0);
@@ -188,10 +194,9 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 		exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
 	}
 	
-	//Change the range of the data from 0,1 to -1,1
-
-	changeRange(trainingSet,-0.25,0.25);
-	changeRange(validationSet,-0.25,0.25);
+	//Change the range of the data
+	//changeRange(trainingSet,-0.25,0.25);
+	//changeRange(validationSet,-0.25,0.25);
   /*
 	for(int i=0;i<trainingSet.size();i++){
 	  for(int j=0;j<trainingSet[i].size;j++){
@@ -206,8 +211,12 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	
 	for(int i=0;i<nMLPs;i++){
 		numPatchesPerSquare.push_back(splitVal[i].size()/validationSize);
-		std::cout<< "numPatchersPerSquare[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
-	}
+		std::cout<< "numPatchersPerSquare["<<i<<"]: " << numPatchesPerSquare[i] << std::endl;
+	} cout << endl;
+	/*
+	for(int i=0;i<nMLPs;i++){
+	  cout << "size of random feature vector[" <<i<<"]: " << splitTrain[i].size() << endl;
+	}*/
 	
 	trainingSet.clear();
 	validationSet.clear();
@@ -220,7 +229,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	std::cout << "create random feature vector of size: " << nPatches << std::endl;
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-		Patch patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSize));
+		Patch patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSizeBottomLevel));
 		Feature newFeat = featExtr.extract(patch);
 		newFeat.setSquareId(calculateSquareOfPatch(patch));
 		trainingData.push_back(newFeat);    
@@ -267,7 +276,7 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	//increasing the stride to decrease the size of the complete picture set
 	imageScanner.setScannerStride(settings.mlpSettings.scanStrideFirstLayer);
 	
-	trainingSet = createCompletePictureSet(trainingSet,0,trainSize);
+	trainingSet = createCompletePictureSet(trainingSet,trainSizeBottomLevel,trainSize);
 	validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
 	
 	normalizeInput(trainingSet,0);
@@ -280,32 +289,30 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	for(int i=0;i<nMLPs;i++){
 		numPatchesPerSquare[i] = splitVal[i].size()/validationSize;
 		std::cout<< "numPatchersPerSquare with stride increase[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
-	}
+	} cout << endl;
 	
 	trainingSet.clear();
 	validationSet.clear();
 	
-	setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSize); 	//set training set
+	setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSizeFirstLevel); 	//set training set
 	setFirstLevelData(splitVal,inputValFirstLevel,validationSize); 	//set validation set
     
-	setMinAndMaxValueNorm(inputTrainFirstLevel,1);    //set min and max value for first level normalization
+	cout << "size of input vector first level: " << inputTrainFirstLevel.size() << endl;
+	
+	setMinAndMaxValueNorm(inputTrainFirstLevel,1); //set min and max value for first level normalization
 	
 	normalizeInput(inputTrainFirstLevel,1);
 	normalizeInput(inputValFirstLevel,1);
 	
 	//Change the range of the data from 0,1 to -1,1
-	changeRange(inputTrainFirstLevel,0,0.5);
-	changeRange(inputValFirstLevel,0,0.5);
+	//changeRange(inputTrainFirstLevel,0,0.5);
+	//changeRange(inputValFirstLevel,0,0.5);
 }
 //-----------start: training MLP's-------------------------
 void MLPController::trainMutipleMLPs(){
 	vector<vector<Feature> > splitTrain;
 	vector<vector<Feature> > splitVal;
 	
-	//TODO: 
-	/*
-	  Wierd bug were the training error ins to -nan
-	*/
 	createDataBottomLevel(splitTrain,splitVal);
 	
 	/*for(int i=0;i<nMLPs;i++){
@@ -334,7 +341,7 @@ void MLPController::trainMutipleMLPs(){
 		std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
     }
     */
-    std::cout << "create training data for first level... " << std::endl;
+    //std::cout << "create training data for first level... " << std::endl;
     
     vector<Feature> inputTrainFirstLevel;
     vector<Feature> inputValFirstLevel;

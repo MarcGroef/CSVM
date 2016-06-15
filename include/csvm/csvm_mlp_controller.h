@@ -20,8 +20,13 @@ namespace csvm{
 		private:
 		int nMLPs;
 		int nHiddenBottomLevel;
-		int validationSize;
+		
 		int trainSize;
+		int trainSizeBottomLevel;
+		int trainSizeFirstLevel;
+		
+		int validationSize;
+		
 		int amountOfPatchesImage;
 		
 		vector<double> minValues;
