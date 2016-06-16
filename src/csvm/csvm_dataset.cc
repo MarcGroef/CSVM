@@ -184,6 +184,8 @@ void CSVMDataset::splitDataset(){
    unsigned int nData = getTotalImages();
    vector<unsigned int> tempIdces(nData, 0);
    
+   //srand(3);
+   
    for(size_t imIdx = 0; imIdx < nData; ++imIdx)
       tempIdces[imIdx] = imIdx;
       

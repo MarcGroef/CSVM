@@ -59,6 +59,7 @@ void MLPController::setSettings(MLPSettings s){
 		}
 	}
 	amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
+	amountOfImagesCrossVal = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
 } 
  
 void MLPController::initMLPs(){
@@ -68,10 +69,34 @@ void MLPController::initMLPs(){
 void MLPController::createDataBySquares(){
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
-
-	splitTrain = splitUpDataBySquare(createRandomFeatureVector(trainingSet));
-	splitVal   = splitUpDataBySquare(createValidationSet(validationSet));
+ 	
+ 	if(settings.mlpSettings.readInData){
+		importFeatureSet(settings.mlpSettings.readRandomFeatName,trainingSet);
+		importFeatureSet(settings.mlpSettings.readValidationName,validationSet);
+	} 
+	else {
+		trainingSet = createRandomFeatureVector(trainingSet);
+		validationSet = createValidationSet(validationSet);
 	
+		setMinAndMaxValueNorm(trainingSet);
+	
+		normalizeInput(trainingSet);
+		normalizeInput(validationSet);
+	}
+	
+	splitTrain = splitUpDataBySquare(trainingSet);
+	splitVal   = splitUpDataBySquare(validationSet);
+	
+	for(unsigned int i=0;i<mlps.size();i++){
+		numPatchesPerSquare.push_back(splitVal[i].size()/amountOfImagesCrossVal);
+		std::cout<< "numPatchesPerSquare[" << i << "]: " << numPatchesPerSquare[i] << std::endl;
+	}
+
+	if(settings.mlpSettings.saveData){
+		exportFeatureSet(settings.mlpSettings.saveRandomFeatName,trainingSet);
+		exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
+	}
+
 	if(!trainingSet.empty())
 		trainingSet.clear();
 	if(!validationSet.empty())
@@ -98,7 +123,7 @@ int MLPController::calculateSquareOfPatch(Patch patch){
 }
 
 vector<Feature>& MLPController::createValidationSet(vector<Feature>& validationSet){
-	int amountOfImagesCrossVal = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
+	 // !!!!!!!
 
 	vector<Patch> patches;   
     
@@ -126,6 +151,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
     
 	vector<Feature> testData;
 	std::cout << "creating random feature vector... "<< std::endl;
+	//srand(2);
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
 	  //std::cout << "\r" << round((100/(double) nPatches)*(double) pIdx) << "% done";
@@ -141,14 +167,13 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
    std::cout << std::endl;
 	return trainingData;	
 }
-void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet){
-    double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
-    int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
-    mlp.train(trainingSet,validationSet,noPatchesPerSquare);
+void MLPController::trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet, int mlpIndex){
+    //double crossvalidationSize = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize;
+    //int noPatchesPerSquare = validationSet.size()/crossvalidationSize; 
+    mlp.train(trainingSet,validationSet,numPatchesPerSquare[mlpIndex]);
 }
 
 void MLPController::trainMutipleMLPs(){
-	
 	if (settings.mlpSettings.trainWeightsOn != "VALIDATIONSET" && settings.mlpSettings.trainWeightsOn != "TRAINSET"){
 		cout << "It seems like you defined the training set or the weights wrong. Please check the settings file. The inouts are either 'VALIDATIONSET' or .TRAINSET'.   \n... Exitting...\n";
 		exit(-1);
@@ -156,7 +181,7 @@ void MLPController::trainMutipleMLPs(){
 	initMLPs();
 	for(unsigned int i=0;i<mlps.size();i++){ 	
 		std::cout << "(classifier) training mlp["<<i<<"]..." << std::endl;
-		trainMLP(mlps[i],splitTrain[i],splitVal[i]);
+		trainMLP(mlps[i],splitTrain[i],splitVal[i], i);
 		if(settings.mlpSettings.useWeightingMLPs){
 			if (settings.mlpSettings.trainWeightsOn == "VALIDATIONSET"){
 				vector<Feature> newTrainSet = splitVal[i];
@@ -177,7 +202,7 @@ void MLPController::trainMutipleMLPs(){
 				}
 				
 				std::cout << "(classifier) training MLP for patch weights["<<i<<"]..." << std::endl;
-				trainMLP(weightingMLPs[i],newTrainSet,splitVal[i]);
+				trainMLP(weightingMLPs[i],newTrainSet,splitVal[i], i);
 				
 				if(!newTrainSet.empty())
 					newTrainSet.clear();
@@ -195,7 +220,7 @@ void MLPController::trainMutipleMLPs(){
 					cout << "\nHistogram of output probabilities: \n";
 					printHistogram(mlps[i].getDesiredOutputsForWeighting(splitTrain[i]), 20);
 				}
-				trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i]);
+				trainMLP(weightingMLPs[i],splitTrain[i],splitVal[i], i);
 				
 			}
 			
@@ -221,7 +246,6 @@ vector<double> MLPController::changeRange(vector<double> data, double newMin, do
 	for(unsigned int i=0; i<data.size(); i++){
 		data[i] = (data[i] - min) * ((newMax-newMin)/(max-min)) + newMin;
 	}
-	
 	return data;
 }
 
@@ -230,9 +254,18 @@ void MLPController::printHistogram(vector<double> data, int bins){
 	vector<int> histogram (bins,0);
 	double max = 0.0;
 	double min = 2.0;
+	double bin;
+	int bin2;
 	
 	for(unsigned int i=0; i<data.size(); i++){
-		histogram[(int)((data[i]-0.0000001)*bins/2)] ++;
+		bin = ((data[i]-0.0000001)*bins/2);
+		if (bin < 0.0){
+			histogram[0] ++;
+			//cout << "ERROR printHistogram: weights too low!: "  << ((data[i]-0.0000001)*bins/2) << endl;
+		}else {
+			bin2 = (int)bin;
+			histogram[bin2] ++;
+		}
 		if(data[i] > max)
 			max = data[i];
 		if(data[i] < min)
@@ -353,6 +386,7 @@ unsigned int MLPController::mostVotedClass(vector<double> votingHistogram){
 }
 //returns the summed output for one square
 vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Feature> features){
+	//cout << "(classifyImageSquare): begin\n";
 	vector<double> summedOutput (settings.mlpSettings.nOutputUnits,0.0);
 	vector<double> weight (1,0.0);
 	MLPerceptron firstMLP = mlps[indexOfMLPs];
@@ -382,6 +416,7 @@ vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Featur
 	}
 	
 	//myfile.close();
+	//cout << "(classifyImageSquare): end\n";
 	return summedOutput;
 }
 
@@ -398,9 +433,11 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
       
   //extract features from all patches
   for(size_t patch = 0; patch < patches.size(); ++patch){
+		//cout << "(mlpMultipleClassify): extract features begin\t\t";
 		Feature newFeat = featExtr.extract(patches[patch]);
 		newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
 		dataFeatures.push_back(newFeat);
+		//cout << "END\n";
 	}
 		
 	
@@ -645,7 +682,7 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		sizeOfFeatureVector = readInNRandomPatches;
 	}
 	else {
-		sizeOfFeatureVector = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;
+		sizeOfFeatureVector = dataset.getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;  // !!!!!!!
 	}
 
 	for(int i=0;i<sizeOfFeatureVector;i++){

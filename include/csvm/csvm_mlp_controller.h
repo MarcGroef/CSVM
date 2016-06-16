@@ -29,6 +29,10 @@ namespace csvm{
 		vector<MLPerceptron> weightingMLPs;
 		vector<double> outputMLP;
 		int amountOfPatchesImage;
+		int amountOfImagesCrossVal;
+		
+		vector<int> numPatchesPerSquare;
+		
 		
 		double minValue;
     double maxValue;
@@ -42,7 +46,7 @@ namespace csvm{
 		int calculateSquareOfPatch(Patch patch);
 		vector<Feature>& createValidationSet(vector<Feature>& validationSet);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
-		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet);
+		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet, int mlpIndex);
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
 		void initMLPs();
 		
