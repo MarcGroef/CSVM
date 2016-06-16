@@ -259,10 +259,11 @@ void MLPController::printHistogram(vector<double> data, int bins){
 	
 	for(unsigned int i=0; i<data.size(); i++){
 		bin = ((data[i]-0.0000001)*bins/2);
-		if (bin < 0.0){
+		if (bin < 0.0)
 			histogram[0] ++;
-			//cout << "ERROR printHistogram: weights too low!: "  << ((data[i]-0.0000001)*bins/2) << endl;
-		}else {
+		else if(bin > (bins-1))
+			histogram[bins-1] ++;
+		else{
 			bin2 = (int)bin;
 			histogram[bin2] ++;
 		}
@@ -277,8 +278,13 @@ void MLPController::printHistogram(vector<double> data, int bins){
 	for(int i=0; i<bins; i++)
 		cout << "--------";
 	cout << "-" << endl;
-	for(float i=0; i<bins; i++)
+	for(float i=0; i<bins; i++){
+		if(i==0)
+			cout << "<";
+		if(i==bins-1)
+			cout << ">";
 		std::cout << setprecision(3) << (i+1)/(bins/2) << "\t|";
+	}
 	cout << "\n";
 	cout << setprecision(6) << "min value: " << min << endl;
 	cout << "max value: " << max << endl;
@@ -401,9 +407,11 @@ vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Featur
 	
 	for(unsigned int i=0;i<features.size();i++){
 		outputMLP = firstMLP.runFeatureThroughMLP(features[i]);
-		if(settings.mlpSettings.useWeightingMLPs)
+		if(settings.mlpSettings.useWeightingMLPs){
 			weight = weightingMLP.runFeatureThroughMLP(features[i]);
-		else 
+			if(weight[0] < 0.0)
+				weight[0] = 0.0;
+		}else 
 			weight[0] =1.0;
 			//myfile << weight[0] << " \t " << outputMLP[features[i].getLabelId()] << std::endl;
 		allWeights.push_back(weight[0]);

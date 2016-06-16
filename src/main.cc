@@ -1,4 +1,3 @@
- 
 #include <csvm/csvm.h>
 #include <iostream>
 #include <time.h>
@@ -90,28 +89,31 @@ int main(int argc,char**argv){
    unsigned int nImages = c.dataset.getTrainSize();//(unsigned int) c.dataset.getSize();
    unsigned int nClasses = c.getNoClasses();
    
+   vector<unsigned int> trainNumbers = c.dataset.getTrainImageNums();
+   vector<unsigned>::const_iterator first = trainNumbers.begin() + (trainNumbers.size()*0.9);
+   vector<unsigned>::const_iterator last = trainNumbers.end();
+   vector<unsigned int> validationNumbers = vector<unsigned int>(first,last);
+   
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    
    
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-   for(size_t im = 0;im < nImages; ++im){
-     
-      unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
-      unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
-      //std::cout << "result: " << result << "answer: " << answer << std::endl;
+   for(size_t im = 0;im < nImages-validationNumbers.size(); ++im){
+	unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
+	unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
+	//std::cout << "result: " << result << "answer: " << answer << std::endl;
 	  
 	  
-      if (result == answer){
-         ++nCorrect;
-      } else {
-         ++nFalse;
-      }
+	if (result == answer){
+	  ++nCorrect;
+	} else {
+	  ++nFalse;
+	}
 
-      ++classifiedAsTrain[answer][result];
-      ++classifiedAsTrain[answer][nClasses];
-      ++classifiedAsTrain[nClasses][result];
- 
+	++classifiedAsTrain[answer][result];
+	++classifiedAsTrain[answer][nClasses];
+	++classifiedAsTrain[nClasses][result];
    }
    if(normalOut)
       cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
@@ -150,6 +152,79 @@ int main(int argc,char**argv){
    }
 
 
+    //***********************************Testing phase on validation set**********************************************************************************
+
+   if(normalOut)
+      cout << "\n\n\nOn validation set:\n\n";
+   nCorrect = 0;
+   nFalse = 0;
+   unsigned int validationSize = (unsigned int)validationNumbers.size();
+   
+   vector <vector <int> > classifiedAsVal      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
+
+   for(size_t im = nImages-validationSize; im < nImages; ++im){
+      
+      //cout << "classifying image " << image << endl;
+      unsigned int result;
+      unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
+      //cout << "\nAnswer: " << answer;
+      result = c.classify(c.dataset.getTrainImagePtr(im));
+      //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
+
+      //cout << "result: " << result << endl;
+      //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;
+
+      
+      if (result == answer){
+         ++nCorrect;
+      } else {
+         ++nFalse;
+      }
+
+      ++classifiedAsVal[answer][result];
+      ++classifiedAsVal[answer][nClasses];
+      ++classifiedAsVal[nClasses][result];
+      
+   }
+
+  
+   
+   //****************************** Print ConfusionMatrix for Validation *******************
+   
+   
+   if(normalOut)cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+   if(normalOut)cout << "Validationscore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   if(normalOut)cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
+   
+
+   if (normalOut && printConfusionMatrix) {
+      int   total;
+      double precision;
+
+      cout << "\n\n\t       Predicted:\t";
+      for (size_t i=0; i<nClasses; i++){
+         if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
+      }
+      cout << "Average:" << "\n\n    \tActual:\n";
+      for (size_t i=0; i<nClasses; ++i){
+         total = 0;
+         if (c.dataset.getType() == DATASET_CIFAR10) cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+         else                                        cout << " \t" << i << ((i > 1) ? "\t" : "\t");
+         for (size_t j=0; j<nClasses; ++j){
+            total += classifiedAsVal[i][j];
+            cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAsVal[i][j];
+         }
+         precision = (double)classifiedAsVal[i][i] / total * 100;
+         cout << "\t\t" << precision << " %" << "\n\n\n";
+      }
+      cout << "\n\tPrecision:\t";
+      for (size_t i=0; i<nClasses; ++i){
+         precision = (double) classifiedAsVal[i][i] / classifiedAsVal[nClasses][i] * 100;
+         cout << "\t" << fixed << precision << "";
+      }
+   }
+   
   
    //***********************************Testing phase on test set**********************************************************************************
 
