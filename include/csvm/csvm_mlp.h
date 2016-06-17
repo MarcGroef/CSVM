@@ -71,8 +71,8 @@ namespace csvm{
 	  //backpropagation:
 		double derivativeActivationFunction(double activationNode);
 		void calculateDeltas(int index);
-        void outputDelta();
-        void hiddenDelta(int index);
+		 void outputDelta();
+	  void hiddenDelta(int index);
         void adjustWeights(int index);
         void backpropgation();
       //voting:
@@ -82,18 +82,24 @@ namespace csvm{
 		void sumVoting();
 		unsigned int mostVotedClass();
 	  //training:
-	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 	
-        void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+	    
+	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 
+	    void training(vector<Feature>& randomFeatures);
+	    
+	    void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+	    void crossvaldiation(vector<Feature>& randomFeatures);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
 	  
 	  
 	  public:
-      void setSettings(MLPSettings s);
-      void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+	  void setSettings(MLPSettings s);
+	  void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+	  void train(vector<Feature>& randomFeatures,int numPatchSquare);
       
-      unsigned int classify(vector<Feature> imageFeatures);
-      vector<double> classifyPooling(vector<Feature> imageFeatures);
+	  unsigned int classify(vector<Feature> imageFeatures);
+	  vector<double> classifyPooling(vector<Feature> imageFeatures);
 	  void classifyImage(vector<Feature>& imageFeatures);
+	  
 	  void returnHiddenActivation(vector<Feature> imageFeatures,vector<double>& maxHiddenActivation);
 
       //getters

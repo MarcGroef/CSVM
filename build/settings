@@ -1,7 +1,7 @@
 Dataset
 method MNIST
-nTrainImages 4000
-nTestImages 200
+nTrainImages 100
+nTestImages 10
 imageWidth 38
 imageHeight 38
 
@@ -43,24 +43,24 @@ ImageScanner
 patchHeight 32
 patchWidth 32
 scanStride 1
-nRandomPatches 5000
+nRandomPatches 2000
 
 
 MLP
-stackSize 2
-nSplitsForPooling 1
-nHiddenUnits 350
+stackSize 1
+nSplitsForPooling 2
+nHiddenUnits 300
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
-learningRate .02
+learningRate .03
 voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 10
 crossValidationSize 0.1
 epochs 20
 stoppingCriterion 0.999
-nHiddenUnitsFirstLayer 300
+nHiddenUnitsFirstLayer 500
 scanStrideFirstLayer 1
 saveData 0
 saveRandomFeatName RandomFeat_CIFAR10_5000_24x24

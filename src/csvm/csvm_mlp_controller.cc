@@ -47,17 +47,20 @@ void MLPController::setSettings(MLPSettings s){
 		mlps[0].push_back(mlp);
 	}
 	//settings second parameter	
-	MLPerceptron mlp;
-	s.nInputUnits = nHiddenBottomLevel * nMLPs;
-	s.nHiddenUnits = s.nHiddenUnitsFirstLayer;//find parameter
-	mlp.setSettings(s);
-	mlps[1].push_back(mlp);
+	if(s.stackSize == 2){
+		MLPerceptron mlp;
+		s.nInputUnits = nHiddenBottomLevel * nMLPs;
+		s.nHiddenUnits = s.nHiddenUnitsFirstLayer;//find parameter
+		mlp.setSettings(s);
+		mlps[1].push_back(mlp);
+	}
 	/*
 	for(int i = 0; i < 4;i++){
 		std::cout << "memory location of mlp["<<i<<"]: " << &mlps[0][i] << std::endl;
 	}
 	std::cout << "memory location of first level mlp: " << &mlps[1][0] << std::endl;
-	exit(-1);*/
+	exit(-1);
+	*/
 }
 
 void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures, int index){
@@ -131,7 +134,7 @@ void MLPController::changeRange(vector<Feature>& data, double newMin, double new
  * Second parameter is the start in the training set
  * Third parameter is the end in the trainigset
  * */
-vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& validationSet,int start,int end){
+vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& validationSet, int start, int end){
 	vector<Patch> patches;   
 	for(int i = start; i < end;i++){	
 		Image* im = dataset->getTrainImagePtr(i);
@@ -195,7 +198,7 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	}
 	
 	//Change the range of the data
-	//changeRange(trainingSet,-0.25,0.25);
+	//changeRange(trainingSet,0,0.5);
 	//changeRange(validationSet,-0.25,0.25);
   /*
 	for(int i=0;i<trainingSet.size();i++){
@@ -229,7 +232,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	std::cout << "create random feature vector of size: " << nPatches << std::endl;
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
-		Patch patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSizeBottomLevel));
+		Patch patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSize));
 		Feature newFeat = featExtr.extract(patch);
 		newFeat.setSquareId(calculateSquareOfPatch(patch));
 		trainingData.push_back(newFeat);    
@@ -276,7 +279,7 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	//increasing the stride to decrease the size of the complete picture set
 	imageScanner.setScannerStride(settings.mlpSettings.scanStrideFirstLayer);
 	
-	trainingSet = createCompletePictureSet(trainingSet,trainSizeBottomLevel,trainSize);
+	trainingSet = createCompletePictureSet(trainingSet,0,trainSize);
 	validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
 	
 	normalizeInput(trainingSet,0);
@@ -294,7 +297,7 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	trainingSet.clear();
 	validationSet.clear();
 	
-	setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSizeFirstLevel); 	//set training set
+	setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSize); 	//set training set
 	setFirstLevelData(splitVal,inputValFirstLevel,validationSize); 	//set validation set
     
 	cout << "size of input vector first level: " << inputTrainFirstLevel.size() << endl;
@@ -333,42 +336,40 @@ void MLPController::trainMutipleMLPs(){
 		mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
 		std::cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << std::endl << std::endl;
     }
-    
-    
     /*
 	for(int i=0;i<nMLPs;i++){ 		
-		mlps[0][i].train(splitVal[i],splitTrain[i],numPatchesPerSquare[i]);
+		mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
 		std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
-    }
-    */
+    }*/
     //std::cout << "create training data for first level... " << std::endl;
+    if(settings.mlpSettings.stackSize == 2){
+		vector<Feature> inputTrainFirstLevel;
+		vector<Feature> inputValFirstLevel;
     
-    vector<Feature> inputTrainFirstLevel;
-    vector<Feature> inputValFirstLevel;
+		createDataFirstLevel(inputTrainFirstLevel,inputValFirstLevel);
     
-    createDataFirstLevel(inputTrainFirstLevel,inputValFirstLevel);
+		//std::cout << "min value first level: " << minValues[1] << std::endl;
+		//std::cout << "max value first level: " << maxValues[1] << std::endl;
     
-    //std::cout << "min value first level: " << minValues[1] << std::endl;
-    //std::cout << "max value first level: " << maxValues[1] << std::endl;
-    
-    /*for(unsigned int i = 0; i < inputTrainFirstLevel.size();i++){
-		std::cout << "feature ["<<i<<"]: " << inputTrainFirstLevel[i].getLabelId() << std::endl;
-		for(int j = 0; j < inputTrainFirstLevel[i].size;j++){
-			std::cout << inputTrainFirstLevel[i].content[j] << ", ";
+		/*for(unsigned int i = 0; i < inputTrainFirstLevel.size();i++){
+			std::cout << "feature ["<<i<<"]: " << inputTrainFirstLevel[i].getLabelId() << std::endl;
+			for(int j = 0; j < inputTrainFirstLevel[i].size;j++){
+				std::cout << inputTrainFirstLevel[i].content[j] << ", ";
+			}
+			std::cout << std::endl << std::endl;
 		}
-		std::cout << std::endl << std::endl;
+		*/
+		//numPatches is now 1, because training is not done with randompatches anymore.
+		//Training is done one complete images and so is the validation.
+		mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1); 
+		std::cout << "mlp[0] from level 1 finished training" << std::endl;
 	}
-	*/
-	//numPatches is now 1, because training is not done with randompatches anymore.
-	//Training is done one complete images and so is the validation.
-	mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1); 
-	std::cout << "mlp[0] from level 1 finished training" << std::endl;
 }
 //--------------end: training MLP's-----------------------------
 //-------------start: MLP classification------------------------
 unsigned int MLPController::mlpMultipleClassify(Image* im){
 	int numOfImages = 1;
-	
+	int answer = -1;
 	vector<Patch> patches;
 	vector<Feature> dataFeatures;
 
@@ -395,33 +396,57 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		exit(-1);
 		*/
 	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(dataFeatures); //split test features by square	
-	vector<Feature> testDataFirstLevel; //empty feature vector that will be filled with first level features
-	setFirstLevelData(testFeaturesBySquare,testDataFirstLevel,numOfImages);
-	/*
-	for(int i=0;i<testDataFirstLevel[0].size;i++){
-		std::cout << testDataFirstLevel[0].content[i] << ", "; 
-	}
-	std::cout << std::endl;
-	*/
 	
-	normalizeInput(testDataFirstLevel,1); 
-	//changeRange(dataFeatures,0.0,0.5);
-	/*
-	for(int i=0;i<testDataFirstLevel.size();i++){
-		for(int j=0;j<testDataFirstLevel[i].size;j++){
-			cout << testDataFirstLevel[i].content[j] << ", ";
-			} cout << endl;
+	if(settings.mlpSettings.stackSize == 1){
+		vector<double> votingHistogram = vector<double>(settings.mlpSettings.nOutputUnits,0.0);
+		vector<double> outputProp;
+		for(int i=0;i<nMLPs;i++){
+			outputProp = mlps[0][i].classifyPooling(testFeaturesBySquare[i]);
+			for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
+				votingHistogram[j] += outputProp[j];
+			}
 		}
-		exit(-1);*/
+		double highestProp = 0;
+		int mostVotedClass;
+		for(int i=0;i<settings.mlpSettings.nOutputUnits;i++){
+			if(votingHistogram[i] > highestProp){
+				highestProp = votingHistogram[i];
+				mostVotedClass = i;
+			}
+		}
+		answer = mostVotedClass;
+	}
 	
-	//for(int i=0;i<10;i++){
-	//	std::cout << votingHisto[i] << std::endl;
-	//}
-	//std::cout << std::endl;
-	
-	//std::cout << "answer: " << answer << std::endl;
-	
-	int answer = mlps[1][0].classify(testDataFirstLevel);
+	if(settings.mlpSettings.stackSize == 2){
+		vector<Feature> testDataFirstLevel; //empty feature vector that will be filled with first level features
+		setFirstLevelData(testFeaturesBySquare,testDataFirstLevel,numOfImages);
+		/*
+		for(int i=0;i<testDataFirstLevel[0].size;i++){
+			std::cout << testDataFirstLevel[0].content[i] << ", "; 
+		}
+		std::cout << std::endl;
+		*/
+		
+		normalizeInput(testDataFirstLevel,1); 
+		//changeRange(dataFeatures,0.0,0.5);
+		/*
+		for(int i=0;i<testDataFirstLevel.size();i++){
+			for(int j=0;j<testDataFirstLevel[i].size;j++){
+				cout << testDataFirstLevel[i].content[j] << ", ";
+				} cout << endl;
+			}
+			exit(-1);
+		*/
+		
+		//for(int i=0;i<10;i++){
+		//	std::cout << votingHisto[i] << std::endl;
+		//}
+		//std::cout << std::endl;
+		
+		//std::cout << "answer: " << answer << std::endl;
+		
+		answer = mlps[1][0].classify(testDataFirstLevel);
+	}
 	return answer;
 }
 //---------------------end:MLP classification------------------------
