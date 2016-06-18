@@ -407,6 +407,7 @@ vector<double> MLPController::classifyImageSquare(int indexOfMLPs, vector<Featur
 	
 	for(unsigned int i=0;i<features.size();i++){
 		outputMLP = firstMLP.runFeatureThroughMLP(features[i]);
+		activationsToOutputProbabilities();
 		if(settings.mlpSettings.useWeightingMLPs){
 			weight = weightingMLP.runFeatureThroughMLP(features[i]);
 			if(weight[0] < 0.0)
