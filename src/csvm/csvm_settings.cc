@@ -206,6 +206,41 @@ stream >> type;
       exit(-1);
    }
    
+   stream >> type;
+   if (type == "saveMLP") {
+      stream >> mlpSettings.saveMLP;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   stream >> type;
+   if (type == "saveMLPName") {
+      stream >> mlpSettings.saveMLPName;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+      stream >> type;
+   if (type == "readMLP") {
+      stream >> mlpSettings.readMLP;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   stream >> type;
+   if (type == "readMLPName") {
+      stream >> mlpSettings.readMLPName;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
    
 }
 

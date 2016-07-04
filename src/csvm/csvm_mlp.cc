@@ -82,7 +82,7 @@ void MLPerceptron::initializeVectors(){
 	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
 	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
-	weightsMinOne	= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
+	//weightsMinOne	= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -452,6 +452,10 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 	
 	checkingSettingsValidity(randomFeatures[0].size);
 
+	cout << "input units: " << settings.nInputUnits << endl;
+	cout << "hidden units: " << settings.nHiddenUnits << endl;
+	cout << "ouput units: " << settings.nOutputUnits << endl;
+	  
 	training(randomFeatures,validationSet);			
 }
 
@@ -496,4 +500,22 @@ void MLPerceptron::setMaxActivation(vector<double>& maxHiddenActivation,vector<d
 			maxHiddenActivation[i] = currentActivation[i];
 	}
 }
+
 //-------end testing--------
+//-------start loading mlp---------
+vector<vector<double> > MLPerceptron::getBiasNodes(){
+    return biasNodes; 
+}
+
+vector<vector<vector<double> > > MLPerceptron::getWeightMatrix(){
+    return weights;
+}
+
+void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vector<vector<double> > readInBiasNodes){
+      initializeVectors();
+      
+      weights = readInWeights;
+      biasNodes = readInBiasNodes;
+
+}
+//-------end loading mlp----------

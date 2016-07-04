@@ -43,24 +43,24 @@ ImageScanner
 patchHeight 14
 patchWidth 14
 scanStride 1
-nRandomPatches 5000
+nRandomPatches 1000
 
 
 MLP
-stackSize 1
-nSplitsForPooling 3
+stackSize 2
+nSplitsForPooling 2
 nHiddenUnits 400
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
 learningRate .01
-voting MAJORITY
+voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 5
 crossValidationSize 0.1
-epochs 40
+epochs 10
 stoppingCriterion 0.999
-nHiddenUnitsFirstLayer 1000
+nHiddenUnitsFirstLayer 300
 scanStrideFirstLayer 1
 saveData 0
 saveRandomFeatName RandomFeat_CIFAR10_5000_24x24
@@ -68,6 +68,10 @@ saveValidationName Validation_CIFAR10_5000_24x24
 readInData 0
 readRandomFeatName RandomFeat_CIFAR10_5000_24x24
 readValidationName Validation_CIFAR10_5000_24x24
+saveMLP 0
+saveMLPName MNIST_4_324_400_10
+readMLP 0
+readMLPName MNIST_4_324_400_10
 
 SVM
 Kernel LINEAR

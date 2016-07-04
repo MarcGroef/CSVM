@@ -316,7 +316,7 @@ void MLPController::trainMutipleMLPs(){
 	vector<vector<Feature> > splitTrain;
 	vector<vector<Feature> > splitVal;
 	
-//	if(!readInMLP){
+	if(!settings.mlpSettings.readMLP){
 	createDataBottomLevel(splitTrain,splitVal);
 		
 	for(int i=0;i<nMLPs;i++){ 		
@@ -327,14 +327,12 @@ void MLPController::trainMutipleMLPs(){
 		for(int i=0;i<nMLPs;i++){ 		
 			mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
 			std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
-		}*/
-	//} else {
-	//	for(int i=0;i<nMLPs;i++){
-	//		mlps[0][i].setBiasNodes(biasNodes);
-//			mlps[0][i].setWeights(weights);
-		//}
-	//}
-
+		}
+		*/
+	} else 
+	    importPreTrainedMLP(settings.mlpSettings.readMLPName);
+	if(settings.mlpSettings.saveMLP)
+	  exportTrainedMLP(settings.mlpSettings.saveMLPName);
     //std::cout << "create training data for first level... " << std::endl;
     if(settings.mlpSettings.stackSize == 2){
 		vector<Feature> inputTrainFirstLevel;
@@ -454,31 +452,38 @@ union charInt{
    char chars[4];
    unsigned int intVal;
 };
-/*
-void MLPController::importPreTrainedMLP(){
+
+void MLPController::importPreTrainedMLP(string filename){
 	charInt fancyInt;
 	charDouble fancyDouble;
-  
+	
 	ifstream file(filename.c_str(), ios::binary);
 	
 	file.read(fancyInt.chars,4);
 	int readInInputUnits = fancyInt.intVal;
    	if(readInInputUnits != settings.mlpSettings.nInputUnits){
-		std::cout << "The dataset that is read in is " << readInInputUnits << " and in the settings file you have " << settings.mlpSettings.nInputUnits << ", please change this" << std::endl;
+		std::cout << "The input units that is read in is " << readInInputUnits << " and in the settings file you have " << settings.mlpSettings.nInputUnits << ", please change this" << std::endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInHiddenUnits = fancyInt.intVal;
    	if(readInHiddenUnits != settings.mlpSettings.nHiddenUnits){
-		std::cout << "The dataset that is read in is " << readInHiddenUnits << " and in the settings file you have " << settings.mlpSettings.nHiddenUnits << ", please change this" << std::endl;
+		std::cout << "The hidden units that is read in is " << readInHiddenUnits << " and in the settings file you have " << settings.mlpSettings.nHiddenUnits << ", please change this" << std::endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInOutputUnits = fancyInt.intVal;
-   	if(readInHiddenUnits != settings.mlpSettings.nOutputUnits){
-		std::cout << "The dataset that is read in is " << readInHiddenUnits << " and in the settings file you have " << settings.mlpSettings.nOutputUnits << ", please change this" << std::endl;
+   	if(readInOutputUnits != settings.mlpSettings.nOutputUnits){
+		std::cout << "The output units that is read in is " << readInOutputUnits << " and in the settings file you have " << settings.mlpSettings.nOutputUnits << ", please change this" << std::endl;
+		exit(-1);
+	}
+	
+	file.read(fancyInt.chars,4);
+	int readInNSplitsForPooling = fancyInt.intVal;
+   	if(readInNSplitsForPooling != settings.mlpSettings.nSplitsForPooling){
+		std::cout << "The nSplitsForPooling that is read in is " << readInNSplitsForPooling << " and in the settings file you have " << settings.mlpSettings.nSplitsForPooling << ", please change this" << std::endl;
 		exit(-1);
 	}
 	
@@ -491,41 +496,64 @@ void MLPController::importPreTrainedMLP(){
          readInDatasetType = DATASET_CIFAR10;
          break;
       case 1:
-		 readInDatasetType = DATASET_MNIST;
-		 break;
-	   default:
-		readInDatasetType = DATASET_CIFAR10;
-		std::cout << "The read in dataset is unknown, by default it is set to CIFAR10" << std::endl;
-
-	}
+	readInDatasetType = DATASET_MNIST;
+	break;
+      }
    
 	if(readInDatasetType != dataset->getType()){
 		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << std::endl;
 		exit(-1);
 	}
-	int maxUnits;
+	//read min value first level
+	file.read(fancyDouble.chars,8);
+	minValues[0] = fancyDouble.doubleVal;
 	
-	for(int i=0; i<nMLPs;i++){
-		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){
-			for(int k=0;k<maxUnitsk++){
-				for(int l=0;l<weights[j][k].size();l++){
-					fancyDouble.doubleVal = weights[j][k][l];
-					file.write(doubleVal.chars, 8);
+	//read max value first level
+	file.read(fancyDouble.chars,8);
+	maxValues[0] = fancyDouble.doubleVal;
+	
+	int maxUnits=0;
+	
+	if(maxUnits < settings.mlpSettings.nInputUnits){
+	  maxUnits = settings.mlpSettings.nInputUnits;
+	}
+	if(maxUnits < settings.mlpSettings.nHiddenUnits){
+	  maxUnits = settings.mlpSettings.nHiddenUnits;
+	}
+	if(maxUnits < settings.mlpSettings.nOutputUnits){
+	  maxUnits = settings.mlpSettings.nOutputUnits;
+	}
+	
+	vector<vector<double> > biasNodes = vector<vector<double> >(settings.mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
+	vector<vector<vector<double> > > weights = vector<vector<vector<double> > >(settings.mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
+	
+	for(int i=0; i<nMLPs;i++){ //amount of mlps that needs to be read in
+		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){ //amount of weight vectors
+			for(int k=0;k<maxUnits;k++){ //amount of collums
+				for(int l=0;l<maxUnits;l++){ // amount of rows
+				  file.read(fancyDouble.chars,8);
+				  weights[j][k][l] = fancyDouble.doubleVal;
+					
 				}
 			}
 		}
-		for(int j=0;j<biasNodes.size();j++){
-			for(int k=0;k<biasNodes[j].size();k++){
-					fancyDouble.doubleVal = biasNodes[j][k];
-					file.write(doubleVal.chars, 8);
+		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){ //amount of bais nodes matrixs
+			for(int k=0;k<maxUnits;k++){ // max amount of units, there is only one column and 
+				file.read(fancyDouble.chars,8);
+				biasNodes[j][k] = fancyDouble.doubleVal;
 			}
 		}
-	}
+	//load the weights and bais matrix into the mlp
+	mlps[0][i].loadInMLP(weights,biasNodes);
 	
+	//reset weight matrixes for the next mlp
+	biasNodes = vector<vector<double> >(settings.mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
+	weights = vector<vector<vector<double> > >(settings.mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
+	
+	}
 }
-*/
 
-void MLPController::exportTrainedMLP(){
+void MLPController::exportTrainedMLP(string filename){
 	/*
 	 * First,  nInputUnits : 0 - maxInt (4 bytes)
 	 * Second, nHiddenUnits: 0 - maxInt (4 bytes)
@@ -537,61 +565,66 @@ void MLPController::exportTrainedMLP(){
 	 * 
 	 * No seperator char is used 
 	 * 
-*/	 /*
-	 string filen1ame;
-	 
+*/	 
 	 charInt fancyInt;
 	 charDouble fancyDouble;
 	 
 	 ofstream file(filename.c_str(), ios::binary);
 	 
 	 //write nInputUnits
-	 fanyInt.intVal = setttings.mlpSettings.nInputUnits;
+	 fancyInt.intVal = settings.mlpSettings.nInputUnits;
 	 file.write(fancyInt.chars, 4);
 	 
 	 //write nHiddenUnits
-	 fanyInt.intVal = setttings.mlpSettings.nHiddenUnits;
+	 fancyInt.intVal = settings.mlpSettings.nHiddenUnits;
 	 file.write(fancyInt.chars, 4);
 	 
 	 //write nOutputUnits
-	 fanyInt.intVal = setttings.mlpSettings.nOutputUnits;
+	 fancyInt.intVal = settings.mlpSettings.nOutputUnits;
 	 file.write(fancyInt.chars, 4);
 	 
 	 //write nSplitsForPooling
-	 fanyInt.intVal = setttings.mlpSettings.nSplitsForPooling;
+	 fancyInt.intVal = settings.mlpSettings.nSplitsForPooling;
 	 file.write(fancyInt.chars, 4);
 	 
 	//write dataset used
 	switch(settings.datasetSettings.type){
-      case DATASET_CIFAR10:
-         fancyInt.intVal=0;
+	  case DATASET_CIFAR10:
+	    fancyInt.intVal=0;
          break;
-      case DATASET_MNIST:
-		 fancyInt.intVal=1;
+	  case DATASET_MNIST:
+	    fancyInt.intVal=1;
          break;   
 	}
-   file.write(fancyInt.chars, 4);
+	 file.write(fancyInt.chars, 4);
 	
-	for(int i=0; i<nMLPs;i++){
-		vector<vector<double> > biasNodes = mlps[i].getBiasNodes();
-		vector<vector<vector<double> > > weights = mlps[i].getWeightMatrix();
+	 //write min value for first layer
+	 fancyDouble.doubleVal = minValues[0]; 
+	file.write(fancyDouble.chars, 8);
+	
+	//write max value for first layer
+	fancyDouble.doubleVal = maxValues[0];
+	file.write(fancyDouble.chars, 8);
+	 
+	for(int i=0; i<nMLPs;i++){ //amount of mlps
+		vector<vector<double> > biasNodes = mlps[0][i].getBiasNodes();
+		vector<vector<vector<double> > > weights = mlps[0][i].getWeightMatrix();
 		
-		for(int j=0;j<weights.size();j++){
-			for(int k=0;k<weights[j].size();k++){
-				for(int l=0;l<weights[j][k].size();l++){
+		for(unsigned int j=0;j<weights.size();j++){ //amount of weight vectors, 2 for 3 layer mlp
+			for(unsigned int k=0;k<weights[j].size();k++){ //size of the max amount of nodes of the mlp
+				for(unsigned int l=0;l<weights[j][k].size();l++){ //size of the max amount of nodes of the mlp
 					fancyDouble.doubleVal = weights[j][k][l];
-					file.write(doubleVal.chars, 8);
+					file.write(fancyDouble.chars, 8);
 				}
 			}
 		}
-		for(int j=0;j<biasNodes.size();j++){
-			for(int k=0;k<biasNodes[j].size();k++){
-					fancyDouble.doubleVal = biasNodes[j][k];
-					file.write(doubleVal.chars, 8);
+		for(unsigned int j=0;j<biasNodes.size();j++){ //amount of bias node vectors
+			for(unsigned int k=0;k<biasNodes[j].size();k++){ //size of max amount of nodes of the mlp
+				fancyDouble.doubleVal = biasNodes[j][k];
+				file.write(fancyDouble.chars, 8);
 			}
 		}
 	}
-	* */
 }
 
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){

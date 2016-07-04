@@ -97,58 +97,57 @@ int main(int argc,char**argv){
    
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-   for(size_t im = 0;im < nImages-validationSize; ++im){
-	unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
-	unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
-	//std::cout << "result: " << result << "answer: " << answer << std::endl;
-	  
-	  
-	if (result == answer){
-	  ++nCorrect;
-	} else {
-	  ++nFalse;
+      for(size_t im = 0;im < nImages-validationSize; ++im){
+	  unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
+	  unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
+	  //std::cout << "result: " << result << "answer: " << answer << std::endl;
+	    
+	    
+	  if (result == answer){
+	    ++nCorrect;
+	  } else {
+	    ++nFalse;
+	  }
+
+	  ++classifiedAsTrain[answer][result];
+	  ++classifiedAsTrain[answer][nClasses];
+	  ++classifiedAsTrain[nClasses][result];
+      }
+      if(normalOut)
+	cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
+      if(normalOut)
+	cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
+      //****************************** Print ConfusionMatrix for TRAINSET *******************
+
+      bool printConfusionMatrix = true;
+
+      if (normalOut && printConfusionMatrix) {
+	int   total;
+	double precision;
+
+	cout << "\n\n\t       Predicted:\t";
+	for (size_t i=0; i<nClasses; i++){
+	    if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
+	    else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
 	}
-
-	++classifiedAsTrain[answer][result];
-	++classifiedAsTrain[answer][nClasses];
-	++classifiedAsTrain[nClasses][result];
-   }
-   if(normalOut)
-      cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   if(normalOut)
-      cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
-   //****************************** Print ConfusionMatrix for TRAINSET *******************
-
-   bool printConfusionMatrix = true;
-
-   if (normalOut && printConfusionMatrix) {
-      int   total;
-      double precision;
-
-      cout << "\n\n\t       Predicted:\t";
-      for (size_t i=0; i<nClasses; i++){
-         if (c.dataset.getType() == DATASET_CIFAR10) cout << c.dataset.getLabel(i) << ((i<2) ? "\t" : "\t\t");   
-         else                                        cout << i << ((i<1) ? "\t" : "\t\t");   
+	cout << "Average:" << "\n\n    \tActual:\n";
+	for (size_t i=0; i<nClasses; ++i){
+	    total = 0;
+	    if (c.dataset.getType() == DATASET_CIFAR10) cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
+	    else                                        cout << " \t" << i << ((i > 1) ? "\t" : "\t");
+	    for (size_t j=0; j<nClasses; ++j){
+	      total += classifiedAsTrain[i][j];
+	      cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAsTrain[i][j];
+	    }
+	    precision = (double)classifiedAsTrain[i][i] / total * 100;
+	    cout << "\t\t" << precision << " %" << "\n\n\n";
+	}
+	cout << "\n\tPrecision:\t";
+	for (size_t i=0; i<nClasses; ++i){
+	    precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
+	    cout << "\t" << fixed << precision << "";
+	}
       }
-      cout << "Average:" << "\n\n    \tActual:\n";
-      for (size_t i=0; i<nClasses; ++i){
-         total = 0;
-         if (c.dataset.getType() == DATASET_CIFAR10) cout << " \t" << c.dataset.getLabel(i) << ((i > 1) ? "\t" : "");
-         else                                        cout << " \t" << i << ((i > 1) ? "\t" : "\t");
-         for (size_t j=0; j<nClasses; ++j){
-            total += classifiedAsTrain[i][j];
-            cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAsTrain[i][j];
-         }
-         precision = (double)classifiedAsTrain[i][i] / total * 100;
-         cout << "\t\t" << precision << " %" << "\n\n\n";
-      }
-      cout << "\n\tPrecision:\t";
-      for (size_t i=0; i<nClasses; ++i){
-         precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
-         cout << "\t" << fixed << precision << "";
-      }
-   }
-
 
     //***********************************Testing phase on validation set**********************************************************************************
 

@@ -67,8 +67,8 @@ namespace csvm{
 		
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);
 		void importFeatureSet(string filename, vector<Feature>& featureVector);
-		void exportTrainedMLP();
-		void importPreTrainedMLP();
+		void exportTrainedMLP(string filename);
+		void importPreTrainedMLP(string filename);
 		public:
 		
 		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds);

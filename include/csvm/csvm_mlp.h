@@ -33,6 +33,10 @@ namespace csvm{
       int readInData;
       string readRandomFeatName;
       string readValidationName;
+      int saveMLP;
+      string saveMLPName;
+      int readMLP;
+      string readMLPName;
    };
 
    class MLPerceptron{
@@ -65,7 +69,7 @@ namespace csvm{
 		double errorFunction();
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
-	    void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
+		void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
 		//feedforward:
 		double activationFunction(double summedActivation);
 		void calculateActivationLayer(int bottomLayer);
@@ -75,20 +79,20 @@ namespace csvm{
 		void calculateDeltas(int index);
 		void outputDelta();
 		void hiddenDelta(int index);
-        void adjustWeights(int index);
-        void backpropgation();
+		void adjustWeights(int index);
+		void backpropgation();
 		//voting:
-	    void activationsToOutputProbabilities();
+		void activationsToOutputProbabilities();
 		void voting();
 		void majorityVoting();
 		void sumVoting();
 		unsigned int mostVotedClass();
 		//training:
-	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 
-	    void training(vector<Feature>& randomFeatures);
+		void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 
+		void training(vector<Feature>& randomFeatures);
 	    
-	    void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
-	    void crossvaldiation(vector<Feature>& randomFeatures);
+		void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+		void crossvaldiation(vector<Feature>& randomFeatures);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
 	  
 	  
@@ -105,6 +109,9 @@ namespace csvm{
 
       //getters
       vector<double> getMaxActivation();
+      vector<vector<double> > getBiasNodes();
+      vector<vector<vector<double> > > getWeightMatrix();
+      void loadInMLP(vector<vector<vector<double> > > readInWeights, vector<vector<double> > readInBiasNodes);
    };
       
 }
