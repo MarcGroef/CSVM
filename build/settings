@@ -1,9 +1,9 @@
 Dataset
-method MNIST
+method CIFAR10
 nTrainImages 100
 nTestImages 10
-imageWidth 38
-imageHeight 38
+imageWidth 32
+imageHeight 32
 
 General
 Classifier MLP
@@ -25,9 +25,9 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
-cellSize 5
-cellStride 5
-patchSize 32
+cellSize 2
+cellStride 2
+patchSize 14
 padding None
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
@@ -40,27 +40,27 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 32
-patchWidth 32
+patchHeight 14
+patchWidth 14
 scanStride 1
-nRandomPatches 2000
+nRandomPatches 5000
 
 
 MLP
 stackSize 1
-nSplitsForPooling 2
-nHiddenUnits 300
+nSplitsForPooling 3
+nHiddenUnits 400
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
-learningRate .03
-voting SUM
+learningRate .01
+voting MAJORITY
 trainingType CROSSVALIDATION
-crossValidationInterval 10
+crossValidationInterval 5
 crossValidationSize 0.1
-epochs 20
+epochs 40
 stoppingCriterion 0.999
-nHiddenUnitsFirstLayer 500
+nHiddenUnitsFirstLayer 1000
 scanStrideFirstLayer 1
 saveData 0
 saveRandomFeatName RandomFeat_CIFAR10_5000_24x24

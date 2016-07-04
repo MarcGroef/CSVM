@@ -41,6 +41,7 @@ namespace csvm{
       MLPSettings settings;
     
       int numPatchesPerSquare;
+      int momentum;
       
       std::vector<int> layerSizes;
 
@@ -53,36 +54,36 @@ namespace csvm{
 	  std::vector<vector<double> > deltas;
 
 	  std::vector<vector<vector<double> > > weights;
+	  std::vector<vector<vector<double> > > weightsMinOne;
+
 	  
 	  //private methods
 	  
-	  //helpMethods:
+		//helpMethods:
 		void randomizeWeights(std::vector<vector<double> >& array, int indexBottomLayer);
 		void setDesiredOutput(Feature f);
 		double errorFunction();
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
 	    void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
-
-	  //feedforward:
+		//feedforward:
 		double activationFunction(double summedActivation);
 		void calculateActivationLayer(int bottomLayer);
 		void feedforward();
-	  //backpropagation:
+		//backpropagation:
 		double derivativeActivationFunction(double activationNode);
 		void calculateDeltas(int index);
-		 void outputDelta();
-	  void hiddenDelta(int index);
+		void outputDelta();
+		void hiddenDelta(int index);
         void adjustWeights(int index);
         void backpropgation();
-      //voting:
+		//voting:
 	    void activationsToOutputProbabilities();
 		void voting();
 		void majorityVoting();
 		void sumVoting();
 		unsigned int mostVotedClass();
-	  //training:
-	    
+		//training:
 	    void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 
 	    void training(vector<Feature>& randomFeatures);
 	    

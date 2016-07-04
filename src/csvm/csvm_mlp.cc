@@ -56,6 +56,8 @@ double MLPerceptron::errorFunction(){
 }
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
+	momentum = 0.3;
+	
 	if (settings.nLayers == 0){ 
 		std::cout << "There is something wrong with the way the settings are set. layerSizes is equal to 0. This should never be the case. " << std::endl;
 		exit(-1);
@@ -80,6 +82,7 @@ void MLPerceptron::initializeVectors(){
 	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
 	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
+	weightsMinOne	= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -173,9 +176,12 @@ void MLPerceptron::hiddenDelta(int index){
 }	
 
 void MLPerceptron::adjustWeights(int index){
+	//weightsMinOne = weights;
 	for(int i = 0; i < layerSizes[index + 1]; i++){
-		for(int j = 0; j < layerSizes[index]; j++)
-			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j];
+		for(int j = 0; j < layerSizes[index]; j++){
+			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j]; //+momentum term
+			//weights[index][j][i] += momentum*(weights[index][j][i] - weightsMinOne[index][j][i]);
+		}
 		biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
 	}
 }
@@ -191,7 +197,7 @@ void MLPerceptron::backpropgation(){
 void MLPerceptron::activationsToOutputProbabilities(){
 	double sumOfActivations = 0.0;
 	for(int i = 0; i< settings.nOutputUnits; i++){
-		activations[settings.nLayers -1][i] = good_exp(activations[settings.nLayers -1][i]);
+		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
 		sumOfActivations += activations[settings.nLayers -1][i];
 	}
 	for(int i = 0; i< settings.nOutputUnits; i++)
@@ -235,7 +241,7 @@ unsigned int MLPerceptron::mostVotedClass(){
 	double voteCounter = 0;
 	
 	for (int i = 0; i < settings.nOutputUnits; i++){
-		if (votingHistogram[i] > voteCounter){   //what happens if two classes have the same amount of votes?
+		if (votingHistogram[i] > voteCounter){  //what happens if two classes have the same amount of votes?
 			voteCounter = votingHistogram[i];
 			mostVotedClass = i;
 		}
@@ -249,7 +255,7 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
 	if(settings.trainingType == "CROSSVALIDATION")
 		crossvaldiation(randomFeatures,validationSet);
 	else {
-		std::cout << "This training type is unknown. Change to a known voting type in the settings file" << std::endl;
+		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
 		exit(-1);
 	}		
 }
@@ -311,6 +317,17 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			if (activations[1][k] != 0) 
 				deadHiddenUnits[j][k] = 1;*/
 		}
+		
+		double errorPreviousEpoch = averageError/(double)randomFeatures.size();
+		double stopCriterium = 0.0005;
+			if(errorPreviousEpoch < stopCriterium){
+				cout << "The epoch number is " << i << endl;
+				cout << "The training process of the mlp stopped because the training error of the previous epoch is " << errorPreviousEpoch << " which is below " << stopCriterium << std::endl;
+				cout << "The validation error at this point is: ";
+				isErrorOnValidationSetLowEnough(validationSet);
+				cout << endl;
+				break;
+		}
 				
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0 or i == epochs-1){
@@ -366,12 +383,13 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			
 			std::cout << i << ", ";
 			if(isErrorOnValidationSetLowEnough(validationSet))
-				break;	
-			std::cout << averageError/(double)randomFeatures.size() << std::endl;
+				break;
+			cout << errorPreviousEpoch << endl;
 		}
+
+		settings.learningRate *= 0.98; //decreasing learning rate
+	
 		averageError = 0;
-		
-		settings.learningRate *= 0.98;
 		
 	}
 }
@@ -392,7 +410,6 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 	std::cout << "epoch, averageError" << std::endl;
 	for(int i = 0; i<epochs;i++){
 		//cout << " learning rate: " << settings.learningRate << endl;
-		
 		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){

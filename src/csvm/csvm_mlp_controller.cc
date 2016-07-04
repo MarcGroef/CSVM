@@ -316,31 +316,25 @@ void MLPController::trainMutipleMLPs(){
 	vector<vector<Feature> > splitTrain;
 	vector<vector<Feature> > splitVal;
 	
+//	if(!readInMLP){
 	createDataBottomLevel(splitTrain,splitVal);
-	
-	/*for(int i=0;i<nMLPs;i++){
-		normalizeInput(splitTrain[i],0);
-		normalizeInput(splitVal[i],0);
-	}*/
-	/*
-	for(int i=0;i<4;i++){
-		std::cout << splitTrain[i].size() << std::endl;
-		std::cout << splitVal[i].size() << std::endl;
-	}
-	
-	for(int i=0;i<splitTrain[0][0].size;i++){
-		std::cout << splitTrain[0][0].content[i] << std::endl;
-	}*/
-	
+		
 	for(int i=0;i<nMLPs;i++){ 		
 		mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
 		std::cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << std::endl << std::endl;
-    }
-    /*
-	for(int i=0;i<nMLPs;i++){ 		
-		mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
-		std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
-    }*/
+	}
+		/*
+		for(int i=0;i<nMLPs;i++){ 		
+			mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
+			std::cout << "mlp["<<i<<"] from level 0 finished training on validation set" << std::endl << std::endl;
+		}*/
+	//} else {
+	//	for(int i=0;i<nMLPs;i++){
+	//		mlps[0][i].setBiasNodes(biasNodes);
+//			mlps[0][i].setWeights(weights);
+		//}
+	//}
+
     //std::cout << "create training data for first level... " << std::endl;
     if(settings.mlpSettings.stackSize == 2){
 		vector<Feature> inputTrainFirstLevel;
@@ -460,6 +454,145 @@ union charInt{
    char chars[4];
    unsigned int intVal;
 };
+/*
+void MLPController::importPreTrainedMLP(){
+	charInt fancyInt;
+	charDouble fancyDouble;
+  
+	ifstream file(filename.c_str(), ios::binary);
+	
+	file.read(fancyInt.chars,4);
+	int readInInputUnits = fancyInt.intVal;
+   	if(readInInputUnits != settings.mlpSettings.nInputUnits){
+		std::cout << "The dataset that is read in is " << readInInputUnits << " and in the settings file you have " << settings.mlpSettings.nInputUnits << ", please change this" << std::endl;
+		exit(-1);
+	}
+	
+	file.read(fancyInt.chars,4);
+	int readInHiddenUnits = fancyInt.intVal;
+   	if(readInHiddenUnits != settings.mlpSettings.nHiddenUnits){
+		std::cout << "The dataset that is read in is " << readInHiddenUnits << " and in the settings file you have " << settings.mlpSettings.nHiddenUnits << ", please change this" << std::endl;
+		exit(-1);
+	}
+	
+	file.read(fancyInt.chars,4);
+	int readInOutputUnits = fancyInt.intVal;
+   	if(readInHiddenUnits != settings.mlpSettings.nOutputUnits){
+		std::cout << "The dataset that is read in is " << readInHiddenUnits << " and in the settings file you have " << settings.mlpSettings.nOutputUnits << ", please change this" << std::endl;
+		exit(-1);
+	}
+	
+	file.read(fancyInt.chars,4);
+	unsigned int datasetNum = fancyInt.intVal; //some check that his num is smaller than 2
+	CSVMDatasetType readInDatasetType;
+   
+   	switch(datasetNum){
+      case 0:
+         readInDatasetType = DATASET_CIFAR10;
+         break;
+      case 1:
+		 readInDatasetType = DATASET_MNIST;
+		 break;
+	   default:
+		readInDatasetType = DATASET_CIFAR10;
+		std::cout << "The read in dataset is unknown, by default it is set to CIFAR10" << std::endl;
+
+	}
+   
+	if(readInDatasetType != dataset->getType()){
+		std::cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << std::endl;
+		exit(-1);
+	}
+	int maxUnits;
+	
+	for(int i=0; i<nMLPs;i++){
+		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){
+			for(int k=0;k<maxUnitsk++){
+				for(int l=0;l<weights[j][k].size();l++){
+					fancyDouble.doubleVal = weights[j][k][l];
+					file.write(doubleVal.chars, 8);
+				}
+			}
+		}
+		for(int j=0;j<biasNodes.size();j++){
+			for(int k=0;k<biasNodes[j].size();k++){
+					fancyDouble.doubleVal = biasNodes[j][k];
+					file.write(doubleVal.chars, 8);
+			}
+		}
+	}
+	
+}
+*/
+
+void MLPController::exportTrainedMLP(){
+	/*
+	 * First,  nInputUnits : 0 - maxInt (4 bytes)
+	 * Second, nHiddenUnits: 0 - maxInt (4 bytes)
+	 * Third,  nOutputUnits: 0 - maxInt usually 10 (4 bytes)
+	 * Fourth, nSplitsForPooling : 1-2 (4 bytes)
+	 * Fifth,  Dataset     : CIFAR10=0, MNIST=1 (4 bytes)
+	 * 
+	 * Save weight and bias matrix.
+	 * 
+	 * No seperator char is used 
+	 * 
+*/	 /*
+	 string filen1ame;
+	 
+	 charInt fancyInt;
+	 charDouble fancyDouble;
+	 
+	 ofstream file(filename.c_str(), ios::binary);
+	 
+	 //write nInputUnits
+	 fanyInt.intVal = setttings.mlpSettings.nInputUnits;
+	 file.write(fancyInt.chars, 4);
+	 
+	 //write nHiddenUnits
+	 fanyInt.intVal = setttings.mlpSettings.nHiddenUnits;
+	 file.write(fancyInt.chars, 4);
+	 
+	 //write nOutputUnits
+	 fanyInt.intVal = setttings.mlpSettings.nOutputUnits;
+	 file.write(fancyInt.chars, 4);
+	 
+	 //write nSplitsForPooling
+	 fanyInt.intVal = setttings.mlpSettings.nSplitsForPooling;
+	 file.write(fancyInt.chars, 4);
+	 
+	//write dataset used
+	switch(settings.datasetSettings.type){
+      case DATASET_CIFAR10:
+         fancyInt.intVal=0;
+         break;
+      case DATASET_MNIST:
+		 fancyInt.intVal=1;
+         break;   
+	}
+   file.write(fancyInt.chars, 4);
+	
+	for(int i=0; i<nMLPs;i++){
+		vector<vector<double> > biasNodes = mlps[i].getBiasNodes();
+		vector<vector<vector<double> > > weights = mlps[i].getWeightMatrix();
+		
+		for(int j=0;j<weights.size();j++){
+			for(int k=0;k<weights[j].size();k++){
+				for(int l=0;l<weights[j][k].size();l++){
+					fancyDouble.doubleVal = weights[j][k][l];
+					file.write(doubleVal.chars, 8);
+				}
+			}
+		}
+		for(int j=0;j<biasNodes.size();j++){
+			for(int k=0;k<biasNodes[j].size();k++){
+					fancyDouble.doubleVal = biasNodes[j][k];
+					file.write(doubleVal.chars, 8);
+			}
+		}
+	}
+	* */
+}
 
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
 	/* Featureset file conventions:

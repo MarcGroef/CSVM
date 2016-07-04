@@ -88,18 +88,16 @@ int main(int argc,char**argv){
    unsigned int nFalse = 0;
    unsigned int nImages = c.dataset.getTrainSize();//(unsigned int) c.dataset.getSize();
    unsigned int nClasses = c.getNoClasses();
-   
+	
    vector<unsigned int> trainNumbers = c.dataset.getTrainImageNums();
-   vector<unsigned>::const_iterator first = trainNumbers.begin() + (trainNumbers.size()*0.9);
-   vector<unsigned>::const_iterator last = trainNumbers.end();
-   vector<unsigned int> validationNumbers = vector<unsigned int>(first,last);
+   int validationSize = c.dataset.getTrainSize() * c.settings.mlpSettings.crossValidationSize;
    
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    
    
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-   for(size_t im = 0;im < nImages-validationNumbers.size(); ++im){
+   for(size_t im = 0;im < nImages-validationSize; ++im){
 	unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
 	unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
 	//std::cout << "result: " << result << "answer: " << answer << std::endl;
@@ -158,7 +156,6 @@ int main(int argc,char**argv){
       cout << "\n\n\nOn validation set:\n\n";
    nCorrect = 0;
    nFalse = 0;
-   unsigned int validationSize = (unsigned int)validationNumbers.size();
    
    vector <vector <int> > classifiedAsVal      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
 

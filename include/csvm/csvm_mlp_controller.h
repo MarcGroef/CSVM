@@ -32,6 +32,9 @@ namespace csvm{
 		vector<double> minValues;
 		vector<double> maxValues;
 		
+		vector<vector<vector<double> > > deltas;
+		vector<vector<vector<vector<double> > > > weights;
+		
 		vector<int> numPatchesPerSquare;
 		
 		ImageScanner imageScanner;
@@ -64,7 +67,8 @@ namespace csvm{
 		
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);
 		void importFeatureSet(string filename, vector<Feature>& featureVector);
-
+		void exportTrainedMLP();
+		void importPreTrainedMLP();
 		public:
 		
 		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds);
