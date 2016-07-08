@@ -70,10 +70,13 @@ namespace csvm{
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
 		void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
+		//regularization:
+		void initiateDropOut(int isTraining, int bottomLayer);
+		
 		//feedforward:
 		double activationFunction(double summedActivation);
-		void calculateActivationLayer(int bottomLayer);
-		void feedforward();
+		void calculateActivationLayer(int isTraining,int bottomLayer);
+		void feedforward(int isTraining);
 		//backpropagation:
 		double derivativeActivationFunction(double activationNode);
 		void calculateDeltas(int index);
@@ -112,6 +115,9 @@ namespace csvm{
       vector<vector<double> > getBiasNodes();
       vector<vector<vector<double> > > getWeightMatrix();
       void loadInMLP(vector<vector<vector<double> > > readInWeights, vector<vector<double> > readInBiasNodes);
+      
+      //setters
+      void setWeightMatrix(vector<vector<vector<double> > > newWeights);
    };
       
 }

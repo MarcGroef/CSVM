@@ -43,7 +43,7 @@ void CSVMClassifier::initSVMs(){
 
 void CSVMClassifier::constructMLPs(){
    mlpController = new MLPController(&featExtr,&imageScanner,&settings,&dataset);
-   mlpController->setSettings(settings.mlpSettings);	
+   mlpController->setSettings(settings.mlpSettings);
 }
 
 //read settings file, and pass the settings to respective modules

@@ -18,6 +18,7 @@ namespace csvm{
 	
 	class MLPController{
 		private:
+		int first; //variable for dropout a bit dirty
 		int nMLPs;
 		int nHiddenBottomLevel;
 		
@@ -64,6 +65,8 @@ namespace csvm{
 		unsigned int mlpClassify(Image* im);
 		
 		int calculateSquareOfPatch(Patch patch);
+		
+		void dropOutTesting(vector<vector<vector<double> > >& newWeights);
 		
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);
 		void importFeatureSet(string filename, vector<Feature>& featureVector);

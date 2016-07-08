@@ -18,7 +18,7 @@ void MLPController::setSettings(MLPSettings s){
 	cout << "settings set" << std::endl;
 
 	nHiddenBottomLevel = s.nHiddenUnits;
-	
+	first = 1;
 	//init global variables	
 	nMLPs = pow(s.nSplitsForPooling,2);
 	validationSize = dataset->getTrainSize()*s.crossValidationSize;
@@ -359,12 +359,24 @@ void MLPController::trainMutipleMLPs(){
 }
 //--------------end: training MLP's-----------------------------
 //-------------start: MLP classification------------------------
+
+void MLPController::dropOutTesting(vector<vector<vector<double> > >& newWeights){
+  double p = 0.5;
+  for(unsigned int i=0;i<newWeights.size();i++){
+    for(unsigned int  j=0;j<newWeights[i].size();j++){
+      for(unsigned int k=0;k<newWeights[i][j].size();k++){
+	 newWeights[i][j][k] *= p;
+      }
+    }
+  }
+} 
 unsigned int MLPController::mlpMultipleClassify(Image* im){
 	int numOfImages = 1;
 	int answer = -1;
+	
 	vector<Patch> patches;
 	vector<Feature> dataFeatures;
-
+	
 	//extract patches
 	patches = imageScanner.scanImage(im);
 
@@ -390,6 +402,16 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(dataFeatures); //split test features by square	
 	
 	if(settings.mlpSettings.stackSize == 1){
+	  if(first == 1){
+	    vector<vector<vector<double > > > newWeights;
+	    
+	    for(int i=0;i<nMLPs;i++){
+	     newWeights = mlps[0][i].getWeightMatrix();
+	     dropOutTesting(newWeights);
+	     mlps[0][i].setWeightMatrix(newWeights);
+	    }
+	    first=0;
+	  }
 		vector<double> votingHistogram = vector<double>(settings.mlpSettings.nOutputUnits,0.0);
 		vector<double> outputProp;
 		for(int i=0;i<nMLPs;i++){
@@ -418,7 +440,21 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		}
 		std::cout << std::endl;
 		*/
-		
+	  if(first == 1){
+	    vector<vector<vector<double > > > newWeights;
+	    
+	    for(int i=0;i<nMLPs;i++){
+	     newWeights = mlps[0][i].getWeightMatrix();
+	     dropOutTesting(newWeights);
+	     mlps[0][i].setWeightMatrix(newWeights);
+	    }
+	    
+	    newWeights = mlps[1][0].getWeightMatrix();
+	    dropOutTesting(newWeights);
+	    mlps[1][0].setWeightMatrix(newWeights);
+	    
+	    first=0;
+	  }
 		normalizeInput(testDataFirstLevel,1); 
 		//changeRange(dataFeatures,0.0,0.5);
 		/*

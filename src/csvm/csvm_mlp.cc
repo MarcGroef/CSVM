@@ -89,17 +89,44 @@ void MLPerceptron::initializeVectors(){
 }
 void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 	if(actualInputSize != layerSizes[0]){
-		std::cout << "nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << std::endl;
+		std::cout << "MLP: nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << std::endl;
 		exit(-1);
 	}
 }
 
 //------end helpFunctions--------
+//------start regularization-----
+void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
+    double p = 0.5;
+    //dropout for trainingphase (input and hidden units are randomly dropped with the propability p)
+    //now only hidden units are dropped
+    
+    if(isTraining && ((bottomLayer+1) < (settings.nLayers-1))){
+	double totalAc = 0.0;
+	double dropedAc = 0.0;
+	
+	for(int i=0;i<layerSizes[bottomLayer+1];i++){
+	  totalAc += activations[bottomLayer+1][i];  
+	}
+      
+	for(int i=0;i<layerSizes[bottomLayer+1];i++){
+	   if(drand48() < p){
+	     dropedAc += activations[bottomLayer+1][i];
+	     activations[bottomLayer+1][i] = 0.0;
+	   }
+	}
+	//not sure why but it seems like a good idea
+	for(int i=0;i<layerSizes[bottomLayer+1];i++){
+	    activations[bottomLayer+1][i] = activations[bottomLayer+1][i] * (totalAc/(totalAc-dropedAc));
+	}
+    }
+}
+//------end regularization-------
 //------start FEEDFORWARD--------
 
 double MLPerceptron::activationFunction(double summedActivation){
 	//sigmoid:
-	//return 1/(1+good_exp(-summedActivation));
+	//return 1/(1+exp(-summedActivation));
 	
 	//relu:
 	if(summedActivation > 0)
@@ -112,7 +139,7 @@ double MLPerceptron::activationFunction(double summedActivation){
 	//return 0.01*summedActivation;
 }
 
-void MLPerceptron::calculateActivationLayer(int bottomLayer){
+void MLPerceptron::calculateActivationLayer(int isTraining, int bottomLayer){
 	double summedActivation = 0;
 		
 	for(int i=0; i<layerSizes[bottomLayer+1];i++){
@@ -124,12 +151,14 @@ void MLPerceptron::calculateActivationLayer(int bottomLayer){
 		else
 			activations[bottomLayer+1][i] = activationFunction(summedActivation);
 		summedActivation = 0;
-	}	
+	}
+	
+	initiateDropOut(isTraining,bottomLayer);
 }
 
-void MLPerceptron::feedforward(){
+void MLPerceptron::feedforward(int isTraining){
 	for(int i=0;i<settings.nLayers-1;i++)
-		calculateActivationLayer(i);
+		calculateActivationLayer(isTraining,i);
 }
 //--------end FEEDFORWARD--------
 //------start BACKPROPAGATION----
@@ -160,7 +189,6 @@ void MLPerceptron::calculateDeltas(int index){
 }
 
 void MLPerceptron::outputDelta(){
-	//ouputDelta without the signmoid, because softmax is used.
 	for(int i = 0; i < layerSizes[settings.nLayers-1];i++)
 		deltas[settings.nLayers-1][i] = desiredOutput[i] - activations[settings.nLayers-1][i];
 }
@@ -176,11 +204,12 @@ void MLPerceptron::hiddenDelta(int index){
 }	
 
 void MLPerceptron::adjustWeights(int index){
+	//TODO: momentum term
 	//weightsMinOne = weights;
 	for(int i = 0; i < layerSizes[index + 1]; i++){
 		for(int j = 0; j < layerSizes[index]; j++){
-			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j]; //+momentum term
-			//weights[index][j][i] += momentum*(weights[index][j][i] - weightsMinOne[index][j][i]);
+			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j]; // + momentum term
+			//weights[index][j][i] += momentum*(weights[index][j][i] - weightsMinOne[index][j][i]); //
 		}
 		biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
 	}
@@ -276,11 +305,10 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
-			feedforward();
+			feedforward(1);
 			activationsToOutputProbabilities();
 			backpropgation();
 			averageError += errorFunction();
-			
 			/*
 			std::cout << "information weights bottom to first layer" << std::endl;
 			for(int k=0;k<weights[0].size();k++){
@@ -321,8 +349,8 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		double errorPreviousEpoch = averageError/(double)randomFeatures.size();
 		double stopCriterium = 0.0005;
 			if(errorPreviousEpoch < stopCriterium){
-				cout << "The epoch number is " << i << endl;
 				cout << "The training process of the mlp stopped because the training error of the previous epoch is " << errorPreviousEpoch << " which is below " << stopCriterium << std::endl;
+				cout << "The epoch number is " << i << endl;
 				cout << "The validation error at this point is: ";
 				isErrorOnValidationSetLowEnough(validationSet);
 				cout << endl;
@@ -415,7 +443,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
-			feedforward();
+			feedforward(1);
 			backpropgation();
 			averageError += errorFunction();
 		}
@@ -474,7 +502,7 @@ void MLPerceptron::classifyImage(vector<Feature>& imageFeatures){
 	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
-		feedforward();
+		feedforward(0);
 		voting();
 	}
 }
@@ -483,14 +511,14 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	classifyImage(imageFeatures);		
 	return mostVotedClass();
 }
-vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){				
+vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){	
 	classifyImage(imageFeatures);
 	return votingHistogram;
 }
 void MLPerceptron::returnHiddenActivation(vector<Feature> imageFeatures,vector<double>& maxHiddenActivation){
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
-		feedforward();
+		feedforward(0);
 		setMaxActivation(maxHiddenActivation,activations[1]);	
 	}
 }
@@ -519,3 +547,8 @@ void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vect
 
 }
 //-------end loading mlp----------
+//-------start setters-----------
+void MLPerceptron::setWeightMatrix(vector<vector<vector<double> > > newWeights){
+    weights = newWeights;
+}
+//-------end setters -----------
