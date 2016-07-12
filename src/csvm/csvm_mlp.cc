@@ -56,8 +56,10 @@ double MLPerceptron::errorFunction(){
 }
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
+	
 	momentum = 0.3;
 	
+	p = 0.5;
 	if (settings.nLayers == 0){ 
 		std::cout << "There is something wrong with the way the settings are set. layerSizes is equal to 0. This should never be the case. " << std::endl;
 		exit(-1);
@@ -97,7 +99,6 @@ void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 //------end helpFunctions--------
 //------start regularization-----
 void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
-    double p = 0.5;
     //dropout for trainingphase (input and hidden units are randomly dropped with the propability p)
     //now only hidden units are dropped
     
@@ -120,6 +121,27 @@ void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
 	    activations[bottomLayer+1][i] = activations[bottomLayer+1][i] * (totalAc/(totalAc-dropedAc));
 	}
     }
+}
+
+void MLPerceptron::setDropOutTesting(){
+  for(unsigned int i =0; i<weights.size();i++){
+    for(unsigned int j=0;j<weights[i].size();j++){
+      for(unsigned int k=0;k<weights[i][j].size();k++){
+	weights[i][j][k] *= p;
+      }
+    }
+  }
+}
+
+void MLPerceptron::removeDropOutTesting(){
+    for(unsigned int i =0; i<weights.size();i++){
+    for(unsigned int j=0;j<weights[i].size();j++){
+      for(unsigned int k=0;k<weights[i][j].size();k++){
+	weights[i][j][k] /= p;
+      }
+    }
+  }
+  
 }
 //------end regularization-------
 //------start FEEDFORWARD--------
@@ -451,14 +473,15 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
 		averageError = 0;
 		
 		settings.learningRate *= 0.98;
-		
 	}
 }
 
 bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSet){
 	int amountOfImValidationSet = validationSet.size()/numPatchesPerSquare;
 	int classifiedCorrect = 0;
-
+	
+	//setDropOutTesting();
+	
 	for(int i = 0; i < amountOfImValidationSet;i++){
 		vector<Feature>::const_iterator first = validationSet.begin() + (numPatchesPerSquare *i);
 		vector<Feature>::const_iterator last = validationSet.begin() + (numPatchesPerSquare *(i+1));
@@ -471,6 +494,8 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
 	return 0;
+	
+	//removeDropOutTesting();
 }
 
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare){

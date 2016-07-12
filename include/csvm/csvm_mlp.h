@@ -46,6 +46,7 @@ namespace csvm{
     
       int numPatchesPerSquare;
       int momentum;
+      double p;
       
       std::vector<int> layerSizes;
 
@@ -70,6 +71,8 @@ namespace csvm{
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
 		void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
+		void setDropOutTesting();
+		void removeDropOutTesting();
 		//regularization:
 		void initiateDropOut(int isTraining, int bottomLayer);
 		
