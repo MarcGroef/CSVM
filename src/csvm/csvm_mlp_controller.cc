@@ -402,7 +402,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(dataFeatures); //split test features by square	
 	
 	if(settings.mlpSettings.stackSize == 1){
-	  if(first == 1){
+	/*  if(first == 1){
 	    vector<vector<vector<double > > > newWeights;
 	    
 	    for(int i=0;i<nMLPs;i++){
@@ -411,7 +411,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	     mlps[0][i].setWeightMatrix(newWeights);
 	    }
 	    first=0;
-	  }
+	  }*/
 		vector<double> votingHistogram = vector<double>(settings.mlpSettings.nOutputUnits,0.0);
 		vector<double> outputProp;
 		for(int i=0;i<nMLPs;i++){
@@ -440,7 +440,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		}
 		std::cout << std::endl;
 		*/
-	  if(first == 1){
+	  /*if(first == 1){
 	    vector<vector<vector<double > > > newWeights;
 	    
 	    for(int i=0;i<nMLPs;i++){
@@ -454,7 +454,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	    mlps[1][0].setWeightMatrix(newWeights);
 	    
 	    first=0;
-	  }
+	  }*/
 		normalizeInput(testDataFirstLevel,1); 
 		//changeRange(dataFeatures,0.0,0.5);
 		/*

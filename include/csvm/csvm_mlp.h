@@ -45,7 +45,7 @@ namespace csvm{
       MLPSettings settings;
     
       int numPatchesPerSquare;
-      int momentum;
+      double momentum;
       double p;
       
       std::vector<int> layerSizes;
@@ -59,7 +59,7 @@ namespace csvm{
 	  std::vector<vector<double> > deltas;
 
 	  std::vector<vector<vector<double> > > weights;
-	  std::vector<vector<vector<double> > > weightsMinOne;
+	  std::vector<vector<vector<double> > > prevChange;
 
 	  
 	  //private methods

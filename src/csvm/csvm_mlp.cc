@@ -57,9 +57,10 @@ double MLPerceptron::errorFunction(){
 void MLPerceptron::initializeVectors(){
 	int maxNumberOfNodes = 0;
 	
-	momentum = 0.3;
+	momentum = 0.9;
 	
 	p = 0.5;
+	
 	if (settings.nLayers == 0){ 
 		std::cout << "There is something wrong with the way the settings are set. layerSizes is equal to 0. This should never be the case. " << std::endl;
 		exit(-1);
@@ -78,13 +79,14 @@ void MLPerceptron::initializeVectors(){
 	}
 	
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
-
+      
 	activations		= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
 	
+	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
-	//weightsMinOne	= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
+	prevChange		= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -227,11 +229,11 @@ void MLPerceptron::hiddenDelta(int index){
 
 void MLPerceptron::adjustWeights(int index){
 	//TODO: momentum term
-	//weightsMinOne = weights;
 	for(int i = 0; i < layerSizes[index + 1]; i++){
 		for(int j = 0; j < layerSizes[index]; j++){
-			weights[index][j][i] += settings.learningRate * deltas[index+1][i] * activations[index][j]; // + momentum term
-			//weights[index][j][i] += momentum*(weights[index][j][i] - weightsMinOne[index][j][i]); //
+		        double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+			weights[index][j][i] += currentChange + (momentum*prevChange[index][j][i]);
+			prevChange[index][j][i] = currentChange;
 		}
 		biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
 	}
