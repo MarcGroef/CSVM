@@ -1,7 +1,7 @@
 Dataset
 method MNIST
-nTrainImages 300
-nTestImages 10
+nTrainImages 3000
+nTestImages 300
 imageWidth 32
 imageHeight 32
 
@@ -43,7 +43,7 @@ ImageScanner
 patchHeight 26
 patchWidth 26
 scanStride 1
-nRandomPatches 5000
+nRandomPatches 10000
 
 
 MLP
@@ -53,10 +53,10 @@ nHiddenUnits 600
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
-learningRate .001
+learningRate .01
 voting SUM
 trainingType CROSSVALIDATION
-crossValidationInterval 5
+crossValidationInterval 1
 crossValidationSize 0.1
 epochs 30
 stoppingCriterion 0.999
