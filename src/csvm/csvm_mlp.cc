@@ -228,12 +228,11 @@ void MLPerceptron::hiddenDelta(int index){
 }	
 
 void MLPerceptron::adjustWeights(int index){
-	//TODO: momentum term
 	for(int i = 0; i < layerSizes[index + 1]; i++){
 		for(int j = 0; j < layerSizes[index]; j++){
 		        double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
-			weights[index][j][i] += currentChange + (momentum*prevChange[index][j][i]);
-			prevChange[index][j][i] = currentChange;
+			weights[index][j][i] += currentChange; //+ (momentum*prevChange[index][j][i]);
+			//prevChange[index][j][i] = currentChange;
 		}
 		biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
 	}

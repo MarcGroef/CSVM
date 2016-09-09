@@ -1,7 +1,6 @@
 #include <csvm/csvm_mlp_controller.h>
  
 /* This class will control the multiple MLPs for mlp pooling
- * 
  */
  
  using namespace std;
