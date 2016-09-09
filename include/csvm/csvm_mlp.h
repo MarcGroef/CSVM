@@ -37,6 +37,7 @@ namespace csvm{
       string saveMLPName;
       int readMLP;
       string readMLPName;
+      string poolingType;
    };
 
    class MLPerceptron{
@@ -70,7 +71,7 @@ namespace csvm{
 		double errorFunction();
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
-		void setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation);
+		void setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation);
 		void setDropOutTesting();
 		void removeDropOutTesting();
 		//regularization:
@@ -111,7 +112,7 @@ namespace csvm{
 	  vector<double> classifyPooling(vector<Feature> imageFeatures);
 	  void classifyImage(vector<Feature>& imageFeatures);
 	  
-	  void returnHiddenActivation(vector<Feature> imageFeatures,vector<double>& maxHiddenActivation);
+	  vector<double> returnHiddenActivationToMethod(vector<Feature> imageFeatures);
 
       //getters
       vector<double> getMaxActivation();

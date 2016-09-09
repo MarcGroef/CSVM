@@ -371,7 +371,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		}
 		
 		double errorPreviousEpoch = averageError/(double)randomFeatures.size();
-		double stopCriterium = 0.0005;
+		/*double stopCriterium = 0.0005;
 			if(errorPreviousEpoch < stopCriterium){
 				cout << "The training process of the mlp stopped because the training error of the previous epoch is " << errorPreviousEpoch << " which is below " << stopCriterium << std::endl;
 				cout << "The epoch number is " << i << endl;
@@ -379,7 +379,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 				isErrorOnValidationSetLowEnough(validationSet);
 				cout << endl;
 				break;
-		}
+		}*/
 				
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0 or i == epochs-1){
@@ -542,18 +542,45 @@ vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){
 	classifyImage(imageFeatures);
 	return votingHistogram;
 }
-void MLPerceptron::returnHiddenActivation(vector<Feature> imageFeatures,vector<double>& maxHiddenActivation){
+//The pooling method is set in the settings file. Either Min, average or max.
+vector<double> MLPerceptron::returnHiddenActivationToMethod(vector<Feature> imageFeatures){
+	int nHiddenUnits = settings.nHiddenUnits;
+	vector<double> hiddenActivation;
+	
+	if(settings.poolingType == "MAX")
+		hiddenActivation = vector<double>(nHiddenUnits,-10.0);
+				
+	else if(settings.poolingType == "AVERAGE")
+		hiddenActivation = vector<double>(nHiddenUnits,0.0);
+				
+	else if(settings.poolingType == "MIN")
+		hiddenActivation = vector<double>(nHiddenUnits,50.0);
+			
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward(0);
-		setMaxActivation(maxHiddenActivation,activations[1]);	
+		setHiddenActivationToMethod(hiddenActivation,activations[1]);	
 	}
+	if(settings.poolingType == "AVERAGE")
+		for(unsigned int i=0;i<hiddenActivation.size();i++)
+			hiddenActivation[i] /= imageFeatures.size();
+			
+	return hiddenActivation;
 }
-void MLPerceptron::setMaxActivation(vector<double>& maxHiddenActivation,vector<double> currentActivation){
-	for(unsigned int i=0;i<currentActivation.size();i++){
-		if(maxHiddenActivation[i] < currentActivation[i])
-			maxHiddenActivation[i] = currentActivation[i];
-	}
+void MLPerceptron::setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation){
+	if(settings.poolingType == "MAX")
+		for(unsigned int i=0;i<hiddenActivation.size();i++)
+			if(hiddenActivation[i] < currentActivation[i])
+				hiddenActivation[i] = currentActivation[i];
+	
+	if(settings.poolingType == "AVERAGE")
+		for(unsigned int i=0;i<hiddenActivation.size();i++)
+			hiddenActivation[i] += currentActivation[i];		
+	
+	if(settings.poolingType == "MIN")
+		for(unsigned int i=0;i<hiddenActivation.size();i++)
+			if(hiddenActivation[i] > currentActivation[i])
+				hiddenActivation[i] = currentActivation[i];
 }
 
 //-------end testing--------

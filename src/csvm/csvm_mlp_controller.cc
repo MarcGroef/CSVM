@@ -250,21 +250,25 @@ double Rand(double fMin, double fMax){
 
 void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,vector<Feature>& dataFirstLevel, int sizeData){
 	for(int i = 0; i < sizeData;i++){			
-		vector<double> input;
-		input.reserve(nHiddenBottomLevel*nMLPs);
+		vector<double> inputVector;
+		inputVector.reserve(nHiddenBottomLevel*nMLPs);
 		
 		for(int j=0;j<nMLPs;j++){			
 			vector<Feature>::const_iterator first = splitDataBottom[j].begin()+(numPatchesPerSquare[j]*i);
 			vector<Feature>::const_iterator last = splitDataBottom[j].begin()+(numPatchesPerSquare[j]*(i+1));
-
-			vector<double> inputTemp = vector<double>(nHiddenBottomLevel,-10.0);
 			
-			mlps[0][j].returnHiddenActivation(vector<Feature>(first,last),inputTemp);
-			input.insert(input.end(),inputTemp.begin(),inputTemp.end());
+			vector<double> hiddenActivationSquare = mlps[0][j].returnHiddenActivationToMethod(vector<Feature>(first,last));
+			
+			inputVector.insert(inputVector.end(),hiddenActivationSquare.begin(),hiddenActivationSquare.end());
+			
+			//Is this saver? than above?
+			//for(unsigned int i=0;i<hiddenActivationSquare.size();i++)
+			//	inputVector.push_back(hiddenActivationSquare[i]);
 		}
-		Feature newFeat = new Feature(input);	
-		newFeat.setLabelId(splitDataBottom[0][i*numPatchesPerSquare[0]].getLabelId());
 		
+		Feature newFeat = new Feature(inputVector);	
+		//get label abritrary patch
+		newFeat.setLabelId(splitDataBottom[0][i*numPatchesPerSquare[0]].getLabelId());
 		dataFirstLevel.push_back(newFeat);
 	}
 }
@@ -421,7 +425,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 			}
 		}
 		double highestProp = 0;
-		int mostVotedClass;
+		int mostVotedClass = -1;
 		for(int i=0;i<settings.mlpSettings.nOutputUnits;i++){
 			if(votingHistogram[i] > highestProp){
 				highestProp = votingHistogram[i];
@@ -525,7 +529,7 @@ void MLPController::importPreTrainedMLP(string filename){
 	
 	file.read(fancyInt.chars,4);
 	unsigned int datasetNum = fancyInt.intVal; //some check that his num is smaller than 2
-	CSVMDatasetType readInDatasetType;
+	CSVMDatasetType readInDatasetType = DATASET_CIFAR10; //set to CIFAR10 to make the compiler stop complaining
    
    	switch(datasetNum){
       case 0:

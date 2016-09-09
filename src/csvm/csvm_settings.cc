@@ -92,7 +92,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       stream >> mlpSettings.voting;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
     stream >> type;
@@ -100,7 +100,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       stream >> mlpSettings.trainingType;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    stream >> type;
@@ -108,7 +108,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
 	stream >> mlpSettings.crossValidationInterval;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
 
@@ -117,7 +117,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
 	stream >> mlpSettings.crossValidationSize;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
 }
    stream >> type;
@@ -125,7 +125,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       stream >> mlpSettings.epochs;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
     stream >> type;
@@ -133,7 +133,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       stream >> mlpSettings.stoppingCriterion;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
     stream >> type;
@@ -141,7 +141,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       stream >> mlpSettings.nHiddenUnitsFirstLayer;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
     stream >> type;
@@ -149,7 +149,7 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       stream >> mlpSettings.scanStrideFirstLayer;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
 stream >> type;
@@ -157,7 +157,7 @@ stream >> type;
       stream >> mlpSettings.saveData;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -166,7 +166,7 @@ stream >> type;
       stream >> mlpSettings.saveRandomFeatName;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -175,7 +175,7 @@ stream >> type;
       stream >> mlpSettings.saveValidationName;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -184,7 +184,7 @@ stream >> type;
       stream >> mlpSettings.readInData;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -193,7 +193,7 @@ stream >> type;
       stream >> mlpSettings.readRandomFeatName;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -202,7 +202,7 @@ stream >> type;
       stream >> mlpSettings.readValidationName;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -211,7 +211,7 @@ stream >> type;
       stream >> mlpSettings.saveMLP;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -220,7 +220,7 @@ stream >> type;
       stream >> mlpSettings.saveMLPName;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -229,7 +229,7 @@ stream >> type;
       stream >> mlpSettings.readMLP;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
@@ -238,7 +238,16 @@ stream >> type;
       stream >> mlpSettings.readMLPName;
    }
    else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   stream >> type;
+   if (type == "poolingType") {
+      stream >> mlpSettings.poolingType;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
    
