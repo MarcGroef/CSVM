@@ -24,6 +24,7 @@ namespace csvm{
       int crossValidationInterval;
       double crossValidationSize;
       int epochs;
+      int epochsSecondLayer;
       double stoppingCriterion;
       int nHiddenUnitsFirstLayer;
       int scanStrideFirstLayer;
@@ -38,6 +39,7 @@ namespace csvm{
       int readMLP;
       string readMLPName;
       string poolingType;
+      int splitTrainSet;
    };
 
    class MLPerceptron{
@@ -48,6 +50,8 @@ namespace csvm{
       int numPatchesPerSquare;
       double momentum;
       double p;
+      int dropConnect;
+      int maxNumberOfNodes;
       
       std::vector<int> layerSizes;
 
@@ -56,12 +60,17 @@ namespace csvm{
 	  std::vector<double> maxHiddenActivation;
 	  
 	  std::vector<vector<double> > biasNodes;
-	  std::vector<vector<double> > activations;
+          std::vector<vector<double> > prevBias;
+	  std::vector<vector<bool> > maskBias;
+          
+          std::vector<vector<double> > activations;
 	  std::vector<vector<double> > deltas;
 
-	  std::vector<vector<vector<double> > > weights;
-	  std::vector<vector<vector<double> > > prevChange;
+	  std::vector<vector<vector<double> > > weights;          	  
+          std::vector<vector<vector<double> > > prevWeights;
 
+	  std::vector<vector<vector<double> > > prevChange;
+          std::vector<vector<vector<bool> > > mask;
 	  
 	  //private methods
 	  
@@ -71,12 +80,13 @@ namespace csvm{
 		double errorFunction();
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
-		void setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation);
+		void setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation, string type);
 		void setDropOutTesting();
 		void removeDropOutTesting();
 		//regularization:
 		void initiateDropOut(int isTraining, int bottomLayer);
-		
+		void createMask(int isTraining);
+                
 		//feedforward:
 		double activationFunction(double summedActivation);
 		void calculateActivationLayer(int isTraining,int bottomLayer);
@@ -112,7 +122,7 @@ namespace csvm{
 	  vector<double> classifyPooling(vector<Feature> imageFeatures);
 	  void classifyImage(vector<Feature>& imageFeatures);
 	  
-	  vector<double> returnHiddenActivationToMethod(vector<Feature> imageFeatures);
+	  vector<double> returnHiddenActivationToMethod(vector<Feature> imageFeatures,string type);
 
       //getters
       vector<double> getMaxActivation();
@@ -122,6 +132,7 @@ namespace csvm{
       
       //setters
       void setWeightMatrix(vector<vector<vector<double> > > newWeights);
+      void setEpochs(int epochs);
    };
       
 }

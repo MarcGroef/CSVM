@@ -30,9 +30,11 @@ namespace csvm{
 		
 		int amountOfPatchesImage;
 		
+                vector<string> poolingTypes;
+                
 		vector<double> minValues;
 		vector<double> maxValues;
-		
+                
 		vector<vector<vector<double> > > deltas;
 		vector<vector<vector<vector<double> > > > weights;
 		

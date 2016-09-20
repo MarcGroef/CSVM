@@ -97,7 +97,7 @@ int main(int argc,char**argv){
    
    if(normalOut)
       cout << "Testing on trainingsset:\n";
-      for(size_t im = 0;im < nImages-validationSize; ++im){
+      for(size_t im = 0;im < nImages-validationSize && im < 6000; ++im){
 	  unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
 	  unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
 	  //std::cout << "result: " << result << "answer: " << answer << std::endl;
@@ -293,6 +293,7 @@ int main(int argc,char**argv){
          precision = (double) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
+      cout << endl; 
    }
    return 0;
 }

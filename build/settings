@@ -47,18 +47,19 @@ nRandomPatches 1000
 
 
 MLP
-stackSize 2
+stackSize 1
 nSplitsForPooling 1
-nHiddenUnits 200
+nHiddenUnits 600
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
-learningRate .01
+learningRate .02
 voting SUM
 trainingType CROSSVALIDATION
-crossValidationInterval 1
+crossValidationInterval 5
 crossValidationSize 0.1
-epochs 15
+epochs 20
+epochsSecondLayer 30 
 stoppingCriterion 0.999
 nHiddenUnitsFirstLayer 300
 scanStrideFirstLayer 1
@@ -72,7 +73,8 @@ saveMLP 0
 saveMLPName MNIST_4_324_400_10
 readMLP 0
 readMLPName MNIST_4_324_400_10
-poolingType MAX
+poolingType AVERAGE,MAX
+splitTrainSet 0
 
 SVM
 Kernel LINEAR

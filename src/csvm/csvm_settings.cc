@@ -25,7 +25,7 @@ CSVMSettings::~CSVMSettings() {
 
 void CSVMSettings::parseMLPSettings(ifstream& stream){
    string type, setting;
-
+   
     stream >> setting;
    if (setting == "stackSize") {
       stream >> mlpSettings.stackSize;
@@ -128,6 +128,16 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
+   
+    stream >> type;
+   if (type == "epochsSecondLayer") {
+      stream >> mlpSettings.epochsSecondLayer;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }
+   
     stream >> type;
    if (type == "stoppingCriterion") {
       stream >> mlpSettings.stoppingCriterion;
@@ -245,6 +255,15 @@ stream >> type;
    stream >> type;
    if (type == "poolingType") {
       stream >> mlpSettings.poolingType;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   stream >> type;
+   if (type == "splitTrainSet") {
+      stream >> mlpSettings.splitTrainSet;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";

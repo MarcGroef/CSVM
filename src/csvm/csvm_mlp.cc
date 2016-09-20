@@ -55,18 +55,15 @@ double MLPerceptron::errorFunction(){
 	return error;
 }
 void MLPerceptron::initializeVectors(){
-	int maxNumberOfNodes = 0;
+	maxNumberOfNodes = 0;
 	
 	momentum = 0.9;
-	
+    
 	p = 0.5;
 	
-	if (settings.nLayers == 0){ 
-		std::cout << "There is something wrong with the way the settings are set. layerSizes is equal to 0. This should never be the case. " << std::endl;
-		exit(-1);
-	}
-	
-	layerSizes		 = vector<int>(settings.nLayers,0);
+        dropConnect = 0;
+        
+	layerSizes             = vector<int>(settings.nLayers,0);
 	
 	layerSizes[0] = settings.nInputUnits; 
 	layerSizes[1] = settings.nHiddenUnits;
@@ -82,27 +79,154 @@ void MLPerceptron::initializeVectors(){
       
 	activations		= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
 	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
+        
 	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
-	
+	maskBias		= vector<vector<bool> >(settings.nLayers-1,std::vector<bool>(maxNumberOfNodes,0));
 	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
 	prevChange		= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
-
+        
+        mask                    = vector< vector< vector<bool> > >(settings.nLayers-1,std::vector< vector<bool> >(maxNumberOfNodes, std::vector<bool>(maxNumberOfNodes,0)));
+        
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
 }
+/*
+inline int fastrand() { 
+  g_seed = (214013*g_seed+2531011); 
+  return (g_seed>>16)&0x7FFF; 
+} */
+#ifndef RAND_SSE_H
+#define RAND_SSE_H
+#include "emmintrin.h"
+
+//#define COMPATABILITY
+//define this if you wish to return values similar to the standard rand();
+
+
+void srand_sse( unsigned int seed );
+void rand_sse( unsigned int* );
+
+static __m128i cur_seed;
+
+void srand_sse( unsigned int seed ) {
+    cur_seed = _mm_set_epi32( seed, seed+1, seed, seed+1 );
+}
+
+inline void rand_sse( unsigned int* result ) {
+     __m128i cur_seed_split;
+     __m128i multiplier;
+     __m128i adder;
+     __m128i mod_mask;
+     __m128i sra_mask;
+     __m128i sseresult;
+     static const unsigned int mult[4] = { 214013, 17405, 214013, 69069 };
+     static const unsigned int gadd[4] = { 2531011, 10395331, 13737667, 1 };
+     static const unsigned int mask[4] = { 0xFFFFFFFF, 0, 0xFFFFFFFF, 0 };
+     static const unsigned int masklo[4] = { 0x00007FFF, 0x00007FFF, 0x00007FFF, 0x00007FFF };
+
+    adder = _mm_load_si128( (__m128i*) gadd);
+    multiplier = _mm_load_si128( (__m128i*) mult);
+    mod_mask = _mm_load_si128( (__m128i*) mask);
+    sra_mask = _mm_load_si128( (__m128i*) masklo);
+    cur_seed_split = _mm_shuffle_epi32( cur_seed, _MM_SHUFFLE( 2, 3, 0, 1 ) );
+
+    cur_seed = _mm_mul_epu32( cur_seed, multiplier );
+    multiplier = _mm_shuffle_epi32( multiplier, _MM_SHUFFLE( 2, 3, 0, 1 ) );
+    cur_seed_split = _mm_mul_epu32( cur_seed_split, multiplier );
+
+    cur_seed = _mm_and_si128( cur_seed, mod_mask);
+    cur_seed_split = _mm_and_si128( cur_seed_split, mod_mask );
+    cur_seed_split = _mm_shuffle_epi32( cur_seed_split, _MM_SHUFFLE( 2, 3, 0, 1 ) );
+    cur_seed = _mm_or_si128( cur_seed, cur_seed_split );
+    cur_seed = _mm_add_epi32( cur_seed, adder);
+
+    #ifdef COMPATABILITY
+
+    // Add the lines below if you wish to reduce your results to 16-bit vals...
+    //sseresult = _mm_srai_epi32( cur_seed, 16);
+    //sseresult = _mm_and_si128( sseresult, sra_mask );
+    //_mm_storeu_si128( (__m128i*) result, sseresult );
+    return;
+
+    #endif
+
+    sseresult = _mm_srai_epi32( cur_seed, 16);
+    sseresult = _mm_and_si128( sseresult, sra_mask );
+    _mm_storeu_si128( (__m128i*) result, sseresult );
+    return;
+    //_mm_storeu_si128( (__m128i*) result, cur_seed);
+    //return;
+}
+
+#endif
+
 void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 	if(actualInputSize != layerSizes[0]){
-		std::cout << "MLP: nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << std::endl;
+		std::cout << "MLP:nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << std::endl;
 		exit(-1);
 	}
 }
 
 //------end helpFunctions--------
 //------start regularization-----
+void MLPerceptron::createMask(int isTraining){
+    if(isTraining){
+        unsigned int randNum[4];
+        for(int i=0;i<settings.nLayers-1;i++)
+            for(int j=0;j<layerSizes[i];j++)
+                for(int k=0;k<layerSizes[i+1];k+=4){
+                    rand_sse(randNum);
+                    int sizeL = 4;
+                    if(k+sizeL >= layerSizes[i+1])
+                        sizeL = k+sizeL - layerSizes[i+1];
+                    for(int l=0;l<sizeL;l++){
+                        //if(k+l >= layerSizes[i+1])
+                         //   break
+                        if(randNum[l] % 2)
+                            mask[i][j][k+l] = 1;
+                        else 
+                            mask[i][j][k+l] = 0;
+
+                    }
+                }
+        for(int i=0;i<settings.nLayers-1;i++)
+            for(int j=0;j<layerSizes[i+1];j+=4){
+                rand_sse(randNum);
+                for(int k=0;k<4;k++){
+                    if(j+k >= layerSizes[i+1])
+                        break;
+                    if(randNum[k] % 2)
+                        maskBias[i][j+k] = 1;
+                    else 
+                        maskBias[i][j+k] = 0;
+                }
+        }
+    }
+    /*
+    if(isTraining){
+        for(int i=0;i<settings.nLayers-1;i++)
+            for(int j=0;j<layerSizes[i];j++)
+                for(int k=0;k<layerSizes[i+1];k++){
+                        if(drand48() < p)
+                            mask[i][j][k] = 1;
+                        else 
+                            mask[i][j][k] = 0;
+                }
+        for(int i=0;i<settings.nLayers-1;i++)
+            for(int j=0;j<layerSizes[i+1];j++){
+                    if(drand48() < p)
+                        maskBias[i][j] = 1;
+                    else 
+                        maskBias[i][j] = 0;
+                }
+    }
+    */
+}
+
 void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
     //dropout for trainingphase (input and hidden units are randomly dropped with the propability p)
-    //now only hidden units are dropped
+    //only hidden units are dropped
     
     if(isTraining && ((bottomLayer+1) < (settings.nLayers-1))){
 	double totalAc = 0.0;
@@ -143,7 +267,6 @@ void MLPerceptron::removeDropOutTesting(){
       }
     }
   }
-  
 }
 //------end regularization-------
 //------start FEEDFORWARD--------
@@ -165,23 +288,43 @@ double MLPerceptron::activationFunction(double summedActivation){
 
 void MLPerceptron::calculateActivationLayer(int isTraining, int bottomLayer){
 	double summedActivation = 0;
-		
-	for(int i=0; i<layerSizes[bottomLayer+1];i++){
+        
+        if (dropConnect && isTraining){
+            for(int i=0; i<layerSizes[bottomLayer+1];i++){
 		for(int j=0;j<layerSizes[bottomLayer];j++)
-			summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
-		summedActivation += biasNodes[bottomLayer][i];
-		if ((bottomLayer+1) == settings.nLayers-1)
+                        if(mask[bottomLayer][j][i])
+                            summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
+                if (maskBias[bottomLayer][i])
+                    summedActivation += biasNodes[bottomLayer][i];
+                
+                if ((bottomLayer+1) == settings.nLayers-1)
 			activations[bottomLayer+1][i] = summedActivation;
 		else
 			activations[bottomLayer+1][i] = activationFunction(summedActivation);
 		summedActivation = 0;
-	}
-	
-	initiateDropOut(isTraining,bottomLayer);
+            
+            }
+            //initiateDropOut(isTraining,bottomLayer);
+        } else{
+            for(int i=0; i<layerSizes[bottomLayer+1];i++){
+                    for(int j=0;j<layerSizes[bottomLayer];j++)
+                            summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
+                    summedActivation += biasNodes[bottomLayer][i];
+                    if ((bottomLayer+1) == settings.nLayers-1)
+                            activations[bottomLayer+1][i] = summedActivation;
+                    else
+                            activations[bottomLayer+1][i] = activationFunction(summedActivation);
+                    summedActivation = 0;
+            }
+            initiateDropOut(isTraining,bottomLayer);
+        }
 }
 
 void MLPerceptron::feedforward(int isTraining){
-	for(int i=0;i<settings.nLayers-1;i++)
+	if(dropConnect)
+           createMask(isTraining);
+       // cout << "lekker2" << endl;
+        for(int i=0;i<settings.nLayers-1;i++)
 		calculateActivationLayer(isTraining,i);
 }
 //--------end FEEDFORWARD--------
@@ -218,24 +361,56 @@ void MLPerceptron::outputDelta(){
 }
 	
 void MLPerceptron::hiddenDelta(int index){
-	double sumDeltaWeights = 0;
-	for(int i = 0; i < layerSizes[index];i++){
-		for(int j = 0; j < layerSizes[index+1];j++)
-			sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
-		deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(activations[index][i]);
-		sumDeltaWeights = 0;
-	}
+    double sumDeltaWeights = 0;
+    if(dropConnect){
+        for(int i = 0; i < layerSizes[index];i++){
+            for(int j = 0; j < layerSizes[index+1];j++){
+                if(mask[index][i][j])
+                    sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
+            }
+            if(maskBias[index][i])
+                deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(activations[index][i]);
+            sumDeltaWeights = 0;
+            }    
+        } else {
+            for(int i = 0; i < layerSizes[index];i++){
+                    for(int j = 0; j < layerSizes[index+1];j++)
+                            sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
+                    deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(activations[index][i]);
+                    sumDeltaWeights = 0;
+            }
+        }
 }	
 
 void MLPerceptron::adjustWeights(int index){
-	for(int i = 0; i < layerSizes[index + 1]; i++){
-		for(int j = 0; j < layerSizes[index]; j++){
-		        double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
-			weights[index][j][i] += currentChange; //+ (momentum*prevChange[index][j][i]);
-			//prevChange[index][j][i] = currentChange;
-		}
-		biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
-	}
+        if(dropConnect){
+            for(int i = 0; i < layerSizes[index + 1]; i++){
+                for(int j = 0; j < layerSizes[index]; j++){
+                    if(mask[index][j][i]){
+                        double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+                        weights[index][j][i] += currentChange;
+                        
+                        //Momentum term
+                        //weights[index][j][i] += (momentum*prevChange[index][j][i]);
+                        //prevChange[index][j][i] = currentChange;
+                    }
+                }
+                if(maskBias[index][i])
+                    biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
+            }            
+        }else{ 
+            for(int i = 0; i < layerSizes[index + 1]; i++){
+                for(int j = 0; j < layerSizes[index]; j++){
+                        double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+                        weights[index][j][i] += currentChange;
+                        
+                        //Momentum term
+                        //weights[index][j][i] += (momentum*prevChange[index][j][i]);
+                        //prevChange[index][j][i] = currentChange;
+                }
+                biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
+            }
+        }
 }
 
 void MLPerceptron::backpropgation(){
@@ -542,41 +717,41 @@ vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){
 	return votingHistogram;
 }
 //The pooling method is set in the settings file. Either Min, average or max.
-vector<double> MLPerceptron::returnHiddenActivationToMethod(vector<Feature> imageFeatures){
+vector<double> MLPerceptron::returnHiddenActivationToMethod(vector<Feature> imageFeatures, string type){
 	int nHiddenUnits = settings.nHiddenUnits;
 	vector<double> hiddenActivation;
 	
-	if(settings.poolingType == "MAX")
+	if(type == "MAX")
 		hiddenActivation = vector<double>(nHiddenUnits,-10.0);
 				
-	else if(settings.poolingType == "AVERAGE")
+	else if(type == "AVERAGE")
 		hiddenActivation = vector<double>(nHiddenUnits,0.0);
 				
-	else if(settings.poolingType == "MIN")
+	else if(type == "MIN")
 		hiddenActivation = vector<double>(nHiddenUnits,50.0);
 			
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward(0);
-		setHiddenActivationToMethod(hiddenActivation,activations[1]);	
+		setHiddenActivationToMethod(hiddenActivation,activations[1],type);	
 	}
-	if(settings.poolingType == "AVERAGE")
+	if(type == "AVERAGE")
 		for(unsigned int i=0;i<hiddenActivation.size();i++)
 			hiddenActivation[i] /= imageFeatures.size();
 			
 	return hiddenActivation;
 }
-void MLPerceptron::setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation){
-	if(settings.poolingType == "MAX")
+void MLPerceptron::setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation,string type){
+	if(type == "MAX")
 		for(unsigned int i=0;i<hiddenActivation.size();i++)
 			if(hiddenActivation[i] < currentActivation[i])
 				hiddenActivation[i] = currentActivation[i];
 	
-	if(settings.poolingType == "AVERAGE")
+	if(type == "AVERAGE")
 		for(unsigned int i=0;i<hiddenActivation.size();i++)
 			hiddenActivation[i] += currentActivation[i];		
 	
-	if(settings.poolingType == "MIN")
+	if(type == "MIN")
 		for(unsigned int i=0;i<hiddenActivation.size();i++)
 			if(hiddenActivation[i] > currentActivation[i])
 				hiddenActivation[i] = currentActivation[i];
@@ -592,7 +767,8 @@ vector<vector<vector<double> > > MLPerceptron::getWeightMatrix(){
     return weights;
 }
 
-void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vector<vector<double> > readInBiasNodes){
+void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vector<vector<double> > readInBiasNodes)
+{
       initializeVectors();
       
       weights = readInWeights;
@@ -601,7 +777,13 @@ void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vect
 }
 //-------end loading mlp----------
 //-------start setters-----------
-void MLPerceptron::setWeightMatrix(vector<vector<vector<double> > > newWeights){
+void MLPerceptron::setWeightMatrix(vector<vector<vector<double> > > newWeights)
+{
     weights = newWeights;
+}
+
+void MLPerceptron::setEpochs(int epochs)
+{    
+    settings.epochs = epochs; //This is tricky when an mlp is saved.
 }
 //-------end setters -----------
