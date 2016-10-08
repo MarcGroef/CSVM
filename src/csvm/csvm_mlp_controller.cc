@@ -34,8 +34,10 @@ void MLPController::setSettings(MLPSettings s){
             cout << "The bottom level will be trained with patches from " << trainSizeBottomLevel << " images" << endl;
             cout << "The first level will use " << trainSizeFirstLevel << " images" << endl;
         }
-        
-	amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
+        //Why plus one? That does not seem right
+	//amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
+
+        amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight);
 
 	for(int i=0;i<2;i++){
 		minValues.push_back(1000);
@@ -145,6 +147,29 @@ void MLPController::changeRange(vector<Feature>& data, double newMin, double new
  * Second parameter is the start in the training set
  * Third parameter is the end in the trainigset
  * */
+
+vector<Feature> MLPController::createTestSet(){
+        vector<Feature> testSet;
+    	vector<Patch> patches; 
+        
+        int testSetSize = dataset->getTestSize();
+	
+        for(int i = 0; i < testSetSize;i++){	
+		Image* im = dataset->getTestImagePtr(i);
+		 
+		//extract patches
+		patches = imageScanner.scanImage(im);
+      
+		//extract features from all patches
+		for(size_t patch = 0; patch < patches.size(); ++patch){
+			Feature newFeat = featExtr.extract(patches[patch]);
+			newFeat.setSquareId(calculateSquareOfPatch(patches[patch]));
+			testSet.push_back(newFeat);
+		}
+	}
+	return testSet;
+}
+
 vector<Feature>& MLPController::createCompletePictureSet(vector<Feature>& validationSet, int start, int end){
 	vector<Patch> patches;   
 	for(int i = start; i < end;i++){	
@@ -177,7 +202,7 @@ vector<vector<Feature> > MLPController::splitUpDataBySquare(vector<Feature>& tra
 void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal){
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
-
+        
 	if(settings.mlpSettings.readInData){
 		importFeatureSet(settings.mlpSettings.readRandomFeatName,trainingSet);
 		importFeatureSet(settings.mlpSettings.readValidationName,validationSet);
@@ -185,17 +210,8 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	else {
                 trainingSet = createRandomFeatureVector(trainingSet);
                 validationSet = createCompletePictureSet(validationSet,trainSize,trainSize+validationSize);
-		/*
-		for(int i=0;i<trainingSet.size();i++){
-		  for(int j=0;j<trainingSet[i].size;j++){
-		  cout << trainingSet[i].content[j] << ", ";
-		  } 
-		    cout << endl << endl;
-		 }
-		  exit(-1);
-		  */
-	 
-		
+                
+
 		setMinAndMaxValueNorm(trainingSet,0);
 
 		normalizeInput(trainingSet,0);
@@ -254,6 +270,17 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 	
 	return trainingData;	
 }
+
+vector<vector<Feature> > MLPController::createRandomFeatVal(vector<vector<Feature> >& valSet){
+        vector<vector<Feature> > randomFeatVal = vector<vector<Feature> >(nMLPs);
+        for(int i=0;i < nMLPs;i++){
+            double ratio = (double)settings.scannerSettings.nRandomPatches/(double)trainSize;
+            double sizeRandomFeatVal = (double)validationSize*ratio;
+            for(int j = 0; j < sizeRandomFeatVal; j++)
+                randomFeatVal[i].push_back(valSet[i][rand() % (numPatchesPerSquare[i]*validationSize)]);
+        }
+        return randomFeatVal;
+}
 //--------------------end: bottom level---------------------------
 //--------------------start: first level--------------------------
 
@@ -262,25 +289,36 @@ double Rand(double fMin, double fMax){
     return fMin + f * (fMax - fMin);
 }
 
+bool isThereANextPoolingType(string type){
+    return type.empty() ? 0 : 1;
+}
+
+string currentPoolingType(string& type){
+    size_t iter = type.find_first_of(",");
+    string currentType;
+    
+    if(iter != string::npos){
+        currentType = type.substr(0,iter);
+        type = type.substr(iter+1);
+    }
+    else{
+        currentType = type;
+        type = "";
+    }
+    
+    return currentType;
+}
+
 void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,vector<Feature>& dataFirstLevel, int sizeData){
 	for(int i = 0; i < sizeData;i++){			
 		vector<double> inputVector;
 		inputVector.reserve(nHiddenBottomLevel*nMLPs*3);
                 string type = settings.mlpSettings.poolingType;
-                while(!type.empty()){
-                    size_t iter = type.find_first_of(",");
-                    string currentType;
-                    
-                    if(iter != string::npos){
-                        currentType = type.substr(0,iter);
-                        type = type.substr(iter+1);
-                    }
-                    else{
-                        currentType = type;
-                        type = "";
-                    }
-                    
-                    
+                //In the settings file a string is defined with the pooling types with a comma seperator
+                //e.g. AVERAGE,MAX. Are the abbriviations for max pooling and average pooling
+                //The pooling types that are available are MAX, MIN, and AVERAGE. 
+                while(isThereANextPoolingType(type)){
+                    string currentType = currentPoolingType(type);
                     for(int j=0;j<nMLPs;j++){			
                             vector<Feature>::const_iterator first = splitDataBottom[j].begin()+(numPatchesPerSquare[j]*i);
                             vector<Feature>::const_iterator last = splitDataBottom[j].begin()+(numPatchesPerSquare[j]*(i+1));
@@ -295,7 +333,6 @@ void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,
                     }
                     
                     Feature newFeat = new Feature(inputVector);	
-                    //get label abritrary patch
                     newFeat.setLabelId(splitDataBottom[0][i*numPatchesPerSquare[0]].getLabelId());
                     dataFirstLevel.push_back(newFeat);
                 }
@@ -352,34 +389,55 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	//changeRange(inputTrainFirstLevel,0,0.5);
 	//changeRange(inputValFirstLevel,0,0.5);
 }
+
 //-----------start: training MLP's-------------------------
 void MLPController::trainMutipleMLPs()
 {
 	vector<vector<Feature> > splitTrain;
 	vector<vector<Feature> > splitVal;
+                
+        vector<vector<Feature> > randomFeatValidation;
 	
 	if(!settings.mlpSettings.readMLP){
             createDataBottomLevel(splitTrain,splitVal);
-		
-            for(int i=0;i<nMLPs;i++){ 		
+            
+            if(nMLPs == 1){
+                vector<Feature> testSet = createTestSet();
+                normalizeInput(testSet,0);
+                mlps[0][0].train(splitTrain[0],splitVal[0],numPatchesPerSquare[0],testSet);
+
+            }else 
+                for(int i=0;i<nMLPs;i++){ 		
                     mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
                     cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << endl << endl;
-            }
-		/*
-		for(int i=0;i<nMLPs;i++){ 		
-			mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
-			cout << "mlp["<<i<<"] from level 0 finished training on validation set" << endl << endl;
-		}
-		*/
+                }
+            
+            //Training on validation randomfeature vector
+            //Random feature vector is created by first calculating how many patches per image are in the random feature vector from the training data
+            //This number is used to create the same distribution
+            /*
+            randomFeatValidation = createRandomFeatVal(splitVal);
+            
+            cout << "RandomFeat validation set: " << randomFeatValidation[0].size() << endl;
+            
+            for(int i=0;i<nMLPs;i++){
+                    vector<Feature> emptyValidation;
+                    mlps[0][i].train(randomFeatValidation[i],numPatchesPerSquare[i]);
+                    cout << "mlp["<<i<<"] from level 0 finished training on validation set" << endl << endl;
+            }*/
+            
 	} else 
 	    importPreTrainedMLP(settings.mlpSettings.readMLPName);
-	if(settings.mlpSettings.saveMLP)
+	
+        if(settings.mlpSettings.saveMLP)
 	  exportTrainedMLP(settings.mlpSettings.saveMLPName);
+        
     //cout << "create training data for first level... " << endl;
     if(settings.mlpSettings.stackSize == 2){
         vector<Feature> inputTrainFirstLevel;
         vector<Feature> inputValFirstLevel;
-    
+
+        
         createDataFirstLevel(inputTrainFirstLevel,inputValFirstLevel);
     
         //cout << "min value first level: " << minValues[1] << endl;
@@ -394,11 +452,26 @@ void MLPController::trainMutipleMLPs()
         }
         */
         mlps[1][0].setEpochs(settings.mlpSettings.epochsSecondLayer);
-                
-        //Training is done one complete images and so is the validation.
-        mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1); 
-        cout << "mlp[0] from level 1 finished training" << endl;
-	}
+        
+        vector<Feature> testSet = createTestSet();
+        normalizeInput(testSet,0);
+        
+        vector<vector<Feature> > testSetSplit = splitUpDataBySquare(testSet);
+        vector<Feature> testSetFirstLevel;
+        
+        setFirstLevelData(testSetSplit,testSetFirstLevel,dataset->getTestSize());
+        normalizeInput(testSetFirstLevel,1);
+        
+        //Training is done on complete images and so is the validation.
+        mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1,testSetFirstLevel); 
+        cout << "mlp[0] from level 1 finished training on the training set" << endl;
+        
+        /*
+        vector<Feature> emptyValidation;
+        mlps[1][0].train(inputValFirstLevel,1);
+        cout << "mlp[0] from level 1 finished training on the validation set" << endl;
+        */
+    }
 }
 //--------------end: training MLP's-----------------------------
 //-------------start: MLP classification------------------------
@@ -523,7 +596,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 }
 //---------------------end:MLP classification------------------------
 //---------------------start:import/export---------------------------
-union charDouble{
+union chardouble{
    char chars[8];
    double doubleVal;
 };
@@ -535,7 +608,7 @@ union charInt{
 
 void MLPController::importPreTrainedMLP(string filename){
 	charInt fancyInt;
-	charDouble fancyDouble;
+	chardouble fancydouble;
 	
 	ifstream file(filename.c_str(), ios::binary);
 	
@@ -585,12 +658,12 @@ void MLPController::importPreTrainedMLP(string filename){
 		exit(-1);
 	}
 	//read min value first level
-	file.read(fancyDouble.chars,8);
-	minValues[0] = fancyDouble.doubleVal;
+	file.read(fancydouble.chars,8);
+	minValues[0] = fancydouble.doubleVal;
 	
 	//read max value first level
-	file.read(fancyDouble.chars,8);
-	maxValues[0] = fancyDouble.doubleVal;
+	file.read(fancydouble.chars,8);
+	maxValues[0] = fancydouble.doubleVal;
 	
 	int maxUnits=0;
 	
@@ -611,16 +684,16 @@ void MLPController::importPreTrainedMLP(string filename){
 		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){ //amount of weight vectors
 			for(int k=0;k<maxUnits;k++){ //amount of collums
 				for(int l=0;l<maxUnits;l++){ // amount of rows
-				  file.read(fancyDouble.chars,8);
-				  weights[j][k][l] = fancyDouble.doubleVal;
+				  file.read(fancydouble.chars,8);
+				  weights[j][k][l] = fancydouble.doubleVal;
 					
 				}
 			}
 		}
 		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){ //amount of bais nodes matrixs
 			for(int k=0;k<maxUnits;k++){ // max amount of units, there is only one column and 
-				file.read(fancyDouble.chars,8);
-				biasNodes[j][k] = fancyDouble.doubleVal;
+				file.read(fancydouble.chars,8);
+				biasNodes[j][k] = fancydouble.doubleVal;
 			}
 		}
 	//load the weights and bais matrix into the mlp
@@ -647,7 +720,7 @@ void MLPController::exportTrainedMLP(string filename){
 	 * 
 */	 
 	 charInt fancyInt;
-	 charDouble fancyDouble;
+	 chardouble fancydouble;
 	 
 	 ofstream file(filename.c_str(), ios::binary);
 	 
@@ -679,12 +752,12 @@ void MLPController::exportTrainedMLP(string filename){
 	 file.write(fancyInt.chars, 4);
 	
 	 //write min value for first layer
-	 fancyDouble.doubleVal = minValues[0]; 
-	file.write(fancyDouble.chars, 8);
+	 fancydouble.doubleVal = minValues[0]; 
+	file.write(fancydouble.chars, 8);
 	
 	//write max value for first layer
-	fancyDouble.doubleVal = maxValues[0];
-	file.write(fancyDouble.chars, 8);
+	fancydouble.doubleVal = maxValues[0];
+	file.write(fancydouble.chars, 8);
 	 
 	for(int i=0; i<nMLPs;i++){ //amount of mlps
 		vector<vector<double> > biasNodes = mlps[0][i].getBiasNodes();
@@ -693,15 +766,15 @@ void MLPController::exportTrainedMLP(string filename){
 		for(unsigned int j=0;j<weights.size();j++){ //amount of weight vectors, 2 for 3 layer mlp
 			for(unsigned int k=0;k<weights[j].size();k++){ //size of the max amount of nodes of the mlp
 				for(unsigned int l=0;l<weights[j][k].size();l++){ //size of the max amount of nodes of the mlp
-					fancyDouble.doubleVal = weights[j][k][l];
-					file.write(fancyDouble.chars, 8);
+					fancydouble.doubleVal = weights[j][k][l];
+					file.write(fancydouble.chars, 8);
 				}
 			}
 		}
 		for(unsigned int j=0;j<biasNodes.size();j++){ //amount of bias node vectors
 			for(unsigned int k=0;k<biasNodes[j].size();k++){ //size of max amount of nodes of the mlp
-				fancyDouble.doubleVal = biasNodes[j][k];
-				file.write(fancyDouble.chars, 8);
+				fancydouble.doubleVal = biasNodes[j][k];
+				file.write(fancydouble.chars, 8);
 			}
 		}
 	}
@@ -726,7 +799,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    */
    
    charInt fancyInt;
-   charDouble fancyDouble;
+   chardouble fancydouble;
  
    ofstream file(filename.c_str(),  ios::binary);
    
@@ -776,8 +849,8 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 
 	for(unsigned int i=0;i<featureVector.size();i++){
 		for(int j=0;j<featureVector[i].size;j++){
-			fancyDouble.doubleVal = featureVector[i].content[j];
-			file.write(fancyDouble.chars, 8);
+			fancydouble.doubleVal = featureVector[i].content[j];
+			file.write(fancydouble.chars, 8);
 		}
 		//write label of the feat
 		fancyInt.intVal = featureVector[i].getLabelId();
@@ -790,13 +863,13 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 	}		
 	if(featureVector.size() == settings.scannerSettings.nRandomPatches){
 		//write min value from bottom level
-		fancyDouble.doubleVal = minValues[0]; 
-		file.write(fancyDouble.chars, 8);
-		//cout << "min value in write: " << fancyDouble.doubleVal << endl;
+		fancydouble.doubleVal = minValues[0]; 
+		file.write(fancydouble.chars, 8);
+		//cout << "min value in write: " << fancydouble.doubleVal << endl;
 		//write max value
-		fancyDouble.doubleVal = maxValues[0];
-		file.write(fancyDouble.chars, 8);
-		//cout << "min value in write: " << fancyDouble.doubleVal << endl;
+		fancydouble.doubleVal = maxValues[0];
+		file.write(fancydouble.chars, 8);
+		//cout << "min value in write: " << fancydouble.doubleVal << endl;
 
 		vector<unsigned int> trainImages = dataset->getTrainImageNums();
 		for(int i=0;i<dataset->getTrainSize();i++){
@@ -815,7 +888,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 
 void MLPController::importFeatureSet(string filename, vector<Feature>& featureVector){
 	charInt fancyInt;
-	charDouble fancyDouble;
+	chardouble fancydouble;
   
 	//unsigned int typesize;
 	//unsigned int featDims;
@@ -910,8 +983,8 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		contentFeat.reserve(readInFeatExt);
 		
 		for(int j=0;j<readInFeatSize;j++){
-			file.read(fancyDouble.chars, 8);
-			contentFeat.push_back(fancyDouble.doubleVal);
+			file.read(fancydouble.chars, 8);
+			contentFeat.push_back(fancydouble.doubleVal);
 		}
 		Feature feat = new Feature(contentFeat);
 		
@@ -931,12 +1004,12 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 	
 	if(!(file.peek() == ifstream::traits_type::eof())){
 		//read min value
-		file.read(fancyDouble.chars, 8);
-		minValues[0] = fancyDouble.doubleVal;
+		file.read(fancydouble.chars, 8);
+		minValues[0] = fancydouble.doubleVal;
 	
 		//read max value
-		file.read(fancyDouble.chars, 8);
-		maxValues[0] = fancyDouble.doubleVal;
+		file.read(fancydouble.chars, 8);
+		maxValues[0] = fancydouble.doubleVal;
 		
 		vector<unsigned int> readInTrainImages;
 		for(int i=0;i<dataset->getTrainSize();i++){

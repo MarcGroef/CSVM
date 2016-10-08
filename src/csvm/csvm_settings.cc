@@ -129,6 +129,16 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
       exit(-1);
    }
    
+   stream >> type;
+   if (type == "epochsValidationSet") {
+      stream >> mlpSettings.epochsValidationSet;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+   
     stream >> type;
    if (type == "epochsSecondLayer") {
       stream >> mlpSettings.epochsSecondLayer;
@@ -269,7 +279,6 @@ stream >> type;
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
-   
 }
 
 void CSVMSettings::parseConvSVMSettings(ifstream& stream) {
@@ -923,9 +932,6 @@ void CSVMSettings::parseFeatureExtractorSettings(ifstream& stream) {
          exit(-1);
       }
    }
-
-
-
 }
 
 void CSVMSettings::parseImageScannerSettings(ifstream& stream) {

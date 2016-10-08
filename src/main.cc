@@ -3,6 +3,8 @@
 #include <time.h>
 #include <cstdlib>
 #include <fstream>
+#include <string> 
+#include <sstream>
 
 
 #include <csvm/csvm_interpolator.h>
@@ -38,6 +40,16 @@ void printKernel(vector< vector<Feature> > kernels){
          cout << endl;
       }
    }
+}
+
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
 }
 
 int main(int argc,char**argv){
@@ -239,7 +251,18 @@ int main(int argc,char**argv){
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
       //cout << "\nAnswer: " << answer;
       result = c.classify(c.dataset.getTestImagePtr(im));
-      //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
+      /*
+      if(answer != result){
+          string name = patch::to_string(answer);
+          name += "->";
+          name += patch::to_string(result);
+          name += ".png";
+          
+          //cout << "this is the name: " << name << endl;
+          c.dataset.getTestImagePtr(im)->exportImage(name);
+      }
+          */
+        //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
 
       //cout << "result: " << result << endl;
       //cout << "classifying image \t" << image << ": " << c.dataset.getImagePtr(image)->getLabel() << " is classified as " << c.dataset.getLabel(result) << endl;

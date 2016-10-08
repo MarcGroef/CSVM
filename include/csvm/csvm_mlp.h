@@ -24,6 +24,7 @@ namespace csvm{
       int crossValidationInterval;
       double crossValidationSize;
       int epochs;
+      int epochsValidationSet;
       int epochsSecondLayer;
       double stoppingCriterion;
       int nHiddenUnitsFirstLayer;
@@ -105,17 +106,19 @@ namespace csvm{
 		void sumVoting();
 		unsigned int mostVotedClass();
 		//training:
-		void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet); 
+		void training(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet); 
 		void training(vector<Feature>& randomFeatures);
 	    
-		void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet);
+		void crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet);
 		void crossvaldiation(vector<Feature>& randomFeatures);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
 	  
 	  
 	  public:
 	  void setSettings(MLPSettings s);
-	  void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+	  void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare,vector<Feature>& testSet);          	  
+          void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+
 	  void train(vector<Feature>& randomFeatures,int numPatchSquare);
       
 	  unsigned int classify(vector<Feature> imageFeatures);

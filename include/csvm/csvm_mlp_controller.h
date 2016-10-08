@@ -52,12 +52,16 @@ namespace csvm{
 		vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures,int index);
 		void changeRange(vector<Feature>& data, double newMin, double newMax);
 		
+                vector<vector<Feature> > createRandomFeatVal(vector<vector<Feature> >& valSet);
+                
 		void createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal);
 		void createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel);
-		
+                
+                
 		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);
 		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
-		
+		vector<Feature> createTestSet();
+                
 		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
 				
 		void setFirstLevelData(vector<vector<Feature> >& splitDataBottom,vector<Feature>& dataFirstLevel, int sizeData);

@@ -234,7 +234,3 @@ string CSVMDataset::getLabel(int labelId){
 int CSVMDataset::getNumberClasses(){
    return settings.nClasses;
 }
-
-
-
-

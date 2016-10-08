@@ -2,8 +2,8 @@ Dataset
 method MNIST
 nTrainImages 300
 nTestImages 100
-imageWidth 32
-imageHeight 32
+imageWidth 14
+imageHeight 14
 
 General
 Classifier MLP
@@ -25,9 +25,9 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
-cellSize 4
-cellStride 4
-patchSize 14
+cellSize 5
+cellStride 5
+patchSize 12
 padding None
 useColourPixel true
 interpolation INTERPOLATE_LINEAR
@@ -40,25 +40,26 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 26
-patchWidth 26
+patchHeight 12
+patchWidth 12
 scanStride 1
-nRandomPatches 1000
+nRandomPatches 20000
 
 
 MLP
-stackSize 1
-nSplitsForPooling 1
-nHiddenUnits 600
-nInputUnits 324
+stackSize 2
+nSplitsForPooling 2
+nHiddenUnits 200
+nInputUnits 36
 nOutputUnits 10
 nLayers 3
-learningRate .02
+learningRate .01
 voting SUM
 trainingType CROSSVALIDATION
-crossValidationInterval 5
+crossValidationInterval 1
 crossValidationSize 0.1
-epochs 20
+epochs 5
+epochsValidationSet 5
 epochsSecondLayer 30 
 stoppingCriterion 0.999
 nHiddenUnitsFirstLayer 300
@@ -73,7 +74,7 @@ saveMLP 0
 saveMLPName MNIST_4_324_400_10
 readMLP 0
 readMLPName MNIST_4_324_400_10
-poolingType AVERAGE,MAX
+poolingType AVERAGE,MIN
 splitTrainSet 0
 
 SVM
