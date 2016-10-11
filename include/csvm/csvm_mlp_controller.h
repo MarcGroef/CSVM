@@ -55,7 +55,7 @@ namespace csvm{
                 vector<vector<Feature> > createRandomFeatVal(vector<vector<Feature> >& valSet);
                 
 		void createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal);
-		void createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel);
+		void createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel, vector<Feature>& testSetFirstLevel);
                 
                 
 		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);

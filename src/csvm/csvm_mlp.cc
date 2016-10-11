@@ -33,8 +33,16 @@ double fRand(double fMin, double fMax){
     return fMin + f * (fMax - fMin);
 }
 
+inline double doubleDivEx (double numerator, double denominator) {
+    if (denominator == 0){
+        throw overflow_error("Divide by zero exception");
+        exit(-1);
+    }
+    return numerator / denominator;
+}
 
-void MLPerceptron::randomizeWeights(std::vector<vector<double> >& array,int indexBottomLayer){
+
+void MLPerceptron::randomizeWeights(vector<vector<double> >& array,int indexBottomLayer){
 	for( int i = 0; i < layerSizes[indexBottomLayer];i++)
 		for(int j = 0; j < layerSizes[indexBottomLayer+1];j++)
 			array[i][j] = fRand(-0.05,0.05);
@@ -69,6 +77,10 @@ void MLPerceptron::initializeVectors(){
 	layerSizes[1] = settings.nHiddenUnits;
 	layerSizes[2] = settings.nOutputUnits;
 	
+        cout << "input units: " << settings.nInputUnits << endl;
+        cout << "hidden units: " << settings.nHiddenUnits << endl;
+        cout << "ouput unis: " << settings.nOutputUnits << endl;
+        
 	//returns max layer size
 	for(unsigned int i = 0; i < layerSizes.size();i++){
 		if(maxNumberOfNodes < layerSizes[i])
@@ -77,16 +89,16 @@ void MLPerceptron::initializeVectors(){
 	
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
       
-	activations		= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
-	deltas 			= vector<vector<double> >(settings.nLayers,std::vector<double>(maxNumberOfNodes,0.0));
+	activations		= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+	deltas 			= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
         
-	biasNodes 		= vector<vector<double> >(settings.nLayers-1,std::vector<double>(maxNumberOfNodes,0.0));
-	maskBias		= vector<vector<bool> >(settings.nLayers-1,std::vector<bool>(maxNumberOfNodes,0));
+	biasNodes 		= vector<vector<double> >(settings.nLayers-1,vector<double>(maxNumberOfNodes,0.0));
+	maskBias		= vector<vector<bool> >(settings.nLayers-1,vector<bool>(maxNumberOfNodes,0));
 	
-	weights			= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
-	prevChange		= vector< vector< vector<double> > >(settings.nLayers-1,std::vector< vector<double> >(maxNumberOfNodes, std::vector<double>(maxNumberOfNodes,0.0)));
+	weights			= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
+	prevChange		= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
         
-        mask                    = vector< vector< vector<bool> > >(settings.nLayers-1,std::vector< vector<bool> >(maxNumberOfNodes, std::vector<bool>(maxNumberOfNodes,0)));
+        mask                    = vector< vector< vector<bool> > >(settings.nLayers-1,vector< vector<bool> >(maxNumberOfNodes, vector<bool>(maxNumberOfNodes,0)));
         
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -163,7 +175,7 @@ inline void rand_sse( unsigned int* result ) {
 
 void MLPerceptron::checkingSettingsValidity(int actualInputSize){
 	if(actualInputSize != layerSizes[0]){
-		std::cout << "MLP:nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << std::endl;
+		cout << "MLP:nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << endl;
 		exit(-1);
 	}
 }
@@ -440,13 +452,19 @@ void MLPerceptron::backpropgation(){
 //---------start VOTING----------
 
 void MLPerceptron::activationsToOutputProbabilities(){
-	double sumOfActivations = 0.0;
+	double sumOfActivations = 0.01; // try the catch later.
 	for(int i = 0; i< settings.nOutputUnits; i++){
 		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
 		sumOfActivations += activations[settings.nLayers -1][i];
 	}
-	for(int i = 0; i< settings.nOutputUnits; i++)
-		activations[settings.nLayers -1][i] /= sumOfActivations;
+	for(int i = 0; i< settings.nOutputUnits; i++){
+            try{
+                activations[settings.nLayers -1][i] = doubleDivEx(activations[settings.nLayers -1][i],sumOfActivations);
+            } catch(overflow_error e) {
+                cout << e.what() << endl;
+                cout << "it occured in activationsToOutputProbabilities() in the csvm_mlp.cc class" << endl;
+            }
+        }
 }
 
 
@@ -457,7 +475,7 @@ void MLPerceptron::voting(){
 	else if (settings.voting == "SUM")
 		sumVoting();
 	else{ 
-		std::cout << "This voting type is unknown. Change to a known voting type in the settings file" << std::endl; 
+		cout << "This voting type is unknown. Change to a known voting type in the settings file" << endl; 
 		exit(-1);
 	}
 		
@@ -497,7 +515,7 @@ unsigned int MLPerceptron::mostVotedClass(){
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet, vector<Feature>& testSet){
 	double averageError = 0;
 	int epochs = settings.epochs;
-	std::cout << "epochs: " << epochs << std::endl;
+	cout << "epochs: " << epochs << endl;
         if(!testSet.empty())
             cout << "epoch, validationError, testSetError, averageError" << endl;
 	else
@@ -507,8 +525,8 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 	for(int i = 0; i<epochs;i++){
 		//cout << " learning rate: " << settings.learningRate << endl;
 		
-	  	//vector<vector<int> > deadHiddenUnits = vector<vector<int> >(randomFeatures.size(),std::vector<int>(settings.nHiddenUnits,0));
-		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
+	  	//vector<vector<int> > deadHiddenUnits = vector<vector<int> >(randomFeatures.size(),vector<int>(settings.nHiddenUnits,0));
+		random_shuffle(randomFeatures.begin(), randomFeatures.end());
 		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
@@ -518,35 +536,35 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			backpropgation();
 			averageError += errorFunction();
 			/*
-			std::cout << "information weights bottom to first layer" << std::endl;
+			cout << "information weights bottom to first layer" << endl;
 			for(int k=0;k<weights[0].size();k++){
 				for(int l=0;l<weights[0][l].size();l++){
-					std::cout << weights[0][k][l] << ",";
+					cout << weights[0][k][l] << ",";
 				}
-				std::cout << std::endl;
+				cout << endl;
 			}
 			*/
 		/*	
-			std::cout << "information input units: " << std::endl;
+			cout << "information input units: " << endl;
 			
 			for(int k=0;k<settings.nInputUnits;k++){
-				std::cout << activations[0][k] << ", ";	
+				cout << activations[0][k] << ", ";	
 			}
-			std::cout << std::endl;
+			cout << endl;
 		
-			std::cout << "information hidden units: " << std::endl;
+			cout << "information hidden units: " << endl;
 
 			for(int k=0;k<settings.nHiddenUnits;k++){
-				std::cout << activations[1][k] << ", ";	
+				cout << activations[1][k] << ", ";	
 			}
-			std::cout << std::endl;
+			cout << endl;
 
-			std::cout << "information output units: " << std::endl;
+			cout << "information output units: " << endl;
 
 			for(int k=0;k<settings.nOutputUnits;k++){
-				std::cout << activations[2][k] << ", ";	
+				cout << activations[2][k] << ", ";	
 			}
-			std::cout << std::endl << endl;	
+			cout << endl << endl;	
 			if(j == 10) exit(-1);
 		*//*
 		for(int k=0;k<settings.nHiddenUnits;k++)
@@ -557,7 +575,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		double errorPreviousEpoch = averageError/(double)randomFeatures.size();
 		/*double stopCriterium = 0.0005;
 			if(errorPreviousEpoch < stopCriterium){
-				cout << "The training process of the mlp stopped because the training error of the previous epoch is " << errorPreviousEpoch << " which is below " << stopCriterium << std::endl;
+				cout << "The training process of the mlp stopped because the training error of the previous epoch is " << errorPreviousEpoch << " which is below " << stopCriterium << endl;
 				cout << "The epoch number is " << i << endl;
 				cout << "The validation error at this point is: ";
 				isErrorOnValidationSetLowEnough(validationSet);
@@ -570,29 +588,29 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		  /*
                     int counter = 0;
 		  	
-                        std::cout << "information input units: " << std::endl;
+                        cout << "information input units: " << endl;
 			
 			for(int k=0;k<settings.nInputUnits;k++){
-				std::cout << activations[0][k] << ", ";	
+				cout << activations[0][k] << ", ";	
 			}
-			std::cout << std::endl;
+			cout << endl;
 		
-			std::cout << "information hidden units: " << std::endl;
+			cout << "information hidden units: " << endl;
 			
 			
 			 for(int k=0;k<settings.nHiddenUnits;k++){
 				//if (activations[1][k] == 0.0) counter++; //counter amount of zero's
-				std::cout << activations[1][k] << ", ";	
+				cout << activations[1][k] << ", ";	
 			}
 			
-			std::cout << std::endl;
+			cout << endl;
 
-			std::cout << "information output units: " << std::endl;
+			cout << "information output units: " << endl;
 
 			for(int k=0;k<settings.nOutputUnits;k++){
-				std::cout << activations[2][k] << ", ";	
+				cout << activations[2][k] << ", ";	
 			}
-			std::cout << std::endl << endl; 
+			cout << endl << endl; 
                         */
     
 			/*if(i != 0)
@@ -613,16 +631,16 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			    if(count == randomFeatures.size()) counter++;
 			  }*/
 			/*
-			std::cout << "information bias nodes input to hidden" << std::endl;
+			cout << "information bias nodes input to hidden" << endl;
 			for(int k=0;k<settings.nHiddenUnits;k++){
-				std::cout << biasNodes[0][k] << ", ";
+				cout << biasNodes[0][k] << ", ";
 			}
-			cout << std::endl;
+			cout << endl;
 			*/
-			//std::cout << "amount of dead hidden units: " << counter << std::endl << endl;
+			//cout << "amount of dead hidden units: " << counter << endl << endl;
 			
-			std::cout << i << ", ";
-			if(isErrorOnValidationSetLowEnough(validationSet) || (!testSet.empty() && isErrorOnValidationSetLowEnough(testSet)))
+			cout << i << ", ";
+			if(  (!validationSet.empty() && isErrorOnValidationSetLowEnough(validationSet)) || (!testSet.empty() && isErrorOnValidationSetLowEnough(testSet)))
 				break;
 			cout << errorPreviousEpoch << endl;
 		}
@@ -635,7 +653,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 
 }
 
-void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
+void MLPerceptron::crossvaldiation(vector<Feature>& validationSet){
 	double averageError = 0;
 	int epochs = settings.epochs;
 	
@@ -644,16 +662,16 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures){
         cout << " learning rate: " << settings.learningRate << endl;
 
 	for(int i = 0; i<epochs;i++){
-		std::random_shuffle(randomFeatures.begin(), randomFeatures.end());
-		for(unsigned int j = 0;j<randomFeatures.size();j++){
-			activations[0] = randomFeatures.at(j).content;
-			setDesiredOutput(randomFeatures.at(j));
+		random_shuffle(validationSet.begin(), validationSet.end());
+		for(unsigned int j = 0;j<validationSet.size();j++){
+			activations[0] = validationSet.at(j).content;
+			setDesiredOutput(validationSet.at(j));
 			feedforward(1);
                         activationsToOutputProbabilities();
 			backpropgation();
 			averageError += errorFunction();
                 }
-		cout << i << ", " << averageError/(double)randomFeatures.size() << endl;
+		cout << i << ", " << averageError/(double)validationSet.size() << endl;
 		averageError = 0;
 		
 		settings.learningRate *= 0.98;
@@ -683,62 +701,43 @@ void MLPerceptron::training(vector<Feature>& randomFeatures,vector<Feature>& val
             else
                 crossvaldiation(randomFeatures);
 	else {
-		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
+		cout << "This training type is unknown. Change to a known training type in the settings file" << endl;
 		exit(-1);
 	}		
 }*/
 
 //This method is to train randompatches, it uses the validation set and the test set for validation.
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,int numPatchSquare,vector<Feature>& testSet){
+void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet, int numPatchSquare){
 	numPatchesPerSquare = numPatchSquare;
         initializeVectors();
         
-        cout << "input units: " << settings.nInputUnits << endl;
-        cout << "hidden units: " << settings.nHiddenUnits << endl;
-        cout << "ouput unis: " << settings.nOutputUnits << endl;
-        
         checkingSettingsValidity(randomFeatures[0].size);
         
-        if(settings.trainingType == "CROSSVALIDATION")
-                crossvaldiation(randomFeatures,validationSet,testSet);
-        else {
-		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
-		exit(-1);
-	}
+        crossvaldiation(randomFeatures,validationSet,testSet);
 }
 
 //This method is for training on the randomFeatures and testing on the validation set.
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,int numPatchSquare){
+//Or this method is for training on the validation set and validating on the test set
+//It depends on the parameters being passed.
+
+void MLPerceptron::train(vector<Feature>& trainingSet,vector<Feature>& validationSet,int numPatchSquare){
 	numPatchesPerSquare = numPatchSquare;
-        vector<Feature> testSet; // empty test set so the crossvaldiation method does not have to be overloaded again
+        vector<Feature> emptyFeatureSet; // empty feature set so the crossvaldiation method does not have to be overloaded again
         
         initializeVectors();
         
-        cout << "input units: " << settings.nInputUnits << endl;
-        cout << "hidden units: " << settings.nHiddenUnits << endl;
-        cout << "ouput unis: " << settings.nOutputUnits << endl;
+        checkingSettingsValidity(trainingSet[0].size);
         
-        checkingSettingsValidity(randomFeatures[0].size);
-        
-        if(settings.trainingType == "CROSSVALIDATION")
-                crossvaldiation(randomFeatures,validationSet,testSet); 
-        else {
-		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
-		exit(-1);
-	}	
+        crossvaldiation(trainingSet,validationSet,emptyFeatureSet); 	
 }
 
 //This method is for training on the validation set
-void MLPerceptron::train(vector<Feature>& randomFeatures, int numPatchSquare){
+void MLPerceptron::train(vector<Feature>& validationSet, int numPatchSquare){
         numPatchesPerSquare = numPatchSquare;
-	checkingSettingsValidity(randomFeatures[0].size);
+	
+        checkingSettingsValidity(validationSet[0].size);
         
-        if(settings.trainingType == "CROSSVALIDATION")
-                crossvaldiation(randomFeatures); 
-        else {
-		std::cout << "This training type is unknown. Change to a known training type in the settings file" << std::endl;
-		exit(-1);
-	}	
+        crossvaldiation(validationSet);
 }
 //--------end training-----------
 //------start testing------------
@@ -826,5 +825,9 @@ void MLPerceptron::setWeightMatrix(vector<vector<vector<double> > > newWeights)
 void MLPerceptron::setEpochs(int epochs)
 {    
     settings.epochs = epochs; //This is tricky when an mlp is saved.
+}
+
+void MLPerceptron::setLearningRate(double learningRate){
+    settings.learningRate = learningRate;
 }
 //-------end setters -----------

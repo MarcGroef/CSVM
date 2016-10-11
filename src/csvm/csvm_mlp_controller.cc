@@ -342,13 +342,16 @@ void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,
  * In the first level the mlp training is now based on complete images. 
  * This is different from the bottom level where it is based on random patches 
  * */
-void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel){
+void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel, vector<Feature>& testSetFirstLevel){
   	vector<Feature> trainingSet;
 	vector<Feature> validationSet;
-	
+	vector<Feature> testSet;
+        
 	//increasing the stride to decrease the size of the complete picture set
 	imageScanner.setScannerStride(settings.mlpSettings.scanStrideFirstLayer);
-	
+    
+        testSet = createTestSet();
+        
         if(settings.mlpSettings.splitTrainSet)
             trainingSet = createCompletePictureSet(trainingSet,trainSizeBottomLevel,trainSize);
         else
@@ -358,10 +361,12 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	
 	normalizeInput(trainingSet,0);
 	normalizeInput(validationSet,0);
+        normalizeInput(testSet,0);
 	
-	vector<vector<Feature> > splitTrain = splitUpDataBySquare(trainingSet);
+        vector<vector<Feature> > splitTrain = splitUpDataBySquare(trainingSet);
 	vector<vector<Feature> > splitVal   = splitUpDataBySquare(validationSet);
-	
+        vector<vector<Feature> > testSetSplit = splitUpDataBySquare(testSet); //This is neccesary for the setFirstLevelData function
+
 	//set new number of patches per square
 	for(int i=0;i<nMLPs;i++){
 		numPatchesPerSquare[i] = splitVal[i].size()/validationSize;
@@ -370,6 +375,7 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	
 	trainingSet.clear();
 	validationSet.clear();
+        testSet.clear();
         
 	if(settings.mlpSettings.splitTrainSet)
             setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSizeFirstLevel); 
@@ -377,14 +383,16 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
             setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSize); 	
         
         setFirstLevelData(splitVal,inputValFirstLevel,validationSize);
-    
-	cout << "size of input vector first level: " << inputTrainFirstLevel.size() << endl;
+        setFirstLevelData(testSetSplit,testSetFirstLevel,dataset->getTestSize());
+        
+	//cout << "size of input vector first level: " << inputTrainFirstLevel.size() << endl;
 	
 	setMinAndMaxValueNorm(inputTrainFirstLevel,1); //set min and max value for first level normalization
 	
 	normalizeInput(inputTrainFirstLevel,1);
 	normalizeInput(inputValFirstLevel,1);
-	
+        normalizeInput(testSetFirstLevel,1);
+
 	//Change the range of the data from 0,1 to -1,1
 	//changeRange(inputTrainFirstLevel,0,0.5);
 	//changeRange(inputValFirstLevel,0,0.5);
@@ -404,7 +412,7 @@ void MLPController::trainMutipleMLPs()
             if(nMLPs == 1){
                 vector<Feature> testSet = createTestSet();
                 normalizeInput(testSet,0);
-                mlps[0][0].train(splitTrain[0],splitVal[0],numPatchesPerSquare[0],testSet);
+                mlps[0][0].train(splitTrain[0],splitVal[0],testSet,numPatchesPerSquare[0]);
 
             }else 
                 for(int i=0;i<nMLPs;i++){ 		
@@ -412,19 +420,16 @@ void MLPController::trainMutipleMLPs()
                     cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << endl << endl;
                 }
             
-            //Training on validation randomfeature vector
-            //Random feature vector is created by first calculating how many patches per image are in the random feature vector from the training data
-            //This number is used to create the same distribution
-            /*
-            randomFeatValidation = createRandomFeatVal(splitVal);
+            //Training on validation is done with all patches of an image
             
-            cout << "RandomFeat validation set: " << randomFeatValidation[0].size() << endl;
+            //randomFeatValidation = createRandomFeatVal(splitVal);
+            
+            //cout << "RandomFeat validation set: " << randomFeatValidation[0].size() << endl;
             
             for(int i=0;i<nMLPs;i++){
-                    vector<Feature> emptyValidation;
-                    mlps[0][i].train(randomFeatValidation[i],numPatchesPerSquare[i]);
+                    mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
                     cout << "mlp["<<i<<"] from level 0 finished training on validation set" << endl << endl;
-            }*/
+            }
             
 	} else 
 	    importPreTrainedMLP(settings.mlpSettings.readMLPName);
@@ -436,9 +441,9 @@ void MLPController::trainMutipleMLPs()
     if(settings.mlpSettings.stackSize == 2){
         vector<Feature> inputTrainFirstLevel;
         vector<Feature> inputValFirstLevel;
-
+        vector<Feature> testSetFirstLevel;
         
-        createDataFirstLevel(inputTrainFirstLevel,inputValFirstLevel);
+        createDataFirstLevel(inputTrainFirstLevel,inputValFirstLevel,testSetFirstLevel);
     
         //cout << "min value first level: " << minValues[1] << endl;
         //cout << "max value first level: " << maxValues[1] << endl;
@@ -452,25 +457,15 @@ void MLPController::trainMutipleMLPs()
         }
         */
         mlps[1][0].setEpochs(settings.mlpSettings.epochsSecondLayer);
+
+        //setSettingsSecondLayer();
+        //Training on the training set and validating on both the validation and test set
+        mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,testSetFirstLevel,1); 
         
-        vector<Feature> testSet = createTestSet();
-        normalizeInput(testSet,0);
+        //Training on the validation set and validating on the testSet
+        //mlps[1][0].train(inputValFirstLevel,testSetFirstLevel,1); 
+        //cout << "mlp[0] from level 1 finished training on the validation set" << endl;
         
-        vector<vector<Feature> > testSetSplit = splitUpDataBySquare(testSet);
-        vector<Feature> testSetFirstLevel;
-        
-        setFirstLevelData(testSetSplit,testSetFirstLevel,dataset->getTestSize());
-        normalizeInput(testSetFirstLevel,1);
-        
-        //Training is done on complete images and so is the validation.
-        mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1,testSetFirstLevel); 
-        cout << "mlp[0] from level 1 finished training on the training set" << endl;
-        
-        /*
-        vector<Feature> emptyValidation;
-        mlps[1][0].train(inputValFirstLevel,1);
-        cout << "mlp[0] from level 1 finished training on the validation set" << endl;
-        */
     }
 }
 //--------------end: training MLP's-----------------------------

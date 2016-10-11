@@ -97,7 +97,13 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
     stream >> type;
    if (type == "trainingType") {
-      stream >> mlpSettings.trainingType;
+
+       stream >> mlpSettings.trainingType;
+
+       if(mlpSettings.trainingType != "CROSSVALIDATION"){
+            cout << "This training type is unknown. Change this to a known training type in the settings file" << endl;
+            exit(-1);
+    }
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";

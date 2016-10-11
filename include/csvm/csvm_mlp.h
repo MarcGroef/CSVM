@@ -116,12 +116,12 @@ namespace csvm{
 	  
 	  public:
 	  void setSettings(MLPSettings s);
-	  void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare,vector<Feature>& testSet);          	  
+	  
+          void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet,int numPatchSquare);          	  
           void train(vector<Feature>& randomFeatures,vector<Feature>& validationSet, int numPatchSquare);
+	  void train(vector<Feature>& validationSet,int numPatchSquare);
 
-	  void train(vector<Feature>& randomFeatures,int numPatchSquare);
-      
-	  unsigned int classify(vector<Feature> imageFeatures);
+          unsigned int classify(vector<Feature> imageFeatures);
 	  vector<double> classifyPooling(vector<Feature> imageFeatures);
 	  void classifyImage(vector<Feature>& imageFeatures);
 	  
@@ -136,6 +136,7 @@ namespace csvm{
       //setters
       void setWeightMatrix(vector<vector<vector<double> > > newWeights);
       void setEpochs(int epochs);
+      void setLearningRate(double learningRate);
    };
       
 }

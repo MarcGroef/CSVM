@@ -181,8 +181,8 @@ void CSVMDataset::splitDataset(){
    
    for(size_t imIdx = 0; imIdx < nData; ++imIdx)
       tempIdces[imIdx] = imIdx;
-   //no shuffle of the dataset 
-   /*  
+   //shuffle of the dataset 
+   /*
    for(size_t shuffleIdx = 0; shuffleIdx < nData; ++shuffleIdx){
       unsigned int randIdx = rand() % nData;
       unsigned int temp = tempIdces[shuffleIdx];
