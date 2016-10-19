@@ -19,6 +19,7 @@
 #include <fstream>
 #include <assert.h>
 #include <cstdlib>
+
 #include "csvm_svm.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_codebook.h"
@@ -29,12 +30,12 @@
 //#include "csvm_cluster_analyser.h"
 #include "csvm_linear_network.h"
 #include "csvm_deep_codebook.h"
-
 #include "csvm_mlp.h"
+#include "csvm_mlp_controller.h"
 
 using namespace std;
 
-namespace csvm{
+using namespace csvm;
 
    enum FEATURE_TYPE{
       CSVM_FEATURE_HOG = 1,
@@ -60,9 +61,9 @@ namespace csvm{
    class CSVMSettings{
      public:
       bool debugOut, normalOut;
+      
       CLASSIFIER classifier;
       CODEBOOK codebook;
-      
       
       FEATURE_TYPE feature;
       SVM_Settings svmSettings;
@@ -73,7 +74,9 @@ namespace csvm{
       LinNetSettings netSettings;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
+      MLPControllerSettings mlpControlSettings;
       MLPSettings mlpSettings;
+
       
      // CleanSettings clSettings; // clean descriptor
       //ClusterAnalyserSettings analyserSettings;
@@ -91,8 +94,6 @@ namespace csvm{
       void parseCleanDescrSettings(ifstream& stream);
       void parseGeneralSettings(ifstream& stream);
       void parseMLPSettings(ifstream& stream);
+      void parseMLPControllerSettings(ifstream& stream);
    };
-
-}
-
 #endif

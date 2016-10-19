@@ -1,6 +1,7 @@
 #include <csvm/csvm.h>
 #include <iostream>
 #include <time.h>
+#include <ctime>
 #include <cstdlib>
 #include <fstream>
 #include <string> 
@@ -55,6 +56,7 @@ namespace patch
 int main(int argc,char**argv){
    
    //cout << "started main of CSVM" << endl;
+    
    bool normalOut;
    if(argc!=2){
       showUsage();
@@ -105,7 +107,6 @@ int main(int argc,char**argv){
    int validationSize = c.dataset.getTrainSize() * c.settings.mlpSettings.crossValidationSize;
    
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
-   
    
    if(normalOut)
       cout << "Testing on trainingsset:\n";
@@ -243,17 +244,26 @@ int main(int argc,char**argv){
    unsigned int testSize = (unsigned int)c.dataset.getTestSize();
 
    vector <vector <int> > classifiedAs      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
-
-   for(size_t im = 0; im < testSize; ++im){
+    /*
+   time_t t = time(0); 
+    struct tm * now = localtime( & t );
+    string date = (now->tm_year + 1900) + '-' + (now->tm_mon + 1) + '-' + now->tm_mday;
+   */
+    time_t t = time(0); 
+    struct tm * now = localtime( & t );
+    string date = patch::to_string(now->tm_year + 1900) + '-' + patch::to_string(now->tm_mon + 1) + '-' + patch::to_string(now->tm_mday);
+   
+    for(size_t im = 0; im < testSize; ++im){
       
       //cout << "classifying image " << image << endl;
       unsigned int result;
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
       //cout << "\nAnswer: " << answer;
       result = c.classify(c.dataset.getTestImagePtr(im));
-      /*
+      
       if(answer != result){
-          string name = patch::to_string(answer);
+          string name = date + "_" + patch::to_string(im) + "_"; 
+          name += patch::to_string(answer);
           name += "->";
           name += patch::to_string(result);
           name += ".png";
@@ -261,7 +271,6 @@ int main(int argc,char**argv){
           //cout << "this is the name: " << name << endl;
           c.dataset.getTestImagePtr(im)->exportImage(name);
       }
-          */
         //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
 
       //cout << "result: " << result << endl;

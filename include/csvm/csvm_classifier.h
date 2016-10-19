@@ -31,7 +31,7 @@ using namespace std;
 namespace csvm{
    
    class CSVMClassifier{
-      
+      controllerSettingsPack controller;
       vector<MLPerceptron> mlps;
       Codebook codebook;
       DeepCodebook* deepCodebook;
@@ -45,8 +45,6 @@ namespace csvm{
       MLPController* mlpController;
       
       vector< vector<double> > classicTrainActivations;
-      
-            
       
       
       void trainLinearNetwork();

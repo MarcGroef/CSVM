@@ -5,75 +5,74 @@
  
  using namespace std;
  using namespace csvm;
- 
-MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds){
+
+MLPController::MLPController(FeatureExtractor* fe, ImageScanner* imScan,CSVMDataset* ds){
 	featExtr = *fe;
 	imageScanner = *imScan;
-	settings = *se;
 	dataset = ds;
 }
 //--------------start: init MLP's-------------------
-void MLPController::setSettings(MLPSettings s){
-	cout << "settings set" << endl;
-
-	nHiddenBottomLevel = s.nHiddenUnits;
-	first = 1;
+void MLPController::setSettings(controllerSettingsPack controller){
+    cout << "settings set" << endl;    
+    this->controller = controller;
+    this->controllerSettings = controller.controllerSettings;
+    this->mlpSettings = controller.mlpSettings;
+    
+    
+    
+    nMLPs = pow(controllerSettings.nSplitsForPooling,2);
+    
+    validationSize = dataset->getTrainSize()*mlpSettings.crossValidationSize;
+    trainSize = dataset->getTrainSize()-validationSize;
 	
-        //init global variables	
-	nMLPs = pow(s.nSplitsForPooling,2);
-	validationSize = dataset->getTrainSize()*s.crossValidationSize;
-	
-	trainSize = dataset->getTrainSize() - validationSize;
-        
-	//60% of the train data is for the bottom level mlp and the other 40% is for the first level.
-	trainSizeBottomLevel = trainSize*0.6; 
-	trainSizeFirstLevel = trainSize*0.4;  
-	
-        if(settings.mlpSettings.splitTrainSet){
+    first = 1;
+    //60% of the train data is for the bottom level mlp and the other 40% is for the first level.
+    trainSizeBottomLevel = trainSize*0.6; 
+    trainSizeFirstLevel = trainSize*0.4; 
+    
+    if(controllerSettings.splitTrainSet){
             cout << "The trainingSet is split for the bottom and the first level" << endl;
             cout << "The bottom level will be trained with patches from " << trainSizeBottomLevel << " images" << endl;
             cout << "The first level will use " << trainSizeFirstLevel << " images" << endl;
-        }
-        //Why plus one? That does not seem right
-	//amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth + 1) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight + 1);
+    }
 
-        amountOfPatchesImage = (settings.datasetSettings.imWidth - settings.scannerSettings.patchWidth) * (settings.datasetSettings.imHeight - settings.scannerSettings.patchHeight);
-
-	for(int i=0;i<2;i++){
+    amountOfPatchesImage = (controller.datasetSettings.imWidth - controller.scannerSettings.patchWidth) * (controller.datasetSettings.imHeight - controller.scannerSettings.patchHeight);
+        
+    for(int i=0;i<2;i++){
 		minValues.push_back(1000);
 		maxValues.push_back(0);
-	}
-	
-	//reserve global vectors
-	numPatchesPerSquare.reserve(nMLPs);
-	mlps.reserve(s.stackSize);
-	
-	mlps = vector<vector<MLPerceptron> >(s.stackSize);
-	
-	for(int j = 0; j < nMLPs;j++){
-		MLPerceptron mlp;
-		mlp.setSettings(s);
-		mlps[0].push_back(mlp);
-	}
-	//settings second parameter	
-	if(s.stackSize == 2){
-		MLPerceptron mlp;
-		s.nInputUnits = nHiddenBottomLevel * nMLPs;
-		s.nHiddenUnits = s.nHiddenUnitsFirstLayer;//find parameter
-		mlp.setSettings(s);
-		mlps[1].push_back(mlp);
-	}
-	/*
-	for(int i = 0; i < 4;i++){
-		cout << "memory location of mlp["<<i<<"]: " << &mlps[0][i] << endl;
-	}
-	cout << "memory location of first level mlp: " << &mlps[1][0] << endl;
-	exit(-1);
-	*/
-        //TODO maybe
-        //set poolingType to array
-        //settings.mlpSettings.poolingType;
-        
+    }
+    
+    //reserve global vectors
+    numPatchesPerSquare.reserve(nMLPs);
+    mlps.reserve(controllerSettings.stackSize);
+    
+    mlps = vector<vector<MLPerceptron> >(controllerSettings.stackSize);
+    
+    for(int j = 0; j < nMLPs;j++){
+            MLPerceptron mlp;
+            mlp.setSettings(mlpSettings);
+            mlps[0].push_back(mlp);
+    }
+    //settings second parameter	
+    if(controllerSettings.stackSize == 2){
+            MLPerceptron mlp;
+            firstLevelMLP = mlpSettings;
+            firstLevelMLP.nInputUnits = mlpSettings.nHiddenUnits * nMLPs;
+            firstLevelMLP.nHiddenUnits = controllerSettings.nHiddenUnitsFirstLayer;//find parameter
+            mlp.setSettings(firstLevelMLP);
+            mlps[1].push_back(mlp);
+    }
+    /*
+    for(int i = 0; i < 4;i++){
+            cout << "memory location of mlp["<<i<<"]: " << &mlps[0][i] << endl;
+    }
+    cout << "memory location of first level mlp: " << &mlps[1][0] << endl;
+    exit(-1);
+    */
+    //TODO maybe
+    //set poolingType to array
+    //controllerSettings.poolingType;
 }
 
 void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures, int index){
@@ -110,13 +109,13 @@ vector<Feature>& MLPController::normalizeInput(vector<Feature>& inputFeatures, i
 }
 
 int MLPController::calculateSquareOfPatch(Patch patch){
-	int splits = settings.mlpSettings.nSplitsForPooling;
+	int splits = controllerSettings.nSplitsForPooling;
 	
 	int middlePatchX = patch.getX() + patch.getWidth() / 2;
 	int middlePatchY = patch.getY() + patch.getHeight() / 2;
 	
-	int imWidth  = settings.datasetSettings.imWidth;
-	int imHeight = settings.datasetSettings.imHeight;
+	int imWidth  = controller.datasetSettings.imWidth;
+	int imHeight = controller.datasetSettings.imHeight;
 	
 	return middlePatchX / (imWidth/splits) + (splits * (middlePatchY / (imHeight/splits)));
 }
@@ -203,9 +202,9 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 	vector<Feature> trainingSet;
  	vector<Feature> validationSet;
         
-	if(settings.mlpSettings.readInData){
-		importFeatureSet(settings.mlpSettings.readRandomFeatName,trainingSet);
-		importFeatureSet(settings.mlpSettings.readValidationName,validationSet);
+	if(controllerSettings.readInData){
+		importFeatureSet(controllerSettings.readRandomFeatName,trainingSet);
+		importFeatureSet(controllerSettings.readValidationName,validationSet);
 	} 
 	else {
                 trainingSet = createRandomFeatureVector(trainingSet);
@@ -218,14 +217,14 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 		normalizeInput(validationSet,0);
 	}
 	
-	if(settings.mlpSettings.saveData){
-		exportFeatureSet(settings.mlpSettings.saveRandomFeatName,trainingSet);
-		exportFeatureSet(settings.mlpSettings.saveValidationName,validationSet);
+	if(controllerSettings.saveData){
+		exportFeatureSet(controllerSettings.saveRandomFeatName,trainingSet);
+		exportFeatureSet(controllerSettings.saveValidationName,validationSet);
 	}
 	
 	//Change the range of the data
-	//changeRange(trainingSet,0,0.5);
-	//changeRange(validationSet,-0.25,0.25);
+	//changeRange(trainingSet,0,1);
+	//changeRange(validationSet,0,1);
   /*
 	for(int i=0;i<trainingSet.size();i++){
 	  for(int j=0;j<trainingSet[i].size;j++){
@@ -252,14 +251,14 @@ void MLPController::createDataBottomLevel(vector<vector<Feature> >& splitTrain, 
 }
 
 vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& trainingData){
-    unsigned int nPatches = settings.scannerSettings.nRandomPatches;
+    unsigned int nPatches = controller.scannerSettings.nRandomPatches;
    
 	vector<Feature> testData;
 	cout << "create random feature vector of size: " << nPatches << endl;
 	
 	for(size_t pIdx = 0; pIdx < nPatches; ++pIdx){
                 Patch patch;
-                if(settings.mlpSettings.splitTrainSet and settings.mlpSettings.stackSize > 1)
+                if(controllerSettings.splitTrainSet and controllerSettings.stackSize > 1)
                     patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSizeBottomLevel));
                 else 
                     patch = imageScanner.getRandomPatch(dataset->getTrainImagePtr(rand() % trainSize));
@@ -274,7 +273,7 @@ vector<Feature>& MLPController::createRandomFeatureVector(vector<Feature>& train
 vector<vector<Feature> > MLPController::createRandomFeatVal(vector<vector<Feature> >& valSet){
         vector<vector<Feature> > randomFeatVal = vector<vector<Feature> >(nMLPs);
         for(int i=0;i < nMLPs;i++){
-            double ratio = (double)settings.scannerSettings.nRandomPatches/(double)trainSize;
+            double ratio = (double)controller.scannerSettings.nRandomPatches/(double)trainSize;
             double sizeRandomFeatVal = (double)validationSize*ratio;
             for(int j = 0; j < sizeRandomFeatVal; j++)
                 randomFeatVal[i].push_back(valSet[i][rand() % (numPatchesPerSquare[i]*validationSize)]);
@@ -313,7 +312,7 @@ void MLPController::setFirstLevelData(vector<vector<Feature> >& splitDataBottom,
 	for(int i = 0; i < sizeData;i++){			
 		vector<double> inputVector;
 		inputVector.reserve(nHiddenBottomLevel*nMLPs*3);
-                string type = settings.mlpSettings.poolingType;
+                string type = controllerSettings.poolingType;
                 //In the settings file a string is defined with the pooling types with a comma seperator
                 //e.g. AVERAGE,MAX. Are the abbriviations for max pooling and average pooling
                 //The pooling types that are available are MAX, MIN, and AVERAGE. 
@@ -348,11 +347,11 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	vector<Feature> testSet;
         
 	//increasing the stride to decrease the size of the complete picture set
-	imageScanner.setScannerStride(settings.mlpSettings.scanStrideFirstLayer);
+	imageScanner.setScannerStride(controllerSettings.scanStrideFirstLayer);
     
         testSet = createTestSet();
         
-        if(settings.mlpSettings.splitTrainSet)
+        if(controllerSettings.splitTrainSet)
             trainingSet = createCompletePictureSet(trainingSet,trainSizeBottomLevel,trainSize);
         else
             trainingSet = createCompletePictureSet(trainingSet,0,trainSize);
@@ -377,7 +376,7 @@ void MLPController::createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, 
 	validationSet.clear();
         testSet.clear();
         
-	if(settings.mlpSettings.splitTrainSet)
+	if(controllerSettings.splitTrainSet)
             setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSizeFirstLevel); 
         else 
             setFirstLevelData(splitTrain,inputTrainFirstLevel,trainSize); 	
@@ -406,15 +405,15 @@ void MLPController::trainMutipleMLPs()
                 
         vector<vector<Feature> > randomFeatValidation;
 	
-	if(!settings.mlpSettings.readMLP){
+	if(!controllerSettings.readMLP){
             createDataBottomLevel(splitTrain,splitVal);
-            
+            /*
             if(nMLPs == 1){
                 vector<Feature> testSet = createTestSet();
                 normalizeInput(testSet,0);
                 mlps[0][0].train(splitTrain[0],splitVal[0],testSet,numPatchesPerSquare[0]);
 
-            }else 
+            }else*/ 
                 for(int i=0;i<nMLPs;i++){ 		
                     mlps[0][i].train(splitTrain[i],splitVal[i],numPatchesPerSquare[i]);
                     cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << endl << endl;
@@ -425,20 +424,20 @@ void MLPController::trainMutipleMLPs()
             //randomFeatValidation = createRandomFeatVal(splitVal);
             
             //cout << "RandomFeat validation set: " << randomFeatValidation[0].size() << endl;
-            
+            /*
             for(int i=0;i<nMLPs;i++){
                     mlps[0][i].train(splitVal[i],numPatchesPerSquare[i]);
                     cout << "mlp["<<i<<"] from level 0 finished training on validation set" << endl << endl;
-            }
+            }*/
             
 	} else 
-	    importPreTrainedMLP(settings.mlpSettings.readMLPName);
+	    importPreTrainedMLP(controllerSettings.readMLPName);
 	
-        if(settings.mlpSettings.saveMLP)
-	  exportTrainedMLP(settings.mlpSettings.saveMLPName);
+        if(controllerSettings.saveMLP)
+	  exportTrainedMLP(controllerSettings.saveMLPName);
         
     //cout << "create training data for first level... " << endl;
-    if(settings.mlpSettings.stackSize == 2){
+    if(controllerSettings.stackSize == 2){
         vector<Feature> inputTrainFirstLevel;
         vector<Feature> inputValFirstLevel;
         vector<Feature> testSetFirstLevel;
@@ -456,7 +455,7 @@ void MLPController::trainMutipleMLPs()
                 cout << endl << endl;
         }
         */
-        mlps[1][0].setEpochs(settings.mlpSettings.epochsSecondLayer);
+        mlps[1][0].setEpochs(controllerSettings.epochsSecondLayer);
 
         //setSettingsSecondLayer();
         //Training on the training set and validating on both the validation and test set
@@ -513,7 +512,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		*/
 	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(dataFeatures); //split test features by square	
 	
-	if(settings.mlpSettings.stackSize == 1){
+	if(controllerSettings.stackSize == 1){
 	/*  if(first == 1){
 	    vector<vector<vector<double > > > newWeights;
 	    
@@ -524,17 +523,17 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	    }
 	    first=0;
 	  }*/
-		vector<double> votingHistogram = vector<double>(settings.mlpSettings.nOutputUnits,0.0);
+		vector<double> votingHistogram = vector<double>(mlpSettings.nOutputUnits,0.0);
 		vector<double> outputProp;
 		for(int i=0;i<nMLPs;i++){
 			outputProp = mlps[0][i].classifyPooling(testFeaturesBySquare[i]);
-			for(int j=0;j<settings.mlpSettings.nOutputUnits;j++){
+			for(int j=0;j<mlpSettings.nOutputUnits;j++){
 				votingHistogram[j] += outputProp[j];
 			}
 		}
 		double highestProp = 0;
 		int mostVotedClass = -1;
-		for(int i=0;i<settings.mlpSettings.nOutputUnits;i++){
+		for(int i=0;i<mlpSettings.nOutputUnits;i++){
 			if(votingHistogram[i] > highestProp){
 				highestProp = votingHistogram[i];
 				mostVotedClass = i;
@@ -543,7 +542,7 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		answer = mostVotedClass;
 	}
 	
-	if(settings.mlpSettings.stackSize == 2){
+	if(controllerSettings.stackSize == 2){
 		vector<Feature> testDataFirstLevel; //empty feature vector that will be filled with first level features
 		setFirstLevelData(testFeaturesBySquare,testDataFirstLevel,numOfImages);
 		/*
@@ -609,29 +608,29 @@ void MLPController::importPreTrainedMLP(string filename){
 	
 	file.read(fancyInt.chars,4);
 	int readInInputUnits = fancyInt.intVal;
-   	if(readInInputUnits != settings.mlpSettings.nInputUnits){
-		cout << "The input units that is read in is " << readInInputUnits << " and in the settings file you have " << settings.mlpSettings.nInputUnits << ", please change this" << endl;
+   	if(readInInputUnits != mlpSettings.nInputUnits){
+		cout << "The input units that is read in is " << readInInputUnits << " and in the settings file you have " << mlpSettings.nInputUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInHiddenUnits = fancyInt.intVal;
-   	if(readInHiddenUnits != settings.mlpSettings.nHiddenUnits){
-		cout << "The hidden units that is read in is " << readInHiddenUnits << " and in the settings file you have " << settings.mlpSettings.nHiddenUnits << ", please change this" << endl;
+   	if(readInHiddenUnits != mlpSettings.nHiddenUnits){
+		cout << "The hidden units that is read in is " << readInHiddenUnits << " and in the settings file you have " << mlpSettings.nHiddenUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInOutputUnits = fancyInt.intVal;
-   	if(readInOutputUnits != settings.mlpSettings.nOutputUnits){
-		cout << "The output units that is read in is " << readInOutputUnits << " and in the settings file you have " << settings.mlpSettings.nOutputUnits << ", please change this" << endl;
+   	if(readInOutputUnits != mlpSettings.nOutputUnits){
+		cout << "The output units that is read in is " << readInOutputUnits << " and in the settings file you have " << mlpSettings.nOutputUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInNSplitsForPooling = fancyInt.intVal;
-   	if(readInNSplitsForPooling != settings.mlpSettings.nSplitsForPooling){
-		cout << "The nSplitsForPooling that is read in is " << readInNSplitsForPooling << " and in the settings file you have " << settings.mlpSettings.nSplitsForPooling << ", please change this" << endl;
+   	if(readInNSplitsForPooling != controllerSettings.nSplitsForPooling){
+		cout << "The nSplitsForPooling that is read in is " << readInNSplitsForPooling << " and in the settings file you have " << controllerSettings.nSplitsForPooling << ", please change this" << endl;
 		exit(-1);
 	}
 	
@@ -662,21 +661,21 @@ void MLPController::importPreTrainedMLP(string filename){
 	
 	int maxUnits=0;
 	
-	if(maxUnits < settings.mlpSettings.nInputUnits){
-	  maxUnits = settings.mlpSettings.nInputUnits;
+	if(maxUnits < mlpSettings.nInputUnits){
+	  maxUnits = mlpSettings.nInputUnits;
 	}
-	if(maxUnits < settings.mlpSettings.nHiddenUnits){
-	  maxUnits = settings.mlpSettings.nHiddenUnits;
+	if(maxUnits < mlpSettings.nHiddenUnits){
+	  maxUnits = mlpSettings.nHiddenUnits;
 	}
-	if(maxUnits < settings.mlpSettings.nOutputUnits){
-	  maxUnits = settings.mlpSettings.nOutputUnits;
+	if(maxUnits < mlpSettings.nOutputUnits){
+	  maxUnits = mlpSettings.nOutputUnits;
 	}
 	
-	vector<vector<double> > biasNodes = vector<vector<double> >(settings.mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
-	vector<vector<vector<double> > > weights = vector<vector<vector<double> > >(settings.mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
+	vector<vector<double> > biasNodes = vector<vector<double> >(mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
+	vector<vector<vector<double> > > weights = vector<vector<vector<double> > >(mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
 	
 	for(int i=0; i<nMLPs;i++){ //amount of mlps that needs to be read in
-		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){ //amount of weight vectors
+		for(int j=0;j<mlpSettings.nLayers-1;j++){ //amount of weight vectors
 			for(int k=0;k<maxUnits;k++){ //amount of collums
 				for(int l=0;l<maxUnits;l++){ // amount of rows
 				  file.read(fancydouble.chars,8);
@@ -685,7 +684,7 @@ void MLPController::importPreTrainedMLP(string filename){
 				}
 			}
 		}
-		for(int j=0;j<settings.mlpSettings.nLayers-1;j++){ //amount of bais nodes matrixs
+		for(int j=0;j<mlpSettings.nLayers-1;j++){ //amount of bais nodes matrixs
 			for(int k=0;k<maxUnits;k++){ // max amount of units, there is only one column and 
 				file.read(fancydouble.chars,8);
 				biasNodes[j][k] = fancydouble.doubleVal;
@@ -695,8 +694,8 @@ void MLPController::importPreTrainedMLP(string filename){
 	mlps[0][i].loadInMLP(weights,biasNodes);
 	
 	//reset weight matrixes for the next mlp
-	biasNodes = vector<vector<double> >(settings.mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
-	weights = vector<vector<vector<double> > >(settings.mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
+	biasNodes = vector<vector<double> >(mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
+	weights = vector<vector<vector<double> > >(mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
 	
 	}
 }
@@ -720,23 +719,23 @@ void MLPController::exportTrainedMLP(string filename){
 	 ofstream file(filename.c_str(), ios::binary);
 	 
 	 //write nInputUnits
-	 fancyInt.intVal = settings.mlpSettings.nInputUnits;
+	 fancyInt.intVal = mlpSettings.nInputUnits;
 	 file.write(fancyInt.chars, 4);
 	 
 	 //write nHiddenUnits
-	 fancyInt.intVal = settings.mlpSettings.nHiddenUnits;
+	 fancyInt.intVal = mlpSettings.nHiddenUnits;
 	 file.write(fancyInt.chars, 4);
 	 
 	 //write nOutputUnits
-	 fancyInt.intVal = settings.mlpSettings.nOutputUnits;
+	 fancyInt.intVal = mlpSettings.nOutputUnits;
 	 file.write(fancyInt.chars, 4);
 	 
 	 //write nSplitsForPooling
-	 fancyInt.intVal = settings.mlpSettings.nSplitsForPooling;
+	 fancyInt.intVal = controllerSettings.nSplitsForPooling;
 	 file.write(fancyInt.chars, 4);
 	 
 	//write dataset used
-	switch(settings.datasetSettings.type){
+	switch(controller.datasetSettings.type){
 	  case DATASET_CIFAR10:
 	    fancyInt.intVal=0;
          break;
@@ -799,7 +798,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    ofstream file(filename.c_str(),  ios::binary);
    
    //write dataset used
-	switch(settings.datasetSettings.type){
+	switch(controller.datasetSettings.type){
       case DATASET_CIFAR10:
          fancyInt.intVal=0;
          break;
@@ -810,23 +809,23 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
    file.write(fancyInt.chars, 4);
  
    //write amount of features
-   fancyInt.intVal = settings.scannerSettings.nRandomPatches;   
+   fancyInt.intVal = controller.scannerSettings.nRandomPatches;   
    file.write(fancyInt.chars, 4);
    
    //write patchWidth
-   fancyInt.intVal = settings.scannerSettings.patchWidth;
+   fancyInt.intVal = controller.scannerSettings.patchWidth;
    file.write(fancyInt.chars, 4);
    
    //write patchWidth
-   fancyInt.intVal = settings.scannerSettings.patchHeight;
+   fancyInt.intVal = controller.scannerSettings.patchHeight;
    file.write(fancyInt.chars, 4);
    
    //write FeatSize
-   fancyInt.intVal = settings.mlpSettings.nInputUnits;
+   fancyInt.intVal = mlpSettings.nInputUnits;
    file.write(fancyInt.chars, 4);   
    
    //write FeatExtractor method
-   	switch(settings.featureSettings.featureType){
+   	switch(controller.featureSettings.featureType){
       case LBP:
          fancyInt.intVal=0;
          break;
@@ -856,7 +855,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
 		fancyInt.intVal = featureVector[i].getSquareId(); //does this always exists??
 		file.write(fancyInt.chars, 4);		
 	}		
-	if(featureVector.size() == settings.scannerSettings.nRandomPatches){
+	if(featureVector.size() == controller.scannerSettings.nRandomPatches){
 		//write min value from bottom level
 		fancydouble.doubleVal = minValues[0]; 
 		file.write(fancydouble.chars, 8);
@@ -914,29 +913,29 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 	
 	file.read(fancyInt.chars,4);
 	unsigned int readInNRandomPatches = fancyInt.intVal;
-	if(settings.scannerSettings.nRandomPatches != readInNRandomPatches){
-		cout << "The nRandomPatches that is read in is " << readInNRandomPatches << " in the settings file it is " << settings.scannerSettings.nRandomPatches << ", please change this" << endl;
+	if(controller.scannerSettings.nRandomPatches != readInNRandomPatches){
+		cout << "The nRandomPatches that is read in is " << readInNRandomPatches << " in the settings file it is " << controller.scannerSettings.nRandomPatches << ", please change this" << endl;
 		exit(-1);
 	}
   
 	file.read(fancyInt.chars,4);
 	unsigned int readInPatchWidth = fancyInt.intVal;
-	if(settings.scannerSettings.patchWidth != readInPatchWidth){
-		cout << "The patchWidth that is read in is " << readInPatchWidth << " in the settings file it is " << settings.scannerSettings.patchWidth << ", please change this" << endl;
+	if(controller.scannerSettings.patchWidth != readInPatchWidth){
+		cout << "The patchWidth that is read in is " << readInPatchWidth << " in the settings file it is " << controller.scannerSettings.patchWidth << ", please change this" << endl;
 		exit(-1);
 	}
   
 	file.read(fancyInt.chars,4);
 	unsigned int readInPatchHeigth = fancyInt.intVal;
-	if(settings.scannerSettings.patchHeight != readInPatchHeigth){
-		cout << "The patchHeigth that is read in is " << readInPatchHeigth << " in the settings file it is " << settings.scannerSettings.patchHeight << ", please change this" << endl;
+	if(controller.scannerSettings.patchHeight != readInPatchHeigth){
+		cout << "The patchHeigth that is read in is " << readInPatchHeigth << " in the settings file it is " << controller.scannerSettings.patchHeight << ", please change this" << endl;
 		exit(-1);
 	}
 
 	file.read(fancyInt.chars,4);
 	int readInFeatSize = fancyInt.intVal;
-	if(settings.mlpSettings.nInputUnits != readInFeatSize){
-		cout << "The feature size that is read in is " << readInFeatSize << " in the settings file it is " << settings.mlpSettings.nInputUnits << ", please change this" << endl;
+	if(mlpSettings.nInputUnits != readInFeatSize){
+		cout << "The feature size that is read in is " << readInFeatSize << " in the settings file it is " << mlpSettings.nInputUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	file.read(fancyInt.chars,4);
@@ -960,8 +959,8 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		 cout << "The read in feature extractor is unknown, by default it is set to HOG" << endl;
 	}
 	
-	if(settings.featureSettings.featureType != readInFeatExt){
-		cout << "The Feature extractor that is read in is " << readInFeatExt << " in the settings file it is" << settings.featureSettings.featureType << ", please change this" << endl;
+	if(controller.featureSettings.featureType != readInFeatExt){
+		cout << "The Feature extractor that is read in is " << readInFeatExt << " in the settings file it is" << controller.featureSettings.featureType << ", please change this" << endl;
 		exit(-1);		
 	}
 	int sizeOfFeatureVector;
@@ -970,7 +969,7 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		sizeOfFeatureVector = readInNRandomPatches;
 	}
 	else {
-		sizeOfFeatureVector = dataset->getTrainSize() * settings.mlpSettings.crossValidationSize * amountOfPatchesImage;
+		sizeOfFeatureVector = dataset->getTrainSize() * mlpSettings.crossValidationSize * amountOfPatchesImage;
 	}
 
 	for(int i=0;i<sizeOfFeatureVector;i++){

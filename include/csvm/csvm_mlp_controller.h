@@ -4,21 +4,61 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <algorithm> 
 
-#include "csvm_settings.h"
 #include "csvm_dataset.h"
 #include "csvm_image_scanner.h"
 #include "csvm_feature.h"
 #include "csvm_feature_extractor.h"
 #include "csvm_mlp.h"
-#include "csvm_mlp_stacked.h"
+
 
 using namespace std;
 namespace csvm{
-	
+
+    struct MLPControllerSettings{
+        int stackSize;
+        int nSplitsForPooling;
+        int epochsValidationSet;
+        int epochsSecondLayer;
+        int nHiddenUnitsFirstLayer;
+        int scanStrideFirstLayer;
+        int saveData;
+        string saveRandomFeatName;
+        string saveValidationName;
+        int readInData;
+        string readRandomFeatName;
+        string readValidationName;
+        int saveMLP;
+        string saveMLPName;
+        int readMLP;
+        string readMLPName;
+        string poolingType;
+        int splitTrainSet;
+        
+    };
+    
+    struct controllerSettingsPack{
+        FeatureExtractorSettings featureSettings;
+        ImageScannerSettings scannerSettings;
+        CSVMDataset_Settings datasetSettings;
+        MLPControllerSettings controllerSettings;
+        MLPSettings mlpSettings;
+                
+    };    
 	class MLPController{
 		private:
-		int first; //variable for dropout a bit dirty
+                MLPControllerSettings controllerSettings;
+                MLPSettings mlpSettings;
+                MLPSettings firstLevelMLP;
+                controllerSettingsPack controller;
+                
+                ImageScanner imageScanner;
+		FeatureExtractor featExtr;
+		CSVMDataset* dataset;
+                
+                int first; //variable for dropout a bit dirty
 		int nMLPs;
 		int nHiddenBottomLevel;
 		
@@ -39,12 +79,6 @@ namespace csvm{
 		vector<vector<vector<vector<double> > > > weights;
 		
 		vector<int> numPatchesPerSquare;
-		
-		ImageScanner imageScanner;
-		FeatureExtractor featExtr;
-		
-		CSVMSettings settings;
-		CSVMDataset* dataset;
 		
 		vector<vector<MLPerceptron> > mlps;
 		
@@ -79,10 +113,9 @@ namespace csvm{
 		void exportTrainedMLP(string filename);
 		void importPreTrainedMLP(string filename);
 		public:
+		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMDataset* ds);
 		
-		MLPController(FeatureExtractor* fe, ImageScanner* imScan, CSVMSettings* se, CSVMDataset* ds);
-		
-		void setSettings(MLPSettings s);
+		void setSettings(controllerSettingsPack controller);
 
 		void trainMutipleMLPs();
 		unsigned int mlpMultipleClassify(Image* im);

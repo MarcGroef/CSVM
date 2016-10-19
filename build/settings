@@ -1,13 +1,14 @@
 Dataset
-method CIFAR10
-nTrainImages 300
-nTestImages 100
-imageWidth 38
-imageHeight 38
+method MNIST
+nTrainImages 100
+nTestImages 10
+imageWidth 15
+imageHeight 15
 
 General
 Classifier MLP
 Codebook MLP
+saveClassifiedImages 0
 nClasses 10
 debugOut FALSE
 normalOut TRUE
@@ -25,11 +26,11 @@ similaritySigma 0.05
 FeatureExtractor
 method HOG
 nBins 9
-cellSize 3
-cellStride 3
-patchSize 20
+cellSize 5
+cellStride 5
+patchSize 12
 padding None
-useColourPixel true
+useColourPixel False
 interpolation INTERPOLATE_LINEAR
 binmethod CROSSCOLOUR
 postprocessing L2
@@ -40,17 +41,20 @@ standardize NONE
 
 
 ImageScanner
-patchHeight 20
-patchWidth 20
+patchHeight 12
+patchWidth 12
 scanStride 1
 nRandomPatches 8000
 
+MLPController
 
 MLP
-stackSize 2
+dropout 1
+momentum 0
+stackSize 1
 nSplitsForPooling 1
 nHiddenUnits 500
-nInputUnits 324
+nInputUnits 36
 nOutputUnits 10
 nLayers 3
 learningRate .03
@@ -74,7 +78,7 @@ saveMLP 0
 saveMLPName MNIST_4_324_400_10
 readMLP 0
 readMLPName MNIST_4_324_400_10
-poolingType AVERAGE
+poolingType MAX
 splitTrainSet 0
 
 SVM

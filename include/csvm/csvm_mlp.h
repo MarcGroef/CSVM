@@ -9,14 +9,13 @@
 using namespace std;
 
 namespace csvm{
-   
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
-      int stackSize;
-      int nSplitsForPooling;
-      int nOutputUnits;
+      int dropout;
+      int momentum;
       int nHiddenUnits;
       int nInputUnits;
+      int nOutputUnits;
       int nLayers;
       double learningRate;
       string voting;
@@ -24,23 +23,7 @@ namespace csvm{
       int crossValidationInterval;
       double crossValidationSize;
       int epochs;
-      int epochsValidationSet;
-      int epochsSecondLayer;
       double stoppingCriterion;
-      int nHiddenUnitsFirstLayer;
-      int scanStrideFirstLayer;
-      int saveData;
-      string saveRandomFeatName;
-      string saveValidationName;
-      int readInData;
-      string readRandomFeatName;
-      string readValidationName;
-      int saveMLP;
-      string saveMLPName;
-      int readMLP;
-      string readMLPName;
-      string poolingType;
-      int splitTrainSet;
    };
 
    class MLPerceptron{
@@ -49,10 +32,10 @@ namespace csvm{
       MLPSettings settings;
     
       int numPatchesPerSquare;
-      double momentum;
-      double p;
-      int dropConnect;
       int maxNumberOfNodes;
+      
+      double lapda;
+      double p;
       
       std::vector<int> layerSizes;
 
@@ -113,7 +96,6 @@ namespace csvm{
 		void crossvaldiation(vector<Feature>& randomFeatures);
 		bool isErrorOnValidationSetLowEnough(vector<Feature>& validationSet);
 	  
-	  
 	  public:
 	  void setSettings(MLPSettings s);
 	  
@@ -137,7 +119,6 @@ namespace csvm{
       void setWeightMatrix(vector<vector<vector<double> > > newWeights);
       void setEpochs(int epochs);
       void setLearningRate(double learningRate);
-   };
-      
+   };      
 }
 #endif
