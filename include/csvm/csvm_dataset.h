@@ -34,6 +34,7 @@ namespace csvm{
       unsigned int nClasses;
       unsigned int imWidth;
       unsigned int imHeight;
+      bool crossVal;
    };
    
    class CSVMDataset{

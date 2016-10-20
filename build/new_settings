@@ -1,0 +1,116 @@
+Dataset
+method MNIST
+nTrainImages 1000
+nTestImages 10
+imageWidth 38
+imageHeight 38
+crossVal 0
+
+General
+Classifier MLP
+Codebook MLP
+nClasses 10
+debugOut FALSE
+normalOut TRUE
+
+Codebook
+generate TRUE 
+standardize TRUE
+whitening FALSE
+method KMEANS
+nClusters 400
+nIterations 20
+SimilarityFunction SOFT_ASSIGNMENT
+similaritySigma 0.05
+
+FeatureExtractor
+method HOG
+nBins 9
+cellSize 5
+cellStride 5
+patchSize 32
+padding None
+useColourPixel False
+interpolation INTERPOLATE_LINEAR
+binmethod CROSSCOLOUR
+postprocessing L2
+debugLevel 0
+
+CleanDescriptor
+standardize NONE
+
+
+ImageScanner
+patchHeight 32
+patchWidth 32
+scanStride 1
+nRandomPatches 1000
+
+MLPController
+stackSize 1
+nSplitsForPooling 1
+poolingType MAX
+epochsValidationSet 5
+scanStrideFirstLayer 1
+splitTrainSet 0
+crossValidationSize 0.1
+saveData 0
+saveRandomFeatName RandomFeat_CIFAR10_5000_24x24
+saveValidationName Validation_CIFAR10_5000_24x24
+readInData 0
+readRandomFeatName RandomFeat_CIFAR10_5000_24x24
+readValidationName Validation_CIFAR10_5000_24x24
+saveMLP 0
+saveMLPName MNIST_4_324_400_10
+readMLP 0
+readMLPName MNIST_4_324_400_10
+
+MLP
+dropout 1
+momentum 0
+nHiddenUnits 500
+nInputUnits 324
+nOutputUnits 10
+nLayers 3
+learningRate .03
+voting SUM
+trainingType CROSSVALIDATION
+crossValidationInterval 5
+epochs 30
+stoppingCriterion 0.999
+
+MLPFirstLevel
+dropout 1
+momentum 0
+nHiddenUnits 500
+nInputUnits 500
+nOutputUnits 10
+nLayers 3
+learningRate .01
+voting SUM
+trainingType CROSSVALIDATION
+crossValidationInterval 5
+epochs 30
+stoppingCriterion 0.999
+
+SVM
+Kernel LINEAR
+AlphaDataInit 0.0000002
+nIterations 500
+learningRate 0.001
+SVM_C_Data 1000
+Cost 1
+D2 1
+sigmaClassicSimilarity 500
+
+LinNet
+nIterations 10
+initWeight 0.01
+learningRate 0.000005
+
+ConvSVM
+learningRate 0.000002
+nIterations 2000
+initWeight 0.000002
+CSVM_C 500
+L2 FALSE

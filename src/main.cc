@@ -104,8 +104,7 @@ int main(int argc,char**argv){
    unsigned int nClasses = c.getNoClasses();
 	
    vector<unsigned int> trainNumbers = c.dataset.getTrainImageNums();
-   int validationSize = c.dataset.getTrainSize() * c.settings.mlpSettings.crossValidationSize;
-   
+   int validationSize = c.dataset.getTrainSize() * c.settings.mlpControlSettings.crossValidationSize;
    vector <vector <int> > classifiedAsTrain      ( nClasses +1, vector<int> ( nClasses +1, 0 ) );
    
    if(normalOut)

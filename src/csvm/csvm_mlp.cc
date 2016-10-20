@@ -35,7 +35,7 @@ double fRand(double fMin, double fMax){
 void MLPerceptron::randomizeWeights(vector<vector<double> >& array,int indexBottomLayer){
 	for( int i = 0; i < layerSizes[indexBottomLayer];i++)
 		for(int j = 0; j < layerSizes[indexBottomLayer+1];j++)
-			array[i][j] = fRand(-0.05,0.05);
+			array[i][j] = fRand(-0.1,0.1);
 }
 
 void MLPerceptron::setDesiredOutput(Feature f){
@@ -85,8 +85,6 @@ void MLPerceptron::initializeVectors(){
 	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
 	prevChange		= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
-        
-        mask                    = vector< vector< vector<bool> > >(settings.nLayers-1,vector< vector<bool> >(maxNumberOfNodes, vector<bool>(maxNumberOfNodes,0)));
         
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -175,24 +173,22 @@ void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
     //only hidden units are dropped
     
     if(isTraining && ((bottomLayer+1) < (settings.nLayers-1))){
-	double totalAc = 0.0;
+	double activeAc = 0.0;
 	double dropedAc = 0.0;
-	
-	for(int i=0;i<layerSizes[bottomLayer+1];i++){
-	  totalAc += activations[bottomLayer+1][i];  
-	}
       
 	for(int i=0;i<layerSizes[bottomLayer+1];i++){
 	   if(drand48() < p){
 	     dropedAc += activations[bottomLayer+1][i];
 	     activations[bottomLayer+1][i] = 0.0;
 	   }
+	   else
+               activeAc += activations[bottomLayer+1][i];
 	}
 	for(int i=0;i<layerSizes[bottomLayer+1];i++){
-            if(totalAc-dropedAc < 0.01)
+            if(activeAc < 0.01)
                 activations[bottomLayer+1][i] = 0.0;
             else
-                activations[bottomLayer+1][i] = activations[bottomLayer+1][i] * (totalAc/(totalAc-dropedAc));
+                activations[bottomLayer+1][i] = activations[bottomLayer+1][i] * ((activeAc + dropedAc)/activeAc);
 	}
     }
 }
@@ -230,7 +226,8 @@ void MLPerceptron::calculateActivationLayer(int isTraining, int bottomLayer){
                         activations[bottomLayer+1][i] = activationFunction(summedActivation);
                 summedActivation = 0;
         }
-        if(settings.dropout) initiateDropOut(isTraining,bottomLayer);
+        if(settings.dropout) 
+            initiateDropOut(isTraining,bottomLayer);
 }
 
 void MLPerceptron::feedforward(int isTraining){
@@ -279,7 +276,9 @@ void MLPerceptron::hiddenDelta(int index){
         for(int i = 0; i < layerSizes[index];i++){
                 for(int j = 0; j < layerSizes[index+1];j++)
                         sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
-                deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(activations[index][i]);                    
+                deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(activations[index][i]);    
+                
+                sumDeltaWeights = 0;
         }
 }	
 
@@ -313,10 +312,7 @@ void MLPerceptron::activationsToOutputProbabilities(){
 	}
 	
 	for(int i = 0; i< settings.nOutputUnits; i++){
-                if (sumOfActivations < 0.01)
-                     activations[settings.nLayers -1][i] = 0.0;
-                else
-                activations[settings.nLayers -1][i] = activations[settings.nLayers -1][i]/sumOfActivations;
+            activations[settings.nLayers -1][i] /= sumOfActivations;
         }
 }
 
@@ -391,7 +387,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0 or i == epochs-1){
 			cout << i << ", ";
-			if(  (!validationSet.empty() && isErrorOnValidationSetLowEnough(validationSet)) || (!testSet.empty() && isErrorOnValidationSetLowEnough(testSet)))
+			if(isErrorOnValidationSetLowEnough(validationSet) || (!testSet.empty() && isErrorOnValidationSetLowEnough(testSet)))
 				break;
 			cout << errorPreviousEpoch << endl;
 		}

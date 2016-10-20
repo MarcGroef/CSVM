@@ -57,23 +57,6 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
-   stream >> type;
-   if (type == "epochsSecondLayer") {
-      stream >> mlpControlSettings.epochsSecondLayer;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
-      exit(-1);
-   }
-   
-    stream >> type;
-   if (type == "nHiddenUnitsFirstLayer") {
-      stream >> mlpControlSettings.nHiddenUnitsFirstLayer;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
-      exit(-1);
-   }
     stream >> type;
    if (type == "scanStrideFirstLayer") {
       stream >> mlpControlSettings.scanStrideFirstLayer;
@@ -86,6 +69,15 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
     stream >> type;
    if (type == "splitTrainSet") {
       stream >> mlpControlSettings.splitTrainSet;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }
+   
+    stream >> type;
+   if(type == "crossValidationSize"){
+       stream >> mlpControlSettings.crossValidationSize;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -182,12 +174,15 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    }
 }
 
-void CSVMSettings::parseMLPSettings(ifstream& stream){
+void CSVMSettings::parseMLPSettings(ifstream& stream,bool bottomLevel){
    string type, setting;
    
    stream >> type;
    if (type == "dropout") {
-      stream >> mlpSettings.dropout;
+       if(bottomLevel)
+        stream >> mlpSettings.dropout;
+       else
+           stream >> mlpSettingsFirstLevel.dropout;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -195,7 +190,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
       stream >> type;
    if (type == "momentum") {
-      stream >> mlpSettings.momentum;
+       if(bottomLevel)
+        stream >> mlpSettings.momentum;
+       else
+           stream >> mlpSettingsFirstLevel.momentum;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -203,7 +201,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
    stream >> setting;
    if (setting == "nHiddenUnits") {
+       if(bottomLevel)
       stream >> mlpSettings.nHiddenUnits;
+      else
+           stream >> mlpSettingsFirstLevel.nHiddenUnits;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
@@ -212,7 +213,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    
    stream >> setting;
    if (setting == "nInputUnits") {
-      stream >> mlpSettings.nInputUnits;
+       if(bottomLevel)
+        stream >> mlpSettings.nInputUnits;
+       else
+           stream >> mlpSettingsFirstLevel.nInputUnits;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
@@ -221,7 +225,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    
    stream >> setting;
    if (setting == "nOutputUnits") {
-      stream >> mlpSettings.nOutputUnits;
+       if(bottomLevel)
+        stream >> mlpSettings.nOutputUnits;
+       else
+           stream >> mlpSettingsFirstLevel.nOutputUnits;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
@@ -230,7 +237,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    
     stream >> setting;
    if (setting == "nLayers") {
+       if(bottomLevel)
       stream >> mlpSettings.nLayers;
+      else
+           stream >> mlpSettingsFirstLevel.nLayers;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
@@ -238,7 +248,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
      stream >> setting;
    if (setting == "learningRate") {
+       if(bottomLevel)
       stream >> mlpSettings.learningRate;
+      else
+           stream >> mlpSettingsFirstLevel.learningRate;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
@@ -246,7 +259,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
     stream >> type;
    if (type == "voting") {
+       if(bottomLevel)
       stream >> mlpSettings.voting;
+      else
+           stream >> mlpSettingsFirstLevel.voting;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -254,10 +270,12 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
     stream >> type;
    if (type == "trainingType") {
+       if(bottomLevel)
+        stream >> mlpSettings.trainingType;
+       else
+           stream >> mlpSettingsFirstLevel.trainingType;
 
-       stream >> mlpSettings.trainingType;
-
-       if(mlpSettings.trainingType != "CROSSVALIDATION"){
+       if((mlpSettings.trainingType != "CROSSVALIDATION" && bottomLevel) || ( mlpSettingsFirstLevel.trainingType != "CROSSVALIDATION" && !bottomLevel)){
             cout << "This training type is unknown. Change this to a known training type in the settings file" << endl;
             exit(-1);
     }
@@ -268,7 +286,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
    stream >> type;
    if(type == "crossValidationInterval"){
-	stream >> mlpSettings.crossValidationInterval;
+	if(bottomLevel)
+            stream >> mlpSettings.crossValidationInterval;
+        else
+           stream >> mlpSettingsFirstLevel.crossValidationInterval;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -276,16 +297,11 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    }
 
    stream >> type;
-   if(type == "crossValidationSize"){
-	stream >> mlpSettings.crossValidationSize;
-   }
-   else {
-      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
-      exit(-1);
-}
-   stream >> type;
    if (type == "epochs") {
+       if(bottomLevel)
       stream >> mlpSettings.epochs;
+      else
+           stream >> mlpSettingsFirstLevel.epochs;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -294,7 +310,10 @@ void CSVMSettings::parseMLPSettings(ifstream& stream){
    
     stream >> type;
    if (type == "stoppingCriterion") {
+       if(bottomLevel)
       stream >> mlpSettings.stoppingCriterion;
+      else
+           stream >> mlpSettingsFirstLevel.stoppingCriterion;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -450,6 +469,13 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream) {
       exit(-1);
    }
    stream >> datasetSettings.imHeight;
+   
+   stream >> setting;
+   if (setting != "crossVal") {
+      cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile" << setting << " . Exitting...\n";
+      exit(-1);
+   }
+   stream >> datasetSettings.crossVal;
 }
 
 
@@ -1201,7 +1227,9 @@ void CSVMSettings::readSettingsFile(string dir) {
    while (getline(file, line) && line != "MLPController");
    parseMLPControllerSettings(file);
    while (getline(file, line) && line != "MLP");
-   parseMLPSettings(file);
+   parseMLPSettings(file,1);
+   while (getline(file, line) && line != "MLPFirstLevel");
+   parseMLPSettings(file,0);
    while (getline(file, line) && line != "SVM");
    parseSVMSettings(file);
    while (getline(file, line) && line != "LinNet");

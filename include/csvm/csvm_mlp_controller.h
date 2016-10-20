@@ -25,6 +25,7 @@ namespace csvm{
         int nHiddenUnitsFirstLayer;
         int scanStrideFirstLayer;
         int saveData;
+        double crossValidationSize;
         string saveRandomFeatName;
         string saveValidationName;
         int readInData;
@@ -44,7 +45,7 @@ namespace csvm{
         ImageScannerSettings scannerSettings;
         CSVMDataset_Settings datasetSettings;
         MLPControllerSettings controllerSettings;
-        MLPSettings mlpSettings;
+        MLPSettings mlpSettings,mlpSettingsFirstLevel;
                 
     };    
 	class MLPController{

@@ -46,6 +46,7 @@ void CSVMClassifier::constructMLPs(){
    
    controller.controllerSettings = settings.mlpControlSettings;
    controller.mlpSettings = settings.mlpSettings;
+   controller.mlpSettingsFirstLevel = settings.mlpSettingsFirstLevel;
    controller.featureSettings = settings.featureSettings;
    controller.scannerSettings = settings.scannerSettings;
    controller.datasetSettings = settings.datasetSettings;

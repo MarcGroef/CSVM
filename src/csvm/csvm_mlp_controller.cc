@@ -22,7 +22,7 @@ void MLPController::setSettings(controllerSettingsPack controller){
     
     nMLPs = pow(controllerSettings.nSplitsForPooling,2);
     
-    validationSize = dataset->getTrainSize()*mlpSettings.crossValidationSize;
+    validationSize = dataset->getTrainSize()*controllerSettings.crossValidationSize;
     trainSize = dataset->getTrainSize()-validationSize;
 	
     first = 1;
@@ -57,10 +57,7 @@ void MLPController::setSettings(controllerSettingsPack controller){
     //settings second parameter	
     if(controllerSettings.stackSize == 2){
             MLPerceptron mlp;
-            firstLevelMLP = mlpSettings;
-            firstLevelMLP.nInputUnits = mlpSettings.nHiddenUnits * nMLPs;
-            firstLevelMLP.nHiddenUnits = controllerSettings.nHiddenUnitsFirstLayer;//find parameter
-            mlp.setSettings(firstLevelMLP);
+            mlp.setSettings(controller.mlpSettingsFirstLevel);
             mlps[1].push_back(mlp);
     }
     /*
@@ -455,15 +452,16 @@ void MLPController::trainMutipleMLPs()
                 cout << endl << endl;
         }
         */
-        mlps[1][0].setEpochs(controllerSettings.epochsSecondLayer);
-
-        //setSettingsSecondLayer();
         //Training on the training set and validating on both the validation and test set
-        mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,testSetFirstLevel,1); 
+        //mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,testSetFirstLevel,1); 
         
         //Training on the validation set and validating on the testSet
-        //mlps[1][0].train(inputValFirstLevel,testSetFirstLevel,1); 
+       // mlps[1][0].train(inputValFirstLevel,testSetFirstLevel,1); 
         //cout << "mlp[0] from level 1 finished training on the validation set" << endl;
+        
+        //Training on the training set and validating on the validationSet
+        mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1); 
+        cout << "mlp[0] from level 1 finished training on the validation set" << endl;
         
     }
 }
@@ -545,45 +543,9 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	if(controllerSettings.stackSize == 2){
 		vector<Feature> testDataFirstLevel; //empty feature vector that will be filled with first level features
 		setFirstLevelData(testFeaturesBySquare,testDataFirstLevel,numOfImages);
-		/*
-		for(int i=0;i<testDataFirstLevel[0].size;i++){
-			cout << testDataFirstLevel[0].content[i] << ", "; 
-		}
-		cout << endl;
-		*/
-	  /*if(first == 1){
-	    vector<vector<vector<double > > > newWeights;
-	    
-	    for(int i=0;i<nMLPs;i++){
-	     newWeights = mlps[0][i].getWeightMatrix();
-	     dropOutTesting(newWeights);
-	     mlps[0][i].setWeightMatrix(newWeights);
-	    }
-	    
-	    newWeights = mlps[1][0].getWeightMatrix();
-	    dropOutTesting(newWeights);
-	    mlps[1][0].setWeightMatrix(newWeights);
-	    
-	    first=0;
-	  }*/
+
 		normalizeInput(testDataFirstLevel,1); 
-		//changeRange(dataFeatures,0.0,0.5);
-		/*
-		for(int i=0;i<testDataFirstLevel.size();i++){
-			for(int j=0;j<testDataFirstLevel[i].size;j++){
-				cout << testDataFirstLevel[i].content[j] << ", ";
-				} cout << endl;
-			}
-			exit(-1);
-		*/
-		
-		//for(int i=0;i<10;i++){
-		//	cout << votingHisto[i] << endl;
-		//}
-		//cout << endl;
-		
-		//cout << "answer: " << answer << endl;
-		
+
 		answer = mlps[1][0].classify(testDataFirstLevel);
 	}
 	return answer;
@@ -969,7 +931,7 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
 		sizeOfFeatureVector = readInNRandomPatches;
 	}
 	else {
-		sizeOfFeatureVector = dataset->getTrainSize() * mlpSettings.crossValidationSize * amountOfPatchesImage;
+		sizeOfFeatureVector = dataset->getTrainSize() * controllerSettings.crossValidationSize * amountOfPatchesImage;
 	}
 
 	for(int i=0;i<sizeOfFeatureVector;i++){

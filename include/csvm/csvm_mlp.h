@@ -21,7 +21,6 @@ namespace csvm{
       string voting;
       string trainingType;
       int crossValidationInterval;
-      double crossValidationSize;
       int epochs;
       double stoppingCriterion;
    };

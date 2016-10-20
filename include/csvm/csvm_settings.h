@@ -75,7 +75,7 @@ using namespace csvm;
       ConvSVMSettings convSVMSettings;
       DCBSettings dcbSettings; //deep codebook
       MLPControllerSettings mlpControlSettings;
-      MLPSettings mlpSettings;
+      MLPSettings mlpSettings,mlpSettingsFirstLevel;
 
       
      // CleanSettings clSettings; // clean descriptor
@@ -93,7 +93,7 @@ using namespace csvm;
       void parseConvSVMSettings(ifstream& stream);
       void parseCleanDescrSettings(ifstream& stream);
       void parseGeneralSettings(ifstream& stream);
-      void parseMLPSettings(ifstream& stream);
+      void parseMLPSettings(ifstream& stream,bool bottomLevel);
       void parseMLPControllerSettings(ifstream& stream);
    };
 #endif

@@ -182,14 +182,13 @@ void CSVMDataset::splitDataset(){
    for(size_t imIdx = 0; imIdx < nData; ++imIdx)
       tempIdces[imIdx] = imIdx;
    //shuffle of the dataset 
-   /*
-   for(size_t shuffleIdx = 0; shuffleIdx < nData; ++shuffleIdx){
-      unsigned int randIdx = rand() % nData;
-      unsigned int temp = tempIdces[shuffleIdx];
-      tempIdces[shuffleIdx] = tempIdces[randIdx];
-      tempIdces[randIdx] = temp;
-   }
-   */
+   if(settings.crossVal)
+        for(size_t shuffleIdx = 0; shuffleIdx < nData; ++shuffleIdx){
+            unsigned int randIdx = rand() % nData;
+            unsigned int temp = tempIdces[shuffleIdx];
+            tempIdces[shuffleIdx] = tempIdces[randIdx];
+            tempIdces[randIdx] = temp;
+        }
    unsigned int nTrainData = settings.nTrainImages;
    unsigned int nTestData = settings.nTestImages;
    
