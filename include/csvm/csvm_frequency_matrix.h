@@ -11,11 +11,11 @@
       
       
       class FreqMatrix{
-         vector<double> triangle;
+         vector<float> triangle;
          int size;
-         double mean;
-         double stddev;
-	 double totalInput;
+         float mean;
+         float stddev;
+	 float totalInput;
       public:
         FreqMatrix(int size) ;
 	FreqMatrix();
@@ -23,8 +23,8 @@
 	void reserve(int size);
         int getTriangleIndex(int i, int j);
         void setZeros();
-        void addCombo(int wordA, int wordB, double activationA, double activationB);
-        double getCombo(int wordA, int wordB);
+        void addCombo(int wordA, int wordB, float activationA, float activationB);
+        float getCombo(int wordA, int wordB);
         void analyze();
 	void normalize();
       };

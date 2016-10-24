@@ -9,9 +9,9 @@ using namespace csvm;
       int intVal;
    };
    
-   union charDouble{
+   union charfloat{
       char chars[8];
-      double doubleVal;
+      float floatVal;
    };
    
    RBM::RBM(){
@@ -35,7 +35,7 @@ using namespace csvm;
    }
    
    
-   RBM::RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries){
+   RBM::RBM(int nLayers,int* layerSizes,float learningRate,float** dataset,int nDataEntries){
       initLayerStack(&layers,nLayers,layerSizes);
       data.data = dataset;
       data.size = nDataEntries;
@@ -55,7 +55,7 @@ using namespace csvm;
    }
    
    
-   void RBM::linkDataset(double** data,int nEntries){
+   void RBM::linkDataset(float** data,int nEntries){
       this->data.data = data; 
       this->data.size = nEntries;
      
@@ -73,15 +73,15 @@ using namespace csvm;
       performRBM(&layers,&data,settings.learningRate,0,settings.nGibbsSteps);
    }
    
-   double* RBM::getOutput(){
-      double* output = new double[settings.layerSizes[settings.nLayers-1]];
+   float* RBM::getOutput(){
+      float* output = new float[settings.layerSizes[settings.nLayers-1]];
       for (int i = 0; i < settings.layerSizes[settings.nLayers - 1];i++){
          output[i] = layers.layers[settings.nLayers-1][i];
       }
       return output;
    }
    
-   double* RBM::run(double* input){
+   float* RBM::run(float* input){
       for(int i = 0;i < settings.layerSizes[0];i++){
          layers.layers[0][i] = input[i];
       }
@@ -96,7 +96,7 @@ using namespace csvm;
       * 
       *
       */
-      charDouble fancyDouble;
+      charfloat fancyfloat;
       charInt fancyInt;
       
       ofstream file(filename.c_str(), ios::out | ios::binary);
@@ -119,9 +119,9 @@ using namespace csvm;
       for(size_t layer = 0; layer < (unsigned int)settings.nLayers - 1; ++layer){
          for(size_t lIdx1 = 0; lIdx1 < (unsigned int) settings.layerSizes[layer]; ++lIdx1){  //source neuron index
             for(size_t lIdx2 = 0; lIdx2 < (unsigned int)settings.layerSizes[layer]; ++lIdx2){  //target neuron
-               fancyDouble.doubleVal = layers.weights[layer][lIdx1][lIdx2];
+               fancyfloat.floatVal = layers.weights[layer][lIdx1][lIdx2];
                for(size_t idxt = 0; idxt < 8; ++ idxt)
-                  file << fancyDouble.chars[idxt];
+                  file << fancyfloat.chars[idxt];
             }
          }
       }
@@ -131,7 +131,7 @@ using namespace csvm;
    }
    
    void RBM::importNetwork(string filename){
-      charDouble fancyDouble;
+      charfloat fancyfloat;
       charInt fancyInt;
       
       ifstream file(filename.c_str(), ios::in | ios::binary);
@@ -169,30 +169,30 @@ using namespace csvm;
       for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers); ++layer)
          free(layers.layers[layer]);
       free(layers.layers);
-      layers.layers = (double**) malloc(layers.nLayers * sizeof(double*));
+      layers.layers = (float**) malloc(layers.nLayers * sizeof(float*));
       assert(layers.layers != NULL);
       
       
       for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers); ++layer){
-         layers.layers[layer] = (double*) malloc(layers.layerSizes[layer] * sizeof(double));
+         layers.layers[layer] = (float*) malloc(layers.layerSizes[layer] * sizeof(float));
          assert(layers.layers[layer] != NULL);
       }
       
       //allocate weights
-      layers.weights = (double***) malloc ((layers.nLayers - 1)* sizeof(double**));
+      layers.weights = (float***) malloc ((layers.nLayers - 1)* sizeof(float**));
       assert(layers.weights != NULL);
       for(size_t layer = 0; layer <  (unsigned int)(layers.nLayers - 1); ++layer){
          for(size_t idxL1 = 0; idxL1 <  (unsigned int)(layers.layerSizes[layer]); ++idxL1){
-            layers.weights[layer] = (double**) malloc(layers.layerSizes[layer] * sizeof(double*));
+            layers.weights[layer] = (float**) malloc(layers.layerSizes[layer] * sizeof(float*));
             assert(layers.weights[layer] != NULL); 
             for(size_t idxL2 = 0; idxL2 < (unsigned int)( layers.layerSizes[layer + 1]); ++idxL2){
-               layers.weights[layer][idxL1] = (double*) malloc(layers.layerSizes[layer + 1] * sizeof(double));
+               layers.weights[layer][idxL1] = (float*) malloc(layers.layerSizes[layer + 1] * sizeof(float));
                assert(layers.weights[layer][idxL1] != NULL);
                for(size_t weight = 0; weight <  (unsigned int)(layers.layerSizes[layer + 1]); ++weight){
-                  for(size_t idxDouble = 0; idxDouble < 4; ++ idxDouble){
-                     file >> fancyDouble.chars[idxDouble];
+                  for(size_t idxfloat = 0; idxfloat < 4; ++ idxfloat){
+                     file >> fancyfloat.chars[idxfloat];
                   }
-                  layers.weights[layer][idxL1][idxL2] = fancyDouble.doubleVal;
+                  layers.weights[layer][idxL1][idxL2] = fancyfloat.floatVal;
                }
             }
          }

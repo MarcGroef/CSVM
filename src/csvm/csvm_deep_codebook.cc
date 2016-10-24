@@ -37,20 +37,20 @@ void DeepCodebook::setSettings(DCBSettings& s){
 //*********** PRIVATE ********************
 
 //Calculate activations of centroids given a feature
-vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
+vector<float> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    
    unsigned int nCentroids = c.size();
    unsigned int nDims = p.content.size();
    
-   vector<double> activations(nCentroids, 0);
-   vector<double> distances(nCentroids, 0);
+   vector<float> activations(nCentroids, 0);
+   vector<float> distances(nCentroids, 0);
    
    
    
    //Radial base function (Gaussian sheep)
 	
    if(settings.simFunction == DCB_RBF){
-      double dev;
+      float dev;
       
       for(unsigned int word = 0; word < nCentroids; ++word){
          
@@ -64,15 +64,15 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
    } else if (settings.simFunction == DCB_SOFT_ASSIGNMENT){
       //As done by Ng,Coates:
       
-      double mean = 0.0;
-      double xx = 0;
+      float mean = 0.0;
+      float xx = 0;
       for(size_t dim = 0; dim < nDims; ++dim){
          xx += p.content[dim] * p.content[dim];
       }
       
       for(unsigned int word = 0; word < nCentroids; ++word){
-         double cc = 0.0;
-         double xc = 0.0;
+         float cc = 0.0;
+         float xc = 0.0;
          
          for(size_t dim = 0; dim < nDims; ++dim){
             
@@ -80,7 +80,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
             xc += c[word].content[dim] * p.content[dim];
             
          }
-         //double dist = 0.0;
+         //float dist = 0.0;
          //for(size_t dim = 0; dim < dataDims; ++dim){
          //   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
          //}
@@ -90,7 +90,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          
          mean += distances[word];
       }
-      mean /= (double)(nCentroids);
+      mean /= (float)(nCentroids);
       for(unsigned int word = 0; word < nCentroids; ++word){
          activations[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
       }
@@ -99,15 +99,15 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
 		//With cosine distances
       
 		
-      double mean = 0.0;
-      double xx = 0;
+      float mean = 0.0;
+      float xx = 0;
       for(size_t dim = 0; dim < nDims; ++dim){
          xx += p.content[dim] * p.content[dim];
       }
       
       for(unsigned int word = 0; word < nCentroids; ++word){
-         double cc = 0.0;
-         double xc = 0.0;
+         float cc = 0.0;
+         float xc = 0.0;
          
          for(size_t dim = 0; dim < nDims; ++dim){
             
@@ -122,22 +122,22 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          
          mean += distances[word];
       }
-      mean /= (double)(nCentroids);
+      mean /= (float)(nCentroids);
       for(unsigned int word = 0; word < nCentroids; ++word){
          activations[word] += ( mean - distances[word] > 0.0 ? mean - distances[word] : 0.0);
       }
 	}
 	//more iterations of max-clipping
    else if(settings.simFunction == DCB_SOFT_ASSIGNMENT_CLIPPING){
-      double mean = 0.0;
-      double xx = 0;
+      float mean = 0.0;
+      float xx = 0;
       
       for(size_t dim = 0; dim < nDims; ++dim){
          xx += p.content[dim] * p.content[dim];
       }
       for(unsigned int word = 0; word < nCentroids; ++word){
-         double cc = 0.0;
-         double xc = 0.0;
+         float cc = 0.0;
+         float xc = 0.0;
          
          for(size_t dim = 0; dim < nDims; ++dim){
             cc += c[word].content[dim] * c[word].content[dim];
@@ -151,7 +151,7 @@ vector<double> DeepCodebook::calcSimilarity(Feature& p, vector<Centroid>& c){
          
          mean += distances[word];
       }
-      mean /= (double)(nCentroids);
+      mean /= (float)(nCentroids);
       for(unsigned int word = 0; word < nCentroids; ++word){
          activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
       }
@@ -212,17 +212,17 @@ void DeepCodebook::calculateSizes(unsigned int imSize, unsigned int patchSize, u
 
 //Next two function recursivly call each other throughout the layers. Maintaining a relative low memory consumption, while calculating all the maps
 
-vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
+vector<float> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){   //vector elements are poolsum for each centroid
    //cout << "calc poolmap(" << depth << ") at " << x << ", " << y << endl; 
    unsigned int scanStride = fmSizes[depth] / plSizes[depth];
    unsigned int scanWidth = fmSizes[depth] % plSizes[depth] == 0 ? scanStride : scanStride + 1;
    
   
-   vector<double> sum(nCentroids[depth], 0);
+   vector<float> sum(nCentroids[depth], 0);
    for(size_t cvX = x * scanStride; cvX < (x + 1) * scanWidth; ++cvX){
       for(size_t cvY = y * scanStride; cvY < (y + 1) * scanWidth; ++cvY){
          
-         vector<double> cvVals = calculateConvMapAt(im, depth, cvX, cvY);
+         vector<float> cvVals = calculateConvMapAt(im, depth, cvX, cvY);
          for(size_t centrIdx = 0; centrIdx < nCentroids[depth]; ++centrIdx){
             sum[centrIdx] += cvVals[centrIdx];
          }
@@ -231,13 +231,13 @@ vector<double> DeepCodebook::calculatePoolMapAt(Image* im, unsigned int depth, u
    return sum;
 }
 //calc value at location of feature maps
-vector<double> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
+vector<float> DeepCodebook::calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y){  //feature map element at x,y for each centroid
    //cout << "calc cmap(" << depth << ") at " << x << ", " << y << endl; 
    if(depth == 0){//first layer, thus use image-patch extraction
       Feature f = featExtr->extract(scanner->getPatchAt(im, x, y));
       return calcSimilarity(f, layerStack[depth]);
    }else{//recursive step
-      vector<double> pm = calculatePoolMapAt(im, depth - 1, x, y);
+      vector<float> pm = calculatePoolMapAt(im, depth - 1, x, y);
       Feature f(pm);
       return calcSimilarity(f, layerStack[depth]);
    }
@@ -268,7 +268,7 @@ void DeepCodebook::generateCentroids(){
             cout << "Collecting next-level patches..\n";
          for(size_t nIm = 0; nIm < nRandomPatches[depthIdx]; ++nIm){
             unsigned int imIdx = rand() % dataset->getTotalImages();
-            vector<double> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);
+            vector<float> conv = calculatePoolMapAt(dataset->getImagePtr(imIdx), depthIdx - 1, rand() % scanWidth, rand() % scanWidth);
             
             randomPatches.push_back(Feature(conv));
          }
@@ -280,9 +280,9 @@ void DeepCodebook::generateCentroids(){
 
 
 //normalize, be centering and stddev units
-void standardize(vector<double>& vec){
-   double mean = 0;
-   double stddev = 0;
+void standardize(vector<float>& vec){
+   float mean = 0;
+   float stddev = 0;
    
    unsigned int size = vec.size();
    for(size_t idx = 0; idx < size; ++idx){
@@ -299,12 +299,12 @@ void standardize(vector<double>& vec){
    }
 }
 
-vector<double> DeepCodebook::getActivations(Image* im){
-   vector<double> activations;
+vector<float> DeepCodebook::getActivations(Image* im){
+   vector<float> activations;
    unsigned int plSize = plSizes[nLayers - 1];
    for(size_t pmX = 0; pmX < plSize; ++pmX){
       for(size_t pmY = 0; pmY < plSize; ++pmY){
-         vector<double> pmAct = calculatePoolMapAt(im, nLayers - 1, pmX, pmY);
+         vector<float> pmAct = calculatePoolMapAt(im, nLayers - 1, pmX, pmY);
          //standardize(pmAct);
          activations.insert(activations.begin(), pmAct.begin(), pmAct.end());
       }

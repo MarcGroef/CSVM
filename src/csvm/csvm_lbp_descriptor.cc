@@ -300,7 +300,7 @@ unsigned int LBPDescriptor::computeLBP(unsigned int x, unsigned int y, Patch pat
     return (unsigned int)pixelFeatures.to_ulong();
 }
 
-void LBPDescriptor::binLBP(unsigned int X, unsigned int Y, LBPColour col, vector<double>& cellLBPHistogram, Patch block) {
+void LBPDescriptor::binLBP(unsigned int X, unsigned int Y, LBPColour col, vector<float>& cellLBPHistogram, Patch block) {
     //here we deal with 
     //cout << "computing lbp of (" << X << "," << Y << ")\n";
     //cout << "computing lbp of pixel (" << (X) << "," << (Y) << "), has center intensity" << ( settings.useColourPixel ? block.getPixel(X,Y,col):block.getGreyPixel(X, Y)) << ", with lbp= ";
@@ -310,14 +310,14 @@ void LBPDescriptor::binLBP(unsigned int X, unsigned int Y, LBPColour col, vector
     ++cellLBPHistogram[uniformFeatureIndex[ lbpval ]];
 }
 
-vector<double> LBPDescriptor::computeCellLBP(unsigned int cellX, unsigned int cellY, Patch patch) {
+vector<float> LBPDescriptor::computeCellLBP(unsigned int cellX, unsigned int cellY, Patch patch) {
     //cout << "computing cell lbp of X:" << cellX << ", Y: " << cellY << endl;
 
-    vector<double> returnLBP(0, 0.0);
+    vector<float> returnLBP(0, 0.0);
     
     if (settings.binmethod == LCROSSCOLOUR) {
         //cout << "crosscolour binning" << endl;
-        vector <double> cellOrientationHistogram(settings.LBPSize, 0.0);
+        vector <float> cellOrientationHistogram(settings.LBPSize, 0.0);
 
             for (size_t X = 0; X < settings.cellSize; ++X)
             {
@@ -344,10 +344,10 @@ vector<double> LBPDescriptor::computeCellLBP(unsigned int cellX, unsigned int ce
     }
     else {
 
-        vector <double> cellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
-        vector <double> redCellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
-        vector <double> blueCellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
-        vector <double> greenCellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+        vector <float> cellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+        vector <float> redCellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+        vector <float> blueCellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+        vector <float> greenCellOrientationHistogram(settings.LBPSize, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
 
         for (size_t X = 0; X < settings.cellSize; ++X) {
             for (size_t Y = 0; Y < settings.cellSize; ++Y) {
@@ -376,7 +376,7 @@ vector<double> LBPDescriptor::computeCellLBP(unsigned int cellX, unsigned int ce
 Feature LBPDescriptor::getLBP(Patch& patch) {
     int patchWidth = patch.getWidth();
     int patchHeight = patch.getHeight();
-    vector<double> LBPHistogram(0, 0);
+    vector<float> LBPHistogram(0, 0);
     settings.patchSize = patch.getHeight();
 
     int colours = ((settings.useColourPixel) * 2) + 1;
@@ -387,7 +387,7 @@ Feature LBPDescriptor::getLBP(Patch& patch) {
             for (int cellY = 1; cellY + settings.cellSize <= patchHeight-1; cellY += settings.cellStride) {
                 //cout << "cell: " << cellX << ", " << cellY << '\n';
 
-                vector <double> cellOrientationHistogram = computeCellLBP(cellX, cellY, patch);    //cellOrientationHistogram tracks the HOG for the current cell
+                vector <float> cellOrientationHistogram = computeCellLBP(cellX, cellY, patch);    //cellOrientationHistogram tracks the HOG for the current cell
                 //cout << "\ncellorientationHistogram:\n";
                 //for (unsigned int ita = 0; ita < cellOrientationHistogram.size(); ++ita) {
                 //    cout << cellOrientationHistogram[ita] << " , ";
@@ -401,7 +401,7 @@ Feature LBPDescriptor::getLBP(Patch& patch) {
             for (int cellY = 0; cellY + settings.cellSize <= patchHeight; cellY += settings.cellStride) {
                 //cout << "cell: " << cellX << ", " << cellY << '\n';
 
-                vector <double> cellOrientationHistogram = computeCellLBP(cellX, cellY, patch);    //cellOrientationHistogram tracks the HOG for the current cell
+                vector <float> cellOrientationHistogram = computeCellLBP(cellX, cellY, patch);    //cellOrientationHistogram tracks the HOG for the current cell
 
                 LBPHistogram.insert(LBPHistogram.end(), cellOrientationHistogram.begin(), cellOrientationHistogram.end());
             }

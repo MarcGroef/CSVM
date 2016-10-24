@@ -11,16 +11,16 @@ using namespace csvm;
  */
 
 
-LinNetwork::LinNetwork(){//(unsigned int nClasses, unsigned int nCentroids, double initWeights){
+LinNetwork::LinNetwork(){//(unsigned int nClasses, unsigned int nCentroids, float initWeights){
    //nClasses = 10;
    //nCentroids = 200 * 4;
    //weights.reserve(nClasses);
    
    
    //for(size_t networkClassIdx = 0; networkClassIdx < nClasses; ++networkClassIdx){
-      //weights[networkClassIdx] = vector< vector<double> >(nClasses);
+      //weights[networkClassIdx] = vector< vector<float> >(nClasses);
       /*for(size_t clIdx = 0; clIdx < nClasses; ++ clIdx){
-         //weights[networkClassIdx][clIdx] = vector<double>(nCentroids);
+         //weights[networkClassIdx][clIdx] = vector<float>(nCentroids);
          for(size_t centrIdx = 0; centrIdx < nCentroids; ++ centrIdx){
             weights[networkClassIdx][clIdx][centrIdx] = initWeights;
          }
@@ -33,11 +33,11 @@ void LinNetwork::setSettings(LinNetSettings s){
 
 }
 
-double sigmoid(double x){
+float sigmoid(float x){
    return 1.0/(1.0 + exp(-1.0 * x));
 }
-double LinNetwork::computeOutput(unsigned int networkClassIdx,vector<double>& clActivations){
-   double out = 0.0;
+float LinNetwork::computeOutput(unsigned int networkClassIdx,vector<float>& clActivations){
+   float out = 0.0;
 
    for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
       //cout << "weights = " <<  weights[networkClassIdx][clIdx][centrIdx] << ", activ = " << clActivations[clIdx][centrIdx] << ", sum = " << out <<endl;
@@ -51,20 +51,20 @@ double LinNetwork::computeOutput(unsigned int networkClassIdx,vector<double>& cl
    return out;
 }
 
-void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds){
+void LinNetwork::train(vector< vector< float > >& activations, CSVMDataset* ds){
 
    unsigned int nData = activations.size();
-   double output;
-   double error;
-   double target;
-   double learningRate = settings.learningRate;
-   double deltaWeight;
-   double errorSum = 100;
-   double sqErrorSum = 100;
-   double sumOfChange;
+   float output;
+   float error;
+   float target;
+   float learningRate = settings.learningRate;
+   float deltaWeight;
+   float errorSum = 100;
+   float sqErrorSum = 100;
+   float sumOfChange;
    
-   weights = vector< vector<double> > (settings.nClasses, vector<double>(activations[0].size(),settings.initWeight));
-   biases = vector<double>(settings.nClasses,0);
+   weights = vector< vector<float> > (settings.nClasses, vector<float>(activations[0].size(),settings.initWeight));
+   biases = vector<float>(settings.nClasses,0);
    
    //cout << "nCentroids = " << activations[0].size() << endl;;
    settings.nCentroids = activations[0].size();
@@ -92,7 +92,7 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
             
             for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
                
-               double activ = activations[dataIdx][centrIdx];
+               float activ = activations[dataIdx][centrIdx];
                deltaWeight = learningRate * error * -1.0 /* output * (1.00 - output) */* activ;
                sumOfChange += (deltaWeight < 0 ? deltaWeight * -1 : deltaWeight);
                
@@ -115,10 +115,10 @@ void LinNetwork::train(vector< vector< double > >& activations, CSVMDataset* ds)
    }
 }
 
-unsigned int LinNetwork::classify(vector< double > imageActivations){
+unsigned int LinNetwork::classify(vector< float > imageActivations){
    unsigned int maxLabel = 0;
-   double maxOutput = computeOutput(0, imageActivations);
-   double output;
+   float maxOutput = computeOutput(0, imageActivations);
+   float output;
    //cout << "Classify!\n";
    //cout << "output 0 = " << maxOutput << endl;
    for(size_t labelIdx = 1; labelIdx < settings.nClasses; ++labelIdx){

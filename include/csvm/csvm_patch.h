@@ -20,8 +20,8 @@ namespace csvm{
       unsigned int width,height;
       bool isSet;
       
-      double mean;
-      double stddev;
+      float mean;
+      float stddev;
       void analyze();
       int calculateSquare();
       
@@ -38,7 +38,7 @@ namespace csvm{
       int getWidth();
       int getHeight();
       int getSquare();
-      double getGreyPixel(int x,int y);
+      float getGreyPixel(int x,int y);
       string getLabel();
       unsigned int getLabelId();
       bool equals(Patch p);

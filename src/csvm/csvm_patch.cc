@@ -63,11 +63,11 @@ void Patch::setArea(int x,int y,int width,int height){
 }
 
 int Patch::calculateSquare(){
-	double middleImageX = source->getWidth()/2.0;
- 	double middleImageY = source->getHeight()/2.0;
+	float middleImageX = source->getWidth()/2.0;
+ 	float middleImageY = source->getHeight()/2.0;
 
-	double middlePatchX = offsetX + width/2.0;
-	double middlePatchY = offsetY + height/2.0;
+	float middlePatchX = offsetX + width/2.0;
+	float middlePatchY = offsetY + height/2.0;
 		
 	//top-left
 	if(middlePatchX <= middleImageX && middlePatchY < middleImageY)
@@ -133,11 +133,11 @@ int Patch::getHeight(){
 }
 
 //get pixel from patch, but converted to grey pixels
-double Patch::getGreyPixel(int x, int y){
+float Patch::getGreyPixel(int x, int y){
    unsigned char val = source->getGreyPixel(offsetX+x,offsetY+y);
    val = val > 255 ? 255 : val;
-   return (double)val;
-   return (double)(val - mean)/ stddev;
+   return (float)val;
+   return (float)(val - mean)/ stddev;
 }
 
 //get label from source-image

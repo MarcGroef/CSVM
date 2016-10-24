@@ -25,7 +25,7 @@ namespace csvm{
         int nHiddenUnitsFirstLayer;
         int scanStrideFirstLayer;
         int saveData;
-        double crossValidationSize;
+        float crossValidationSize;
         string saveRandomFeatName;
         string saveValidationName;
         int readInData;
@@ -74,11 +74,11 @@ namespace csvm{
 		
                 vector<string> poolingTypes;
                 
-		vector<double> minValues;
-		vector<double> maxValues;
+		vector<float> minValues;
+		vector<float> maxValues;
                 
-		vector<vector<vector<double> > > deltas;
-		vector<vector<vector<vector<double> > > > weights;
+		vector<vector<vector<float> > > deltas;
+		vector<vector<vector<vector<float> > > > weights;
 		
 		vector<int> numPatchesPerSquare;
 		
@@ -86,7 +86,7 @@ namespace csvm{
 		
 		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures,int index);	
 		vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures,int index);
-		void changeRange(vector<Feature>& data, double newMin, double newMax);
+		void changeRange(vector<Feature>& data, float newMin, float newMax);
 		
                 vector<vector<Feature> > createRandomFeatVal(vector<vector<Feature> >& valSet);
                 
@@ -108,7 +108,7 @@ namespace csvm{
 		
 		int calculateSquareOfPatch(Patch patch);
 		
-		void dropOutTesting(vector<vector<vector<double> > >& newWeights);
+		void dropOutTesting(vector<vector<vector<float> > >& newWeights);
 		
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);
 		void importFeatureSet(string filename, vector<Feature>& featureVector);

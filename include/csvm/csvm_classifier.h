@@ -44,7 +44,7 @@ namespace csvm{
       
       MLPController* mlpController;
       
-      vector< vector<double> > classicTrainActivations;
+      vector< vector<float> > classicTrainActivations;
       
       
       void trainLinearNetwork();

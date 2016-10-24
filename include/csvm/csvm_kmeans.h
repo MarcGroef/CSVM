@@ -21,7 +21,7 @@ namespace csvm{
   
    struct KMeans_settings{
       int nClusters;
-      double alpha;
+      float alpha;
       unsigned int nIter;
       bool normalOut;
    };

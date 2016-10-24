@@ -34,7 +34,7 @@ namespace csvm{
    
    struct DCBSettings{
       ActFunction simFunction;
-      double similaritySigma;
+      float similaritySigma;
       unsigned int nCentroids;
       unsigned int nRandomPatches;
       unsigned int nIter;
@@ -61,15 +61,15 @@ namespace csvm{
       CSVMDataset* dataset;
       FeatureExtractor* featExtr;
       
-      vector<double> calcSimilarity(Feature& p, vector<Centroid>& c);
-      vector<double> calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
-      vector<double> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
+      vector<float> calcSimilarity(Feature& p, vector<Centroid>& c);
+      vector<float> calculatePoolMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
+      vector<float> calculateConvMapAt(Image* im, unsigned int depth, unsigned int x, unsigned int y);
    public:
       bool debugOut, normalOut;
       DeepCodebook(FeatureExtractor* fe, ImageScanner* imScanner, CSVMDataset* ds);
       void setSettings(DCBSettings& s);
       void generateCentroids();
-      vector<double> getActivations(Image* im);
+      vector<float> getActivations(Image* im);
    };
    
    

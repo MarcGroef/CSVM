@@ -72,8 +72,8 @@ vector<Centroid> AKMeans::initCentroids(vector<Feature> featureSamples, unsigned
 void checkEqualFeatures(vector< Feature>& dictionary){
    //cout << "Begin sanity meditation. I see " << dictionary.size() << " features\n";
    unsigned int dictSize = dictionary.size();
-   double dist = 0; 
-   double delta;
+   float dist = 0; 
+   float delta;
    unsigned int wordSize = dictionary[0].content.size();
    unsigned int nEquals = 0;
    
@@ -119,26 +119,26 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    
    //per cluster.. 
    nMembers = vector< unsigned int >(nClusters, 0);	// < number of assigned members	>
-   averageDistances = vector< double >(nClusters, 0.0);	// < average distance to cluster >
-   deviations = vector< double >(nClusters, 0.0);	// < standard deviation to center	>
+   averageDistances = vector< float >(nClusters, 0.0);	// < average distance to cluster >
+   deviations = vector< float >(nClusters, 0.0);	// < standard deviation to center	>
 
    //per cluster..., per class...
    byClassNMembers = vector< vector<unsigned int> >(nClusters, vector<unsigned int>(nClasses, 0)); //< number of members present in every class >
-   byClassAverageDistancesToCentroid = vector< vector< double> >(nClusters, vector<double>(nClasses, 0.0)); //average distance to cluster centroid per class
-   byClassDeviationsToCentroid = vector< vector<double> >(nClusters, vector<double>(nClasses, 0.0)); // deviation to cluster centroid per class
+   byClassAverageDistancesToCentroid = vector< vector< float> >(nClusters, vector<float>(nClasses, 0.0)); //average distance to cluster centroid per class
+   byClassDeviationsToCentroid = vector< vector<float> >(nClusters, vector<float>(nClasses, 0.0)); // deviation to cluster centroid per class
 									
 
    //per classCluster...
    //vector<vector< Centroid > > 
    byClassClusters = vector<vector< Centroid> >(nClusters, vector<Centroid>(nClasses)); // centroids of classes
-   byClassAverageDistancesToClassCluster = vector<vector< double > >(nClusters, vector<double>(nClasses, 0.0));	//average distances of class features to classcluster
-   byClassDeviationsToClassCluster = vector<vector<double > >(nClusters, vector<double>(nClasses, 0.0));		//deviations of class features to classcluster
+   byClassAverageDistancesToClassCluster = vector<vector< float > >(nClusters, vector<float>(nClasses, 0.0));	//average distances of class features to classcluster
+   byClassDeviationsToClassCluster = vector<vector<float > >(nClusters, vector<float>(nClasses, 0.0));		//deviations of class features to classcluster
 																												//deviations of class features to classcluster
-   byClassClusterDistanceToCentroid = vector<vector<double> >(nClusters, vector<double>(nClasses, 0.0));
+   byClassClusterDistanceToCentroid = vector<vector<float> >(nClusters, vector<float>(nClasses, 0.0));
 
    //classrepresentativeness is used to represent how much every cluster represents a class.
-   vector< vector<double> > byClassContributions(nClusters, vector<double>(nClasses, 0.0));
-   vector< vector<double> > byClassStrengths(nClusters, vector<double>(nClasses, 0.0));
+   vector< vector<float> > byClassContributions(nClusters, vector<float>(nClasses, 0.0));
+   vector< vector<float> > byClassStrengths(nClusters, vector<float>(nClasses, 0.0));
 
 
 
@@ -152,11 +152,11 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    
    
  
-   double curDist;
-   double prevTotalDistance = 2;
-   double totalDistance = 1;	//used to track cluster changes in mean
-   double deltaDist = 1;
-   double closestDist;
+   float curDist;
+   float prevTotalDistance = 2;
+   float totalDistance = 1;	//used to track cluster changes in mean
+   float deltaDist = 1;
+   float closestDist;
    
    for (size_t clIdx = 0; clIdx < nClusters; ++clIdx) {
 	   centroids1[clIdx].content.resize(dataDims);
@@ -202,7 +202,7 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
        
 	  //start assigning features to clusters...
       for(size_t dIdx = 0; dIdx < nData; ++dIdx){
-         closestDist = numeric_limits<double>::max();
+         closestDist = numeric_limits<float>::max();
          unsigned int closestCentr = -1;
          
 		 //compute closest cluster of a feature
@@ -268,7 +268,7 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
 	   
 
 	   //assigning to cluster:
-	   closestDist = numeric_limits<double>::max();
+	   closestDist = numeric_limits<float>::max();
 	   unsigned int closestCentr = -1;
 
 	   //compute closest cluster of a feature
@@ -334,7 +334,7 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    //now, in order to compute their deviations, we must iterate over the features ones more. 
    // fortunately, we won't have to recompute all distances, because we saved the assignments previously. 
    unsigned int clusterAssigned = 0;
-   double featDistClust;
+   float featDistClust;
    for (unsigned int featID = 0; featID < nData; ++featID) {
 	   clusterAssigned = featureAssignments[featID];
 	   
@@ -379,25 +379,25 @@ vector<Centroid> AKMeans::cluster(vector<Feature> featureSamples, unsigned int p
    return (*newCentroids);
 }
 
-vector<vector<double> > AKMeans::getClusterClassContributions() {
+vector<vector<float> > AKMeans::getClusterClassContributions() {
 	return clusterByClassContributions;
 }
 
-vector<double>  AKMeans::getClusterClassContributions(int clust) {
+vector<float>  AKMeans::getClusterClassContributions(int clust) {
 	return clusterByClassContributions[clust];
 }
 
-vector<double>  AKMeans::getClusterClassContributions(Feature feat) {
+vector<float>  AKMeans::getClusterClassContributions(Feature feat) {
 
-	double curDist;
-	/* double prevTotalDistance = 2;
-	double totalDistance = 1;	//used to track cluster changes in mean
-	double deltaDist = 1;
+	float curDist;
+	/* float prevTotalDistance = 2;
+	float totalDistance = 1;	//used to track cluster changes in mean
+	float deltaDist = 1;
 	*/
-	double closestDist;
+	float closestDist;
 	//unsigned int dataDims = feat.content.size();	//feature dimensionality
 	unsigned int nClusters = clusters.size();
-	closestDist = numeric_limits<double>::max();
+	closestDist = numeric_limits<float>::max();
 	unsigned int closestCentr = -1;
 
 	//compute closest cluster of a feature

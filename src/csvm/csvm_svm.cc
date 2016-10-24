@@ -28,22 +28,22 @@ SVM::SVM(int datasetSize, int nClasses, int nCentroids, unsigned int labelId){
 void SVM::setSettings(SVM_Settings s){
    //cout << "I recieved " << s.alphaDataInit << endl;
    settings = s;
-   alphaData = vector<double>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
+   alphaData = vector<float>(datasetSize,settings.alphaDataInit /** settings.SVM_C_Data*/);
 }
 
 
 
 //update alphaData for dual obj. SVM with alpha_i, alpha_j, given a similarity kernel between two activation vectors:
-double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMDataset* ds){
+float SVM::updateAlphaDataClassic(vector< vector< float >  >& simKernel, CSVMDataset* ds){
    
-   double diff = 0.0;
-   double deltaDiff = 0.0;
-   double target;
-   double sum = 0.0;
-   double yData0;
-   double yData1;
+   float diff = 0.0;
+   float deltaDiff = 0.0;
+   float target;
+   float sum = 0.0;
+   float yData0;
+   float yData1;
    unsigned int nData = simKernel.size();
-   double deltaAlpha;
+   float deltaAlpha;
    unsigned int kernelIdx0,kernelIdx1;
 	
 	//alpha_i is called alphaData[dIdx0] here, where alpha_j is called alphaData[dIdx1];
@@ -92,19 +92,19 @@ double SVM::updateAlphaDataClassic(vector< vector< double >  >& simKernel, CSVMD
 }
 
 //make sure  sum(alphaCentroid * yCentroid) == 0, or below threshold
-double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds){
+float SVM::constrainAlphaDataClassic(vector< vector<float> >& simKernel, CSVMDataset* ds){
    
    
-   double oldVal;
+   float oldVal;
    unsigned int nData = simKernel.size();
-   double deltaAlpha;
-   double yData; 
-   double target;
+   float deltaAlpha;
+   float yData; 
+   float target;
    
-   double diff = 0.0;
-   double deltaDiff = 0.0;
-   double sum = 0;
-   double threshold = 0.00001;
+   float diff = 0.0;
+   float deltaDiff = 0.0;
+   float sum = 0;
+   float threshold = 0.00001;
    
    //calculate current sum
    for(size_t dIdx0 = 0; dIdx0  < nData; ++dIdx0){
@@ -134,12 +134,12 @@ double SVM::constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMD
    return diff;
 }
 
-void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
+void SVM::calculateBiasClassic(vector< vector< float> >& simKernel, CSVMDataset* ds){
    bias = 0;
    unsigned int total = 0;
    unsigned int nData = simKernel.size();
-   double output;
-   double yData;
+   float output;
+   float yData;
    unsigned int kernelIdx0, kernelIdx1;
    
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
@@ -171,16 +171,16 @@ void SVM::calculateBiasClassic(vector< vector< double> >& simKernel, CSVMDataset
    else 
       bias /= total;
 }
-void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
+void SVM::trainClassic(vector< vector< float> >& simKernel, CSVMDataset* ds){
    
-   double sumDeltaAlpha = 1000.0;
-   //double prevSumDeltaAlpha = 100.0;
-   double deltaAlphaData;
+   float sumDeltaAlpha = 1000.0;
+   //float prevSumDeltaAlpha = 100.0;
+   float deltaAlphaData;
 
 
-   //double objective = 0.0;
-   double sum0 = 0.0;
-   double sum1 = 0.0;
+   //float objective = 0.0;
+   float sum0 = 0.0;
+   float sum1 = 0.0;
    
    unsigned int kernelIdx0, kernelIdx1;
    for(size_t round = 0; /*sumDeltaAlpha > 0.00001*/ /*(prevObjective - objective < -0.0001 || round < 1000)*/ round < settings.nIterations; ++round){
@@ -194,7 +194,7 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
       constrainAlphaDataClassic(simKernel, ds);
       
       
-      double yData0, yData1;
+      float yData0, yData1;
       
       //calculate objective
       sum0 = 0.0;
@@ -232,12 +232,12 @@ void SVM::trainClassic(vector< vector< double> >& simKernel, CSVMDataset* ds){
 
 
 //Classify an image, represented by a set of features, using the classic (alpha_i, alpha_j) SVM
-double SVM::classifyClassic(vector< double >f, vector< vector<double> >& datasetActivations, CSVMDataset* ds){
+float SVM::classifyClassic(vector< float >f, vector< vector<float> >& datasetActivations, CSVMDataset* ds){
    
-   double result = 0;
+   float result = 0;
    unsigned int nData = datasetActivations.size();
-   double yData;
-   double kernel = 0.0;
+   float yData;
+   float kernel = 0.0;
    unsigned int nCentroids = datasetActivations[0].size();
    Feature dataKernel(nData,0.0);
    
@@ -246,7 +246,7 @@ double SVM::classifyClassic(vector< double >f, vector< vector<double> >& dataset
    //update sum with similarity between image activations
    for(size_t dIdx0 = 0; dIdx0 < nData; ++dIdx0){
       
-      double sum = 0;
+      float sum = 0;
       //calculate similarity between activation vectors
       
       

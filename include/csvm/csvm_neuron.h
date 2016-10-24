@@ -24,15 +24,15 @@ namespace csvm{
       
    public:
       //void train(vector<Feature>& randomFeatures);
-      void Neuron::Neuron(double* inWeights, double* inValues);
+      void Neuron::Neuron(float* inWeights, float* inValues);
       
-      double* randomizeWeights();
-      double fRand(double fMin, double fMax);
+      float* randomizeWeights();
+      float fRand(float fMin, float fMax);
       
-      void activationFunction(double summedActivation);
-      void sumInputUnits(double* inputValue, double inputWeights*, double b);
+      void activationFunction(float summedActivation);
+      void sumInputUnits(float* inputValue, float inputWeights*, float b);
       
-      double errorFunction(double* desiredOutput, double* actualOutput);
+      float errorFunction(float* desiredOutput, float* actualOutput);
      
    };
       

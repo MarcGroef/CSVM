@@ -20,20 +20,20 @@ namespace csvm{
     
   public:
      bool debugOut, normalOut;
-      vector< double> content;
+      vector< float> content;
       string label;
       int labelId;
       int size;
       int squareId;
       unsigned int getSquareId();
       void setSquareId(int id);
-      Feature(int size,double initValue);
+      Feature(int size,float initValue);
       Feature(Feature* f);
-      Feature(vector<double>& vect);
+      Feature(vector<float>& vect);
       void setLabelId(int id);
       unsigned int getLabelId();
-      double getDistanceSq(Feature& f);
-      double getManhDist(Feature* f);
+      float getDistanceSq(Feature& f);
+      float getManhDist(Feature* f);
   };
   
   

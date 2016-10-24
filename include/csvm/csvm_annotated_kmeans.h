@@ -19,7 +19,7 @@ namespace csvm{
 	
   struct AKMeans_settings{
     int nClusters;
-    double alpha;
+    float alpha;
 	unsigned int nIter;
   };
 
@@ -31,7 +31,7 @@ namespace csvm{
 
   class AKMeans{
     AKMeans_settings settings;
-	vector<vector<double> > clusterByClassContributions;
+	vector<vector<float> > clusterByClassContributions;
 	//vector<ClusterCentroid> initPrototypes(vector<Feature> collection, unsigned int nProtos);
    vector<Centroid> initCentroids(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
    
@@ -43,28 +43,28 @@ namespace csvm{
 	  vector<Centroid> clusters;
 
 	  vector< unsigned int > nMembers;	// < number of assigned members	>
-	  vector< double > averageDistances;	// < average distance to cluster >
-	  vector< double > deviations;	// < standard deviation to center	>
+	  vector< float > averageDistances;	// < average distance to cluster >
+	  vector< float > deviations;	// < standard deviation to center	>
 
 													//per cluster..., per class...
 	  vector< vector<unsigned int> > byClassNMembers; //< number of members present in every class >
-	  vector< vector< double> > byClassAverageDistancesToCentroid; //average distance to cluster centroid per class
-	  vector< vector<double> > byClassDeviationsToCentroid;// deviation to cluster centroid per class
+	  vector< vector< float> > byClassAverageDistancesToCentroid; //average distance to cluster centroid per class
+	  vector< vector<float> > byClassDeviationsToCentroid;// deviation to cluster centroid per class
 
 
 																									  //per classCluster...
 	  vector<vector< Centroid > > byClassClusters; // centroids of classes
-	  vector<vector< double > > byClassAverageDistancesToClassCluster;	//average distances of class features to classcluster
-	  vector<vector<double > > byClassDeviationsToClassCluster;		//deviations of class features to classcluster
-	  vector<vector<double> > byClassClusterDistanceToCentroid;
+	  vector<vector< float > > byClassAverageDistancesToClassCluster;	//average distances of class features to classcluster
+	  vector<vector<float > > byClassDeviationsToClassCluster;		//deviations of class features to classcluster
+	  vector<vector<float> > byClassClusterDistanceToCentroid;
 
 
 
     vector<Centroid> cluster(vector<Feature> collection, unsigned int nClusters, unsigned int nClasses);
 	
-	vector<vector<double> > getClusterClassContributions();
-	vector<double> getClusterClassContributions(int clust);
-	vector<double> getClusterClassContributions(Feature feat);
+	vector<vector<float> > getClusterClassContributions();
+	vector<float> getClusterClassContributions(int clust);
+	vector<float> getClusterClassContributions(Feature feat);
 
 	void printAllClusterStats();
 	void printClusterStats(unsigned int clust);

@@ -17,7 +17,7 @@ namespace csvm{
   
     struct LVQ_Settings{
       int nClusters;
-      double alpha;
+      float alpha;
     };
 
     class LVQ{
@@ -27,7 +27,7 @@ namespace csvm{
     public:
       bool debugOut, normalOut;
       LVQ();
-      vector<Feature> cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, double learningRate, int epochs);
+      vector<Feature> cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, float learningRate, int epochs);
     };
 }
 

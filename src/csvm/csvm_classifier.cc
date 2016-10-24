@@ -202,7 +202,7 @@ void CSVMClassifier::constructCodebook(){
 
 void CSVMClassifier::trainConvSVMs(){
    unsigned int nTrainImages = dataset.getTrainSize();
-   vector < vector < double > > datasetActivations;
+   vector < vector < float > > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
    
@@ -210,7 +210,7 @@ void CSVMClassifier::trainConvSVMs(){
    datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
    for(size_t dataIdx = 0; dataIdx < nTrainImages; ++dataIdx){
-      vector<double> dataActivation;
+      vector<float> dataActivation;
       //extract patches
       
       if(settings.codebook == CB_CODEBOOK){
@@ -275,7 +275,7 @@ void CSVMClassifier::trainConvSVMs(){
 unsigned int CSVMClassifier::classifyConvSVM(Image* image){
    vector<Patch> patches;
    vector<Feature> dataFeatures;
-   vector<double> dataActivation;
+   vector<float> dataActivation;
    
    if(settings.codebook == CB_CODEBOOK){
       
@@ -332,11 +332,11 @@ void CSVMClassifier::trainClassicSVMs(){
    unsigned int nClasses = dataset.getNumberClasses(); 
    unsigned int nCentroids; 
    
-   vector < vector<double> > datasetActivations;
+   vector < vector<float> > datasetActivations;
    vector < Feature > dataFeatures;
    vector < Patch > patches;
-   vector < vector<double> > dataKernel(nTrainImages);
-   vector<double> dataActivation;
+   vector < vector<float> > dataKernel(nTrainImages);
+   vector<float> dataActivation;
 
    //allocate space for more vectors
    datasetActivations.reserve(nTrainImages);
@@ -388,7 +388,7 @@ void CSVMClassifier::trainClassicSVMs(){
       //cout << "done with similarity of " << dIdx0 << endl;
       for(size_t dIdx1 = 0; dIdx1 <= dIdx0; ++dIdx1){
          dataKernel[dIdx0].resize(dIdx0 + 1);
-         double sum = 0;
+         float sum = 0;
 	 
          if(settings.svmSettings.kernelType == RBF){
             
@@ -430,7 +430,7 @@ void CSVMClassifier::trainClassicSVMs(){
 unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults){
    unsigned int nClasses = dataset.getNumberClasses();
    
-   vector<double> dataActivation;
+   vector<float> dataActivation;
    if(settings.codebook == CB_CODEBOOK){
       vector<Patch> patches;
       vector<Feature> dataFeatures;
@@ -458,9 +458,9 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
    
 
    //reserve space for results
-   vector<double> results(nClasses, 0);
+   vector<float> results(nClasses, 0);
    
-   double maxResult = -99999;
+   float maxResult = -99999;
    unsigned int maxLabel=0;
    //get max-result label
    for(size_t cl = 0; cl < nClasses; ++cl){
@@ -481,10 +481,10 @@ unsigned int CSVMClassifier::classifyClassicSVMs(Image* image, bool printResults
 
 void CSVMClassifier::trainLinearNetwork(){
    unsigned int nTrainImages = dataset.getTrainSize();
-   vector < vector < double > > datasetActivations;
+   vector < vector < float > > datasetActivations;
    
    vector < Patch > patches;
-   vector<double> dataActivation;
+   vector<float> dataActivation;
    //allocate space for more vectors
    datasetActivations.reserve(nTrainImages);
    //for all trainings imagages:
@@ -531,7 +531,7 @@ void CSVMClassifier::trainLinearNetwork(){
 unsigned int CSVMClassifier::lnClassify(Image* image){
    vector<Patch> patches;
    vector<Feature> dataFeatures;
-   vector<double> dataActivation;
+   vector<float> dataActivation;
    //extract patches
   
    if(settings.codebook == CB_CODEBOOK){

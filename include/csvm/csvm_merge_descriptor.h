@@ -49,7 +49,7 @@ namespace csvm {
 		HOGSettings hogSettings;
 		int patchSize;
 		bool useColourPixel;
-		double weightRatio;
+		float weightRatio;
 	};
 	class MERGEDescriptor {
 		MERGESettings settings;
@@ -69,8 +69,8 @@ namespace csvm {
 		Feature standardizeFeature(Feature feat);
 		Feature normalizeFeature(Feature feat);
 		//Feature weightFeature(Feature feat);
-		//Feature standardizeFeature(vector<double> content);
-		//Feature normalizeFeature(vector<double> content);
+		//Feature standardizeFeature(vector<float> content);
+		//Feature normalizeFeature(vector<float> content);
 	
 	};
 

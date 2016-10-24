@@ -40,15 +40,15 @@ namespace csvm{
       
       RBM();
       RBM(int nLayers,int* layerSizes,float learningRate);
-      RBM(int nLayers,int* layerSizes,float learningRate,double** dataset,int nDataEntries);  //dimension of a single data-entry should be equal to the layersize of the first, thus zero-th, layer.
+      RBM(int nLayers,int* layerSizes,float learningRate,float** dataset,int nDataEntries);  //dimension of a single data-entry should be equal to the layersize of the first, thus zero-th, layer.
       ~RBM();
       
       void setSettings(RBMSettings set);
       void freeDataset();
-      void linkDataset(double** data,int nEntries);
+      void linkDataset(float** data,int nEntries);
       void train();
-      double* getOutput();
-      double* run(double* input);
+      float* getOutput();
+      float* run(float* input);
       void exportNetwork(string filename);
       void importNetwork(string filename);
    };

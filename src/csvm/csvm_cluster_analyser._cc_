@@ -26,14 +26,14 @@ void ClusterAnalyser::studyFeaturesRBM(vector<Feature> features){
    unsigned int nFeatures = features.size();
    unsigned int featureDim = features[0].content.size();
    cout << "Studying " << nFeatures << " 1 x " << featureDim << " dimensional features\n";
-   double** data;
+   float** data;
    
   
-   data = (double**) malloc(nFeatures * sizeof(double*));
+   data = (float**) malloc(nFeatures * sizeof(float*));
    assert(data!=NULL);
    
    for(size_t idx = 0; idx < nFeatures; ++ idx){
-      data[idx] = (double*) malloc(featureDim * sizeof(double));
+      data[idx] = (float*) malloc(featureDim * sizeof(float));
       assert(data[idx] != NULL);
       for(size_t idx1 = 0; idx1 < featureDim; ++idx1){
          data[idx][idx1] = features[idx].content[idx1];

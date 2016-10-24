@@ -22,13 +22,13 @@ namespace csvm{
   
 
   struct SVM_Settings{
-      double SVM_C_Data;
-      double learningRate;
-      double sigmaClassicSimilarity;
-      double cost;
-      double D2;
+      float SVM_C_Data;
+      float learningRate;
+      float sigmaClassicSimilarity;
+      float cost;
+      float D2;
       unsigned int nIterations;
-      double alphaDataInit;
+      float alphaDataInit;
       SVM_Kernel kernelType;
 
   };
@@ -41,16 +41,16 @@ namespace csvm{
     unsigned int nCentroids, nClasses, datasetSize;
 
     //internal state
-    vector <double> alphaData;
-    double bias;
+    vector <float> alphaData;
+    float bias;
       
     
 
       
     //functions for KKT-SVM
-      double constrainAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
-      double updateAlphaDataClassic(vector< vector<double> >& simKernel, CSVMDataset* ds);
-      void calculateBiasClassic(vector<vector<double> >& simKernel, CSVMDataset* ds);
+      float constrainAlphaDataClassic(vector< vector<float> >& simKernel, CSVMDataset* ds);
+      float updateAlphaDataClassic(vector< vector<float> >& simKernel, CSVMDataset* ds);
+      void calculateBiasClassic(vector<vector<float> >& simKernel, CSVMDataset* ds);
       
   public:
      bool debugOut, normalOut;
@@ -58,8 +58,8 @@ namespace csvm{
      void setSettings(SVM_Settings s);
      
      //functions for the textbook KKT-SVM
-     void trainClassic(vector<vector<double> >& simKernel, CSVMDataset* ds);
-     double classifyClassic(vector<double> f, vector< vector<double > >& datasetActivations, CSVMDataset* cb);
+     void trainClassic(vector<vector<float> >& simKernel, CSVMDataset* ds);
+     float classifyClassic(vector<float> f, vector< vector<float > >& datasetActivations, CSVMDataset* cb);
      
      
   };

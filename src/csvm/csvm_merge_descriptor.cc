@@ -28,7 +28,7 @@ void MERGEDescriptor::setHOGSettings(HOGSettings hs) {
 
 Feature MERGEDescriptor::normalizeFeature(Feature feat) {
     size_t featureLen = feat.size;
-	double vTwoSquared = 0.0;
+	float vTwoSquared = 0.0;
 
 	// */
 	//		L2 NORMALIZATION
@@ -38,21 +38,21 @@ Feature MERGEDescriptor::normalizeFeature(Feature feat) {
 	//   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
 	// e is some magic number still...
-	double e = 0.000000000000001;
+	float e = 0.000000000000001;
 	for (size_t idx = 0; idx < featureLen; ++idx) {
 		feat.content[idx] /= sqrt(vTwoSquared + pow(e, 2));
 	}
 	// */
 	//	CONVENTIONAL NORMALIZATION
 	/*
-	double max = 0.0;
-	double min = numeric_limits<double>::max();
+	float max = 0.0;
+	float min = numeric_limits<float>::max();
 	for (size_t idx = 0; idx < featureLen; ++idx) {
 		max = feat.content[idx] > max ? feat.content[idx]  : max;
 		min = feat.content[idx] < min ? feat.content[idx] : min;
 	}
 	//updating content with normalized values:
-	double diff = max - min;
+	float diff = max - min;
 	for (size_t idx = 0; idx < featureLen; ++idx) {
 		feat.content[idx] = (feat.content[idx] - min) / (diff); 
 	}
@@ -68,19 +68,19 @@ Feature MERGEDescriptor::normalizeFeature(Feature feat) {
 
 
 Feature MERGEDescriptor::standardizeFeature(Feature feat) {
-	double mean = 0.0;
-	double standardDeviation = 0.0;
+	float mean = 0.0;
+	float standardDeviation = 0.0;
 	size_t featureLen = feat.size;
 
 	for (size_t idx = 0; idx < featureLen; ++idx) {
 		mean += feat.content[idx];
 	}
-	mean /= (double)featureLen;
-	double deviation = 0.0;
+	mean /= (float)featureLen;
+	float deviation = 0.0;
 	for (size_t idx = 0; idx < featureLen; ++idx) {
 		deviation += pow((feat.content[idx] - mean), 2.0);
 	}
-	deviation /= (double)featureLen;
+	deviation /= (float)featureLen;
 	standardDeviation = sqrt(deviation);
 
 	for (size_t idx = 0; idx < featureLen; ++idx) {
@@ -104,7 +104,7 @@ Feature MERGEDescriptor::getMERGE(Patch& p, CleanDescriptor& pix, HOGDescriptor&
 
 	size_t totalFeatureLength = pixLen + hogLen;
 	
-	vector <double> results(totalFeatureLength, 0.0);
+	vector <float> results(totalFeatureLength, 0.0);
 	for (size_t idx = 0; idx < pixLen; ++idx) {
 		results[idx] = (rawPixs.content[idx] * settings.weightRatio) / pixLen;
 	}

@@ -17,12 +17,12 @@ namespace csvm{
       int nInputUnits;
       int nOutputUnits;
       int nLayers;
-      double learningRate;
+      float learningRate;
       string voting;
       string trainingType;
       int crossValidationInterval;
       int epochs;
-      double stoppingCriterion;
+      float stoppingCriterion;
    };
 
    class MLPerceptron{
@@ -33,40 +33,40 @@ namespace csvm{
       int numPatchesPerSquare;
       int maxNumberOfNodes;
       
-      double lapda;
-      double p;
+      float lapda;
+      float p;
       
       vector<int> layerSizes;
 
-	  vector<double> desiredOutput;
-	  vector<double> votingHistogram;
-	  vector<double> maxHiddenActivation;
+	  vector<float> desiredOutput;
+	  vector<float> votingHistogram;
+	  vector<float> maxHiddenActivation;
 	  
-	  vector<vector<double> > biasNodes;
-          vector<vector<double> > prevBias;
+	  vector<vector<float> > biasNodes;
+          vector<vector<float> > prevBias;
 	  vector<vector<bool> > maskBias;
           
-          vector<vector<double> > activations;
-          vector<vector<double> > prevActiv;
+          vector<vector<float> > activations;
+          vector<vector<float> > prevActiv;
           
-	  vector<vector<double> > deltas;
-	  vector<vector<double> > prevDeltas;
+	  vector<vector<float> > deltas;
+	  vector<vector<float> > prevDeltas;
 
-	  vector<vector<vector<double> > > weights;          	  
-          vector<vector<vector<double> > > prevWeights;
+	  vector<vector<vector<float> > > weights;          	  
+          vector<vector<vector<float> > > prevWeights;
 
-	  vector<vector<vector<double> > > prevChange;
+	  vector<vector<vector<float> > > prevChange;
           vector<vector<vector<bool> > > mask;
 	  
 	  //private methods
 	  
 		//helpMethods:
-		void randomizeWeights(vector<vector<double> >& array, int indexBottomLayer);
+		void randomizeWeights(vector<vector<float> >& array, int indexBottomLayer);
 		void setDesiredOutput(Feature f);
-		double errorFunction();
+		float errorFunction();
 		void initializeVectors();
 		void checkingSettingsValidity(int actualInputSize);
-		void setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation, string type);
+		void setHiddenActivationToMethod(vector<float>& hiddenActivation,vector<float>& currentActivation, string type);
 		void setDropOutTesting();
 		void removeDropOutTesting();
 		//regularization:
@@ -74,11 +74,11 @@ namespace csvm{
 		void createMask(int isTraining);
                 
 		//feedforward:
-		double activationFunction(double summedActivation);
+		float activationFunction(float summedActivation);
 		void calculateActivationLayer(int isTraining,int bottomLayer);
 		void feedforward(int isTraining);
 		//backpropagation:
-		double derivativeActivationFunction(double activationNode);
+		float derivativeActivationFunction(float activationNode);
 		void calculateDeltas(int index);
 		void outputDelta();
 		void hiddenDelta(int index);
@@ -106,21 +106,21 @@ namespace csvm{
 	  void train(vector<Feature>& validationSet,int numPatchSquare);
 
           unsigned int classify(vector<Feature> imageFeatures);
-	  vector<double> classifyPooling(vector<Feature> imageFeatures);
+	  vector<float> classifyPooling(vector<Feature> imageFeatures);
 	  void classifyImage(vector<Feature>& imageFeatures);
 	  
-	  vector<double> returnHiddenActivationToMethod(vector<Feature> imageFeatures,string type);
+	  vector<float> returnHiddenActivationToMethod(vector<Feature> imageFeatures,string type);
 
       //getters
-      vector<double> getMaxActivation();
-      vector<vector<double> > getBiasNodes();
-      vector<vector<vector<double> > > getWeightMatrix();
-      void loadInMLP(vector<vector<vector<double> > > readInWeights, vector<vector<double> > readInBiasNodes);
+      vector<float> getMaxActivation();
+      vector<vector<float> > getBiasNodes();
+      vector<vector<vector<float> > > getWeightMatrix();
+      void loadInMLP(vector<vector<vector<float> > > readInWeights, vector<vector<float> > readInBiasNodes);
       
       //setters
-      void setWeightMatrix(vector<vector<vector<double> > > newWeights);
+      void setWeightMatrix(vector<vector<vector<float> > > newWeights);
       void setEpochs(int epochs);
-      void setLearningRate(double learningRate);
+      void setLearningRate(float learningRate);
    };      
 }
 #endif

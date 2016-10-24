@@ -20,19 +20,19 @@ void MLPerceptron::setSettings(MLPSettings s){
    this->settings = s;
 }
 
-double good_exp(double y){
+float good_exp(float y){
 	if(y < -10.0) return 0;
 	if(y > 10.0) return 9999999.0;
 	
 	return exp(y);
 }
 
-double fRand(double fMin, double fMax){
-    double f = (double)rand() / RAND_MAX;
+float fRand(float fMin, float fMax){
+    float f = (float)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
 
-void MLPerceptron::randomizeWeights(vector<vector<double> >& array,int indexBottomLayer){
+void MLPerceptron::randomizeWeights(vector<vector<float> >& array,int indexBottomLayer){
 	for( int i = 0; i < layerSizes[indexBottomLayer];i++)
 		for(int j = 0; j < layerSizes[indexBottomLayer+1];j++)
 			array[i][j] = fRand(-0.1,0.1);
@@ -40,12 +40,12 @@ void MLPerceptron::randomizeWeights(vector<vector<double> >& array,int indexBott
 
 void MLPerceptron::setDesiredOutput(Feature f){
 	int label = f.getLabelId();
-	desiredOutput = vector<double>(settings.nOutputUnits,0.0);
+	desiredOutput = vector<float>(settings.nOutputUnits,0.0);
 	desiredOutput.at(label) = 1;
 }
 	
-double MLPerceptron::errorFunction(){
-	double error = 0;
+float MLPerceptron::errorFunction(){
+	float error = 0;
 	for (int i=0; i< layerSizes[settings.nLayers-1];i++)
 		error += (desiredOutput[i] - activations[settings.nLayers-1][i])*(desiredOutput[i] - activations[settings.nLayers-1][i]);
 	error *= 0.5;
@@ -75,18 +75,18 @@ void MLPerceptron::initializeVectors(){
 			maxNumberOfNodes = layerSizes[i];	
 	}
 	
-	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
+	desiredOutput 	= vector<float>(settings.nOutputUnits,0.0);
       
-        activations		= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
-	prevActiv               = vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+        activations		= vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
+	prevActiv               = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
     
-        deltas 			= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
-        prevDeltas              = vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+        deltas 			= vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
+        prevDeltas              = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
         
-	biasNodes 		= vector<vector<double> >(settings.nLayers-1,vector<double>(maxNumberOfNodes,0.0));
+	biasNodes 		= vector<vector<float> >(settings.nLayers-1,vector<float>(maxNumberOfNodes,0.0));
 	maskBias		= vector<vector<bool> >(settings.nLayers-1,vector<bool>(maxNumberOfNodes,0));
 	
-	weights			= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
+	weights			= vector< vector< vector<float> > >(settings.nLayers-1,vector< vector<float> >(maxNumberOfNodes, vector<float>(maxNumberOfNodes,0.0)));
         
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -175,8 +175,8 @@ void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
     //only hidden units are dropped
     
     if(isTraining && ((bottomLayer+1) < (settings.nLayers-1))){
-	double activeAc = 0.0;
-	double dropedAc = 0.0;
+	float activeAc = 0.0;
+	float dropedAc = 0.0;
       
 	for(int i=0;i<layerSizes[bottomLayer+1];i++){
 	   if(drand48() < p){
@@ -198,7 +198,7 @@ void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
 //------end regularization-------
 //------start FEEDFORWARD--------
 
-double MLPerceptron::activationFunction(double summedActivation){
+float MLPerceptron::activationFunction(float summedActivation){
 	//sigmoid:
 	//return 1/(1+exp(-summedActivation));
 	
@@ -217,7 +217,7 @@ double MLPerceptron::activationFunction(double summedActivation){
 }
 
 void MLPerceptron::calculateActivationLayer(int isTraining, int bottomLayer){
-	double summedActivation = 0;
+	float summedActivation = 0;
         for(int i=0; i<layerSizes[bottomLayer+1];i++){
                 for(int j=0;j<layerSizes[bottomLayer];j++)
                         summedActivation += activations[bottomLayer][j]*weights[bottomLayer][j][i];
@@ -238,7 +238,7 @@ void MLPerceptron::feedforward(int isTraining){
 }
 //--------end FEEDFORWARD--------
 //------start BACKPROPAGATION----
-double MLPerceptron::derivativeActivationFunction(double activationNode){
+float MLPerceptron::derivativeActivationFunction(float activationNode){
 	//signmoid:
 	//return (1 - activationNode)*activationNode;
 	
@@ -273,7 +273,7 @@ void MLPerceptron::outputDelta(){
 }
 
 void MLPerceptron::hiddenDelta(int index){
-    double sumDeltaWeights = 0;
+    float sumDeltaWeights = 0;
         for(int i = 0; i < layerSizes[index];i++){
                 for(int j = 0; j < layerSizes[index+1];j++)
                         sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
@@ -287,8 +287,8 @@ void MLPerceptron::adjustWeights(int index){
     if(settings.momentum)
         for(int i = 0; i < layerSizes[index + 1]; i++){
             for(int j = 0; j < layerSizes[index]; j++){
-                    double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
-                    double prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                    float currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+                    float prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
                     weights[index][j][i] += currentChange + lapda * prevChange;
             }
             biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
@@ -296,7 +296,7 @@ void MLPerceptron::adjustWeights(int index){
     else
         for(int i = 0; i < layerSizes[index + 1]; i++){
             for(int j = 0; j < layerSizes[index]; j++){
-                    double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+                    float currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
                     weights[index][j][i] += currentChange;
             }
             biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
@@ -312,7 +312,7 @@ void MLPerceptron::backpropgation(){
 //---------start VOTING----------
 
 void MLPerceptron::activationsToOutputProbabilities(){
-	double sumOfActivations = 0;
+	float sumOfActivations = 0;
 	for(int i = 0; i< settings.nOutputUnits; i++){
 		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
 		sumOfActivations += activations[settings.nLayers -1][i];
@@ -339,7 +339,7 @@ void MLPerceptron::voting(){
 
 void MLPerceptron::majorityVoting(){
 	int indexHighestAct = 0;
-	double highestActivationClass = 0;
+	float highestActivationClass = 0;
 	for (int i=0; i<settings.nOutputUnits;i++){
 		if(activations[settings.nLayers-1][i]>highestActivationClass){
 			highestActivationClass = activations[settings.nLayers-1][i];
@@ -356,7 +356,7 @@ void MLPerceptron::sumVoting(){
 
 unsigned int MLPerceptron::mostVotedClass(){
 	unsigned int mostVotedClass = 0;
-	double voteCounter = 0;
+	float voteCounter = 0;
 	
 	for (int i = 0; i < settings.nOutputUnits; i++)
 		if (votingHistogram[i] > voteCounter){  //what happens if two classes have the same amount of votes?
@@ -369,7 +369,7 @@ unsigned int MLPerceptron::mostVotedClass(){
 //---------end VOTING-----------
 //---------start training--------
 void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Feature>& validationSet, vector<Feature>& testSet){
-	double averageError = 0;
+	float averageError = 0;
 	int epochs = settings.epochs;
 	cout << "epochs: " << epochs << endl;
         if(!testSet.empty())
@@ -391,7 +391,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			averageError += errorFunction();
 		}
 		
-		double errorPreviousEpoch = averageError/(double)randomFeatures.size();
+		float errorPreviousEpoch = averageError/(float)randomFeatures.size();
 				
 		//after x amount of iterations it should check on the validation set
 		if(i % settings.crossValidationInterval == 0 or i == epochs-1){
@@ -410,7 +410,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 }
 
 void MLPerceptron::crossvaldiation(vector<Feature>& validationSet){
-	double averageError = 0;
+	float averageError = 0;
 	int epochs = settings.epochs;
 	
         cout << "epochs: " << epochs << endl;
@@ -427,7 +427,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& validationSet){
 			backpropgation();
 			averageError += errorFunction();
                 }
-		cout << i << ", " << averageError/(double)validationSet.size() << endl;
+		cout << i << ", " << averageError/(float)validationSet.size() << endl;
 		averageError = 0;
 		
 		settings.learningRate *= 0.98;
@@ -444,7 +444,7 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 		if(validationSet[i*numPatchesPerSquare].getLabelId() == classify(vector<Feature>(first,last)))
 			classifiedCorrect++;
 	}
-        cout << 1.0 - (double)((double)classifiedCorrect/(double)amountOfImValidationSet) << ", ";
+        cout << 1.0 - (float)((float)classifiedCorrect/(float)amountOfImValidationSet) << ", ";
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
 	return 0;
@@ -486,7 +486,7 @@ void MLPerceptron::train(vector<Feature>& validationSet, int numPatchSquare){
 //--------end training-----------
 //------start testing------------
 void MLPerceptron::classifyImage(vector<Feature>& imageFeatures){
-	votingHistogram = vector<double>(settings.nOutputUnits,0.0);
+	votingHistogram = vector<float>(settings.nOutputUnits,0.0);
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
 		feedforward(0);
@@ -498,23 +498,23 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	classifyImage(imageFeatures);		
 	return mostVotedClass();
 }
-vector<double> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){	
+vector<float> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){	
 	classifyImage(imageFeatures);
 	return votingHistogram;
 }
 //The pooling method is set in the settings file. Either Min, average or max.
-vector<double> MLPerceptron::returnHiddenActivationToMethod(vector<Feature> imageFeatures, string type){
+vector<float> MLPerceptron::returnHiddenActivationToMethod(vector<Feature> imageFeatures, string type){
 	int nHiddenUnits = settings.nHiddenUnits;
-	vector<double> hiddenActivation;
+	vector<float> hiddenActivation;
 	
 	if(type == "MAX")
-		hiddenActivation = vector<double>(nHiddenUnits,-10.0);
+		hiddenActivation = vector<float>(nHiddenUnits,-10.0);
 				
 	else if(type == "AVERAGE")
-		hiddenActivation = vector<double>(nHiddenUnits,0.0);
+		hiddenActivation = vector<float>(nHiddenUnits,0.0);
 				
 	else if(type == "MIN")
-		hiddenActivation = vector<double>(nHiddenUnits,50.0);
+		hiddenActivation = vector<float>(nHiddenUnits,50.0);
 			
 	for (unsigned int i = 0; i<imageFeatures.size();i++){
 		activations[0] = imageFeatures[i].content;
@@ -527,7 +527,7 @@ vector<double> MLPerceptron::returnHiddenActivationToMethod(vector<Feature> imag
 			
 	return hiddenActivation;
 }
-void MLPerceptron::setHiddenActivationToMethod(vector<double>& hiddenActivation,vector<double>& currentActivation,string type){
+void MLPerceptron::setHiddenActivationToMethod(vector<float>& hiddenActivation,vector<float>& currentActivation,string type){
 	if(type == "MAX")
 		for(unsigned int i=0;i<hiddenActivation.size();i++)
 			if(hiddenActivation[i] < currentActivation[i])
@@ -543,15 +543,15 @@ void MLPerceptron::setHiddenActivationToMethod(vector<double>& hiddenActivation,
 
 //-------end testing---------------
 //-------start loading mlp---------
-vector<vector<double> > MLPerceptron::getBiasNodes(){
+vector<vector<float> > MLPerceptron::getBiasNodes(){
     return biasNodes; 
 }
 
-vector<vector<vector<double> > > MLPerceptron::getWeightMatrix(){
+vector<vector<vector<float> > > MLPerceptron::getWeightMatrix(){
     return weights;
 }
 
-void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vector<vector<double> > readInBiasNodes)
+void MLPerceptron::loadInMLP(vector<vector<vector<float> > > readInWeights,vector<vector<float> > readInBiasNodes)
 {
       initializeVectors();
       
@@ -561,7 +561,7 @@ void MLPerceptron::loadInMLP(vector<vector<vector<double> > > readInWeights,vect
 }
 //-------end loading mlp----------
 //-------start setters-----------
-void MLPerceptron::setWeightMatrix(vector<vector<vector<double> > > newWeights)
+void MLPerceptron::setWeightMatrix(vector<vector<vector<float> > > newWeights)
 {
     weights = newWeights;
 }
@@ -571,7 +571,7 @@ void MLPerceptron::setEpochs(int epochs)
     settings.epochs = epochs; //This is tricky when an mlp is saved.
 }
 
-void MLPerceptron::setLearningRate(double learningRate){
+void MLPerceptron::setLearningRate(float learningRate){
     settings.learningRate = learningRate;
 }
 //-------end setters -----------

@@ -68,9 +68,9 @@ namespace csvm {
       //unsigned int computeLBP(unsigned int X, unsigned int Y, Patch& patch);
 	  unsigned int computeLBP(unsigned int X, unsigned int Y, Patch patch, LBPColour col);
 
-	  void binLBP(unsigned int X, unsigned int Y, LBPColour col, vector<double>& cellLBPHistogram, Patch block);
+	  void binLBP(unsigned int X, unsigned int Y, LBPColour col, vector<float>& cellLBPHistogram, Patch block);
 
-	  vector<double> computeCellLBP(unsigned int X, unsigned int Y, Patch patch);
+	  vector<float> computeCellLBP(unsigned int X, unsigned int Y, Patch patch);
 	  int lbpdiff(unsigned int centX, unsigned int centY, unsigned int X, unsigned int Y, Patch patch, LBPColour col);
 	  bool isUniform(int lbp);
 	  int uniformValue(int lbp);

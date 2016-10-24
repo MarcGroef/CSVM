@@ -43,7 +43,7 @@ namespace csvm{
 	   AKMeans_settings akmeansSettings;
       CodebookClusterMethod method;
       unsigned int numberVisualWords;
-      double similaritySigma;
+      float similaritySigma;
       SimilarityFunction simFunction;
       bool generate;
       bool standardize;
@@ -61,27 +61,27 @@ namespace csvm{
     vector<Centroid> bow;
 
     unsigned int nClasses;
-    void standardize(vector<double>& x, double sigmaFix);
+    void standardize(vector<float>& x, float sigmaFix);
   public:
     bool debugOut, normalOut;
     Codebook();
     void constructCodebook(vector<Feature> featureset);
     void setSettings(Codebook_settings s);
     Centroid getCentroid(int centrIdx);
-    vector < double > getActivations(vector<Feature> features);
+    vector < float > getActivations(vector<Feature> features);
     void exportCodebook(string filename);
     void importCodebook(string filename);
     unsigned int getNClasses();
     unsigned int getNCentroids();
     void constructActivationCodebook(vector<Feature> activations, unsigned int layerIdx);
-    vector< double > getQActivations(vector<Feature> features);
+    vector< float > getQActivations(vector<Feature> features);
     bool getGenerate();
     
 	//for akmeans:
-	//vector<vector< double> > Codebook::getAKContributions(vector<Feature> classifyFeatures);
-	vector<vector <double> > getCentroidByClassContributions();
-	vector<double> getCentroidByClassContributions(int cl);
-	vector<double> getCentroidByClassContributions(Feature feat);
+	//vector<vector< float> > Codebook::getAKContributions(vector<Feature> classifyFeatures);
+	vector<vector <float> > getCentroidByClassContributions();
+	vector<float> getCentroidByClassContributions(int cl);
+	vector<float> getCentroidByClassContributions(Feature feat);
   };
   
 }

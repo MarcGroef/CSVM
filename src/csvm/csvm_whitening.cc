@@ -14,7 +14,7 @@ void Whitener::analyze(vector<Feature>& collection){
    size_t nDims = collection[0].content.size();
    
    for(size_t xIdx = 0; xIdx != collectionSize; ++xIdx){
-      double mean = 0;
+      float mean = 0;
       
       
       for(size_t dIdx = 0; dIdx != nDims; ++dIdx){
@@ -28,7 +28,7 @@ void Whitener::analyze(vector<Feature>& collection){
    }
    
    //calc sigma matrix;
-   //sigma.resize(nDims, vector<double>(nDims, 0));
+   //sigma.resize(nDims, vector<float>(nDims, 0));
    sigma = MatrixXd::Constant(nDims, nDims,0);
    
    for(size_t xIdx = 0; xIdx != collectionSize; ++xIdx){
@@ -63,7 +63,7 @@ void Whitener::transform(Feature& f){
    //return;
    size_t dims = f.content.size();
    //cout << "trasnform!\n";
-   double mean = 0;
+   float mean = 0;
    
    for(size_t dIdx = 0; dIdx != dims; ++dIdx){
       mean += f.content[dIdx];
@@ -83,7 +83,7 @@ void Whitener::transform(Feature& f){
    VectorXd res = m.transpose() * pc;
    
 
-   f.content = vector<double>(res.data(), res.data() + res.rows() * res.cols());
+   f.content = vector<float>(res.data(), res.data() + res.rows() * res.cols());
    if(f.content.size() != dims)
       cout << "WARNING: Whitener::transform() I/O dims dont match!\n";
 

@@ -17,10 +17,10 @@ using namespace csvm;
 	
 
    // classification given an activation vector
-   double ConvSVM::output(vector<double>& activations, unsigned int svmIdx){
+   float ConvSVM::output(vector<float>& activations, unsigned int svmIdx){
       
       unsigned int nCentroids = activations.size();
-      double out = 0;
+      float out = 0;
       
       for(size_t centrIdx = 0; centrIdx < nCentroids; ++centrIdx){
          out += weights[svmIdx][centrIdx] * activations[centrIdx];
@@ -33,19 +33,19 @@ using namespace csvm;
 
 
    // training
-   void ConvSVM::train(vector< vector<double> >& activations, CSVMDataset* ds){
+   void ConvSVM::train(vector< vector<float> >& activations, CSVMDataset* ds){
       
       unsigned int nData = activations.size();
       settings.nCentroids = activations[0].size();
       cout << fixed << setprecision(5);
       
-      weights = vector< vector<double> >(settings.nClasses, vector<double>(settings.nCentroids, settings.initWeight));
-      biases  = vector<double>(settings.nClasses, 0);
+      weights = vector< vector<float> >(settings.nClasses, vector<float>(settings.nCentroids, settings.initWeight));
+      biases  = vector<float>(settings.nClasses, 0);
 
       //############ Logging functions ################
-      maxOuts = vector<double>(settings.nClasses, 0);
-      minOuts = vector<double>(settings.nClasses, 0);
-      avOuts  = vector<double>(settings.nClasses, 0);
+      maxOuts = vector<float>(settings.nClasses, 0);
+      minOuts = vector<float>(settings.nClasses, 0);
+      avOuts  = vector<float>(settings.nClasses, 0);
       ofstream statDatFile;
       //###############################################
 
@@ -63,12 +63,12 @@ using namespace csvm;
          //for all training iterations
          for(size_t itIdx = 0; itIdx < settings.nIter; ++itIdx){
             
-            double sumSlack = 0;
+            float sumSlack = 0;
             float right = 0;
             float wrong = 0;
 
             //############ Logging functions ################
-            allOuts  = vector<double>(nData, 0);
+            allOuts  = vector<float>(nData, 0);
             minOut = 0;
             maxOut = 0;
             nMax   = 0;
@@ -80,8 +80,8 @@ using namespace csvm;
             for(size_t dIdx = 0; dIdx < nData; ++dIdx){
                
                unsigned int label = ds->getTrainImagePtr(dIdx)->getLabelId();
-               double yData = (label == svmIdx ? 1.0 : -1.0);
-               double out = output(activations[dIdx], svmIdx);
+               float yData = (label == svmIdx ? 1.0 : -1.0);
+               float out = output(activations[dIdx], svmIdx);
              
                // for all centers 
                for(size_t centrIdx = 0; centrIdx < settings.nCentroids; ++centrIdx){
@@ -122,23 +122,23 @@ using namespace csvm;
             //calculate objective function
 
             // calculating first term of objective function
-            double objective = 0;
+            float objective = 0;
             for(size_t clIdx = 0; clIdx < settings.nCentroids; ++clIdx){
                objective += weights[svmIdx][clIdx] * weights[svmIdx][clIdx];
             }
 
-            double hypPlane = objective;
+            float hypPlane = objective;
             objective /= 2.0;
             objective += settings.CSVM_C * sumSlack ;
            
             //############ Logging functions ################ 
-            maxOuts[svmIdx] = (double)  maxOut / nMax;
-            minOuts[svmIdx] = (double)  minOut / nMin;
-            avOuts[svmIdx]  = (double) (maxOut + minOut) / nData;
-            double stdDevMaxOutPos = 0;
-            double stdDevMaxOutNeg = 0;
-            double stdDevMinOutPos = 0;
-            double stdDevMinOutNeg = 0;
+            maxOuts[svmIdx] = (float)  maxOut / nMax;
+            minOuts[svmIdx] = (float)  minOut / nMin;
+            avOuts[svmIdx]  = (float) (maxOut + minOut) / nData;
+            float stdDevMaxOutPos = 0;
+            float stdDevMaxOutNeg = 0;
+            float stdDevMinOutPos = 0;
+            float stdDevMinOutNeg = 0;
             int nMaxPos = 0;
             int nMaxNeg = 0;
             int nMinPos = 0;
@@ -174,13 +174,13 @@ using namespace csvm;
 
    
    //classify image, given its activations
-   unsigned int ConvSVM::classify(vector<double>& activations){
+   unsigned int ConvSVM::classify(vector<float>& activations){
 
       unsigned int maxLabel = 0;
-      double maxVal = output(activations, 0);
+      float maxVal = output(activations, 0);
 
       for(size_t svmIdx = 0; svmIdx < settings.nClasses; ++svmIdx){
-         double out = output(activations, svmIdx);
+         float out = output(activations, svmIdx);
          if (debugOut) cout << "Output CSVM_" << svmIdx << ": " << out << "\tBias: " << biases[svmIdx] <<endl;
          if(out > maxVal){
             maxVal = out;

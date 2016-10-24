@@ -28,13 +28,13 @@ Feature CleanDescriptor::describe(Patch p){
    f.labelId = p.getLabelId();
    f.label = p.getLabel();
    
-   f.content = vector<double>(imSize,0);
+   f.content = vector<float>(imSize,0);
    
       
    
    //Not the most sexy way to implement the standardization option, but well, here it goes..
-   double mean = 0.0;
-   double stddev = 0.0;
+   float mean = 0.0;
+   float stddev = 0.0;
    switch(settings.stdOptions){
       case CL_ALL:
          mean = 0.0;
@@ -42,7 +42,7 @@ Feature CleanDescriptor::describe(Patch p){
          for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
             for(size_t idxX = 0; idxX < imWidth; ++idxX){
                for(size_t idxY = 0; idxY < imHeight; ++idxY){
-                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (float)(p.getPixel(idxX,idxY,chIdx)) ;
                   mean += f.content[idxY * imWidth + idxX];
                   
                }
@@ -79,7 +79,7 @@ Feature CleanDescriptor::describe(Patch p){
             
             for(size_t idxX = 0; idxX < imWidth; ++idxX){
                for(size_t idxY = 0; idxY < imHeight; ++idxY){
-                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (float)(p.getPixel(idxX,idxY,chIdx)) ;
                   mean += f.content[idxY * imWidth + idxX];
                   
                }
@@ -113,7 +113,7 @@ Feature CleanDescriptor::describe(Patch p){
          for(size_t chIdx = 0; chIdx < numColours; ++chIdx){
             for(size_t idxX = 0; idxX < imWidth; ++idxX){
                for(size_t idxY = 0; idxY < imHeight; ++idxY){
-                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (double)(p.getPixel(idxX,idxY,chIdx)) ;
+                  f.content[chIdx * chSize + idxY * imWidth + idxX] = (float)(p.getPixel(idxX,idxY,chIdx)) ;
                }
             }
          }

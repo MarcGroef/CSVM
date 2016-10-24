@@ -22,10 +22,10 @@ using namespace std;
 namespace csvm{
 
    struct ConvSVMSettings{
-     double learningRate;
+     float learningRate;
      unsigned int nIter;
-     double initWeight;
-     double CSVM_C;
+     float initWeight;
+     float CSVM_C;
      unsigned int nClasses;
      unsigned int nCentroids;
      bool L2;
@@ -36,24 +36,24 @@ namespace csvm{
       
       ConvSVMSettings settings;
       
-      vector< vector<double> > weights;
-      vector<double> biases;
+      vector< vector<float> > weights;
+      vector<float> biases;
     
-      double output(vector<double>& activations, unsigned int svmIdx);
+      float output(vector<float>& activations, unsigned int svmIdx);
       
       int nMax, nMin;
-      double maxOut, minOut;
-      vector<double> maxOuts;
-      vector<double> minOuts;
-      vector<double> avOuts;
-      vector<double> allOuts;
+      float maxOut, minOut;
+      vector<float> maxOuts;
+      vector<float> minOuts;
+      vector<float> avOuts;
+      vector<float> allOuts;
 
    public:
       bool debugOut, normalOut;
       void setSettings(ConvSVMSettings s);
       
-      void train(vector< vector<double> >& activations, CSVMDataset* ds);
-      unsigned int classify(vector<double>& activations);
+      void train(vector< vector<float> >& activations, CSVMDataset* ds);
+      unsigned int classify(vector<float>& activations);
 
    };
 

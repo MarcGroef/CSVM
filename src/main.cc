@@ -128,14 +128,14 @@ int main(int argc,char**argv){
       if(normalOut)
 	cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
       if(normalOut)
-	cout << "TrainSetScore: " << ((double)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
+	cout << "TrainSetScore: " << ((float)nCorrect * 100)/(nCorrect + nFalse) << "\% correct.\n";
       //****************************** Print ConfusionMatrix for TRAINSET *******************
 
       bool printConfusionMatrix = true;
 
       if (normalOut && printConfusionMatrix) {
 	int   total;
-	double precision;
+	float precision;
 
 	cout << "\n\n\t       Predicted:\t";
 	for (size_t i=0; i<nClasses; i++){
@@ -151,12 +151,12 @@ int main(int argc,char**argv){
 	      total += classifiedAsTrain[i][j];
 	      cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAsTrain[i][j];
 	    }
-	    precision = (double)classifiedAsTrain[i][i] / total * 100;
+	    precision = (float)classifiedAsTrain[i][i] / total * 100;
 	    cout << "\t\t" << precision << " %" << "\n\n\n";
 	}
 	cout << "\n\tPrecision:\t";
 	for (size_t i=0; i<nClasses; ++i){
-	    precision = (double) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
+	    precision = (float) classifiedAsTrain[i][i] / classifiedAsTrain[nClasses][i] * 100;
 	    cout << "\t" << fixed << precision << "";
 	}
       }
@@ -201,13 +201,13 @@ int main(int argc,char**argv){
    
    
    if(normalOut)cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   if(normalOut)cout << "Validationscore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
-   if(normalOut)cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
+   if(normalOut)cout << "Validationscore: " << ((float)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   if(normalOut)cout << fixed << ((float)nCorrect)/(nCorrect + nFalse) << endl;
    
 
    if (normalOut && printConfusionMatrix) {
       int   total;
-      double precision;
+      float precision;
 
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
@@ -223,12 +223,12 @@ int main(int argc,char**argv){
             total += classifiedAsVal[i][j];
             cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAsVal[i][j];
          }
-         precision = (double)classifiedAsVal[i][i] / total * 100;
+         precision = (float)classifiedAsVal[i][i] / total * 100;
          cout << "\t\t" << precision << " %" << "\n\n\n";
       }
       cout << "\n\tPrecision:\t";
       for (size_t i=0; i<nClasses; ++i){
-         precision = (double) classifiedAsVal[i][i] / classifiedAsVal[nClasses][i] * 100;
+         precision = (float) classifiedAsVal[i][i] / classifiedAsVal[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
    }
@@ -295,13 +295,13 @@ int main(int argc,char**argv){
    
    
    if(normalOut)cout << nCorrect << " correct, and " << nFalse << " false classifications, out of " << nCorrect + nFalse << " images\n";
-   if(normalOut)cout << "TestSetScore: " << ((double)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
-   if(normalOut)cout << fixed << ((double)nCorrect)/(nCorrect + nFalse) << endl;
+   if(normalOut)cout << "TestSetScore: " << ((float)nCorrect*100)/(nCorrect + nFalse) << "\% correct.\n";
+   if(normalOut)cout << fixed << ((float)nCorrect)/(nCorrect + nFalse) << endl;
    
 
    if (normalOut && printConfusionMatrix) {
       int   total;
-      double precision;
+      float precision;
 
       cout << "\n\n\t       Predicted:\t";
       for (size_t i=0; i<nClasses; i++){
@@ -317,12 +317,12 @@ int main(int argc,char**argv){
             total += classifiedAs[i][j];
             cout << (((((j == 1 ) |( j == 2)) && i > 1)) ? "\t\t" : "\t\t") << fixed << classifiedAs[i][j];
          }
-         precision = (double)classifiedAs[i][i] / total * 100;
+         precision = (float)classifiedAs[i][i] / total * 100;
          cout << "\t\t" << precision << " %" << "\n\n\n";
       }
       cout << "\n\tPrecision:\t";
       for (size_t i=0; i<nClasses; ++i){
-         precision = (double) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
+         precision = (float) classifiedAs[i][i] / classifiedAs[nClasses][i] * 100;
          cout << "\t" << fixed << precision << "";
       }
       cout << endl; 

@@ -111,56 +111,56 @@ void HOGDescriptor::setSettings(HOGSettings s) {
    //cout << "hog settigns set\n";
 }
 
-double HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
-   double result;
+float HOGDescriptor::computeXGradient(Patch patch, int x, int y, Colour col) {
+   float result;
    if (!settings.useColourPixel || col == GRAY) {
-      double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
-      double xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
+      float xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x + 1, y));
+      float xMin = (x - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x - 1, y));
       result = xPlus - xMin;
    }
    else
    {
-      double xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
-      double xMin = (x - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x - 1, y, col));
+      float xPlus = (x + 1 == patch.getWidth() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x + 1, y, col));
+      float xMin = (x - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x - 1, y, col));
       result = xPlus - xMin;
    }//patch.getPixel(x,y, channel in 0-2)
    return result;
 }
 
-double HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
-   double result;
+float HOGDescriptor::computeYGradient(Patch patch, int x, int y, Colour col) {
+   float result;
    if (!settings.useColourPixel || col == GRAY) {
-      double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y + 1));
-      double yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y - 1));
+      float yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y + 1));
+      float yMin = (y - 1 < 0 ? settings.padding*patch.getGreyPixel(x, y) : patch.getGreyPixel(x, y - 1));
       result = yPlus - yMin;
    }
    else
    {
-      double yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
-      double yMin = (y - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y - 1, col));
+      float yPlus = (y + 1 == patch.getHeight() ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y + 1, col));
+      float yMin = (y - 1 < 0 ? settings.padding*patch.getPixel(x, y, col) : patch.getPixel(x, y - 1, col));
       result = yPlus - yMin;
    }
    return result;
 }
 
-double HOGDescriptor::computeMagnitude(double xGradient, double yGradient) {
+float HOGDescriptor::computeMagnitude(float xGradient, float yGradient) {
    return sqrt(pow(xGradient, 2) + pow(yGradient, 2));
 }
 
-double HOGDescriptor::computeOrientation(double xGradient, double yGradient) {
-   double ori = atan2(yGradient, xGradient) * 180.0 / M_PI;
+float HOGDescriptor::computeOrientation(float xGradient, float yGradient) {
+   float ori = atan2(yGradient, xGradient) * 180.0 / M_PI;
    while (ori < 0.0)
       ori += 180.0;
    return ori;
 }
 
-void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block) {
+void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<float>& cellOrientationHistogram, Patch& block) {
    //cout << "binPixel called for x:" << X << ", y:" << Y << "\n";
 
-   double xGradient = computeXGradient(block, X, Y, col);
-   double yGradient = computeYGradient(block, X, Y, col);
-   double gradientMagnitude = computeMagnitude(xGradient, yGradient);
-   double gradientOrientation = computeOrientation(xGradient, yGradient);
+   float xGradient = computeXGradient(block, X, Y, col);
+   float yGradient = computeYGradient(block, X, Y, col);
+   float gradientMagnitude = computeMagnitude(xGradient, yGradient);
+   float gradientOrientation = computeOrientation(xGradient, yGradient);
    if (settings.interpol == INTERPOLATE_BINARY) {
       size_t bin = (unsigned int)(gradientOrientation / (180.0 / settings.nBins));
       cellOrientationHistogram[bin == settings.nBins ? 0 : bin] += gradientMagnitude;
@@ -179,9 +179,9 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
       int lowerBinValue = lowerBinIndex*bandWidth + base; // = 58 - 18 + 10 = 40 + 10 = bin 50 (aka: 40-60)
       //int upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
                                              //cout << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
-      double lowerBinAddedValue = gradientMagnitude*(1.0 - (((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth));
+      float lowerBinAddedValue = gradientMagnitude*(1.0 - (((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth));
 
-      double higherBinAddedValue = gradientMagnitude*(((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth);
+      float higherBinAddedValue = gradientMagnitude*(((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth);
 
       //cout << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
 
@@ -190,9 +190,9 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
    }
 }
 
-void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, double ****imageTranspose) {
-   double gradientOrientation;
-   double gradientMagnitude;
+void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<float>& cellOrientationHistogram, float ****imageTranspose) {
+   float gradientOrientation;
+   float gradientMagnitude;
    
 
    //cout << "fancy binPixel called for x:" << X << ", y:" << Y << "\n";
@@ -213,9 +213,9 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
       cellOrientationHistogram[bin == settings.nBins ? 0 : bin] += gradientMagnitude;
    }
    else if (settings.interpol == INTERPOLATE_LINEAR) {      //with 9 | 18 bins:
-      double bandWidth = (180.0 / settings.nBins); // = 180 / 9 | 18 = 20 | 10
-      double orientationBin = gradientOrientation; // = 58
-      double base = bandWidth / 2; // = 10 | 5 , first bin value, also added mid values of bins
+      float bandWidth = (180.0 / settings.nBins); // = 180 / 9 | 18 = 20 | 10
+      float orientationBin = gradientOrientation; // = 58
+      float base = bandWidth / 2; // = 10 | 5 , first bin value, also added mid values of bins
 
 
       int lowerBinIndex = (int)((orientationBin - base < 0 ? (orientationBin - base) + 180.0 : orientationBin - base) / bandWidth );      //int lowerBinIndex = ((orientationBin - base + 180) % 180) / bandWidth;
@@ -223,17 +223,17 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
 
       //cout << "lwrbID " << lowerBinIndex << " | " << upperBinIndex << " hgherbID" << endl;
 
-      double lowerBinValue = lowerBinIndex*bandWidth + base; // = 58 - 18 + 10 = 40 + 10 = bin 50 (aka: 40-60)
-      double upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
+      float lowerBinValue = lowerBinIndex*bandWidth + base; // = 58 - 18 + 10 = 40 + 10 = bin 50 (aka: 40-60)
+      float upperBinValue = upperBinIndex*bandWidth + base; // = 50+20 = bin 70 (aka: 60-80)
       // << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
       if (gradientOrientation == lowerBinValue) {
          cellOrientationHistogram[lowerBinIndex] += gradientMagnitude;
       }
       else {
-         double lowerBinAddedValue = gradientMagnitude*(1.0 - (((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth));
+         float lowerBinAddedValue = gradientMagnitude*(1.0 - (((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth));
          if (settings.debugLevel >=2) cout << col << ": added a share of " << lowerBinAddedValue << " to lowerbin " << lowerBinIndex << " (" << lowerBinValue << " )";
 
-         double higherBinAddedValue = gradientMagnitude*(((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth);
+         float higherBinAddedValue = gradientMagnitude*(((gradientOrientation - lowerBinValue) > 0 ? (gradientOrientation - lowerBinValue) : (180 + (orientationBin - lowerBinValue))) / bandWidth);
          if (settings.debugLevel >=2) cout << "and a share of " << higherBinAddedValue << " to higherbin " << upperBinIndex << " (" << upperBinValue << " )\n";
          //cout << "before: lowerbin: " << lowerBinIndex << ", upperbin: " << upperBinIndex << "\n";
 
@@ -243,9 +243,9 @@ void HOGDescriptor::binPixel(size_t X, size_t Y, Colour col, vector<double>& cel
    }
 }
 
-double ****HOGDescriptor::patchTranspose(Patch& block, double ****transposedImage, unsigned int colours) {
+float ****HOGDescriptor::patchTranspose(Patch& block, float ****transposedImage, unsigned int colours) {
 
-   vector <double> gx, gy;
+   vector <float> gx, gy;
    unsigned int patchWidth = block.getWidth();
    unsigned int patchHeight = block.getHeight();
 
@@ -254,35 +254,35 @@ double ****HOGDescriptor::patchTranspose(Patch& block, double ****transposedImag
    if (settings.padding != NONE) {
       if (settings.useColourPixel == true) {
          //cout << "making transposed image\n";
-         transposedImage = new double***[colours]; //= total size to store compelte image array-wise
-         double xGradient = 0.0;
-         double yGradient = 0.0;
+         transposedImage = new float***[colours]; //= total size to store compelte image array-wise
+         float xGradient = 0.0;
+         float yGradient = 0.0;
 
-         transposedImage[RED] = new double**[patchWidth];
-         transposedImage[GREEN] = new double**[patchWidth];
-         transposedImage[BLUE] = new double**[patchWidth];
+         transposedImage[RED] = new float**[patchWidth];
+         transposedImage[GREEN] = new float**[patchWidth];
+         transposedImage[BLUE] = new float**[patchWidth];
 
          for (unsigned int X = 0; X < patchWidth; ++X) {
-            transposedImage[RED][X] = new double*[patchHeight];
-            transposedImage[GREEN][X] = new double*[patchHeight];
-            transposedImage[BLUE][X] = new double*[patchHeight];
+            transposedImage[RED][X] = new float*[patchHeight];
+            transposedImage[GREEN][X] = new float*[patchHeight];
+            transposedImage[BLUE][X] = new float*[patchHeight];
 
 
             for (unsigned int Y = 0; Y < patchHeight; ++Y) {
                //Red          
-               transposedImage[RED][X][Y] = new double[2];
+               transposedImage[RED][X][Y] = new float[2];
                xGradient = computeXGradient(block, X, Y, RED);
                yGradient = computeYGradient(block, X, Y, RED);
                transposedImage[RED][X][Y][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
                transposedImage[RED][X][Y][ORIENTATION] = computeOrientation(xGradient, yGradient);
                //green
-               transposedImage[GREEN][X][Y] = new double[2];
+               transposedImage[GREEN][X][Y] = new float[2];
                xGradient = computeXGradient(block, X, Y, GREEN);
                yGradient = computeYGradient(block, X, Y, GREEN);
                transposedImage[GREEN][X][Y][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
                transposedImage[GREEN][X][Y][ORIENTATION] = computeOrientation(xGradient, yGradient);
                //blue
-               transposedImage[BLUE][X][Y] = new double[2];
+               transposedImage[BLUE][X][Y] = new float[2];
                xGradient = computeXGradient(block, X, Y, BLUE);
                yGradient = computeYGradient(block, X, Y, BLUE);
                transposedImage[BLUE][X][Y][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
@@ -295,16 +295,16 @@ double ****HOGDescriptor::patchTranspose(Patch& block, double ****transposedImag
 
       }
       else {   //if we're not working with colour. 
-         transposedImage = new double***[1]; //= total size to store compelte image array-wise
-         double xGradient = 0.0;
-         double yGradient = 0.0;
-         transposedImage[0] = new double**[patchWidth];
+         transposedImage = new float***[1]; //= total size to store compelte image array-wise
+         float xGradient = 0.0;
+         float yGradient = 0.0;
+         transposedImage[0] = new float**[patchWidth];
          for (unsigned int X = 0; X < patchWidth; ++X) {
-            transposedImage[0][X] = new double*[patchHeight];
+            transposedImage[0][X] = new float*[patchHeight];
 
             for (unsigned int Y = 0; Y < patchHeight; ++Y) {
                //gray
-               transposedImage[0][X][Y] = new double[2];
+               transposedImage[0][X][Y] = new float[2];
                xGradient = computeXGradient(block, X, Y, GRAY);
                yGradient = computeYGradient(block, X, Y, GRAY);
                transposedImage[0][X][Y][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
@@ -316,35 +316,35 @@ double ****HOGDescriptor::patchTranspose(Patch& block, double ****transposedImag
    else {         // we're working with padding = NONE
       if (settings.useColourPixel == true) {
          //cout << "making transposed image\n";
-         transposedImage = new double***[colours]; //= total size to store compelte image array-wise
-         double xGradient = 0.0;
-         double yGradient = 0.0;
+         transposedImage = new float***[colours]; //= total size to store compelte image array-wise
+         float xGradient = 0.0;
+         float yGradient = 0.0;
 
-         transposedImage[RED] = new double**[patchWidth - 2]; //our arrays are smaller
-         transposedImage[GREEN] = new double**[patchWidth - 2];
-         transposedImage[BLUE] = new double**[patchWidth - 2];
+         transposedImage[RED] = new float**[patchWidth - 2]; //our arrays are smaller
+         transposedImage[GREEN] = new float**[patchWidth - 2];
+         transposedImage[BLUE] = new float**[patchWidth - 2];
 
          for (unsigned int X = 1; X < patchWidth - 1; ++X) {   //we start and end within the boundary
-            transposedImage[RED][X - 1] = new double*[patchHeight - 2]; //but we must access our arrays accordingly, 
-            transposedImage[GREEN][X - 1] = new double*[patchHeight - 2];
-            transposedImage[BLUE][X - 1] = new double*[patchHeight - 2];
+            transposedImage[RED][X - 1] = new float*[patchHeight - 2]; //but we must access our arrays accordingly, 
+            transposedImage[GREEN][X - 1] = new float*[patchHeight - 2];
+            transposedImage[BLUE][X - 1] = new float*[patchHeight - 2];
 
 
             for (unsigned int Y = 1; Y < patchHeight - 1; ++Y) {
                //Red          
-               transposedImage[RED][X - 1][Y - 1] = new double[2];
+               transposedImage[RED][X - 1][Y - 1] = new float[2];
                xGradient = computeXGradient(block, X, Y, RED); //here we give the exact coordinates, so we give them through correctly
                yGradient = computeYGradient(block, X, Y, RED);
                transposedImage[RED][X - 1][Y - 1][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
                transposedImage[RED][X - 1][Y - 1][ORIENTATION] = computeOrientation(xGradient, yGradient);
                //green
-               transposedImage[GREEN][X - 1][Y - 1] = new double[2];
+               transposedImage[GREEN][X - 1][Y - 1] = new float[2];
                xGradient = computeXGradient(block, X, Y, GREEN);
                yGradient = computeYGradient(block, X, Y, GREEN);
                transposedImage[GREEN][X - 1][Y - 1][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
                transposedImage[GREEN][X - 1][Y - 1][ORIENTATION] = computeOrientation(xGradient, yGradient);
                //blue
-               transposedImage[BLUE][X - 1][Y - 1] = new double[2];
+               transposedImage[BLUE][X - 1][Y - 1] = new float[2];
                xGradient = computeXGradient(block, X, Y, BLUE);
                yGradient = computeYGradient(block, X, Y, BLUE);
                transposedImage[BLUE][X - 1][Y - 1][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
@@ -357,16 +357,16 @@ double ****HOGDescriptor::patchTranspose(Patch& block, double ****transposedImag
 
       }
       else {   //if we're not working with colour. 
-         transposedImage = new double***[1]; //= total size to store compelte image array-wise
-         double xGradient = 0.0;
-         double yGradient = 0.0;
-         transposedImage[0] = new double**[patchWidth - 2];
+         transposedImage = new float***[1]; //= total size to store compelte image array-wise
+         float xGradient = 0.0;
+         float yGradient = 0.0;
+         transposedImage[0] = new float**[patchWidth - 2];
          for (unsigned int X = 1; X < patchWidth - 1; ++X) {
-            transposedImage[0][X - 1] = new double*[patchHeight - 2];
+            transposedImage[0][X - 1] = new float*[patchHeight - 2];
 
             for (unsigned int Y = 1; Y < patchHeight - 1; ++Y) {
                //gray
-               transposedImage[0][X - 1][Y - 1] = new double[2];
+               transposedImage[0][X - 1][Y - 1] = new float[2];
                xGradient = computeXGradient(block, X, Y, GRAY);
                yGradient = computeYGradient(block, X, Y, GRAY);
                transposedImage[0][X - 1][Y - 1][MAGNITUDE] = computeMagnitude(xGradient, yGradient);
@@ -380,15 +380,15 @@ double ****HOGDescriptor::patchTranspose(Patch& block, double ****transposedImag
 
 
 
-vector <double> HOGDescriptor::computeCellHOG(double ****imageTranspose, unsigned int cellX, unsigned int cellY) {
+vector <float> HOGDescriptor::computeCellHOG(float ****imageTranspose, unsigned int cellX, unsigned int cellY) {
    //let's compute the HOG for a single cell.
 
-   vector <double> returnHOG(0, 0.0);//(settings.nBins) * ((settings.binmethod * 2) + 1), 0.0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+   vector <float> returnHOG(0, 0.0);//(settings.nBins) * ((settings.binmethod * 2) + 1), 0.0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
 
 
    if (settings.binmethod == CROSSCOLOUR) { //we bin the colours into a single histogram
    
-      vector <double> cellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+      vector <float> cellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
 
 
       for (size_t X = 0; X < settings.cellSize; ++X)
@@ -443,10 +443,10 @@ vector <double> HOGDescriptor::computeCellHOG(double ****imageTranspose, unsigne
    }
    else {      //we are binning by colours, so for every colour, we create a seperate HOG, which are appended to one another in the end. 
 
-      vector <double> cellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
-      vector <double> redCellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
-      vector <double> blueCellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
-      vector <double> greenCellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+      vector <float> cellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+      vector <float> redCellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+      vector <float> blueCellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
+      vector <float> greenCellOrientationHistogram(settings.nBins, 0); //if we bin cross-colour, then we'll only have single HOG, if we bin by-colour, then we'll have multiple HOGS appended to one another.
 
       if (!settings.useColourPixel)
       {
@@ -529,7 +529,7 @@ vector <double> HOGDescriptor::computeCellHOG(double ****imageTranspose, unsigne
 }
 
 
-vector <double> HOGDescriptor::postProcess(vector <double> blockHistogram) {
+vector <float> HOGDescriptor::postProcess(vector <float> blockHistogram) {
 
 
    //POSTPROCESsING ------------------------------------------
@@ -544,19 +544,19 @@ vector <double> HOGDescriptor::postProcess(vector <double> blockHistogram) {
       return blockHistogram;
    }
    if (settings.postproccess == STANDARDISATION) {
-      double mean = 0.0;
-      double standardDeviation = 0.0;
+      float mean = 0.0;
+      float standardDeviation = 0.0;
       size_t featureLen = blockHistogram.size() ;
 
       for (size_t idx = 0; idx < featureLen; ++idx) {
          mean += blockHistogram[idx];
       }
-      mean /= (double)featureLen;
-      double deviation = 0.0;
+      mean /= (float)featureLen;
+      float deviation = 0.0;
       for (size_t idx = 0; idx < featureLen; ++idx) {
          deviation += pow((blockHistogram[idx] - mean), 2.0);
       }
-      deviation /= (double)featureLen;
+      deviation /= (float)featureLen;
       standardDeviation = sqrt(deviation);
 
       for (size_t idx = 0; idx < featureLen; ++idx) {
@@ -570,14 +570,14 @@ vector <double> HOGDescriptor::postProcess(vector <double> blockHistogram) {
    if (settings.postproccess == NORMALISATION) {
 
       size_t featureLen = blockHistogram.size();
-      double max = 0.0;
-      double min = numeric_limits<double>::max();
+      float max = 0.0;
+      float min = numeric_limits<float>::max();
       for (size_t idx = 0; idx < featureLen; ++idx) {
          max = blockHistogram[idx] > max ? blockHistogram[idx] : max;
          min = blockHistogram[idx] < min ? blockHistogram[idx] : min;
       }
       //updating content with normalized values:
-      double diff = max - min;
+      float diff = max - min;
       for (size_t idx = 0; idx < featureLen; ++idx) {
          blockHistogram[idx] = (blockHistogram[idx] - min) / (diff);
       }
@@ -589,14 +589,14 @@ vector <double> HOGDescriptor::postProcess(vector <double> blockHistogram) {
 
    if (settings.postproccess == LTWONORM) {
       //L2 normalization scheme:
-      double vTwoSquared = 0;
+      float vTwoSquared = 0;
       for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
          vTwoSquared += pow(blockHistogram[idx], 2);
       }
       //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
       // e is some magic number still...
-      double e = 0.000001;
+      float e = 0.000001;
       for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
          blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
       }
@@ -607,22 +607,22 @@ vector <double> HOGDescriptor::postProcess(vector <double> blockHistogram) {
    }
 
    if (settings.postproccess == CLIPNORM) {
-      double lowestValue = 360;
-      double highestValue = 0;
+      float lowestValue = 360;
+      float highestValue = 0;
       for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
          highestValue = (blockHistogram[idx] > highestValue ? blockHistogram[idx] : highestValue);
          lowestValue = (blockHistogram[idx] < highestValue ? blockHistogram[idx] : lowestValue);
       }
 
       //L2 normalization scheme:
-      double vTwoSquared = 0;
+      float vTwoSquared = 0;
       for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
          vTwoSquared += pow(blockHistogram[idx], 2);
       }
       //   vTwoSquared = sqrt(vTwoSquared); //is now vector length
 
       // e is some magic number still...
-      double e = 0.000001;
+      float e = 0.000001;
       for (size_t idx = 0; idx < blockHistogram.size(); ++idx) {
          blockHistogram[idx] /= sqrt(vTwoSquared + pow(e, 2));
       }
@@ -658,15 +658,15 @@ vector <double> HOGDescriptor::postProcess(vector <double> blockHistogram) {
 
 //This function implements classic HOG, and is the function called when computing the HOG-feature of an incoming patch (which we call block)
 Feature HOGDescriptor::getHOG(Patch& block) {
-   vector <double> gx, gy;
+   vector <float> gx, gy;
    unsigned int patchWidth = block.getWidth();
    unsigned int patchHeight = block.getHeight();
    settings.patchSize = block.getHeight();
-   vector <double> blockHistogram(0, 0);
+   vector <float> blockHistogram(0, 0);
 
    int colours = ((settings.useColourPixel) * 2) + 1; //how many colours do we have? if useColour == true, then 3, otherwise just 1
    //cout << "we have " << colours << " colours\n";
-   double**** transposedImage; //transposedImage [ colour channel ] [X-coordinate] [Y-coordinate] [MAGNITUDE or ORIENTATION]
+   float**** transposedImage; //transposedImage [ colour channel ] [X-coordinate] [Y-coordinate] [MAGNITUDE or ORIENTATION]
    transposedImage = patchTranspose(block, transposedImage, colours);   //compute the orientations and magnitudes of all pixels, and save these to a new map.
 
 
@@ -680,7 +680,7 @@ Feature HOGDescriptor::getHOG(Patch& block) {
       for (int cellY = 0; cellY + settings.cellSize <= patchHeight; cellY += settings.cellStride) {
          //cout << "cell: " << cellX << ", " << cellY << '\n';
 
-         vector <double> cellOrientationHistogram = computeCellHOG(transposedImage, cellX, cellY);    //cellOrientationHistogram tracks the HOG for the current cell
+         vector <float> cellOrientationHistogram = computeCellHOG(transposedImage, cellX, cellY);    //cellOrientationHistogram tracks the HOG for the current cell
          
          if (settings.debugLevel >= 1) {
             cout << "\ncellorientationHistogram:\n";

@@ -18,7 +18,7 @@ namespace csvm{
 	  
 	  MLPerceptron mlp;
 	  
-	  vector<double> highestHiddenActivationImage(vector<Feature> imageFeatures);
+	  vector<float> highestHiddenActivationImage(vector<Feature> imageFeatures);
 		
 	public:
 

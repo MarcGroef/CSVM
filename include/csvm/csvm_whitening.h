@@ -12,7 +12,7 @@ using namespace Eigen;
 namespace csvm{
    
    class Whitener{
-      //vector< vector<double> > sigma;
+      //vector< vector<float> > sigma;
       MatrixXd sigma;
       MatrixXcd eigenVectors;
       MatrixXd pc;

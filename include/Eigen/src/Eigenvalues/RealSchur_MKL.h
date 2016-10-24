@@ -69,9 +69,9 @@ RealSchur<Matrix<EIGTYPE, Dynamic, Dynamic, EIGCOLROW> >::compute(const EigenBas
 \
 }
 
-EIGEN_MKL_SCHUR_REAL(float,   double, d, D, ColMajor, LAPACK_COL_MAJOR)
+EIGEN_MKL_SCHUR_REAL(float,   float, d, D, ColMajor, LAPACK_COL_MAJOR)
 EIGEN_MKL_SCHUR_REAL(float,    float,  s, S, ColMajor, LAPACK_COL_MAJOR)
-EIGEN_MKL_SCHUR_REAL(float,   double, d, D, RowMajor, LAPACK_ROW_MAJOR)
+EIGEN_MKL_SCHUR_REAL(float,   float, d, D, RowMajor, LAPACK_ROW_MAJOR)
 EIGEN_MKL_SCHUR_REAL(float,    float,  s, S, RowMajor, LAPACK_ROW_MAJOR)
 
 } // end namespace Eigen

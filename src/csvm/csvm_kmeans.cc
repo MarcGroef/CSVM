@@ -35,10 +35,10 @@ vector<Centroid> KMeans::initCentroids(vector<Feature> collection, unsigned int 
       
       for(size_t d = 0; d < collection[0].content.size(); ++d){
          
-			double randDouble = (((double)rand() / 1000000) / RAND_MAX );
-			//randDouble -= randDouble / 2;
+			float randfloat = (((float)rand() / 1000000) / RAND_MAX );
+			//randfloat -= randfloat / 2;
 			
-         dictionary[idx].content[d] = collection[randomInt].content[d] + randDouble;
+         dictionary[idx].content[d] = collection[randomInt].content[d] + randfloat;
       }
    }
    
@@ -69,11 +69,11 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
    vector< unsigned int > nMembers(nClusters,0);
  
    
-   double curDist;
-   double prevTotalDistance = 2;
-   double totalDistance = 1;
-   double deltaDist = 1;
-   double closestDist;
+   float curDist;
+   float prevTotalDistance = 2;
+   float totalDistance = 1;
+   float deltaDist = 1;
+   float closestDist;
    
    for(size_t clIdx = 0; clIdx < nClusters; ++clIdx){
       centroids1[clIdx].content.resize(dataDims);
@@ -98,7 +98,7 @@ vector<Centroid> KMeans::cluster(vector<Feature>& featureSamples, unsigned int n
          
       //for all data, determine the nearest centroid
       for(size_t dIdx = 0; dIdx < nData; ++dIdx){
-         closestDist = numeric_limits<double>::max();
+         closestDist = numeric_limits<float>::max();
          unsigned int closestCentr = -1;
          
          for(size_t cIdx = 0; cIdx < nClusters; ++cIdx){

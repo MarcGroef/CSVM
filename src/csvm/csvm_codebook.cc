@@ -12,16 +12,16 @@ using namespace csvm;
 
 //unions to make life easier while reading/writing binary files
 
-void Codebook::standardize(vector<double>& x, double sigmaFix){
+void Codebook::standardize(vector<float>& x, float sigmaFix){
    unsigned int size = x.size();
-   double mean = 0;
+   float mean = 0;
    
    for(size_t idx = 0; idx != size; ++idx){
       mean += x[idx];
    }
    mean /= size;
    
-   double sigma = 0;
+   float sigma = 0;
    
    for(size_t idx = 0; idx != size; ++idx)
       sigma += (mean - x[idx]) * (mean - x[idx]);
@@ -41,9 +41,9 @@ union charInt{
    unsigned int intVal;
 };
 
-union charDouble{
+union charfloat{
    char chars[8];
-   double doubleVal;
+   float floatVal;
 };
 
 Codebook::Codebook(){
@@ -103,33 +103,33 @@ unsigned int Codebook::getNCentroids(){
    return settings.numberVisualWords;
 }
 
-vector<vector <double> > Codebook::getCentroidByClassContributions() {
+vector<vector <float> > Codebook::getCentroidByClassContributions() {
 	return akmeans.getClusterClassContributions();
 }
 
-vector<double> Codebook::getCentroidByClassContributions(int cl) {
+vector<float> Codebook::getCentroidByClassContributions(int cl) {
 	return akmeans.getClusterClassContributions(cl);
 }
 
-vector<double> Codebook::getCentroidByClassContributions(Feature feat) {
+vector<float> Codebook::getCentroidByClassContributions(Feature feat) {
 	return akmeans.getClusterClassContributions(feat);
 }
 
-vector< double > Codebook::getActivations(vector<Feature> features){
+vector< float > Codebook::getActivations(vector<Feature> features){
   return getQActivations(features);
    //if(features.size() % 4 != 0)
    //   cout << "Warning: patches do not perfectly fit into quadrants..\n";
 
-   vector< double> activations(settings.numberVisualWords, 0.0);
+   vector< float> activations(settings.numberVisualWords, 0.0);
    unsigned int dataDims = features[0].content.size();
-   vector<double> distances(settings.numberVisualWords);
-   double dev;
+   vector<float> distances(settings.numberVisualWords);
+   float dev;
    unsigned int nFeatures = features.size();
-   double mean;
+   float mean;
    
-   double xx = 0.0;
-   double cc;
-   double xc;
+   float xx = 0.0;
+   float cc;
+   float xc;
    
    for(size_t feat = 0; feat < nFeatures; ++feat){
       
@@ -167,7 +167,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
                xc += bow[word].content[dim] * features[feat].content[dim];
                
             }
-            //double dist = 0.0;
+            //float dist = 0.0;
             //for(size_t dim = 0; dim < dataDims; ++dim){
             //   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
             //}
@@ -177,7 +177,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
             
             mean += distances[word];
          }
-         mean /= (double)(settings.numberVisualWords);
+         mean /= (float)(settings.numberVisualWords);
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
          }
@@ -193,14 +193,14 @@ vector< double > Codebook::getActivations(vector<Feature> features){
                xc += bow[word].content[dim] * features[feat].content[dim];
                
             }
-            //double dist = 0.0;
+            //float dist = 0.0;
             //for(size_t dim = 0; dim < dataDims; ++dim){
             //   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
             //}
             distances[word] = xc / (sqrt(xx * cc));
             mean += distances[word];
          }
-         mean /= (double)(settings.numberVisualWords);
+         mean /= (float)(settings.numberVisualWords);
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
          }
@@ -222,7 +222,7 @@ vector< double > Codebook::getActivations(vector<Feature> features){
             
             mean += distances[word];
          }
-         mean /= (double)(settings.numberVisualWords);
+         mean /= (float)(settings.numberVisualWords);
          for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
             activations[word] += ( mean - distances[word]> 0.0 ? mean - distances[word] : 0.0);
          }
@@ -246,19 +246,19 @@ vector< double > Codebook::getActivations(vector<Feature> features){
    return activations;
 }
 
-vector< double > Codebook::getQActivations(vector<Feature> features){
+vector< float > Codebook::getQActivations(vector<Feature> features){
    
     unsigned int nQuadrants = 4; //must be a square!
     
-   vector< double> activations(settings.numberVisualWords * nQuadrants, 0.0);
+   vector< float> activations(settings.numberVisualWords * nQuadrants, 0.0);
    unsigned int dataDims = features[0].content.size();
-   vector<double> distances(settings.numberVisualWords);
-   double dev;
-   double mean;
+   vector<float> distances(settings.numberVisualWords);
+   float dev;
+   float mean;
    
-   double xx = 0.0;
-   double cc;
-   double xc;
+   float xx = 0.0;
+   float cc;
+   float xc;
    
    
    unsigned int sqrtQ = (unsigned int)sqrt(nQuadrants);
@@ -294,7 +294,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                      xc += bow[word].content[dim] * features[pIdx].content[dim];
 
                   }
-                  //double dist = 0.0;
+                  //float dist = 0.0;
                   //for(size_t dim = 0; dim < dataDims; ++dim){
                   //   dist += (bow[cl][word].content[dim] - features[feat].content[dim]) *  (bow[cl][word].content[dim] - features[feat].content[dim]);
                   //}
@@ -305,7 +305,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
                   mean += distances[word];
                }
                
-               mean /= (double)(settings.numberVisualWords);
+               mean /= (float)(settings.numberVisualWords);
                
                for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
                   activations[qIdx * settings.numberVisualWords + word] += ( mean - distances[word] > 0.0 ? (mean - distances[word]) : 0.0);
@@ -326,8 +326,8 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
          
       /*
       //standardize data
-      double mean = 0;
-      double stddev = 0;
+      float mean = 0;
+      float stddev = 0;
       for(unsigned int word = 0; word < settings.numberVisualWords; ++word){
          mean += activations[qIdx * settings.numberVisualWords + word];
       }
@@ -356,7 +356,7 @@ vector< double > Codebook::getQActivations(vector<Feature> features){
 
 void Codebook::importCodebook(string filename){
    charInt fancyInt;
-   charDouble fancyDouble;
+   charfloat fancyfloat;
    unsigned int typesize;
    unsigned int featDims;
    
@@ -394,8 +394,8 @@ void Codebook::importCodebook(string filename){
       Centroid c;
       c.content.resize(featDims);
       for(size_t featIdx = 0; featIdx < featDims; ++featIdx){
-         file.read(fancyDouble.chars, 8);
-         c.content[featIdx] = fancyDouble.doubleVal;
+         file.read(fancyfloat.chars, 8);
+         c.content[featIdx] = fancyfloat.floatVal;
       }
       bow.push_back(c);
    }
@@ -409,7 +409,7 @@ void Codebook::exportCodebook(string filename){
     * 
     * first, the number of classes(int4)
     * second one line with one number (4 bytes), representing the number of visual words
-    * third, the size of the primitive-types of each value (double, float etc)  (1 byte)
+    * third, the size of the primitive-types of each value (float, float etc)  (1 byte)
     * fourth,  one number: the number of dimensions of each visual words. (4 bytes)
     * for each class 
     *    a little-endian binary dump of the visual words.
@@ -418,7 +418,7 @@ void Codebook::exportCodebook(string filename){
    */
    
    charInt fancyInt;
-   charDouble fancyDouble;
+   charfloat fancyfloat;
    
    //cout << "\t\twordSize:\t" << bow[0].content.size() << "\n\tfilename:\t" << filename.c_str() << endl;
    unsigned int wordSize = bow[0].content.size();
@@ -442,8 +442,8 @@ void Codebook::exportCodebook(string filename){
    
    for(size_t word = 0; word < settings.numberVisualWords; ++word){
       for (size_t val = 0; val < wordSize; ++val){
-         fancyDouble.doubleVal = bow[word].content[val];
-         file.write(fancyDouble.chars, 8);
+         fancyfloat.floatVal = bow[word].content[val];
+         file.write(fancyfloat.chars, 8);
       }
    } 
    

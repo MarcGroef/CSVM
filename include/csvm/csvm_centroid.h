@@ -13,9 +13,9 @@ namespace csvm{
       
    public:
       bool debugOut, normalOut;
-     vector<double> content;
-     double getDistanceSq(Feature f);
-	 double getDistanceSq(Centroid c);
+     vector<float> content;
+     float getDistanceSq(Feature f);
+	 float getDistanceSq(Centroid c);
    };
    
    

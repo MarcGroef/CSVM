@@ -57,7 +57,7 @@ void printCollection(vector<Feature> vec){
    
 }
 
-vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, double learningRate, int epochs){
+vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int labelId, unsigned int numberPrototypes, float learningRate, int epochs){
    vector<Feature> dictionary;
    unsigned int collectionSize = collection.size();
    
@@ -68,9 +68,9 @@ vector<Feature> LVQ::cluster(vector<Feature> collection, unsigned int labelId, u
    //checkEquals(dictionary);
    //printCollection(dictionary);
    //getchar();
-   double minDist;
+   float minDist;
    unsigned int closestProto;
-   double distance;
+   float distance;
    for(int epoch = 0; epoch < epochs ; ++epoch){
       //cout << "Epoch " << epoch << "\n";
       for(size_t idx = 0; idx < collectionSize; ++idx){  //loop through datapoints

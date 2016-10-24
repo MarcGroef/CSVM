@@ -10,19 +10,19 @@
 using namespace std;
 using namespace csvm;
 
-Feature::Feature(int size,double initValue){
-   content = vector<double>(size,initValue);
+Feature::Feature(int size,float initValue){
+   content = vector<float>(size,initValue);
    this->size = size;
 }
 
 Feature::Feature(Feature* f){
-   content = vector<double>(f->content);
+   content = vector<float>(f->content);
    this->size = f->size;
    this->label = f->label;
    
 }
 
-Feature::Feature(vector<double>& vect){
+Feature::Feature(vector<float>& vect){
    content = vect;
    size = vect.size();
    this->label = "hoi";
@@ -47,15 +47,15 @@ unsigned int Feature::getSquareId(){
 
 //get squared distance
 
-double Feature::getDistanceSq(Feature& f){
+float Feature::getDistanceSq(Feature& f){
    //cout << "My size = " << size << ", the other one's = " << f->size << endl;
    if(f.size != size){
       cout << "csvm::Feature::getDistance() Error! Different feature sizes! Namely " << f.size << " vs. " << size << endl;
       exit(-1);
    }
    //if(f->content == this->content) cout << "Same pointer also!!!\n";
-   double distance = 0;
-   double dist;
+   float distance = 0;
+   float dist;
    for(int dim = 0; dim < size; ++dim){
       dist = (f.content[dim] - content[dim]);
       //if(dist == 0.f) cout << "exactly the same element! Namely " << f.content[dim] << " and " << content[dim] << "\n";
@@ -66,13 +66,13 @@ double Feature::getDistanceSq(Feature& f){
    return distance;
 }
 
-double Feature::getManhDist(Feature* f){
+float Feature::getManhDist(Feature* f){
    if(f->size != size){
       cout << "csvm::Feature::getDistance() Error! Different feature sizes!\n";
       exit(-1);
    }
-   double distance = 0;
-   double dist;
+   float distance = 0;
+   float dist;
    for(int dim = 0; dim < size; ++dim){
       dist = (f->content[dim] - content[dim]);
       distance += dist >= 0 ? dist : dist*-1 ;

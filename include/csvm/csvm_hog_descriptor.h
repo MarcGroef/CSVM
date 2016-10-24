@@ -74,16 +74,16 @@ namespace csvm{
       Feature getHOG(Patch& patch); //,int channel, bool useGreyPixel);
 
    private:
-      double computeXGradient(Patch patch, int x, int y, Colour col);   //to compute the x gradient
-      double computeYGradient(Patch patch, int x, int y, Colour col);   //self-explanatry
-      double computeMagnitude(double x, double y);             //also self explanatory
-      double computeOrientation(double x, double y);           //~
-     void binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, Patch& block);       //bins the magnitude of a pixel (X,Y) in colour channel col into cellOrientationHistogram, 
-     void binPixel(size_t X, size_t Y, Colour col, vector<double>& cellOrientationHistogram, double ****imageTranspose);   //does the same, but uses the transpose, thus avoiding repeated computing of magnitudes etc. 
-     //void binTranspose(double imageTranspose[], Patch& block);
-     double ****patchTranspose(Patch& block, double ****imageTranspose, unsigned int colours);        //computes the entire gradient-transposition of a patch
-     vector <double> computeCellHOG(double ****imageTranspose, unsigned int cellX, unsigned int cellY);  //computes the HOG for a given cell.
-     vector <double> postProcess(vector <double> blockHistogram);
+      float computeXGradient(Patch patch, int x, int y, Colour col);   //to compute the x gradient
+      float computeYGradient(Patch patch, int x, int y, Colour col);   //self-explanatry
+      float computeMagnitude(float x, float y);             //also self explanatory
+      float computeOrientation(float x, float y);           //~
+     void binPixel(size_t X, size_t Y, Colour col, vector<float>& cellOrientationHistogram, Patch& block);       //bins the magnitude of a pixel (X,Y) in colour channel col into cellOrientationHistogram, 
+     void binPixel(size_t X, size_t Y, Colour col, vector<float>& cellOrientationHistogram, float ****imageTranspose);   //does the same, but uses the transpose, thus avoiding repeated computing of magnitudes etc. 
+     //void binTranspose(float imageTranspose[], Patch& block);
+     float ****patchTranspose(Patch& block, float ****imageTranspose, unsigned int colours);        //computes the entire gradient-transposition of a patch
+     vector <float> computeCellHOG(float ****imageTranspose, unsigned int cellX, unsigned int cellY);  //computes the HOG for a given cell.
+     vector <float> postProcess(vector <float> blockHistogram);
    };
 
 
