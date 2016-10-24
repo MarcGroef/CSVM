@@ -26,7 +26,7 @@ template <typename MatrixLType, typename MatrixUType> struct SparseLUMatrixURetu
   * This class implements the supernodal LU factorization for general matrices.
   * It uses the main techniques from the sequential SuperLU package 
   * (http://crd-legacy.lbl.gov/~xiaoye/SuperLU/). It handles transparently real 
-  * and complex arithmetics with single and double precision, depending on the 
+  * and complex arithmetics with single and float precision, depending on the 
   * scalar type of your input matrix. 
   * The code has been optimized to provide BLAS-3 operations during supernode-panel updates. 
   * It benefits directly from the built-in high-performant Eigen BLAS routines. 
@@ -43,7 +43,7 @@ template <typename MatrixLType, typename MatrixUType> struct SparseLUMatrixURetu
   * Simple example with key steps 
   * \code
   * VectorXd x(n), b(n);
-  * SparseMatrix<double, ColMajor> A;
+  * SparseMatrix<float, ColMajor> A;
   * SparseLU<SparseMatrix<scalar, ColMajor>, COLAMDOrdering<Index> >   solver;
   * // fill A and b;
   * // Compute the ordering permutation vector from the structural pattern of A

@@ -45,7 +45,7 @@
   * \code 
   * AMDOrdering<int> ordering;
   * PermutationMatrix<Dynamic, Dynamic, int> perm;
-  * SparseMatrix<double> A; 
+  * SparseMatrix<float> A; 
   * //Fill the matrix ...
   * 
   * ordering(A, perm); // Call AMD

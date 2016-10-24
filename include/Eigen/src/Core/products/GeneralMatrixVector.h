@@ -36,7 +36,7 @@ namespace internal {
  *   - if even columns have the same alignment then
  *     // odd columns are guaranteed to have the same alignment too
  *     - if even or odd columns have the same alignment as the result, then
- *       // for a register size of 2 scalars, this is guarantee to be the case (e.g., SSE with double)
+ *       // for a register size of 2 scalars, this is guarantee to be the case (e.g., SSE with float)
  *       - perform half aligned and half unaligned loads (-> EvenAligned case)
  *     - otherwise perform unaligned loads only (-> NoneAligned case)
  *   - otherwise, if the register size is 4 scalars (e.g., SSE with float) then

@@ -75,7 +75,7 @@ void Whitener::transform(Feature& f){
    
    
    //subtracted mean, now map to PCA space
-   double* data = f.content.data();
+   double* data = (double*) f.content.data();
    VectorXd m = Map<VectorXd>(data, dims);
    
    //cout << m << endl;
