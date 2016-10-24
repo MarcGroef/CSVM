@@ -36,29 +36,32 @@ namespace csvm{
       double lapda;
       double p;
       
-      std::vector<int> layerSizes;
+      vector<int> layerSizes;
 
-	  std::vector<double> desiredOutput;
-	  std::vector<double> votingHistogram;
-	  std::vector<double> maxHiddenActivation;
+	  vector<double> desiredOutput;
+	  vector<double> votingHistogram;
+	  vector<double> maxHiddenActivation;
 	  
-	  std::vector<vector<double> > biasNodes;
-          std::vector<vector<double> > prevBias;
-	  std::vector<vector<bool> > maskBias;
+	  vector<vector<double> > biasNodes;
+          vector<vector<double> > prevBias;
+	  vector<vector<bool> > maskBias;
           
-          std::vector<vector<double> > activations;
-	  std::vector<vector<double> > deltas;
+          vector<vector<double> > activations;
+          vector<vector<double> > prevActiv;
+          
+	  vector<vector<double> > deltas;
+	  vector<vector<double> > prevDeltas;
 
-	  std::vector<vector<vector<double> > > weights;          	  
-          std::vector<vector<vector<double> > > prevWeights;
+	  vector<vector<vector<double> > > weights;          	  
+          vector<vector<vector<double> > > prevWeights;
 
-	  std::vector<vector<vector<double> > > prevChange;
-          std::vector<vector<vector<bool> > > mask;
+	  vector<vector<vector<double> > > prevChange;
+          vector<vector<vector<bool> > > mask;
 	  
 	  //private methods
 	  
 		//helpMethods:
-		void randomizeWeights(std::vector<vector<double> >& array, int indexBottomLayer);
+		void randomizeWeights(vector<vector<double> >& array, int indexBottomLayer);
 		void setDesiredOutput(Feature f);
 		double errorFunction();
 		void initializeVectors();

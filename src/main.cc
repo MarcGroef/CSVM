@@ -259,16 +259,17 @@ int main(int argc,char**argv){
       unsigned int answer = c.dataset.getTestImagePtr(im)->getLabelId();
       //cout << "\nAnswer: " << answer;
       result = c.classify(c.dataset.getTestImagePtr(im));
-      
-      if(answer != result){
-          string name = date + "_" + patch::to_string(im) + "_"; 
-          name += patch::to_string(answer);
-          name += "->";
-          name += patch::to_string(result);
-          name += ".png";
-          
-          //cout << "this is the name: " << name << endl;
-          c.dataset.getTestImagePtr(im)->exportImage(name);
+      if(c.settings.mlpControlSettings.saveWrongImages){
+        if(answer != result){
+            string name = date + "_" + patch::to_string(im) + "_"; 
+            name += patch::to_string(answer);
+            name += "->";
+            name += patch::to_string(result);
+            name += ".png";
+            
+            //cout << "this is the name: " << name << endl;
+            c.dataset.getTestImagePtr(im)->exportImage(name);
+        }
       }
         //if (result != answer) cout << "WRONG!    (answered " << result << ")\n\n\n";
 

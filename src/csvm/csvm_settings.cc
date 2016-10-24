@@ -172,6 +172,14 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
+   stream >> type;
+   if (type == "saveWrongImages") {
+      stream >> mlpControlSettings.saveWrongImages;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }
 }
 
 void CSVMSettings::parseMLPSettings(ifstream& stream,bool bottomLevel){

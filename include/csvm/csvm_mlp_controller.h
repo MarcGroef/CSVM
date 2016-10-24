@@ -37,6 +37,7 @@ namespace csvm{
         string readMLPName;
         string poolingType;
         int splitTrainSet;
+        bool saveWrongImages;
         
     };
     

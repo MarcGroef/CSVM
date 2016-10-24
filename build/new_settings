@@ -1,10 +1,10 @@
 Dataset
-method MNIST
-nTrainImages 1000
+method CIFAR10
+nTrainImages 200
 nTestImages 10
 imageWidth 38
 imageHeight 38
-crossVal 0
+crossVal 1
 
 General
 Classifier MLP
@@ -61,12 +61,13 @@ readInData 0
 readRandomFeatName RandomFeat_CIFAR10_5000_24x24
 readValidationName Validation_CIFAR10_5000_24x24
 saveMLP 0
-saveMLPName MNIST_4_324_400_10
+saveMLPName CIFAR10_1_324_500_10_momentum_5.000
 readMLP 0
-readMLPName MNIST_4_324_400_10
+readMLPName CIFAR10_1_324_500_10_momentum_5.000
+saveWrongImages 0
 
 MLP
-dropout 1
+dropout 0
 momentum 0
 nHiddenUnits 500
 nInputUnits 324
@@ -80,9 +81,9 @@ epochs 30
 stoppingCriterion 0.999
 
 MLPFirstLevel
-dropout 1
+dropout 0
 momentum 0
-nHiddenUnits 500
+nHiddenUnits 300
 nInputUnits 500
 nOutputUnits 10
 nLayers 3

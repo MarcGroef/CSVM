@@ -427,8 +427,10 @@ void MLPController::trainMutipleMLPs()
                     cout << "mlp["<<i<<"] from level 0 finished training on validation set" << endl << endl;
             }*/
             
-	} else 
+	} else{
+            cout << "loading in mlp..." << endl;
 	    importPreTrainedMLP(controllerSettings.readMLPName);
+        }
 	
         if(controllerSettings.saveMLP)
 	  exportTrainedMLP(controllerSettings.saveMLPName);
@@ -461,7 +463,7 @@ void MLPController::trainMutipleMLPs()
         
         //Training on the training set and validating on the validationSet
         mlps[1][0].train(inputTrainFirstLevel,inputValFirstLevel,1); 
-        cout << "mlp[0] from level 1 finished training on the validation set" << endl;
+        cout << "mlp[0] from level 1 finished training on the training set" << endl;
         
     }
 }
@@ -499,28 +501,9 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 		dataFeatures.push_back(newFeat);
 	}
 	dataFeatures = normalizeInput(dataFeatures,0);
-	//changeRange(dataFeatures,-0.25,0.25);
-
-	/*for(int i=0;i<dataFeatures.size();i++){
-		for(int j=0;j<dataFeatures[i].size;i++){
-			cout << dataFeatures[i].content[j] << ", ";
-			} cout << endl;
-		}
-		exit(-1);
-		*/
 	vector<vector<Feature> > testFeaturesBySquare = splitUpDataBySquare(dataFeatures); //split test features by square	
 	
 	if(controllerSettings.stackSize == 1){
-	/*  if(first == 1){
-	    vector<vector<vector<double > > > newWeights;
-	    
-	    for(int i=0;i<nMLPs;i++){
-	     newWeights = mlps[0][i].getWeightMatrix();
-	     dropOutTesting(newWeights);
-	     mlps[0][i].setWeightMatrix(newWeights);
-	    }
-	    first=0;
-	  }*/
 		vector<double> votingHistogram = vector<double>(mlpSettings.nOutputUnits,0.0);
 		vector<double> outputProp;
 		for(int i=0;i<nMLPs;i++){
@@ -571,28 +554,28 @@ void MLPController::importPreTrainedMLP(string filename){
 	file.read(fancyInt.chars,4);
 	int readInInputUnits = fancyInt.intVal;
    	if(readInInputUnits != mlpSettings.nInputUnits){
-		cout << "The input units that is read in is " << readInInputUnits << " and in the settings file you have " << mlpSettings.nInputUnits << ", please change this" << endl;
+		cout << "The input units that are read in from the mlp is " << readInInputUnits << " and in the settings file you have " << mlpSettings.nInputUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInHiddenUnits = fancyInt.intVal;
    	if(readInHiddenUnits != mlpSettings.nHiddenUnits){
-		cout << "The hidden units that is read in is " << readInHiddenUnits << " and in the settings file you have " << mlpSettings.nHiddenUnits << ", please change this" << endl;
+		cout << "The hidden units that are read in from the mlp is " << readInHiddenUnits << " and in the settings file you have " << mlpSettings.nHiddenUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInOutputUnits = fancyInt.intVal;
    	if(readInOutputUnits != mlpSettings.nOutputUnits){
-		cout << "The output units that is read in is " << readInOutputUnits << " and in the settings file you have " << mlpSettings.nOutputUnits << ", please change this" << endl;
+		cout << "The output units that are read in from the mlp is " << readInOutputUnits << " and in the settings file you have " << mlpSettings.nOutputUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	int readInNSplitsForPooling = fancyInt.intVal;
    	if(readInNSplitsForPooling != controllerSettings.nSplitsForPooling){
-		cout << "The nSplitsForPooling that is read in is " << readInNSplitsForPooling << " and in the settings file you have " << controllerSettings.nSplitsForPooling << ", please change this" << endl;
+		cout << "The nSplitsForPooling that are read in from the mlp is " << readInNSplitsForPooling << " and in the settings file you have " << controllerSettings.nSplitsForPooling << ", please change this" << endl;
 		exit(-1);
 	}
 	
@@ -610,7 +593,7 @@ void MLPController::importPreTrainedMLP(string filename){
       }
    
 	if(readInDatasetType != dataset->getType()){
-		cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << endl;
+		cout << "The dataset that are read in from the mlp is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << endl;
 		exit(-1);
 	}
 	//read min value first level
@@ -621,6 +604,20 @@ void MLPController::importPreTrainedMLP(string filename){
 	file.read(fancydouble.chars,8);
 	maxValues[0] = fancydouble.doubleVal;
 	
+        file.read(fancyInt.chars,4);
+	int dropout = fancyInt.intVal;
+   	if(dropout != mlpSettings.dropout){
+		cout << "The dropout that are read in from the mlp is " << dropout << " and in the settings file you have " << mlpSettings.dropout << ", please change this" << endl;
+		exit(-1);
+	}
+	
+        file.read(fancyInt.chars,4);
+	int momentum = fancyInt.intVal;
+   	if(momentum != mlpSettings.momentum){
+		cout << "The momentum that are read in from the mlp is " << momentum << " and in the settings file you have " << mlpSettings.momentum << ", please change this" << endl;
+		exit(-1);
+	}
+        
 	int maxUnits=0;
 	
 	if(maxUnits < mlpSettings.nInputUnits){
@@ -636,7 +633,7 @@ void MLPController::importPreTrainedMLP(string filename){
 	vector<vector<double> > biasNodes = vector<vector<double> >(mlpSettings.nLayers-1,vector<double>(maxUnits,0.0));
 	vector<vector<vector<double> > > weights = vector<vector<vector<double> > >(mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
 	
-	for(int i=0; i<nMLPs;i++){ //amount of mlps that needs to be read in
+	for(int i=0; i<nMLPs;i++){ //amount of mlps that needs to be read in from mlp
 		for(int j=0;j<mlpSettings.nLayers-1;j++){ //amount of weight vectors
 			for(int k=0;k<maxUnits;k++){ //amount of collums
 				for(int l=0;l<maxUnits;l++){ // amount of rows
@@ -660,6 +657,21 @@ void MLPController::importPreTrainedMLP(string filename){
 	weights = vector<vector<vector<double> > >(mlpSettings.nLayers-1,vector<vector<double> >(maxUnits,vector<double>(maxUnits,0.0)));
 	
 	}
+        //read in from mlp same training images and test images
+        vector<unsigned int> readInTrainImages;
+        for(int i=0;i<dataset->getTrainSize();i++){
+                file.read(fancyInt.chars,4);
+                //cout << "imageNum["<<i<<"]: " << fancyInt.intVal << endl;
+                readInTrainImages.push_back(fancyInt.intVal);
+        }
+        dataset->setTrainImages(readInTrainImages);
+        
+        vector<unsigned int> readInTestImages;
+        for(int i=0;i<dataset->getTestSize();i++){
+                file.read(fancyInt.chars,4);
+                readInTestImages.push_back(fancyInt.intVal);
+        }
+        dataset->setTestImages(readInTestImages);
 }
 
 void MLPController::exportTrainedMLP(string filename){
@@ -668,13 +680,13 @@ void MLPController::exportTrainedMLP(string filename){
 	 * Second, nHiddenUnits: 0 - maxInt (4 bytes)
 	 * Third,  nOutputUnits: 0 - maxInt usually 10 (4 bytes)
 	 * Fourth, nSplitsForPooling : 1-2 (4 bytes)
-	 * Fifth,  Dataset     : CIFAR10=0, MNIST=1 (4 bytes)
+	 * Fifth,  Dataset     : CIFAR10=0, CIFAR10=1 (4 bytes)
 	 * 
 	 * Save weight and bias matrix.
 	 * 
 	 * No seperator char is used 
 	 * 
-*/	 
+    */	 
 	 charInt fancyInt;
 	 chardouble fancydouble;
 	 
@@ -707,13 +719,21 @@ void MLPController::exportTrainedMLP(string filename){
 	}
 	 file.write(fancyInt.chars, 4);
 	
-	 //write min value for first layer
+	 //write min value for bottom layer
 	 fancydouble.doubleVal = minValues[0]; 
 	file.write(fancydouble.chars, 8);
 	
-	//write max value for first layer
+	//write max value for bottom layer
 	fancydouble.doubleVal = maxValues[0];
 	file.write(fancydouble.chars, 8);
+        
+        //write if dropout is used
+	 fancyInt.intVal = mlpSettings.dropout;
+	 file.write(fancyInt.chars, 4);
+         
+        //write if momentum is used
+	 fancyInt.intVal = mlpSettings.momentum;
+	 file.write(fancyInt.chars, 4);
 	 
 	for(int i=0; i<nMLPs;i++){ //amount of mlps
 		vector<vector<double> > biasNodes = mlps[0][i].getBiasNodes();
@@ -734,12 +754,23 @@ void MLPController::exportTrainedMLP(string filename){
 			}
 		}
 	}
+        vector<unsigned int> trainImages = dataset->getTrainImageNums();
+        for(int i=0;i<dataset->getTrainSize();i++){
+                fancyInt.intVal = trainImages[i];
+                //cout << trainImages[i] << endl;
+                file.write(fancyInt.chars,4);
+        }
+        vector<unsigned int> testImages = dataset->getTestImageNums();
+        for(int i=0;i<dataset->getTestSize();i++){
+                fancyInt.intVal = testImages[i];
+                file.write(fancyInt.chars,4);
+        }
 }
 
 void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVector){
 	/* Featureset file conventions:
     * 
-    * first,  Dataset			: 0, CIFAR10 1,MNIST   			(4 bytes)
+    * first,  Dataset			: 0, CIFAR10 1,CIFAR10   			(4 bytes)
     * second, Amount of features: 0-10.000.000         			(4 bytes)
     * third,  PatchWidth		: 0-36                 			(4 bytes)
     * fourth, PatchHeigth		: 0-36                 			(4 bytes)  
@@ -765,7 +796,7 @@ void MLPController::exportFeatureSet(string filename, vector<Feature>& featureVe
          fancyInt.intVal=0;
          break;
       case DATASET_MNIST:
-		 fancyInt.intVal=1;
+        fancyInt.intVal=1;
          break;   
 	}
    file.write(fancyInt.chars, 4);
@@ -860,44 +891,44 @@ void MLPController::importFeatureSet(string filename, vector<Feature>& featureVe
          readInDatasetType = DATASET_CIFAR10;
          break;
       case 1:
-		 readInDatasetType = DATASET_MNIST;
+		 readInDatasetType = DATASET_CIFAR10;
 		 break;
 	   default:
 		readInDatasetType = DATASET_CIFAR10;
-		cout << "The read in dataset is unknown, by default it is set to CIFAR10" << endl;
+		cout << "The read in from feature set dataset is unknown, by default it is set to CIFAR10" << endl;
 
 	}
    
 	if(readInDatasetType != dataset->getType()){
-		cout << "The dataset that is read in is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << endl;
+		cout << "The dataset that are read in from the feature set is " << readInDatasetType << " and in the settings file you have " << dataset->getType() << ", please change this" << endl;
 		exit(-1);
 	}
 	
 	file.read(fancyInt.chars,4);
 	unsigned int readInNRandomPatches = fancyInt.intVal;
 	if(controller.scannerSettings.nRandomPatches != readInNRandomPatches){
-		cout << "The nRandomPatches that is read in is " << readInNRandomPatches << " in the settings file it is " << controller.scannerSettings.nRandomPatches << ", please change this" << endl;
+		cout << "The nRandomPatches that are read in from the feature set is " << readInNRandomPatches << " in the settings file it is " << controller.scannerSettings.nRandomPatches << ", please change this" << endl;
 		exit(-1);
 	}
   
 	file.read(fancyInt.chars,4);
 	unsigned int readInPatchWidth = fancyInt.intVal;
 	if(controller.scannerSettings.patchWidth != readInPatchWidth){
-		cout << "The patchWidth that is read in is " << readInPatchWidth << " in the settings file it is " << controller.scannerSettings.patchWidth << ", please change this" << endl;
+		cout << "The patchWidth that are read in from the feature set is " << readInPatchWidth << " in the settings file it is " << controller.scannerSettings.patchWidth << ", please change this" << endl;
 		exit(-1);
 	}
   
 	file.read(fancyInt.chars,4);
 	unsigned int readInPatchHeigth = fancyInt.intVal;
 	if(controller.scannerSettings.patchHeight != readInPatchHeigth){
-		cout << "The patchHeigth that is read in is " << readInPatchHeigth << " in the settings file it is " << controller.scannerSettings.patchHeight << ", please change this" << endl;
+		cout << "The patchHeigth that are read in from the feature set is " << readInPatchHeigth << " in the settings file it is " << controller.scannerSettings.patchHeight << ", please change this" << endl;
 		exit(-1);
 	}
 
 	file.read(fancyInt.chars,4);
 	int readInFeatSize = fancyInt.intVal;
 	if(mlpSettings.nInputUnits != readInFeatSize){
-		cout << "The feature size that is read in is " << readInFeatSize << " in the settings file it is " << mlpSettings.nInputUnits << ", please change this" << endl;
+		cout << "The feature size that are read in from the feature set is " << readInFeatSize << " in the settings file it is " << mlpSettings.nInputUnits << ", please change this" << endl;
 		exit(-1);
 	}
 	file.read(fancyInt.chars,4);

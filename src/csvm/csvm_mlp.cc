@@ -77,14 +77,16 @@ void MLPerceptron::initializeVectors(){
 	
 	desiredOutput 	= vector<double>(settings.nOutputUnits,0.0);
       
-	activations		= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
-	deltas 			= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+        activations		= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+	prevActiv               = vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+    
+        deltas 			= vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
+        prevDeltas              = vector<vector<double> >(settings.nLayers,vector<double>(maxNumberOfNodes,0.0));
         
 	biasNodes 		= vector<vector<double> >(settings.nLayers-1,vector<double>(maxNumberOfNodes,0.0));
 	maskBias		= vector<vector<bool> >(settings.nLayers-1,vector<bool>(maxNumberOfNodes,0));
 	
 	weights			= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
-	prevChange		= vector< vector< vector<double> > >(settings.nLayers-1,vector< vector<double> >(maxNumberOfNodes, vector<double>(maxNumberOfNodes,0.0)));
         
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
@@ -266,9 +268,8 @@ void MLPerceptron::calculateDeltas(int index){
 }
 
 void MLPerceptron::outputDelta(){
-	for(int i = 0; i < layerSizes[settings.nLayers-1];i++){
+	for(int i = 0; i < layerSizes[settings.nLayers-1];i++)
 		deltas[settings.nLayers-1][i] = desiredOutput[i] - activations[settings.nLayers-1][i];
-        }
 }
 
 void MLPerceptron::hiddenDelta(int index){
@@ -283,14 +284,20 @@ void MLPerceptron::hiddenDelta(int index){
 }	
 
 void MLPerceptron::adjustWeights(int index){
+    if(settings.momentum)
+        for(int i = 0; i < layerSizes[index + 1]; i++){
+            for(int j = 0; j < layerSizes[index]; j++){
+                    double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+                    double prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                    weights[index][j][i] += currentChange + lapda * prevChange;
+            }
+            biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
+        }
+    else
         for(int i = 0; i < layerSizes[index + 1]; i++){
             for(int j = 0; j < layerSizes[index]; j++){
                     double currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
                     weights[index][j][i] += currentChange;
-                    if(settings.momentum){
-                        weights[index][j][i] += (lapda * prevChange[index][j][i]);
-                        prevChange[index][j][i] = currentChange;
-                    }
             }
             biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
         }
@@ -379,6 +386,8 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward(1);
 			activationsToOutputProbabilities();
 			backpropgation();
+                        prevDeltas = deltas;
+                        prevActiv = activations;
 			averageError += errorFunction();
 		}
 		

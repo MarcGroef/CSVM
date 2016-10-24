@@ -104,9 +104,9 @@ void CSVMClassifier::train(){
          if(normalOut) cout << "Training LinNet..\n";
          trainLinearNetwork();
          break;
-		case CL_MLP:
-		if(normalOut) cout << "Training MLPs..\n";
-		mlpController->trainMutipleMLPs();
+        case CL_MLP:
+        if(normalOut) cout << "Training MLPs..\n";
+        mlpController->trainMutipleMLPs();
          break;
       default:
          cout << "WARNING! couldnt recognize selected classifier!\n";
