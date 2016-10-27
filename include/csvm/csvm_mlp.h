@@ -12,6 +12,7 @@ namespace csvm{
    struct MLPSettings{
       //add your settings variables here (stuff you want to set through the settingsfile)
       int dropout;
+      //float probDropout;
       int momentum;
       int nHiddenUnits;
       int nInputUnits;
@@ -33,8 +34,8 @@ namespace csvm{
       int numPatchesPerSquare;
       int maxNumberOfNodes;
       
-      float lapda;
       float p;
+      float lapda;
       
       vector<int> layerSizes;
 

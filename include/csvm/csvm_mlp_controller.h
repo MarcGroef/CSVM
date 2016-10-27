@@ -85,13 +85,14 @@ namespace csvm{
 		vector<vector<MLPerceptron> > mlps;
 		
 		void setMinAndMaxValueNorm(vector<Feature>& inputFeatures,int index);	
-		vector<Feature>& normalizeInput(vector<Feature>& allInputFeatures,int index);
+		void normalizeInput(vector<Feature>& allInputFeatures,int index);
 		void changeRange(vector<Feature>& data, float newMin, float newMax);
-		
+		vector<Feature> imageToFeatures(string setType, int imageNum);
+                
                 vector<vector<Feature> > createRandomFeatVal(vector<vector<Feature> >& valSet);
                 
 		void createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal);
-		void createDataFirstLevel(vector<Feature>& inputTrainFirstLevel, vector<Feature>& inputValFirstLevel, vector<Feature>& testSetFirstLevel);
+		void createDataFirstLevel(vector<vector<Feature> > &trainingData,vector<string> setTypes);
                 
                 
 		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);

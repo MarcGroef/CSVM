@@ -196,6 +196,18 @@ void CSVMSettings::parseMLPSettings(ifstream& stream,bool bottomLevel){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
       exit(-1);
    }
+   /*
+    stream >> type;
+   if (type == "probDropout") {
+       if(bottomLevel)
+        stream >> mlpSettings.probDropout;
+       else
+           stream >> mlpSettingsFirstLevel.probDropout;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
+      exit(-1);
+   }*/
       stream >> type;
    if (type == "momentum") {
        if(bottomLevel)

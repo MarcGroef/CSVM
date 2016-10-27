@@ -56,11 +56,11 @@ void MLPerceptron::initializeVectors(){
 	maxNumberOfNodes = 0;
 	
 	lapda = 0.9;
-    
-	p = 0.5;
         
-	layerSizes             = vector<int>(settings.nLayers,0);
-	
+        p = 0.5;
+        
+	layerSizes    = vector<int>(settings.nLayers,0);
+        
 	layerSizes[0] = settings.nInputUnits; 
 	layerSizes[1] = settings.nHiddenUnits;
 	layerSizes[2] = settings.nOutputUnits;
@@ -278,7 +278,6 @@ void MLPerceptron::hiddenDelta(int index){
                 for(int j = 0; j < layerSizes[index+1];j++)
                         sumDeltaWeights += deltas[index+1][j] * weights[index][i][j];
                 deltas[index][i] = sumDeltaWeights*derivativeActivationFunction(activations[index][i]);    
-                
                 sumDeltaWeights = 0;
         }
 }	
@@ -317,7 +316,6 @@ void MLPerceptron::activationsToOutputProbabilities(){
 		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
 		sumOfActivations += activations[settings.nLayers -1][i];
 	}
-	
 	for(int i = 0; i< settings.nOutputUnits; i++){
             activations[settings.nLayers -1][i] /= sumOfActivations;
         }
