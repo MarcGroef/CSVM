@@ -50,6 +50,7 @@ namespace csvm{
       Patch getRandomPatch(Image* image);
       Patch getPatchAt(Image* image, unsigned int x, unsigned int y);
 	  void setScannerStride(unsigned int stride);
+     unsigned int getScannerStride();
    };
 
 }

@@ -56,7 +56,6 @@ namespace patch
 int main(int argc,char**argv){
    
    //cout << "started main of CSVM" << endl;
-    
    bool normalOut;
    if(argc!=2){
       showUsage();
@@ -113,8 +112,6 @@ int main(int argc,char**argv){
 	  unsigned int result = c.classify(c.dataset.getTrainImagePtr(im));
 	  unsigned int answer = c.dataset.getTrainImagePtr(im)->getLabelId();
 	  //std::cout << "result: " << result << "answer: " << answer << std::endl;
-	    
-	    
 	  if (result == answer){
 	    ++nCorrect;
 	  } else {

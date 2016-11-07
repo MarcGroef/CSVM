@@ -84,7 +84,7 @@ void MLPerceptron::initializeVectors(){
         prevDeltas              = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
         
 	biasNodes 		= vector<vector<float> >(settings.nLayers-1,vector<float>(maxNumberOfNodes,0.0));
-	maskBias		= vector<vector<bool> >(settings.nLayers-1,vector<bool>(maxNumberOfNodes,0));
+	//maskBias		= vector<vector<bool> >(settings.nLayers-1,vector<bool>(maxNumberOfNodes,0));
 	
 	weights			= vector< vector< vector<float> > >(settings.nLayers-1,vector< vector<float> >(maxNumberOfNodes, vector<float>(maxNumberOfNodes,0.0)));
         
@@ -251,9 +251,9 @@ float MLPerceptron::derivativeActivationFunction(float activationNode){
 	//if (activationNode > 0)
 	//	return 1.0;
 	//return 0.01;
-        
-        //hyperbolic tanget function
-        //return 1 - (activationNode * activationNode);
+    
+    //hyperbolic tanget function
+    //return 1 - (activationNode * activationNode);
 }
 
 void MLPerceptron::calculateDeltas(int index){
@@ -287,7 +287,9 @@ void MLPerceptron::adjustWeights(int index){
         for(int i = 0; i < layerSizes[index + 1]; i++){
             for(int j = 0; j < layerSizes[index]; j++){
                     float currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
-                    float prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                    float prevChange = activations[index][j] == 0 ? 0:settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                    //float prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                    
                     weights[index][j][i] += currentChange + lapda * prevChange;
             }
             biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
@@ -449,8 +451,7 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 }
 
 //This method is to train randompatches, it uses the validation set and the test set for validation.
-void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet, int numPatchSquare){
-	numPatchesPerSquare = numPatchSquare;
+void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet){
         initializeVectors();
         
         checkingSettingsValidity(randomFeatures[0].size);
@@ -462,8 +463,7 @@ void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& valida
 //Or this method is for training on the validation set and validating on the test set
 //It depends on the parameters being passed.
 
-void MLPerceptron::train(vector<Feature>& trainingSet,vector<Feature>& validationSet,int numPatchSquare){
-	numPatchesPerSquare = numPatchSquare;
+void MLPerceptron::train(vector<Feature>& trainingSet,vector<Feature>& validationSet){
         vector<Feature> emptyFeatureSet; // empty feature set so the crossvaldiation method does not have to be overloaded again
         
         initializeVectors();
@@ -474,11 +474,8 @@ void MLPerceptron::train(vector<Feature>& trainingSet,vector<Feature>& validatio
 }
 
 //This method is for training on the validation set
-void MLPerceptron::train(vector<Feature>& validationSet, int numPatchSquare){
-        numPatchesPerSquare = numPatchSquare;
-	
-        checkingSettingsValidity(validationSet[0].size);
-        
+void MLPerceptron::train(vector<Feature>& validationSet){
+	    checkingSettingsValidity(validationSet[0].size);
         crossvaldiation(validationSet);
 }
 //--------end training-----------
@@ -497,7 +494,13 @@ unsigned int MLPerceptron::classify(vector<Feature> imageFeatures){
 	return mostVotedClass();
 }
 vector<float> MLPerceptron::classifyPooling(vector<Feature> imageFeatures){	
-	classifyImage(imageFeatures);
+	/*votingHistogram = vector<float>(settings.nOutputUnits,0.0);
+	for (unsigned int i = 0; i<imageFeatures.size();i++){
+		activations[0] = imageFeatures[i].content;
+		feedforward(0);
+         sumVoting();
+	}*/
+	classifyImage(imageFeatures);       
 	return votingHistogram;
 }
 //The pooling method is set in the settings file. Either Min, average or max.
@@ -571,5 +574,8 @@ void MLPerceptron::setEpochs(int epochs)
 
 void MLPerceptron::setLearningRate(float learningRate){
     settings.learningRate = learningRate;
+}
+void MLPerceptron::setNumPatchesPerSquare(int numPatches){
+	numPatchesPerSquare = numPatches;
 }
 //-------end setters -----------

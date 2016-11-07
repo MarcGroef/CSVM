@@ -1,9 +1,9 @@
 Dataset
 method MNIST
-nTrainImages 300
+nTrainImages 400
 nTestImages 40
-imageWidth 38
-imageHeight 38
+imageWidth 37
+imageHeight 37
 crossVal 1
 
 General
@@ -44,12 +44,12 @@ ImageScanner
 patchHeight 32
 patchWidth 32
 scanStride 1
-nRandomPatches 1000
+nRandomPatches 5000
 
 MLPController
-stackSize 2
+stackSize 1
 nSplitsForPooling 1
-poolingType AVERAGE
+poolingType AVERAGE,MAX,MIN
 epochsValidationSet 5
 scanStrideFirstLayer 2
 splitTrainSet 0
@@ -67,13 +67,13 @@ readMLPName CIFAR10_1_324_500_10_momentum_1.000_float
 saveWrongImages 0
 
 MLP
-dropout 0
+dropout 1
 momentum 1
 nHiddenUnits 500
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
-learningRate .03
+learningRate .01
 voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 5
@@ -84,7 +84,7 @@ MLPFirstLevel
 dropout 0
 momentum 0
 nHiddenUnits 300
-nInputUnits 500
+nInputUnits 2000
 nOutputUnits 10
 nLayers 3
 learningRate .01

@@ -24,9 +24,9 @@ namespace csvm{
       string label;
       int labelId;
       int size;
-      int squareId;
+      unsigned int squareId;
       unsigned int getSquareId();
-      void setSquareId(int id);
+      void setSquareId(unsigned int id);
       Feature(int size,float initValue);
       Feature(Feature* f);
       Feature(vector<float>& vect);

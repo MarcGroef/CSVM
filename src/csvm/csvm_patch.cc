@@ -63,25 +63,42 @@ void Patch::setArea(int x,int y,int width,int height){
 }
 
 int Patch::calculateSquare(){
-	float middleImageX = source->getWidth()/2.0;
- 	float middleImageY = source->getHeight()/2.0;
+	bool trueMiddelX = 0;
+   bool trueMiddelY = 0;
 
-	float middlePatchX = offsetX + width/2.0;
-	float middlePatchY = offsetY + height/2.0;
-		
-	//top-left
-	if(middlePatchX <= middleImageX && middlePatchY < middleImageY)
-		return 0;
-	//top-right
- 	if(middlePatchX > middleImageX && middlePatchY < middleImageY)
-		return 1;
-	//bottom-left
-	if(middlePatchX <= middleImageX && middlePatchY >= middleImageY)
-		return 2;
-	//bottom-right
-	if(middlePatchX > middleImageX && middlePatchY >= middleImageY)
-		return 3;
-	return -1;
+   int maxOffSetWidth = source->getWidth()-width;
+   int middelOffSetWidth = maxOffSetWidth/2;
+
+   int maxOffSetHeigth = source->getHeight()-height;
+   int middelOffSetHeigth = maxOffSetHeigth/2;
+   if(maxOffSetWidth%2==0)
+      trueMiddelX=1;
+
+   if(maxOffSetHeigth%2==0)
+      trueMiddelY=1;
+   
+   if(trueMiddelX && trueMiddelY){
+      if(offsetX <= middelOffSetWidth && offsetY < middelOffSetHeigth)//topleft
+         return 0;
+      if(offsetX > middelOffSetWidth && offsetY < middelOffSetHeigth)//topright
+         return 1;
+      if(offsetX <= middelOffSetWidth && offsetY >= middelOffSetHeigth)//bottom-left
+         return 2;
+      if(offsetX > middelOffSetWidth && offsetY >= middelOffSetHeigth)//bottom-right
+         return 3;
+   }
+   if(!trueMiddelX && !trueMiddelY){
+      if(offsetX <= middelOffSetWidth && offsetY <= middelOffSetHeigth)//topleft
+         return 0;
+      if(offsetX > middelOffSetWidth && offsetY <= middelOffSetHeigth)//topright
+         return 1;
+      if(offsetX <= middelOffSetWidth && offsetY > middelOffSetHeigth)//bottom-left
+         return 2;
+      if(offsetX > middelOffSetWidth && offsetY > middelOffSetHeigth)//bottom-right
+         return 3;
+   }
+   //cout << offsetX << ", " << offsetY << ", " << square << endl;
+   return -1;
 }
 
 //get pixel from image at location in patch
@@ -118,7 +135,7 @@ int Patch::getY(){
 }
 
 //get which square patch is located in
-int Patch::getSquare(){
+unsigned int Patch::getSquareId(){
    return square;
 }
 

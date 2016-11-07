@@ -35,7 +35,6 @@ vector<Patch> ImageScanner::scanImage(Image* image){
       return vector<Patch>(1,Patch(image, 0, 0, settings.patchWidth,settings.patchHeight));
    }
 
-  
    for(size_t x = 0; x + settings.patchWidth  <= image->getWidth(); x += settings.stride){
       for(size_t y = 0; y + settings.patchHeight  <= image->getHeight(); y += settings.stride){
          
@@ -75,5 +74,9 @@ Patch ImageScanner::getRandomPatch(Image* image){
 
 void ImageScanner::setScannerStride(unsigned int stride){
 	settings.stride = stride;
-	std::cout << "The stride of the Image scanner is increased to " << stride << std::endl;
+	std::cout << "The stride of the Image scanner is set to " << stride << std::endl;
+}
+
+unsigned int ImageScanner::getScannerStride(){
+   return settings.stride;
 }

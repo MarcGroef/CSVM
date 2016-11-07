@@ -89,25 +89,24 @@ namespace csvm{
 		void changeRange(vector<Feature>& data, float newMin, float newMax);
 		vector<Feature> imageToFeatures(string setType, int imageNum);
                 
-                vector<vector<Feature> > createRandomFeatVal(vector<vector<Feature> >& valSet);
+        vector<vector<Feature> > createRandomFeatVal(vector<vector<Feature> >& valSet);
                 
-		void createDataBottomLevel(vector<vector<Feature> >& splitTrain, vector<vector<Feature> >& splitVal);
-		void createDataFirstLevel(vector<vector<Feature> > &trainingData,vector<string> setTypes);
+		void createDataBottomLevel(vector<vector<vector<Feature> > >& bottomLevelData,vector<string> setTypes);
+		void createDataFirstLevel(vector<vector<Feature> >& trainingData,vector<string> setTypes);
                 
                 
-		vector<Feature>& createCompletePictureSet(vector<Feature>& validationSet,int start, int end);
-		vector<Feature>& createRandomFeatureVector(vector<Feature>& trainingData);
+		vector<Feature> createValidationSet();
+		vector<Feature> createRandomFeatureVector();
 		vector<Feature> createTestSet();
                 
-		vector<vector<Feature> > splitUpDataBySquare(vector<Feature>& trainingSet);
-				
-		void setFirstLevelData(vector<vector<Feature> >& splitDataBottom,vector<Feature>& dataFirstLevel, int sizeData);
+		vector<vector<Feature> > splitUpDataBySquare(vector<Feature> featureSet);
+		vector<Feature> extractHiddenActivation(vector<vector<Feature> > splitDataBottom);
 		
 		void trainMLP(MLPerceptron& mlp,vector<Feature>& trainingSet, vector<Feature>& validationSet, int numPatchesPerSquare);
 		
 		unsigned int mlpClassify(Image* im);
-		
-		int calculateSquareOfPatch(Patch patch);
+        void activationsToOutputProbabilities(vector<float>& votingHistogram);
+        void calcNumPatchesPerSquare();
 		
 		void dropOutTesting(vector<vector<vector<float> > >& newWeights);
 		

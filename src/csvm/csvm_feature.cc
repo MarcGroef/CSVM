@@ -36,7 +36,7 @@ unsigned int Feature::getLabelId(){
    return labelId;
 }
 // set get square
-void Feature::setSquareId(int id){
+void Feature::setSquareId(unsigned int id){
  	squareId = id;
 }
 
