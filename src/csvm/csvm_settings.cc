@@ -230,6 +230,18 @@ void CSVMSettings::parseMLPSettings(ifstream& stream,bool bottomLevel){
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
       exit(-1);
    }
+
+      stream >> setting;
+   if (setting == "nHiddenUnits2nd") {
+       if(bottomLevel)
+      stream >> mlpSettings.nHiddenUnits2nd;
+      else
+           stream >> mlpSettingsFirstLevel.nHiddenUnits2nd;
+   }
+   else {
+      cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << setting << ".. Exitting...\n";
+      exit(-1);
+   }
    
    stream >> setting;
    if (setting == "nInputUnits") {

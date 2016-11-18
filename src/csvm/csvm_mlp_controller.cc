@@ -280,10 +280,10 @@ vector<Feature> MLPController::extractHiddenActivation(vector<vector<Feature> > 
             
             inputVector.insert(inputVector.end(),hiddenActivationSquare.begin(),hiddenActivationSquare.end());
         }
-        Feature newFeat = new Feature(inputVector);	
-        newFeat.setLabelId(splitDataBottom[0][0].getLabelId());
-        dataFirstLevel.push_back(newFeat);
     }
+    Feature newFeat = new Feature(inputVector); 
+    newFeat.setLabelId(splitDataBottom[0][0].getLabelId());
+    dataFirstLevel.push_back(newFeat);
     return dataFirstLevel;
 }
 
@@ -423,11 +423,11 @@ void MLPController::trainMutipleMLPs()
         setTypes.push_back("validation");
 
         createDataFirstLevel(firstLevelData,setTypes);
-        
+        //add validation set to training set
+        firstLevelData[0].insert(firstLevelData[0].end(),firstLevelData[1].begin(),firstLevelData[1].end());
         mlps[1][0].setNumPatchesPerSquare(1);
-        mlps[1][0].train(firstLevelData[0],firstLevelData[1]); 
-        cout << "mlp[0] from level 1 finished training on the training set" << endl;
-        
+        mlps[1][0].train(firstLevelData[0]); 
+        cout << "mlp[0] from level 1 finished training on the training set" << endl;   
     }
 }
 //--------------end: training MLP's-----------------------------
@@ -527,6 +527,7 @@ void MLPController::importPreTrainedMLP(string filename){
 	
         if(!file.is_open()){
             cout << "Cannot find this mlp: "<< filename << endl;
+            exit(-1);
         }
         
 	file.read(fancyInt.chars,4);

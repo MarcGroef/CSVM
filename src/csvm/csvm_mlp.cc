@@ -8,8 +8,6 @@
 
 using namespace std;
 using namespace csvm;
-
-
 /*
  * All the variables below are declared globally. They are used by all the methods in this class.
  * In the class there is a mix between calling methods with parameters and without.
@@ -56,18 +54,26 @@ void MLPerceptron::initializeVectors(){
 	maxNumberOfNodes = 0;
 	
 	lapda = 0.9;
-        
-        p = 0.5;
-        
+    p = 0.5;
+    
+    lowestValidationError=1;
+
 	layerSizes    = vector<int>(settings.nLayers,0);
         
 	layerSizes[0] = settings.nInputUnits; 
 	layerSizes[1] = settings.nHiddenUnits;
 	layerSizes[2] = settings.nOutputUnits;
 	
-        cout << "input units: " << settings.nInputUnits << endl;
-        cout << "hidden units: " << settings.nHiddenUnits << endl;
-        cout << "ouput unis: " << settings.nOutputUnits << endl;
+	if(settings.nLayers==4){
+		layerSizes[2] = settings.nHiddenUnits2nd;
+		layerSizes[3] = settings.nOutputUnits;
+	}
+
+    cout << "input units: " << settings.nInputUnits << endl;
+    cout << "hidden units: " << settings.nHiddenUnits << endl;
+	if(settings.nLayers == 4)
+		cout << "nHiddenUnits2nd: " << settings.nHiddenUnits2nd << endl;
+    cout << "ouput unis: " << settings.nOutputUnits << endl;
         
 	//returns max layer size
 	for(unsigned int i = 0; i < layerSizes.size();i++){
@@ -77,17 +83,44 @@ void MLPerceptron::initializeVectors(){
 	
 	desiredOutput 	= vector<float>(settings.nOutputUnits,0.0);
       
-        activations		= vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
-	prevActiv               = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
+    activations		= vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
+	prevActiv       = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
     
-        deltas 			= vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
-        prevDeltas              = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
+    deltas 			= vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0)); // dit klopt niet
+    prevDeltas      = vector<vector<float> >(settings.nLayers,vector<float>(maxNumberOfNodes,0.0));
         
 	biasNodes 		= vector<vector<float> >(settings.nLayers-1,vector<float>(maxNumberOfNodes,0.0));
-	//maskBias		= vector<vector<bool> >(settings.nLayers-1,vector<bool>(maxNumberOfNodes,0));
-	
+	prevBias        = vector<vector<float> >(settings.nLayers-1,vector<float>(maxNumberOfNodes,0.0));
+	biasMask        = vector<vector<int> >(settings.nLayers-1,vector<int>(maxNumberOfNodes,1));
+
 	weights			= vector< vector< vector<float> > >(settings.nLayers-1,vector< vector<float> >(maxNumberOfNodes, vector<float>(maxNumberOfNodes,0.0)));
-        
+    //Speed up bias drop
+    //biasNodes[0].resize(settings.nHiddenUnits);
+	//biasNodes[1].resize(settings.nOutputUnits);
+
+    /*
+	activations[0].resize(settings.nInputUnits);
+	activations[1].resize(settings.nHiddenUnits);
+	activations[2].resize(settings.nOutputUnits);
+
+	prevActiv[0].resize(settings.nInputUnits);
+	prevActiv[1].resize(settings.nHiddenUnits);
+	prevActiv[2].resize(settings.nOutputUnits);
+
+	deltas[0].resize(settings.nInputUnits);
+	deltas[1].resize(settings.nHiddenUnits);
+	deltas[2].resize(settings.nOutputUnits);
+
+	prevDeltas[0].resize(settings.nInputUnits);
+	prevDeltas[1].resize(settings.nHiddenUnits);
+	prevDeltas[2].resize(settings.nOutputUnits);
+
+	weights[0][0].resize(settings.nInputUnits);//input units
+	weights[0][1].resize(settings.nHiddenUnits);//hidden units
+	
+	weights[1][0].resize(settings.nHiddenUnits);//hidden units
+	weights[1][1].resize(settings.nOutputUnits);//output units
+*/
 	for(int i = 0;i < settings.nLayers-1;i++)
 		randomizeWeights(weights[i],i);
 }
@@ -95,7 +128,7 @@ void MLPerceptron::initializeVectors(){
 inline int fastrand() { 
   g_seed = (214013*g_seed+2531011); 
   return (g_seed>>16)&0x7FFF; 
-} */
+}*/
 #ifndef RAND_SSE_H
 #define RAND_SSE_H
 #include "emmintrin.h"
@@ -161,10 +194,36 @@ inline void rand_sse( unsigned int* result ) {
 
 #endif
 
-void MLPerceptron::checkingSettingsValidity(int actualInputSize){
-	if(actualInputSize != layerSizes[0]){
-		cout << "MLP:nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< actualInputSize <<", please change this in the settings file" << endl;
+void MLPerceptron::checkingSettingsValidity(vector<Feature>& randomFeatures){
+	if(randomFeatures[0].size != layerSizes[0]){
+		cout << "MLP:nInputUnits is set to "<<layerSizes[0]<< ", this is not correct, it should be "<< randomFeatures[0].size <<", please change this in the settings file" << endl;
 		exit(-1);
+	}
+
+	for(size_t i=0;i<randomFeatures.size();i++){
+		if(randomFeatures[i].size != layerSizes[0]){
+			cout << "MLP:feature " << i << " has size: " << randomFeatures[i].size << " this is not consistent with the amount of input units set in the settings file " << layerSizes[0] << endl;
+			exit(-1);
+		}
+	}
+}
+
+void MLPerceptron::initateBiasDrop(int isTraining){
+	if(isTraining){
+		for(int i=0;i<biasMask.size();i++)
+			for(int j=0;j<biasMask[i].size();j++)
+				if(biasMask[i][j]==0)
+					biasNodes[i][j] = prevBias[i][j];
+		prevBias=biasNodes;
+		//create mask
+		for(int i=0;i<biasMask.size();i++)
+			for(int j=0;j<biasMask[i].size();j++){
+				int randNum = rand()%2;
+				biasMask[i][j]=randNum;
+				if(randNum==0){
+					biasNodes[i][j]=0;
+				}
+			}	
 	}
 }
 
@@ -175,23 +234,23 @@ void MLPerceptron::initiateDropOut(int isTraining, int bottomLayer){
     //only hidden units are dropped
     
     if(isTraining && ((bottomLayer+1) < (settings.nLayers-1))){
-	float activeAc = 0.0;
-	float dropedAc = 0.0;
-      
-	for(int i=0;i<layerSizes[bottomLayer+1];i++){
-	   if(drand48() < p){
-	     dropedAc += activations[bottomLayer+1][i];
-	     activations[bottomLayer+1][i] = 0.0;
-	   }
-	   else
-               activeAc += activations[bottomLayer+1][i];
-	}
-	for(int i=0;i<layerSizes[bottomLayer+1];i++){
-            if(activeAc < 0.01)
-                activations[bottomLayer+1][i] = 0.0;
-            else
-                activations[bottomLayer+1][i] = activations[bottomLayer+1][i] * ((activeAc + dropedAc)/activeAc);
-	}
+		float activeAc = 0.0;
+		float dropedAc = 0.0;
+	      
+		for(int i=0;i<layerSizes[bottomLayer+1];i++){
+		   if(drand48() < p){
+		     dropedAc += activations[bottomLayer+1][i];
+		     activations[bottomLayer+1][i] = 0.0;
+		   }
+		   else
+	               activeAc += activations[bottomLayer+1][i];
+		}
+		for(int i=0;i<layerSizes[bottomLayer+1];i++){
+	            if(activeAc < 0.01)
+	                activations[bottomLayer+1][i] = 0.0;
+	            else
+	                activations[bottomLayer+1][i] = activations[bottomLayer+1][i] * ((activeAc + dropedAc)/activeAc);
+		}
     }
 }
 
@@ -233,6 +292,7 @@ void MLPerceptron::calculateActivationLayer(int isTraining, int bottomLayer){
 }
 
 void MLPerceptron::feedforward(int isTraining){
+		initateBiasDrop(isTraining);
         for(int i=0;i<settings.nLayers-1;i++)
 		calculateActivationLayer(isTraining,i);
 }
@@ -286,11 +346,11 @@ void MLPerceptron::adjustWeights(int index){
     if(settings.momentum)
         for(int i = 0; i < layerSizes[index + 1]; i++){
             for(int j = 0; j < layerSizes[index]; j++){
-                    float currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
-                    float prevChange = activations[index][j] == 0 ? 0:settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
-                    //float prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
-                    
-                    weights[index][j][i] += currentChange + lapda * prevChange;
+                float currentChange = settings.learningRate * deltas[index+1][i] * activations[index][j];
+                //float prevChange = activations[index][j] == 0 ? 0:settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                float prevChange = settings.learningRate * prevDeltas[index+1][i] * prevActiv[index][j];
+                
+                weights[index][j][i] += currentChange + lapda * prevChange;
             }
             biasNodes[index][i] += settings.learningRate * deltas[index+1][i];
         }
@@ -314,8 +374,16 @@ void MLPerceptron::backpropgation(){
 
 void MLPerceptron::activationsToOutputProbabilities(){
 	float sumOfActivations = 0;
+	float maxAc = 0;
+
+	for(int i=0;i<settings.nOutputUnits;i++)
+		if(maxAc < activations[settings.nLayers-1][i])
+			maxAc = activations[settings.nLayers-1][i];
+
 	for(int i = 0; i< settings.nOutputUnits; i++){
-		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
+		activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]-maxAc);
+		//activations[settings.nLayers -1][i] = exp(activations[settings.nLayers -1][i]);
+
 		sumOfActivations += activations[settings.nLayers -1][i];
 	}
 	for(int i = 0; i< settings.nOutputUnits; i++){
@@ -386,8 +454,10 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 			feedforward(1);
 			activationsToOutputProbabilities();
 			backpropgation();
-                        prevDeltas = deltas;
-                        prevActiv = activations;
+			if(settings.momentum){
+	            prevDeltas = deltas;
+	            prevActiv = activations;
+        	}
 			averageError += errorFunction();
 		}
 		
@@ -400,22 +470,19 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 				break;
 			cout << errorPreviousEpoch << endl;
 		}
-
 		settings.learningRate *= 0.98; //decreasing learning rate
-	
 		averageError = 0;
-		
 	}
-
+	//weights=bestWeights;
+	//biasNodes=bestBias;
 }
 
 void MLPerceptron::crossvaldiation(vector<Feature>& validationSet){
 	float averageError = 0;
 	int epochs = settings.epochs;
 	
-        cout << "epochs: " << epochs << endl;
+    cout << "epochs: " << epochs << endl;
 	cout << "epoch, averageError" << endl;
-        cout << " learning rate: " << settings.learningRate << endl;
 
 	for(int i = 0; i<epochs;i++){
 		random_shuffle(validationSet.begin(), validationSet.end());
@@ -423,11 +490,16 @@ void MLPerceptron::crossvaldiation(vector<Feature>& validationSet){
 			activations[0] = validationSet.at(j).content;
 			setDesiredOutput(validationSet.at(j));
 			feedforward(1);
-                        activationsToOutputProbabilities();
+            activationsToOutputProbabilities();
 			backpropgation();
+			if(settings.momentum){
+	            prevDeltas = deltas;
+	            prevActiv = activations;
+        	}			
 			averageError += errorFunction();
-                }
-		cout << i << ", " << averageError/(float)validationSet.size() << endl;
+        }
+        if(i % settings.crossValidationInterval == 0 or i == epochs-1)
+			cout << i << ", " << averageError/(float)validationSet.size() << endl;
 		averageError = 0;
 		
 		settings.learningRate *= 0.98;
@@ -444,7 +516,15 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 		if(validationSet[i*numPatchesPerSquare].getLabelId() == classify(vector<Feature>(first,last)))
 			classifiedCorrect++;
 	}
-        cout << 1.0 - (float)((float)classifiedCorrect/(float)amountOfImValidationSet) << ", ";
+    float validationError = 1.0 - (float)((float)classifiedCorrect/(float)amountOfImValidationSet);
+    cout << validationError << ", ";
+    /*
+    if(validationError < lowestValidationError){
+    	bestWeights=weights;
+    	bestBias=biasNodes;
+    	lowestValidationError = validationError;
+    }
+*/
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
 	return 0;
@@ -454,7 +534,7 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 void MLPerceptron::train(vector<Feature>& randomFeatures,vector<Feature>& validationSet,vector<Feature>& testSet){
         initializeVectors();
         
-        checkingSettingsValidity(randomFeatures[0].size);
+        checkingSettingsValidity(randomFeatures);
         
         crossvaldiation(randomFeatures,validationSet,testSet);
 }
@@ -468,14 +548,15 @@ void MLPerceptron::train(vector<Feature>& trainingSet,vector<Feature>& validatio
         
         initializeVectors();
         
-        checkingSettingsValidity(trainingSet[0].size);
+        checkingSettingsValidity(trainingSet);
         
         crossvaldiation(trainingSet,validationSet,emptyFeatureSet); 	
 }
 
-//This method is for training on the validation set
+//This method is for training on just one set
 void MLPerceptron::train(vector<Feature>& validationSet){
-	    checkingSettingsValidity(validationSet[0].size);
+        initializeVectors();
+	    checkingSettingsValidity(validationSet);
         crossvaldiation(validationSet);
 }
 //--------end training-----------

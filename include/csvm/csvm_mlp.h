@@ -15,6 +15,7 @@ namespace csvm{
       //float probDropout;
       int momentum;
       int nHiddenUnits;
+      int nHiddenUnits2nd;
       int nInputUnits;
       int nOutputUnits;
       int nLayers;
@@ -36,7 +37,7 @@ namespace csvm{
       
       float p;
       float lapda;
-      
+      float lowestValidationError;
       vector<int> layerSizes;
 
 	  vector<float> desiredOutput;
@@ -44,17 +45,20 @@ namespace csvm{
 	  vector<float> maxHiddenActivation;
 	  
 	  vector<vector<float> > biasNodes;
-          vector<vector<float> > prevBias;
-	  vector<vector<bool> > maskBias;
-          
-          vector<vector<float> > activations;
-          vector<vector<float> > prevActiv;
+      vector<vector<float> > prevBias;
+	  vector<vector<float> > bestBias;
+  	  vector<vector<int> > biasMask;
+
+      vector<vector<float> > activations;
+      vector<vector<float> > prevActiv;
           
 	  vector<vector<float> > deltas;
 	  vector<vector<float> > prevDeltas;
 
-	  vector<vector<vector<float> > > weights;          	  
-          vector<vector<vector<float> > > prevWeights;
+	  vector<vector<vector<float> > > weights;
+	  vector<vector<vector<float> > > bestWeights;          	  
+
+      vector<vector<vector<float> > > prevWeights;
 
 	  vector<vector<vector<float> > > prevChange;
           vector<vector<vector<bool> > > mask;
@@ -66,12 +70,13 @@ namespace csvm{
 		void setDesiredOutput(Feature f);
 		float errorFunction();
 		void initializeVectors();
-		void checkingSettingsValidity(int actualInputSize);
+		void checkingSettingsValidity(vector<Feature>& randomFeatures);
 		void setHiddenActivationToMethod(vector<float>& hiddenActivation,vector<float>& currentActivation, string type);
 		void setDropOutTesting();
 		void removeDropOutTesting();
 		//regularization:
 		void initiateDropOut(int isTraining, int bottomLayer);
+		void initateBiasDrop(int isTraining);
 		void createMask(int isTraining);
                 
 		//feedforward:

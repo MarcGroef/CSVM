@@ -78,13 +78,13 @@ int Patch::calculateSquare(){
       trueMiddelY=1;
    
    if(trueMiddelX && trueMiddelY){
-      if(offsetX <= middelOffSetWidth && offsetY < middelOffSetHeigth)//topleft
+      if(offsetX < middelOffSetWidth && offsetY < middelOffSetHeigth)//topleft
          return 0;
-      if(offsetX > middelOffSetWidth && offsetY < middelOffSetHeigth)//topright
+      if(offsetX >= middelOffSetWidth && offsetY < middelOffSetHeigth)//topright
          return 1;
-      if(offsetX <= middelOffSetWidth && offsetY >= middelOffSetHeigth)//bottom-left
+      if(offsetX < middelOffSetWidth && offsetY >= middelOffSetHeigth)//bottom-left
          return 2;
-      if(offsetX > middelOffSetWidth && offsetY >= middelOffSetHeigth)//bottom-right
+      if(offsetX >= middelOffSetWidth && offsetY >= middelOffSetHeigth)//bottom-right
          return 3;
    }
    if(!trueMiddelX && !trueMiddelY){

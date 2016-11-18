@@ -1,9 +1,9 @@
 Dataset
 method MNIST
-nTrainImages 400
-nTestImages 40
-imageWidth 37
-imageHeight 37
+nTrainImages 600
+nTestImages 100
+imageWidth 38
+imageHeight 38
 crossVal 1
 
 General
@@ -44,14 +44,14 @@ ImageScanner
 patchHeight 32
 patchWidth 32
 scanStride 1
-nRandomPatches 5000
+nRandomPatches 2000
 
 MLPController
-stackSize 1
+stackSize 2
 nSplitsForPooling 1
-poolingType AVERAGE,MAX,MIN
+poolingType MAX
 epochsValidationSet 5
-scanStrideFirstLayer 2
+scanStrideFirstLayer 1
 splitTrainSet 0
 crossValidationSize 0.1
 saveData 0
@@ -70,6 +70,7 @@ MLP
 dropout 1
 momentum 1
 nHiddenUnits 500
+nHiddenUnits2nd 200
 nInputUnits 324
 nOutputUnits 10
 nLayers 3
@@ -81,13 +82,14 @@ epochs 20
 stoppingCriterion 0.999
 
 MLPFirstLevel
-dropout 0
-momentum 0
+dropout 1
+momentum 1
 nHiddenUnits 300
-nInputUnits 2000
+nHiddenUnits2nd 200
+nInputUnits 500
 nOutputUnits 10
 nLayers 3
-learningRate .01
+learningRate .03
 voting SUM
 trainingType CROSSVALIDATION
 crossValidationInterval 5
