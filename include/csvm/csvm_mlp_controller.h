@@ -94,7 +94,7 @@ namespace csvm{
 		void createDataBottomLevel(vector<vector<vector<Feature> > >& bottomLevelData,vector<string> setTypes);
 		void createDataFirstLevel(vector<vector<Feature> >& trainingData,vector<string> setTypes);
                 
-                
+        bool isTrainOnColorImagesUsed();
 		vector<Feature> createValidationSet();
 		vector<Feature> createRandomFeatureVector();
 		vector<Feature> createTestSet();
@@ -108,6 +108,8 @@ namespace csvm{
         void activationsToOutputProbabilities(vector<float>& votingHistogram);
         void calcNumPatchesPerSquare();
 		
+		vector<Feature> splitDataForOneMLPPerColor(vector<Feature>& features, int j);
+
 		void dropOutTesting(vector<vector<vector<float> > >& newWeights);
 		
 		void exportFeatureSet(string filename, vector<Feature>& featureVector);

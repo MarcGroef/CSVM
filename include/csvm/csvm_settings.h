@@ -19,6 +19,8 @@
 #include <fstream>
 #include <assert.h>
 #include <cstdlib>
+#include <algorithm>
+#include <string> 
 
 #include "csvm_svm.h"
 #include "csvm_feature_extractor.h"

@@ -47,16 +47,16 @@ void MLPController::setSettings(controllerSettingsPack controller){
     mlps.reserve(controllerSettings.stackSize);
     
     mlps = vector<vector<MLPerceptron> >(controllerSettings.stackSize);
-    
+
     for(int i = 0; i < nMLPs;i++){
             MLPerceptron mlp;
-            /*if(controller.featureExtractorSettings.binmethod != "CROSSCOLOUR"){
-                for(size_t j=0; j<3;j++){
-                    MLPerceptron colourMlp;
-                    colourMlp.setSettings(mlpSettings);
-                    mlps[0].push_back(colourMLP);
+            if(isTrainOnColorImagesUsed()){
+                for(size_t j=0; j<2;j++){
+                    MLPerceptron colormlp;
+                    colormlp.setSettings(mlpSettings);
+                    mlps[0].push_back(colormlp);
                 }
-            }*/
+            }
             mlp.setSettings(mlpSettings);
             mlps[0].push_back(mlp);
     }
@@ -77,6 +77,11 @@ void MLPController::setSettings(controllerSettingsPack controller){
     //set poolingType to array
     //controllerSettings.poolingType;
 }
+
+bool MLPController::isTrainOnColorImagesUsed(){
+    return controller.featureSettings.hogSettings.binmethod == BYCOLOUR and controller.featureSettings.hogSettings.useColourPixel == true and controller.datasetSettings.type == DATASET_CIFAR10 ? 1 : 0;
+}
+        
 
 void MLPController::setMinAndMaxValueNorm(vector<Feature>& inputFeatures, int index){
 	minValues[index] = inputFeatures[0].content[0];
@@ -271,10 +276,12 @@ vector<Feature> MLPController::extractHiddenActivation(vector<vector<Feature> > 
     //e.g. AVERAGE,MAX. Are the abbriviations for max pooling and average pooling
     //The pooling types that are available are MAX, MIN, and AVERAGE. 
     while(isThereANextPoolingType(type)){
+        int dataItr = -1;
         string currentType = currentPoolingType(type);
-        for(int j=0;j<nMLPs;j++){
-            vector<Feature>::const_iterator first = splitDataBottom[j].begin();
-            vector<Feature>::const_iterator last = splitDataBottom[j].end();
+        for(size_t j=0;j<mlps[0].size();j++){
+            isTrainOnColorImagesUsed() ? dataItr = j/3:dataItr = j;
+            vector<Feature>::const_iterator first = splitDataBottom[dataItr].begin();
+            vector<Feature>::const_iterator last = splitDataBottom[dataItr].end();
 
             vector<float> hiddenActivationSquare = mlps[0][j].returnHiddenActivationToMethod(vector<Feature>(first,last),currentType);
             
@@ -323,39 +330,36 @@ void MLPController::calcNumPatchesPerSquare(){
         numPatchesPerSquare[0] = (((controller.datasetSettings.imWidth - patchWidth)/scannerStride)+1) * (((controller.datasetSettings.imHeight - patchHeight)/scannerStride)+1);
     
     if(nMLPs == 4){
-   bool trueMiddelX = 0;
-   bool trueMiddelY = 0;
+       bool trueMiddelX = 0;
+       bool trueMiddelY = 0;
 
-   int maxOffSetWidth = controller.datasetSettings.imWidth-patchWidth;
-   int middelOffSetWidth = maxOffSetWidth/2;
+       int maxOffSetWidth = controller.datasetSettings.imWidth-patchWidth;
+       int middelOffSetWidth = maxOffSetWidth/2;
 
-   int maxOffSetHeigth = controller.datasetSettings.imHeight-patchHeight;
-   int middelOffSetHeigth = maxOffSetHeigth/2;
+       int maxOffSetHeigth = controller.datasetSettings.imHeight-patchHeight;
+       int middelOffSetHeigth = maxOffSetHeigth/2;
 
-   if(maxOffSetWidth%2==0)
-      trueMiddelX=1;
-   if(maxOffSetHeigth%2==0)
-      trueMiddelY=1;
-  
-   if(trueMiddelX && trueMiddelY){
-        numPatchesPerSquare[0] = (((middelOffSetWidth)/scannerStride)+1) * (middelOffSetHeigth/scannerStride);
-        numPatchesPerSquare[1] = (middelOffSetWidth/scannerStride) * (middelOffSetHeigth/scannerStride);
-        numPatchesPerSquare[2] = (((middelOffSetWidth)/scannerStride)+1) * (((middelOffSetHeigth)/scannerStride)+1);
-        numPatchesPerSquare[3] = (middelOffSetWidth/scannerStride) * (((middelOffSetHeigth)/scannerStride)+1);
-   }
-   if(!trueMiddelX && !trueMiddelY)
-    for(int i=0;i<nMLPs;i++)
-        numPatchesPerSquare[i] = ((middelOffSetWidth/scannerStride)+1) * (((middelOffSetHeigth)/scannerStride)+1);
-   //if(trueMiddelX && !trueMiddelY) implement this
-    for(int i=0;i<nMLPs;i++)
-        cout<< "numPatchersPerSquare with stride " << scannerStride << ", [" <<i<< "]: " << numPatchesPerSquare[i] << endl;
-
-}
+       if(maxOffSetWidth%2==0)
+          trueMiddelX=1;
+       if(maxOffSetHeigth%2==0)
+          trueMiddelY=1;
+      
+       if(trueMiddelX && trueMiddelY){
+            numPatchesPerSquare[0] = (((middelOffSetWidth)/scannerStride)+1) * (middelOffSetHeigth/scannerStride);
+            numPatchesPerSquare[1] = (middelOffSetWidth/scannerStride) * (middelOffSetHeigth/scannerStride);
+            numPatchesPerSquare[2] = (((middelOffSetWidth)/scannerStride)+1) * (((middelOffSetHeigth)/scannerStride)+1);
+            numPatchesPerSquare[3] = (middelOffSetWidth/scannerStride) * (((middelOffSetHeigth)/scannerStride)+1);
+       }
+       if(!trueMiddelX && !trueMiddelY)
+        for(int i=0;i<nMLPs;i++)
+            numPatchesPerSquare[i] = ((middelOffSetWidth/scannerStride)+1) * (((middelOffSetHeigth)/scannerStride)+1);
+       //if(trueMiddelX && !trueMiddelY) implement this
+        for(int i=0;i<nMLPs;i++)
+            cout<< "numPatchersPerSquare with stride " << scannerStride << ", [" <<i<< "]: " << numPatchesPerSquare[i] << endl;
+    }
 }
 void MLPController::createDataFirstLevel(vector<vector<Feature> >& trainingData, vector<string> setTypes){
     imageScanner.setScannerStride(controllerSettings.scanStrideFirstLayer);
-
-    //calcNumPatchesPerSquare();
     for(size_t i=0;i<setTypes.size();i++){
         unsigned int end=0;
         unsigned int start=0;
@@ -368,7 +372,7 @@ void MLPController::createDataFirstLevel(vector<vector<Feature> >& trainingData,
         }
         if(setTypes[i] == "test")
             end = dataset->getTestSize();
-        
+
         for(size_t j=start;j<end;j++){
             vector<vector<Feature> > split = splitUpDataBySquare(imageToFeatures(setTypes[i],j));
             if(j==0 && setTypes[i] == "train")
@@ -387,6 +391,20 @@ void MLPController::createDataFirstLevel(vector<vector<Feature> >& trainingData,
      }
 }
 
+vector<Feature> MLPController::splitDataForOneMLPPerColor(vector<Feature>& features, int j){
+    vector<Feature> partialFeatureVec;
+    int inputSizeOneColorMLP = controller.mlpSettings.nInputUnits;
+
+    for(size_t k=0;k<features.size();k++){
+        vector<float> inputColor = vector<float>(features[k].content.begin() + inputSizeOneColorMLP*j,features[k].content.begin() + inputSizeOneColorMLP*(j+1));
+        
+        Feature tempFeat = new Feature(inputColor);
+        tempFeat.setLabelId(features[k].getLabelId());
+        partialFeatureVec.push_back(tempFeat);
+    }      
+    return partialFeatureVec;                     
+
+}
 //-----------start: training MLP's-------------------------
 void MLPController::trainMutipleMLPs()
 {
@@ -397,16 +415,29 @@ void MLPController::trainMutipleMLPs()
     //bottomLevelData = vector<vector<vector<Feature> > >(2); //2 for training on a random feature vector and validation set
 
 	if(!controllerSettings.readMLP){
-            setTypes.push_back("train");
-            setTypes.push_back("validation");
-            
-            createDataBottomLevel(bottomLevelData,setTypes);
+        setTypes.push_back("train");
+        setTypes.push_back("validation");
+        
+        createDataBottomLevel(bottomLevelData,setTypes);
+        if(isTrainOnColorImagesUsed()){
+            vector<vector<Feature> > partialData; 
+            partialData = vector<vector<Feature> >(2); 
+            for(int i=0;i<nMLPs;i++)
+                for(int j=i*3;j<3+(i*3);j++){   
+                    for(int k=0;k<2;k++)
+                        partialData[k] = splitDataForOneMLPPerColor(bottomLevelData[k][i],j-(i*3));
+                    mlps[0][j].setNumPatchesPerSquare(numPatchesPerSquare[i]);
+                    mlps[0][j].train(partialData[0],partialData[1]);
+                }
+            }
+        else{
             for(int i=0;i<nMLPs;i++){
                 mlps[0][i].setNumPatchesPerSquare(numPatchesPerSquare[i]);
                 mlps[0][i].train(bottomLevelData[0][i],bottomLevelData[1][i]);
                 cout << "mlp["<<i<<"] from level 0 finished training on randomfeat" << endl;
             }
-            setTypes.clear();
+        }
+        setTypes.clear();
 	} else{
         cout << "loading in mlp..." << endl;
 	    importPreTrainedMLP(controllerSettings.readMLPName);
@@ -423,8 +454,11 @@ void MLPController::trainMutipleMLPs()
         setTypes.push_back("validation");
 
         createDataFirstLevel(firstLevelData,setTypes);
-        //add validation set to training set
+
+        cout << "lekker" << endl;
+
         firstLevelData[0].insert(firstLevelData[0].end(),firstLevelData[1].begin(),firstLevelData[1].end());
+
         mlps[1][0].setNumPatchesPerSquare(1);
         mlps[1][0].train(firstLevelData[0]); 
         cout << "mlp[0] from level 1 finished training on the training set" << endl;   
@@ -477,12 +511,27 @@ unsigned int MLPController::mlpMultipleClassify(Image* im){
 	if(controllerSettings.stackSize == 1){
 		vector<float> votingHistogram = vector<float>(mlpSettings.nOutputUnits,0.0);
 		vector<float> outputProp;
-		for(int i=0;i<nMLPs;i++){
-			outputProp = mlps[0][i].classifyPooling(testFeaturesBySquare[i]);
-			for(int j=0;j<mlpSettings.nOutputUnits;j++){
-				votingHistogram[j] += outputProp[j];
-			}
-		}
+        if(isTrainOnColorImagesUsed()){
+            for(int i=0;i<nMLPs;i++){
+                  for(int j=i*3;j<3+(i*3);j++){
+                        vector<Feature> partialTest = splitDataForOneMLPPerColor(testFeaturesBySquare[i],j-(i*3));
+
+                        outputProp = mlps[0][j].classifyPooling(partialTest);
+                        
+                        for(int k=0;k<mlpSettings.nOutputUnits;k++){
+                            votingHistogram[k] += outputProp[k];
+                        }
+                    }
+            }
+        }
+        else{
+    		for(int i=0;i<nMLPs;i++){
+    			outputProp = mlps[0][i].classifyPooling(testFeaturesBySquare[i]);
+    			for(int j=0;j<mlpSettings.nOutputUnits;j++){
+    				votingHistogram[j] += outputProp[j];
+    			}
+    		}
+        }
 		//activationsToOutputProbabilities(votingHistogram);
 		
         float highestProp = 0;
@@ -612,7 +661,7 @@ void MLPController::importPreTrainedMLP(string filename){
 	vector<vector<float> > biasNodes = vector<vector<float> >(mlpSettings.nLayers-1,vector<float>(maxUnits,0.0));
 	vector<vector<vector<float> > > weights = vector<vector<vector<float> > >(mlpSettings.nLayers-1,vector<vector<float> >(maxUnits,vector<float>(maxUnits,0.0)));
 	
-	for(int i=0; i<nMLPs;i++){ //amount of mlps that needs to be read in from mlp
+	for(size_t i=0; i<mlps[0].size();i++){ //amount of mlps that needs to be read in from mlp
 		for(int j=0;j<mlpSettings.nLayers-1;j++){ //amount of weight vectors
 			for(int k=0;k<maxUnits;k++){ //amount of collums
 				for(int l=0;l<maxUnits;l++){ // amount of rows
@@ -714,7 +763,7 @@ void MLPController::exportTrainedMLP(string filename){
 	 fancyInt.intVal = mlpSettings.momentum;
 	 file.write(fancyInt.chars, 4);
 	 
-	for(int i=0; i<nMLPs;i++){ //amount of mlps
+	for(size_t i=0; i<mlps[0].size();i++){ //amount of mlps
 		vector<vector<float> > biasNodes = mlps[0][i].getBiasNodes();
 		vector<vector<vector<float> > > weights = mlps[0][i].getWeightMatrix();
 		

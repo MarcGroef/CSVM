@@ -23,6 +23,7 @@ CSVMSettings::~CSVMSettings() {
 
 void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    string type, setting;
+    int value;
        stream >> setting;
   if (setting == "stackSize") {
       stream >> mlpControlSettings.stackSize;
@@ -68,7 +69,18 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    
     stream >> type;
    if (type == "splitTrainSet") {
-      stream >> mlpControlSettings.splitTrainSet;
+      stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPControllerSettings(): Please chance saveData to either OFF or ON" << endl;
+        exit(-1);
+      }
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+
+      mlpControlSettings.splitTrainSet=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -86,7 +98,18 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    
     stream >> type;
    if (type == "saveData") {
-      stream >> mlpControlSettings.saveData;
+      stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPControllerSettings(): Please chance saveData to either OFF or ON" << endl;
+        exit(-1);
+      }
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+
+      mlpControlSettings.saveData=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -113,7 +136,17 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    
     stream >> type;
    if (type == "readInData") {
-      stream >> mlpControlSettings.readInData;
+      stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPControllerSettings(): Please chance readInData to either OFF or ON" << endl;
+        exit(-1);
+      }
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+      mlpControlSettings.readInData=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -140,7 +173,17 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    
    stream >> type;
    if (type == "saveMLP") {
-      stream >> mlpControlSettings.saveMLP;
+        stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPControllerSettings(): Please chance saveMLP to either OFF or ON" << endl;
+        exit(-1);
+      }
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+      mlpControlSettings.saveMLP=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -157,7 +200,17 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    }
       stream >> type;
    if (type == "readMLP") {
-      stream >> mlpControlSettings.readMLP;
+        stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPControllerSettings(): Please chance readMLP to either OFF or ON" << endl;
+        exit(-1);
+      }
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+      mlpControlSettings.readMLP=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -174,7 +227,17 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
    }
    stream >> type;
    if (type == "saveWrongImages") {
-      stream >> mlpControlSettings.saveWrongImages;
+    stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPSettings(): Please chance saveWrongImages to either OFF or ON" << endl;
+        exit(-1);
+      }
+      mlpControlSettings.saveWrongImages=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPControllerSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -184,13 +247,24 @@ void CSVMSettings::parseMLPControllerSettings(ifstream& stream){
 
 void CSVMSettings::parseMLPSettings(ifstream& stream,bool bottomLevel){
    string type, setting;
-   
+   int value;
    stream >> type;
    if (type == "dropout") {
-       if(bottomLevel)
-        stream >> mlpSettings.dropout;
-       else
-           stream >> mlpSettingsFirstLevel.dropout;
+      stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPSettings(): Please chance dropout to either OFF or ON" << endl;
+        exit(-1);
+      }
+      
+      if(bottomLevel)
+        mlpSettings.dropout=value;
+      else
+        mlpSettingsFirstLevel.dropout=value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -209,11 +283,22 @@ void CSVMSettings::parseMLPSettings(ifstream& stream,bool bottomLevel){
       exit(-1);
    }*/
       stream >> type;
-   if (type == "momentum") {
+   if (type == "momentum"){
+      stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseMLPSettings(): Please chance momentum to either OFF or ON" << endl;
+        exit(-1);
+      }
+      
        if(bottomLevel)
-        stream >> mlpSettings.momentum;
+        mlpSettings.momentum = value;
        else
-           stream >> mlpSettingsFirstLevel.momentum;
+        mlpSettingsFirstLevel.momentum = value;
    }
    else {
       cout << "csvm::csvm_settings:parseMLPSettings(): Error! Invalid settingsfile layout. Reading " << type << ".. Exitting...\n";
@@ -444,10 +529,9 @@ void CSVMSettings::parseLinNetSettings(ifstream& stream) {
 }
 
 void CSVMSettings::parseDatasetSettings(ifstream& stream) {
-
-
    string setting;
    string method;
+   int value;
    stream >> setting;
    if (setting != "method") {
       cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile layout. Exitting...\n";
@@ -506,8 +590,20 @@ void CSVMSettings::parseDatasetSettings(ifstream& stream) {
    if (setting != "crossVal") {
       cout << "csvm::csvm_settings:parseDatasetSettings(): Error! Invalid settingsfile" << setting << " . Exitting...\n";
       exit(-1);
-   }
-   stream >> datasetSettings.crossVal;
+   }else{
+      stream >> setting;
+      std::transform(setting.begin(), setting.end(), setting.begin(), ::tolower);
+      if(setting != "off" && setting != "on"){
+        cout << "csvm::csvm_settings:parseDatasetSettings(): Please chance crossVal to either OFF or ON" << endl;
+        exit(-1);
+      }
+      if(setting == "off")
+        value=0;
+      if(setting == "on")
+        value=1;
+
+      datasetSettings.crossVal=value;
+ }
 }
 
 

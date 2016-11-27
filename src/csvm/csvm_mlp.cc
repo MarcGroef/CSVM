@@ -210,14 +210,14 @@ void MLPerceptron::checkingSettingsValidity(vector<Feature>& randomFeatures){
 
 void MLPerceptron::initateBiasDrop(int isTraining){
 	if(isTraining){
-		for(int i=0;i<biasMask.size();i++)
-			for(int j=0;j<biasMask[i].size();j++)
+		for(size_t i=0;i<biasMask.size();i++)
+			for(size_t j=0;j<biasMask[i].size();j++)
 				if(biasMask[i][j]==0)
 					biasNodes[i][j] = prevBias[i][j];
 		prevBias=biasNodes;
 		//create mask
-		for(int i=0;i<biasMask.size();i++)
-			for(int j=0;j<biasMask[i].size();j++){
+		for(size_t i=0;i<biasMask.size();i++)
+			for(size_t j=0;j<biasMask[i].size();j++){
 				int randNum = rand()%2;
 				biasMask[i][j]=randNum;
 				if(randNum==0){
@@ -292,7 +292,7 @@ void MLPerceptron::calculateActivationLayer(int isTraining, int bottomLayer){
 }
 
 void MLPerceptron::feedforward(int isTraining){
-		initateBiasDrop(isTraining);
+		//initateBiasDrop(isTraining);
         for(int i=0;i<settings.nLayers-1;i++)
 		calculateActivationLayer(isTraining,i);
 }
@@ -447,7 +447,7 @@ void MLPerceptron::crossvaldiation(vector<Feature>& randomFeatures,vector<Featur
 
 	
 	for(int i = 0; i<epochs;i++){
-                random_shuffle(randomFeatures.begin(), randomFeatures.end());		
+            random_shuffle(randomFeatures.begin(), randomFeatures.end());		
 		for(unsigned int j = 0;j<randomFeatures.size();j++){
 			activations[0] = randomFeatures.at(j).content;
 			setDesiredOutput(randomFeatures.at(j));
@@ -517,14 +517,8 @@ bool MLPerceptron::isErrorOnValidationSetLowEnough(vector<Feature>& validationSe
 			classifiedCorrect++;
 	}
     float validationError = 1.0 - (float)((float)classifiedCorrect/(float)amountOfImValidationSet);
-    cout << validationError << ", ";
-    /*
-    if(validationError < lowestValidationError){
-    	bestWeights=weights;
-    	bestBias=biasNodes;
-    	lowestValidationError = validationError;
-    }
-*/
+    cout << "\t" << validationError << ", \t\t";
+
 	if(classifiedCorrect >= amountOfImValidationSet*settings.stoppingCriterion)
 		return 1;
 	return 0;
