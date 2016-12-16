@@ -261,7 +261,7 @@ float MLPerceptron::activationFunction(float summedActivation){
 	//sigmoid:
 	//return 1/(1+exp(-summedActivation));
 	
-        //relu:
+    //relu:
 	if(summedActivation > 0)
 		return summedActivation;
 	return 0.0;
